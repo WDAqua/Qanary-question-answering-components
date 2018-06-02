@@ -80,7 +80,7 @@ public class Monolitic extends QanaryComponent {
                 + "BIND (IRI(str(RAND())) AS ?b) ."
                 + "BIND (now() as ?time) "
                 + "}";	
-        myQanaryUtils.updateTripleStore(sparql);
+        myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 
 		return myQanaryMessage;
 	}

@@ -1,12 +1,7 @@
 package eu.wdaqua.qanary.querybuilder;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
@@ -40,8 +35,6 @@ public class QueryBuilder extends QanaryComponent {
 	@Override
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("process: {}", myQanaryMessage);
-		String detectedPattern = "";
-
 		List<String> classes = new ArrayList<String>();
 		List<String> properties = new ArrayList<String>();
 		List<String> entities = new ArrayList<String>();
@@ -50,7 +43,9 @@ public class QueryBuilder extends QanaryComponent {
 		QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 		logger.info("Question: {}", myQuestion);
-
+		String endpoint = myQanaryMessage.getEndpoint().toString();
+		logger.info("Endpoint: {}", endpoint);
+		
 		// entities
 
 		String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> "
@@ -69,8 +64,8 @@ public class QueryBuilder extends QanaryComponent {
 				+ "    ] . " //
 				+ " ?a oa:hasBody ?uri . " + "} " + "ORDER BY ?start ";
 
-		ResultSet r = myQanaryUtils.selectFromTripleStore(sparql);
-		String argument = "";
+		ResultSet r = myQanaryUtils.selectFromTripleStore(sparql, endpoint);
+		
 		while (r.hasNext()) {
 			QuerySolution s = r.next();
 			entities.add(s.getResource("uri").getURI());
@@ -83,16 +78,21 @@ public class QueryBuilder extends QanaryComponent {
 				+ "SELECT  ?relationurl " + "FROM <" + myQanaryQuestion.getInGraph() + "> " //
 				+ "WHERE { " //
 				+ "  ?a a qa:AnnotationOfRelation . " + "  ?a oa:hasTarget [ " + "           a    oa:SpecificResource; "
-				+ "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">. " + "  ] ; "
+				+ "           oa:hasSource    <" + myQanaryQuestion.getUri() + "> " + "  ] ; "
 				+ "     oa:hasBody ?relationurl ." + "} " //
 				+ "ORDER BY ?start ";
 
-		r = myQanaryUtils.selectFromTripleStore(sparql);
+		r = myQanaryUtils.selectFromTripleStore(sparql, endpoint);
 
 		while (r.hasNext()) {
 			QuerySolution s = r.next();
-			properties.add(s.getResource("uri").getURI());
-			logger.info("uri info {}", s.getResource("uri").getURI());
+			logger.warn("r: {}  s: {} ",r,s);
+			if( s != null && !s.getResource("relationurl").equals(null)){
+				properties.add(s.getResource("relationurl").getURI());
+				logger.info("uri info {}", s.getResource("relationurl").getURI());
+			} else {
+				logger.warn("getResource(relationurl) was null");
+			}
 		}
 
 		// classes
@@ -101,39 +101,33 @@ public class QueryBuilder extends QanaryComponent {
 				+ "SELECT ?uri " + "FROM <" + myQanaryQuestion.getInGraph() + "> " //
 				+ "WHERE { " //
 				+ "    ?a a qa:AnnotationOfClass . " + "?a oa:hasTarget [ "
-				+ "		     a               oa:SpecificClass. " //
-				+ "		     ] " //
+				+ "		     a               oa:SpecificClass " //
 				+ "    ] . " //
 				+ " ?a oa:hasBody ?uri . " + "} " + "ORDER BY ?start ";
 
-		r = myQanaryUtils.selectFromTripleStore(sparql);
+		r = myQanaryUtils.selectFromTripleStore(sparql, endpoint);
 
 		while (r.hasNext()) {
 			QuerySolution s = r.next();
-			classes.add(s.getResource("uri").getURI());
-			logger.info("uri info {}", s.getResource("uri").getURI());
+			if( s != null && !s.getResource("uri").equals(null)){
+				classes.add(s.getResource("uri").getURI());
+				logger.info("uri info {}", s.getResource("uri").getURI());
+			} else {
+				logger.warn("getResource(uri) was null");
+			}
 		}
 
-		String generatedQuery = "";
 		if (classes.size() == 0) {
 
 			if (properties.size() == 1) {
 				if (entities.size() == 1) {
-					generatedQuery = "SELECT DISTINCT ?uri WHERE { <" + entities.get(0) + "> <" + properties.get(0)
-							+ "> ?uri }";
 				}
 				if (entities.size() == 2) {
-					generatedQuery = "ASK WHERE { <" + entities.get(0) + "> <" + properties.get(0) + "> <"
-							+ entities.get(1) + "> }";
 				}
 			} else if (properties.size() == 2) {
 				if (entities.size() == 1) {
-					generatedQuery = "SELECT DISTINCT ?uri WHERE { ?x <" + properties.get(0) + "> <" + entities.get(0)
-							+ "> . ?x <" + properties.get(1) + "> ?uri .OPTIONAL { <" + entities.get(0) +"> <" + properties.get(0) + "> ?x. } }";
 				}
 				if (entities.size() == 2) {
-					generatedQuery = "SELECT DISTINCT ?uri WHERE { ?uri <" + properties.get(0) + "> <" + entities.get(0)
-							+ "> . ?uri <" + properties.get(1) + "> <" + entities.get(1) + "> . }";
 				}
 			}
 
@@ -148,23 +142,14 @@ public class QueryBuilder extends QanaryComponent {
 				}
 			} else if (properties.size() == 1) {
 				if (entities.size() == 1) {
-					generatedQuery = "SELECT DISTINCT ?uri WHERE {?uri <" + properties.get(0) + "> <" + entities.get(0)
-							+ "> . ?uri <https://www.w3.org/1999/02/22-rdf-syntax-ns#type> <" + classes.get(0) + ">}";
 				}
 				if (entities.size() == 2) {
 
 				}
 			} else if (properties.size() == 2) {
 				if (entities.size() == 1) {
-					generatedQuery = "SELECT DISTINCT ?uri WHERE { ?x <" + properties.get(0) + "> <" + entities.get(0)
-							+ "> . ?x <" + properties.get(1)
-							+ "> ?uri . ?x <https://www.w3.org/1999/02/22-rdf-syntax-ns#type> <" + classes.get(0)
-							+ ">}";
 				}
 				if (entities.size() == 2) {
-					generatedQuery = "SELECT DISTINCT ?uri WHERE {?uri <" + properties.get(0) + "> <" + entities.get(0)
-							+ "> . ?uri <" + properties.get(1) + "> <" + entities.get(1)
-							+ "> . ?uri <https://www.w3.org/1999/02/22-rdf-syntax-ns#type> <" + classes.get(0) + ">}";
 				}
 			}
 
@@ -197,15 +182,4 @@ public class QueryBuilder extends QanaryComponent {
 		return myQanaryMessage;
 	}
 
-	class Entity {
-
-		public int begin;
-		public int end;
-		public String namedEntity;
-		public String uri;
-
-		public void print() {
-			System.out.println("Start: " + begin + "\t End: " + end + "\t Entity: " + namedEntity);
-		}
-	}
 }

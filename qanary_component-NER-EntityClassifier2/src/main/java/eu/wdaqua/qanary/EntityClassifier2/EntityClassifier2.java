@@ -123,7 +123,7 @@ public class EntityClassifier2 extends QanaryComponent {
                     + "  ] ; " + "     oa:annotatedBy <http:entityclassifier2.com> ; "
                     + "	    oa:AnnotatedAt ?time  " + "}} " + "WHERE { " + "BIND (IRI(str(RAND())) AS ?a) ."
                     + "BIND (now() as ?time) " + "}";
-            myQanaryUtils.updateTripleStore(sparql);
+            myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
         }
 		return myQanaryMessage;
 	}

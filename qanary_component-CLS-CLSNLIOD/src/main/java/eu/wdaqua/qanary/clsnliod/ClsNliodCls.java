@@ -206,8 +206,8 @@ BufferedWriter buffWriter = new BufferedWriter(new FileWriter("questions.txt", t
 	                 + "BIND (now() as ?time) "
 	                 + "}";
 	         logger.info("Sparql query {}", sparql);
-	         myQanaryUtils.updateTripleStore(sparql);
-	     }
+	         myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+	    }
 		return myQanaryMessage;
 
 	}

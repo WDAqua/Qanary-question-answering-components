@@ -12,15 +12,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.http.client.ClientProtocolException;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.update.UpdateExecutionFactory;
-import org.apache.jena.update.UpdateFactory;
-import org.apache.jena.update.UpdateProcessor;
-import org.apache.jena.update.UpdateRequest;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -31,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
 
 @Component
@@ -134,25 +127,26 @@ public class DiambiguationProperty extends QanaryComponent {
 		logger.info("process: {}", myQanaryMessage);
 		// TODO: implement processing of question
 
+		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);		
+		
 		// STEP1: Retrieve the named graph and the endpoint
 		String endpoint = myQanaryMessage.getEndpoint().toASCIIString();
 		String namedGraph = myQanaryMessage.getInGraph().toASCIIString();
-		System.out.println("Graph is" + namedGraph);
+		logger.info("Graph: {}", namedGraph);
 		logger.info("Endpoint: {}", endpoint);
 		logger.info("InGraph: {}", namedGraph);
-		// TODO: implement this (custom for every component)
 
 		// STEP2: Retrieve information that are needed for the computations
 		// Here, we need two parameters as input to be fetched from triplestore-
 		// question and language of the question.
-		// So first, Retrive the uri where the question is exposed
+		// So first, Retrieve the uri where the question is exposed
 		String sparql = "PREFIX qa:<http://www.wdaqua.eu/qa#> " + "SELECT ?questionuri " + "FROM <" + namedGraph + "> "
 				+ "WHERE {?questionuri a qa:Question}";
 
-		ResultSet result = selectTripleStore(sparql, endpoint);
+		ResultSet result = myQanaryUtils.selectFromTripleStore(sparql, endpoint);
 		String uriQuestion = result.next().getResource("questionuri").toString();
 		logger.info("Uri of the question: {}", uriQuestion);
-		// Retrive the question itself
+		// Retrieve the question itself
 		RestTemplate restTemplate = new RestTemplate();
 		// TODO: pay attention to "/raw" maybe change that
 		ResponseEntity<String> responseEntity = restTemplate.getForEntity(uriQuestion + "/raw", String.class);
@@ -166,9 +160,9 @@ public class DiambiguationProperty extends QanaryComponent {
 				+ " ?anno <http://www.w3.org/ns/openannotation/core/hasBody> ?lang ."
 				+ " ?anno a qa:AnnotationOfQuestionLanguage}";
 		// Now fetch the language, in our case it is "en".
-		ResultSet result1 = selectTripleStore(questionlang, endpoint);
+		ResultSet result1 = myQanaryUtils.selectFromTripleStore(questionlang, endpoint);
 		String language1 = "en";
-		logger.info("Langauge of the Question: {}", language1);
+		logger.info("Language of the Question: {}", language1);
 
 		String url = "";
 		String data = "";
@@ -183,12 +177,12 @@ public class DiambiguationProperty extends QanaryComponent {
 
 		// now arrange the Web service and input parameters in the way, which is needed
 		// for CURL command
-		url = "http://121.254.173.90:1515/templategeneration/rocknrole";
+		url = "http://ws.okbqa.org:1515/templategeneration/rocknrole";
 		data = "{  \"string\":\"" + question + "\",\"language\":\"" + language1 + "\"}";// "{ \"string\": \"Which river
 																						// flows through Seoul?\",
 																						// \"language\": \"en\"}";
-		System.out.println("\ndata :" + data);
-		System.out.println("\nComponent : 21");
+		logger.info("data: {}", data);
+		logger.info("Component: 21");
 		String output1 = "";
 		// pass the input in CURL command and call the function.
 
@@ -196,7 +190,7 @@ public class DiambiguationProperty extends QanaryComponent {
 			output1 = DiambiguationProperty.runCurlPOSTWithParam(url, data, contentType);
 		} catch (Exception e) {
 		}
-		System.out.println("The output template is:" + output1);
+		logger.info("The output template is: {}", output1);
 
 		/*
 		 * once output is recieved, now the task is to parse the generated template, and
@@ -209,18 +203,18 @@ public class DiambiguationProperty extends QanaryComponent {
 		 * 
 		 */
 
-		url = "http://121.254.173.90:2357/agdistis/run?";
+		url = "http://ws.okbqa.org:2357/agdistis/run?";
 		data = output1.substring(1,output1.length()-1);
 		contentType = "application/json";
 
-		System.out.println("\ndata :" + data);
-		System.out.println("\nComponent : 7");
+		logger.info("data: {}", data);
+		logger.info("Component: 7");
 		output1 = "";
 		try {
 			output1 = DiambiguationProperty.runCurlGetWithParam(url, data, contentType);
 		} catch (Exception e) {
 		}
-		System.out.println("The output template is:" + output1);
+		logger.info("The output template is: {}", output1);
 
 		JSONParser parser = new JSONParser();
 		
@@ -275,79 +269,20 @@ public class DiambiguationProperty extends QanaryComponent {
 				System.out.println("Inside : Literal: " + urls);
 				sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
 						+ "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
-						+ "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " + "INSERT { " + "GRAPH <" + namedGraph+ "> { " + " ?a a qa:AnnotationOfRelation . " + " ?a oa:hasTarget [ " + " a oa:SpecificClass; "
+						+ "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " + "INSERT { " + "GRAPH <" + namedGraph+ "> { " + " ?a a qa:AnnotationOfRelation . " + " ?a oa:hasTarget [ " + " a oa:SpecificResource; "
 						+ " oa:hasSource <" + uriQuestion + ">; " + " ] . " + " ?a oa:hasBody <" + urls + "> ;"
 						+ " oa:annotatedBy <http://okbqa.disambiguationproperty.com> ; " + " oa:AnnotatedAt ?time "
 						+ "}} " + "WHERE { "
 						+ "BIND (IRI(str(RAND())) AS ?a) ." + "BIND (now() as ?time) " + "}";
-				logger.info("Sparql query {}", sparql);
-				loadTripleStore(sparql, endpoint);
+				logger.info("Sparql query: {}", sparql);
+				myQanaryUtils.updateTripleStore(sparql, endpoint);
 				count++;
 			}
-			System.out.println("Count is : "+ count);
+			logger.info("Count is: {}",count);
 		}
 		
 		
-//		Map<String, Map<String, Double>> allUrls = new HashMap<String, Map<String, Double>>();
-//
-//		try {
-//
-//			JSONObject json = (JSONObject) parser.parse(output1);
-//
-//			JSONArray characters = (JSONArray) json.get("ned");
-//			Iterator i = characters.iterator();
-//
-//			while (i.hasNext()) {
-//				JSONObject mainObject = (JSONObject) i.next();
-//				JSONArray types = (JSONArray) mainObject.get("properties");
-//				Iterator iTypes = types.iterator();
-//				Map<String, Double> urlsAndScore = new HashMap<String, Double>();
-//
-//				while (iTypes.hasNext()) {
-//
-//					JSONObject tempObject = (JSONObject) iTypes.next();
-//					String urls = (String) tempObject.get("value");
-//					double score = (double) tempObject.get("score");
-//					urlsAndScore.put(urls, score);
-//					System.out.println("url : " + urls + " , Score : " + score);
-//
-//				}
-//
-//				allUrls.put("properties", urlsAndScore);
-//
-//			}
-//
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//
-//		for (String urls : allUrls.get("properties").keySet()) {
-//			System.out.println("Inside : Literal: " + allUrls.get("properties").get(urls));
-//			sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
-//					+ "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
-//					+ "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " + "INSERT { " + "GRAPH <" + namedGraph + "> { "
-//					+ "  ?a a qa:AnnotationOfSpotProperty . " + "  ?a oa:hasTarget [ "
-//					+ "           a    oa:SpecificProperty; " + "           oa:hasSource    <" + uriQuestion + ">; "
-//					+ "  ] . " + "  ?a oa:hasBody <" + urls + "> ;"
-//					+ "     oa:annotatedBy <http://agdistis.aksw.org> ; " + "	    oa:AnnotatedAt ?time  "
-//					+ "     oa:score \"" + allUrls.get("properties").get(urls) + "\"ˆˆxsd:decimal ." + "}} "
-//					+ "WHERE { " + "BIND (IRI(str(RAND())) AS ?a) ." + "BIND (now() as ?time) " + "}";
-//			logger.info("Sparql query {}", sparql);
-//			loadTripleStore(sparql, endpoint);
-//		}
-
 		return myQanaryMessage;
 	}
 
-	private void loadTripleStore(String sparqlQuery, String endpoint) {
-		UpdateRequest request = UpdateFactory.create(sparqlQuery);
-		UpdateProcessor proc = UpdateExecutionFactory.createRemote(request, endpoint);
-		proc.execute();
-	}
-
-	private ResultSet selectTripleStore(String sparqlQuery, String endpoint) {
-		Query query = QueryFactory.create(sparqlQuery);
-		QueryExecution qExe = QueryExecutionFactory.sparqlService(endpoint, query);
-		return qExe.execSelect();
-	}
 }

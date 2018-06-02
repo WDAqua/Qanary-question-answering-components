@@ -80,7 +80,7 @@ public class FOXComponent extends QanaryComponent {
         //Insert data into temporary graph
         String sparql = "INSERT DATA { GRAPH <" + namedGraphTemp + "> {" + triples + "}}";
         logger.info(sparql);
-        myQanaryUtils.updateTripleStore(sparql);
+        myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 
         //Align to QANARY commons
         sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
@@ -112,11 +112,11 @@ public class FOXComponent extends QanaryComponent {
                 + "		} "
                 + "	} "
                 + "}";
-        myQanaryUtils.updateTripleStore(sparql);
+        myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 
         //Drop the temporary graph
         sparql = "DROP SILENT GRAPH <" + namedGraphTemp + ">";
-        myQanaryUtils.updateTripleStore(sparql);
+        myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 
         long estimatedTime = System.currentTimeMillis() - startTime;
         logger.info("Time: {}", estimatedTime);

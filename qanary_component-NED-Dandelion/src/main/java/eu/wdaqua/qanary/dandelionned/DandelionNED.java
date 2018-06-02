@@ -198,7 +198,7 @@ public class DandelionNED extends QanaryComponent {
                     + "  BIND (now() as ?time) " //
                     + "}";
             logger.debug("Sparql query: {}", sparql);
-            myQanaryUtils.updateTripleStore(sparql);
+            myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
         }
 		return myQanaryMessage;
 	}

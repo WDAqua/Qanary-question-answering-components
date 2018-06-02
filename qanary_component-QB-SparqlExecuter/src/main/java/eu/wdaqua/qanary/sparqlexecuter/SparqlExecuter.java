@@ -102,7 +102,7 @@ public class SparqlExecuter extends QanaryComponent {
                 	+ "  BIND (IRI(str(RAND())) AS ?b) ."
                 	+ "  BIND (now() as ?time) "
                 	+ "}";
-        	myQanaryUtils.updateTripleStore(sparql);
+        	myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 
 		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
 		// TODO: insert data in QanaryMessage.outgraph

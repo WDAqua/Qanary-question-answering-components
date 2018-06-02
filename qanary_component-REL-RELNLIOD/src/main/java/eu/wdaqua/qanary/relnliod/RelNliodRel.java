@@ -71,10 +71,7 @@ public class RelNliodRel extends QanaryComponent {
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
 		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage);
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
-		//String question = URLEncoder.encode(myQuestion, "UTF-8");
-		ArrayList<Selection> selections = new ArrayList<Selection>();
-
-		 try {
+		try {
 				File f = new File("questions.txt");
 		    	FileReader fr = new FileReader(f);
 		    	BufferedReader br  = new BufferedReader(fr);
@@ -113,7 +110,7 @@ public class RelNliodRel extends QanaryComponent {
 		
 		HttpClient httpclient = HttpClients.createDefault();
 		HttpPost httppost = new HttpPost("http://api.textrazor.com");
-		httppost.setHeader("x-textrazor-key", "4cc373915018a40c921da8243995b9a316a8d2716048acc3b900fb2a");
+		httppost.setHeader("x-textrazor-key", "4cc373915018a40c921da8243995b9a316a8d2716048acc3b900fb2a"); // TODO: move to application.properties
 		httppost.setHeader("Content-Type", "application/x-www-form-urlencoded");
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("text", myQuestion.toLowerCase()));
@@ -126,11 +123,11 @@ public class RelNliodRel extends QanaryComponent {
 			if (entity != null) {
 				InputStream instream = entity.getContent();
 				String text = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
-				System.out.println(text);
+				logger.info(text);
 				JSONObject response1 = (new JSONObject(text)).getJSONObject("response");
 				JSONArray jsonArraySent = (JSONArray) response1.get("sentences");
 				ArrayList<String> arrayListWords = textRazorDbSearch.createArrayWordsList(jsonArraySent);
-				System.out.println(arrayListWords.toString());
+				logger.info(arrayListWords.toString());
 				textRazorDbSearch.createPropertyList(response1);
 				textRazorDbSearch.createDbLinkListSet(arrayListWords);
 				dbLinkListSet  = textRazorDbSearch.getDbLinkListSet();
@@ -140,10 +137,10 @@ public class RelNliodRel extends QanaryComponent {
 					textRazorDbSearch.createDbLinkListSet(arrayListWords);
 				}
 				dbLinkListSet  = textRazorDbSearch.getDbLinkListSet();
-				System.out.print("DbLinkListSet: "+dbLinkListSet.toString());
+				logger.info("DbLinkListSet: "+dbLinkListSet.toString());
 
 				
-				BufferedWriter buffWriter = new BufferedWriter(new FileWriter("questions.txt", true));
+				BufferedWriter buffWriter = new BufferedWriter(new FileWriter("questions.txt", true)); // TODO: move to application.properties
 		       
 		        
 		        String MainString = myQuestion + " Answer: "+dbLinkListSet.toString();
@@ -165,18 +162,11 @@ public class RelNliodRel extends QanaryComponent {
 			    //handle this
 				logger.info("{}", e);
 			}
-		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-		// TODO: insert data in QanaryMessage.outgraph
 
-		logger.info("apply vocabulary alignment on outgraph");
-		// TODO: implement this (custom for every component)
-		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-		// TODO: insert data in QanaryMessage.outgraph
+		logger.info("apply vocabulary alignment on outgraph {}", myQanaryMessage.getOutGraph());
 
-		logger.info("apply vocabulary alignment on outgraph");
-
-		// TODO: implement this (custom for every component)
-			for (String urls : dbLinkListSet) {
+		// for all URLs found using the called API
+		for (String urls : dbLinkListSet) {
 				 String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
 		                 + "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
 		                 + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> "
@@ -197,7 +187,7 @@ public class RelNliodRel extends QanaryComponent {
 		                 + "BIND (now() as ?time) "
 		                 + "}";
 		         logger.info("Sparql query {}", sparql);
-		         myQanaryUtils.updateTripleStore(sparql);
+		         myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 		 }
 		
 		return myQanaryMessage;

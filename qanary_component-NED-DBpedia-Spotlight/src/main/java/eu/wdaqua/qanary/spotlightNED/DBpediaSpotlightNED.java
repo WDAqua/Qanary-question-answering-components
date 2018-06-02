@@ -149,7 +149,7 @@ public class DBpediaSpotlightNED extends QanaryComponent {
                     + "  BIND (now() as ?time) " //
                     + "}";
             logger.debug("Sparql query: {}", sparql);
-            myQanaryUtils.updateTripleStore(sparql);
+            myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
         }
         long estimatedTime = System.currentTimeMillis() - startTime;
         logger.info("Time {}", estimatedTime);

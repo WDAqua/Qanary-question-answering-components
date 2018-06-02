@@ -117,7 +117,7 @@ public class StanfordNERComponent extends QanaryComponent {
                     + "  ] ; " + "     oa:annotatedBy <http://nlp.stanford.edu/software/CRF-NER.shtml> ; "
                     + "	    oa:AnnotatedAt ?time  " + "}} " + "WHERE { " + "BIND (IRI(str(RAND())) AS ?a) ."
                     + "BIND (now() as ?time) " + "}";
-            myQanaryUtils.updateTripleStore(sparql);
+            myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
         }
         long estimatedTime = System.currentTimeMillis() - startTime;
         logger.info("Time: {}", estimatedTime);

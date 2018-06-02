@@ -181,7 +181,7 @@ public class SINA extends QanaryComponent {
 					+ "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " + "INSERT { " + "GRAPH <"
 					+ myQanaryUtils.getInGraph() + "> { " + sparqlPart1 + "}} " + "WHERE { " + sparqlPart2
 					+ "BIND (IRI(str(RAND())) AS ?b) ." + "BIND (now() as ?time) " + "}";
-			myQanaryUtils.updateTripleStore(sparql);
+			myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 		}
 		else {
 			logger.info("Argument is Null {}", argument);
