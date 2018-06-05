@@ -74,7 +74,7 @@ It devise semantic-index based representation of PATTY~\cite{DBLP:conf/emnlp/Nak
 [source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-REL-ReMatch)
 It maps natural language relations to knowledge graph properties by using dependency parsing characteristics with adjustment rules.It then carries out a match against knowledge base properties, enhanced with word lexicon Wordnet via a set of similarity measures. It is an open source tool.
 
-### RelMatch 
+### ReLMatch 
 [source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qa.qanary_component-DiambiguationProperty-OKBQA)
 The disambiguation module (DM) of OKBQA framework provides disambiguation of entities, classes, and relations present in a natural language question.
 
