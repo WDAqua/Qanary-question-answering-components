@@ -87,5 +87,29 @@ Natural Language Interfaces for the Web of Data ((NLIWOD) community group (https
 This component is the combination of RNLIWOD and OKBQA disambiguation module for relation linking task. 
 We call this component Spot Property.
 
+
+## Question Answering Class Linking (CL) Components
+
+### NLIWOD CLS 
+[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-CLS-CLSNLIOD)
+NLIWOD Class Identifier is one among the several other tools provided by NLIWOD community for reuse. The code for class identifier is available on GitHub.
+
+### OKBQA Class linker
+[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qa.qanary_component-AnnotationofSpotClass-tgm)
+This component is part of OKBQA disambiguation module.
+
+## Question Answering Query Builder(QB) Components
+
+### NLIWOD Template based QB
+[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qa.qanary_component-QueryBuilder)
+Template based query builders are widely used in QA community for SPARQL query construction. This component is similar to the existing template based components.
+
+### SINA
+[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-QB-Sina)
+SINA is a keyword and natural language query search engine that is based on Hidden Markov Models for choosing the correct dataset to query. We decoupled original implementation to get query builder.
+
+
+
+
  
  
