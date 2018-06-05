@@ -48,7 +48,8 @@ It is a graph based disambiguation tool that couples the HITS algorithm with lab
  
  TextRazor[TextRazor](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-TextRazor)
  
- Dandelion[TextRazor](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-Dandelion)
+ Dandelion[DandelionNED](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-Dandelion)
+ Dandelion[DandelionNER](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-Dandelion)
  
  Ontotext [OntotextNED](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-Ontotext)
   Ontotext [OntotextNER](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-Ontotext)
@@ -59,5 +60,32 @@ It is a graph based disambiguation tool that couples the HITS algorithm with lab
   Meaningcloud [MeaningcloudNED](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-Meaningcloud)
   [MeaningcloudNER](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-Meaningcloud)
  
+ ## Question Answering Relation Linking (RL) Components
+
+### ReMatch 
+[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-REL-ReMatch)
+It maps natural language relations to knowledge graph properties by using dependency parsing characteristics with adjustment rules.It then carries out a match against knowledge base properties, enhanced with word lexicon Wordnet via a set of similarity measures. It is an open source tool.
+
+### RelationMatch 
+[source](https://github.com/WDAqua/Qanary-question-answering-components/blob/master/qanary_component-REL-RelationLinker2/src/main/java/eu/wdaqua/qanary/relationlinker2/RelationLinker2.java)
+It devise semantic-index based representation of PATTY~\cite{DBLP:conf/emnlp/NakasholeWS12} (a knowledge corpus of linguistic patterns and its associated properties in DBpedia) and a search mechanism over this index with the purpose of enhancing relation linking task.
+
+### ReMatch 
+[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-REL-ReMatch)
+It maps natural language relations to knowledge graph properties by using dependency parsing characteristics with adjustment rules.It then carries out a match against knowledge base properties, enhanced with word lexicon Wordnet via a set of similarity measures. It is an open source tool.
+
+### RelMatch 
+[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qa.qanary_component-DiambiguationProperty-OKBQA)
+The disambiguation module (DM) of OKBQA framework provides disambiguation of entities, classes, and relations present in a natural language question.
+
+### RNLIWOD
+[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-REL-RELNLIOD)
+Natural Language Interfaces for the Web of Data ((NLIWOD) community group (https://www.w3.org/community/nli/) provides reusable components for enhancing the performance of QA systems. We utilise one of its components to build similar relation linking.
+
+### Spot Property
+[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qa.qanary_component-AnnotationofSpotProperty-tgm)
+This component is the combination of RNLIWOD and OKBQA disambiguation module for relation linking task. 
+We call this component Spot Property.
+
  
  
