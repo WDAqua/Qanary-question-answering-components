@@ -1,112 +1,130 @@
-# Qanary Components Integrated in Frankenstein
+<img width="200" align=right alt="Qanary logo" src="https://raw.githubusercontent.com/WDAqua/Qanary/master/doc/logo-qanary_s.png">
 
-We decoupled the Frankenstein architecture and presented reusable resources as an extension to the Qanary. Frankenstein is dedicated to extending
-the Qanary ecosystem by the following contributions:
-# R1
-It contributes a large set of new components to the ecosystem of reusable components initiated by the Qanary. Consequently, researchers and practitioners are now enabled to create a large set of different QA systems outof-
-the-box due to the composability features inherited from the Qanary. We calculated that only by using the components directly provided by Frankenstein/ Qanary 380 different ready-to-use QA pipelines can be created with small invest on time.
+# In a Nutshell: Qanary Question Answering Components
 
-# Qanary
-Qanary is a methodology for creating Question Answering Systems it is part of the [WDAqua project](http://wdaqua.eu) where question answering systems are researched and developed. For all the publications related to Qanary please see the section [publications](#qanarypublications). W.r.t. questions, ideas or any feedback related to Qanary please do not hesitate to [contact the core developers](https://github.com/WDAqua/Qanary/wiki/Who-do-I-talk-to%3F). However, if you like to see a QA system built using the Qanary framework, one of our core developers has build a complete end-to-end QA system which allows to query several RDF data stores: http://wdaqua.eu/qa.
+The [Qanary Framework](https://github.com/WDAqua/Qanary/) is dedicated to create Question Answering systems. Question Answering (QA) is a task requiring different fields leading to expensive / time consuming engineering tasks which might block research as it is too expensive. Typical problems/usecases that might occur while developing a question answering system are:
 
-Please go to the [GitHub Wiki page](https://github.com/WDAqua/Qanary/wiki) of this repository to get more insights on how to use this framework, how to add new component etc.
+ * an algorithm is require analyzing textual questions and annotating the found entities, relations, classes, etc. 
+    * it is time consuming as there are many services / algorithms / tools which need to compared 
+ * your QA process needs to be improved
+    * following traditional development approaches requires additional efforts for testing and debugging of code to uncover possible flaws
+ * the quality of components dedicated to a particular task need to be analyzed
+    * it is expensive to integrate all of the particular components due to a missing generalized interface
 
-## Question Answering Name Entity Recognition and Disambiguation Components (NED) Components
+In this repository, the [components of the Qanary framework](https://github.com/WDAqua/Qanary-question-answering-components)  are stored. All components are implemented in Java and provide a Docker container for lightweight maintaince.
 
-### Entity Classifier 
-[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-EntityClassifier2)
-It uses rule base grammar to extract entities in a text. 
+## Big Picture
+ * Qanary is providing the methodology for a knowledge-driven, vocabular-based approach. Our long-term agenda is to create a knowledge-driven ecosystem for the field of Question Answering. It is part of the [WDAqua project](http://wdaqua.eu) where question answering systems are researched and developed.
+ * [Qanary Framework](https://github.com/WDAqua/Qanary/) is providing the core framework for creating Question Answering systems following the Qanary methodology. You might consider the Qanary Framework as reference implementation of the Qanary framework as microserivce-based component architecture.
+ * [Qanary components](https://github.com/WDAqua/Qanary-question-answering-components) is covering the QA components compatible with the Qanary framework.
+ * [Frankenstein](https://github.com/WDAqua/Frankenstein) is a supporting framework to establish a toolset for rapid orchestration and benchmarking of Qanary components. For example, it provides the tools to create from 29 components 380 QA systems.
 
-### Stanford NLP Tool
-[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-stanford)
+
+Regarding questions, ideas or any feedback related to Qanary please do not hesitate to [contact the core developers](https://github.com/WDAqua/Qanary/wiki/Who-do-I-talk-to%3F). However, if you like to see a QA system originally built using the Qanary framework, one of our core developers has build a complete end-to-end QA system which allows to query several RDF data stores: [http://wdaqua.eu/qa](http://wdaqua.eu/qa).
+
+Please go to the [GitHub Wiki page](https://github.com/WDAqua/Qanary/wiki) of Qanary repository to get more insights on how to use this framework, how to add new component etc.
+
+
+## Qanary Components
+
+### Question Answering Name Entity Recognition (NER) and Disambiguation Components (NED) Components
+
+#### Entity Classifier 2 (NER)
+It uses rule base grammar to extract entities in a text.
+
+ * [Qanary Entity Classifier 2 for *NER*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-EntityClassifier2)
+
+#### Stanford NLP Tool (NER)
 Stanford named entity recogniser is an open source tool that uses Gibbs sampling for information extraction to spot entities in a text.
 
-### Babelfy
-[source for NED](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-Babelfy)
-[source for NER](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-Babelfy)
+ * [Qanary Stanford NLP Tool for *NER*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-stanford)
+
+#### Babelfy
 is a multilingual, graph-based approach that uses random walks and the densest subgraph algorithm to identify and disambiguate entities present in a text.
 
+ * [Qanary Babelfy for *NED*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-Babelfy)
+ * [Qanary Babelfy for *NER*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-Babelfy)
 
-### AGDISTIS
-[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-AGDISTIS)
+
+#### AGDISTIS (NED)
 It is a graph based disambiguation tool that couples the HITS algorithm with label expansion strategies and string similarity measures to disambiguate entities in a given text.
 
-### DBpedia Spotlight
-[source for NED](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-DBpedia-Spotlight)
-[source for NER](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-DBpedia-Spotlight)
- It is a web service that uses vector-space representation of entities and using the cosine similarity, recognise and disambiguate the entities.
- 
- 
- ### Tag Me
-[source for NED](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-tagme)
-[source for NER](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-tagme)
- It matches terms in a given text with Wikipedia, \ie links text to recognise named entities. 
+ * [Qanary AGDISTIS for *NED*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-AGDISTIS)
+
+#### DBpedia Spotlight
+It is a web service that uses vector-space representation of entities and using the cosine similarity, recognise and disambiguate the entities.
+
+ * [Qanary DBpedia Spotlight for *NED*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-DBpedia-Spotlight)
+ * [Qanary DBpedia Spotlight for *NER*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-DBpedia-Spotlight)
+
+#### Tag Me
+It matches terms in a given text with Wikipedia, \ie links text to recognise named entities. 
  Furthermore, it uses the in-link graph and the page dataset to disambiguate recognised entities to its Wikipedia URls.
+
+  * [Qanary Tag Me for *NED*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-tagme)
+  * [Qanary Tag Me for *NER*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-tagme)
+
+#### Other NER and NED Tools
+ * TextRazor ([homepage](https://www.textrazor.com/)) is a startup providing software that helps developers rapidly build text analytics into their applications.
+    * [Qanary TextRazor for *NER*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-TextRazor)
+ * Dandelion ([homepage](https://dandelion.eu/)) is a startup specialized in Semantics & Big Data.
+    * [Qanary Dandelion for *NED*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-Dandelion)
+    * [Qanary Dandelion for *NER*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-Dandelion)
+ * Ontotext ([homepage](https://ontotext.com/)) provides a complete set of Semantic Technology enabling better content management, knowledge discovery and semantic search.
+    * [Qanary Ontotext for *NED*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-Ontotext)
+    * [Qanary Ontotext for *NER*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-Ontotext)
+ * Ambiverse ([homepage](https://www.ambiverse.com/)) is a spin-off from the Max Planck Institute for Informatics, develops technologies to automatically understand, analyze, and manage Big Text collections.
+    * [Qanary Ambiverse for *NED*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-Ambiverse)
+    * [Qanary Ambiverse for *NER*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-Ambiverse)
+ * Meaningcloud ([homepage](https://www.meaningcloud.com/)) is a company based in New York City, specialized in software for semantic analysis.
+    * [Qanary Meaningcloud for *NED*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-Meaningcloud)
+    * [Qanary Meaningcloud for *NER*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-Meaningcloud)
  
- ### Other NER and NED Tools 
- In Frankenstein, there are several other tools :
  
- TextRazor[TextRazor](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-TextRazor)
  
- Dandelion[DandelionNED](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-Dandelion)
- Dandelion[DandelionNER](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-Dandelion)
- 
- Ontotext [OntotextNED](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-Ontotext)
-  Ontotext [OntotextNER](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-Ontotext)
-  
- Ambiverse [AmbiverseNED](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-Ambiverse)
-  [AmbiverseNER](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-Ambiverse)
-  
-  Meaningcloud [MeaningcloudNED](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-Meaningcloud)
-  [MeaningcloudNER](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NER-Meaningcloud)
- 
- ## Question Answering Relation Linking (RL) Components
+### Question Answering Relation Linking (RL) Components
 
-### ReMatch 
-[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-REL-ReMatch)
-It maps natural language relations to knowledge graph properties by using dependency parsing characteristics with adjustment rules.It then carries out a match against knowledge base properties, enhanced with word lexicon Wordnet via a set of similarity measures. It is an open source tool.
+#### ReMatch
+ * It maps natural language relations to knowledge graph properties by using dependency parsing characteristics with adjustment rules.It then carries out a match against knowledge base properties, enhanced with word lexicon Wordnet via a set of similarity measures. It is an open source tool.
+ * [Qanary ReMatch for *RL*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-REL-ReMatch)
 
-### RelationMatch 
-[source](https://github.com/WDAqua/Qanary-question-answering-components/blob/master/qanary_component-REL-RelationLinker2/src/main/java/eu/wdaqua/qanary/relationlinker2/RelationLinker2.java)
-It devise semantic-index based representation of PATTY~\cite{DBLP:conf/emnlp/NakasholeWS12} (a knowledge corpus of linguistic patterns and its associated properties in DBpedia) and a search mechanism over this index with the purpose of enhancing relation linking task.
+#### RelationLinker2 (RelationMatch)
+ * It devise semantic-index based representation of PATTY~\cite{DBLP:conf/emnlp/NakasholeWS12} (a knowledge corpus of linguistic patterns and its associated properties in DBpedia) and a search mechanism over this index with the purpose of enhancing relation linking task.
+ * [Qanary RelationLinker2 for *RL*](https://github.com/WDAqua/Qanary-question-answering-components/blob/master/qanary_component-REL-RelationLinker2/)
 
-### ReMatch 
-[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-REL-ReMatch)
-It maps natural language relations to knowledge graph properties by using dependency parsing characteristics with adjustment rules.It then carries out a match against knowledge base properties, enhanced with word lexicon Wordnet via a set of similarity measures. It is an open source tool.
+#### OKBQA DiambiguationProperty (ReLMatch)
+ * The disambiguation module (DM) of OKBQA framework provides disambiguation of entities, classes, and relations present in a natural language question.
+ * [Qanary DiambiguationProperty for *RL*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qa.qanary_component-DiambiguationProperty-OKBQA)
 
-### ReLMatch 
-[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qa.qanary_component-DiambiguationProperty-OKBQA)
-The disambiguation module (DM) of OKBQA framework provides disambiguation of entities, classes, and relations present in a natural language question.
+#### RelNliodRel (RNLIWOD)
+ * Natural Language Interfaces for the Web of Data ((NLIWOD) community group (https://www.w3.org/community/nli/) provides reusable components for enhancing the performance of QA systems. We utilise one of its components to build similar relation linking.
+ * [Qanary RelNliodRel for *RL*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-REL-RELNLIOD)
 
-### RNLIWOD
-[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-REL-RELNLIOD)
-Natural Language Interfaces for the Web of Data ((NLIWOD) community group (https://www.w3.org/community/nli/) provides reusable components for enhancing the performance of QA systems. We utilise one of its components to build similar relation linking.
-
-### Spot Property
-[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qa.qanary_component-AnnotationofSpotProperty-tgm)
-This component is the combination of RNLIWOD and OKBQA disambiguation module for relation linking task. 
-We call this component Spot Property.
+#### Spot Property (AnnotationofSpotProperty)
+ * This component is the combination of RNLIWOD and OKBQA disambiguation module for relation linking task. 
+ * [Qanary AnnotationofSpotProperty for *RL*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qa.qanary_component-AnnotationofSpotProperty-tgm)
 
 
-## Question Answering Class Linking (CL) Components
 
-### NLIWOD CLS 
-[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-CLS-CLSNLIOD)
-NLIWOD Class Identifier is one among the several other tools provided by NLIWOD community for reuse. The code for class identifier is available on GitHub.
+### Question Answering Class Linking (CL) Components
 
-### OKBQA Class linker
-[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qa.qanary_component-AnnotationofSpotClass-tgm)
-This component is part of OKBQA disambiguation module.
+#### ClsNliodCls (NLIWOD CLS)
+ * NLIWOD Class Identifier is one among the several other tools provided by NLIWOD community for reuse. The code for class identifier is available on GitHub.
+ * [Qanary ClsNliodCls for *CL*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-CLS-CLSNLIOD)
 
-## Question Answering Query Builder(QB) Components
+#### AnnotationofSpotClass (OKBQA Class linker)
+ * This component is part of OKBQA disambiguation module.
+ * [Qanary AnnotationofSpotClass for *CL*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qa.qanary_component-AnnotationofSpotClass-tgm)
 
-### NLIWOD Template based QB
-[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qa.qanary_component-QueryBuilder)
-Template based query builders are widely used in QA community for SPARQL query construction. This component is similar to the existing template based components.
+### Question Answering Query Builder (QB) Components
 
-### SINA
-[source](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-QB-Sina)
-SINA is a keyword and natural language query search engine that is based on Hidden Markov Models for choosing the correct dataset to query. We decoupled original implementation to get query builder.
+#### QueryBuilder (NLIWOD Template-based QB)
+ * Template-based query builders are widely used in QA community for SPARQL query construction. This component is similar to the existing template-based components.
+ * [Qanary QueryBuilder for *QB*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qa.qanary_component-QueryBuilder)
+
+#### SINA (QB)
+ * SINA is a keyword and natural language query search engine that is based on Hidden Markov Models for choosing the correct dataset to query. We decoupled original implementation to get query builder.
+ * [Qanary SINA for *QB*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-QB-Sina)
 
 
 
