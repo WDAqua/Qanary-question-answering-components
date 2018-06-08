@@ -1,0 +1,7 @@
+**/eclipse.m2e.core.prefs
+**/logs/
+**/target/
+**/.settings
+**/.project
+**/.classpath
+**/*.jar
