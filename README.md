@@ -45,14 +45,13 @@ Dennis Diefenbach, Kuldeep Singh, Andreas Both, Didier Cherix, Christoph Lange, 
 The Qanary Ecosystem: Getting New Insights by Composing Question Answering Pipelines. ICWE 2017: 171-189
 [DOI 10.1007/978-3-319-60131-1_10](https://doi.org/10.1007/978-3-319-60131-1_10)
 
+**For [further publications](https://github.com/WDAqua/Qanary/wiki/Publications-related-to-Qanary-Methodology-and-Framework) please see the following [wiki page](https://github.com/WDAqua/Qanary/wiki/Publications-related-to-Qanary-Methodology-and-Framework).**
 
-
-
-### Further Citations
-
-
+***
 
 ## Qanary Components
+
+The following components are contained in the   
 
 ### Question Answering Name Entity Recognition (NER) and Disambiguation Components (NED) Components
 
