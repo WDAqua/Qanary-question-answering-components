@@ -25,6 +25,33 @@ Regarding questions, ideas or any feedback related to Qanary please do not hesit
 Please go to the [GitHub Wiki page](https://github.com/WDAqua/Qanary/wiki) of Qanary repository to get more insights on how to use this framework, how to add new component etc.
 
 
+## How to Cite
+
+### Introducing a Vocabulary for knowledge-driven Question Answering Processes
+
+Kuldeep Singh, Andreas Both, Dennis Diefenbach, Saeedeh Shekarpour:
+Towards a Message-Driven Vocabulary for Promoting the Interoperability of Question Answering Systems. ICSC 2016: 386-389
+[DOI 10.1109/ICSC.2016.59](https://doi.org/10.1109/ICSC.2016.59)
+
+### Introducing the Qanary Framework 
+
+Andreas Both, Dennis Diefenbach, Kuldeep Singh, Saeedeh Shekarpour, Didier Cherix, Christoph Lange:
+Qanary - A Methodology for Vocabulary-Driven Open Question Answering Systems. ESWC 2016: 625-641
+[DOI 10.1007/978-3-319-34129-3_38](https://doi.org/10.1007/978-3-319-34129-3_38)
+
+### Analytics of NER/NED Components
+
+Dennis Diefenbach, Kuldeep Singh, Andreas Both, Didier Cherix, Christoph Lange, Sören Auer:
+The Qanary Ecosystem: Getting New Insights by Composing Question Answering Pipelines. ICWE 2017: 171-189
+[DOI 10.1007/978-3-319-60131-1_10](https://doi.org/10.1007/978-3-319-60131-1_10)
+
+
+
+
+### Further Citations
+
+
+
 ## Qanary Components
 
 ### Question Answering Name Entity Recognition (NER) and Disambiguation Components (NED) Components
