@@ -155,10 +155,12 @@ public class DiambiguationProperty extends QanaryComponent {
 
 		// the below mentioned SPARQL query to fetch annotation of language from
 		// triplestore
-		String questionlang = "PREFIX qa:<http://www.wdaqua.eu/qa#> " + "SELECT ?lang " + "FROM <" + namedGraph + "> "
-				+ "WHERE {?q a qa:Question ." + " ?anno <http://www.w3.org/ns/openannotation/core/hasTarget> ?q ."
-				+ " ?anno <http://www.w3.org/ns/openannotation/core/hasBody> ?lang ."
-				+ " ?anno a qa:AnnotationOfQuestionLanguage}";
+		String questionlang = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
+				+ "SELECT ?lang " + "FROM <" + namedGraph + "> " //
+				+ "WHERE {?q a qa:Question ." //
+				+ " ?anno <http://www.w3.org/ns/openannotation/core/hasTarget> ?q ." //
+				+ " ?anno <http://www.w3.org/ns/openannotation/core/hasBody> ?lang ." //
+				+ " ?anno a qa:AnnotationOfQuestionLanguage  }";
 		// Now fetch the language, in our case it is "en".
 		ResultSet result1 = myQanaryUtils.selectFromTripleStore(questionlang, endpoint);
 		String language1 = "en";
@@ -177,12 +179,11 @@ public class DiambiguationProperty extends QanaryComponent {
 
 		// now arrange the Web service and input parameters in the way, which is needed
 		// for CURL command
-		url = "http://ws.okbqa.org:1515/templategeneration/rocknrole";
+		url = "http://ws.okbqa.org:1515/templategeneration/rocknrole"; // @TODO: move to application.properties
 		data = "{  \"string\":\"" + question + "\",\"language\":\"" + language1 + "\"}";// "{ \"string\": \"Which river
 																						// flows through Seoul?\",
 																						// \"language\": \"en\"}";
-		logger.info("data: {}", data);
-		logger.info("Component: 21");
+		logger.info("Component: 21; data: {}", data);
 		String output1 = "";
 		// pass the input in CURL command and call the function.
 
@@ -193,9 +194,9 @@ public class DiambiguationProperty extends QanaryComponent {
 		logger.info("The output template is: {}", output1);
 
 		/*
-		 * once output is recieved, now the task is to parse the generated template, and
+		 * once output is received, now the task is to parse the generated template, and
 		 * store the needed information which is Resource, Property, Resource Literal,
-		 * and Class. Then push this information back to triplestore The below code
+		 * and Class. Then push this information back to triplestore. The below code
 		 * before step 4 does parse the template. For parsing PropertyRetrival.java file
 		 * is used, which is in the same package.
 		 * 
@@ -203,12 +204,11 @@ public class DiambiguationProperty extends QanaryComponent {
 		 * 
 		 */
 
-		url = "http://ws.okbqa.org:2357/agdistis/run?";
+		url = "http://ws.okbqa.org:2357/agdistis/run?"; // @TODO: move to application.properties
 		data = output1.substring(1,output1.length()-1);
 		contentType = "application/json";
 
-		logger.info("data: {}", data);
-		logger.info("Component: 7");
+		logger.info("Component: 7; data: {}", data);
 		output1 = "";
 		try {
 			output1 = DiambiguationProperty.runCurlGetWithParam(url, data, contentType);
@@ -245,12 +245,12 @@ public class DiambiguationProperty extends QanaryComponent {
 
 							allProperties.get(var).remove(allProperties.get(var).entrySet().iterator().next().getKey());
 							allProperties.get(var).put(urls, score);
-							System.out.println("var: " + var + "url : " + urls + " , Score : " + score);
+							logger.info("var: {}, urls: {}, score: {}", var, urls, score);
 						}
 
 					} else {
 						urlsAndScore.put(urls, score);
-						System.out.println("var: " + var + "url : " + urls + " , Score : " + score);
+						logger.info("var: {}, urls: {}, score: {}", var, urls, score);
 						// allUrls.put("classes", urlsAndScore);
 						allProperties.put(var, urlsAndScore);
 					}
@@ -266,14 +266,21 @@ public class DiambiguationProperty extends QanaryComponent {
 			Map<String, Double> allUrls = allProperties.get(vars);
 			int count = 0;
 			for (String urls : allUrls.keySet()) {
-				System.out.println("Inside : Literal: " + urls);
-				sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
-						+ "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
-						+ "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " + "INSERT { " + "GRAPH <" + namedGraph+ "> { " + " ?a a qa:AnnotationOfRelation . " + " ?a oa:hasTarget [ " + " a oa:SpecificResource; "
-						+ " oa:hasSource <" + uriQuestion + ">; " + " ] . " + " ?a oa:hasBody <" + urls + "> ;"
-						+ " oa:annotatedBy <http://okbqa.disambiguationproperty.com> ; " + " oa:AnnotatedAt ?time "
-						+ "}} " + "WHERE { "
-						+ "BIND (IRI(str(RAND())) AS ?a) ." + "BIND (now() as ?time) " + "}";
+				logger.info("Inside : Literal: {}", urls);
+				sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " // 
+						+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
+						+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> "  //
+						+ "INSERT { " + "GRAPH <" + namedGraph+ "> { " //
+						+ " ?a a qa:AnnotationOfRelation . " + " ?a oa:hasTarget [ " + " a oa:SpecificResource; " // 
+						+ " oa:hasSource <" + uriQuestion + ">; " + " ] . " // 
+						+ " ?a oa:hasBody <" + urls + "> ;" // 
+						+ " oa:annotatedBy <urn:qanary:RL#okbqa.disambiguationproperty> ; " //
+						+ " oa:annotatedAt ?time "
+						+ "}} " //
+						+ "WHERE { "  //
+						+ "BIND (IRI(str(RAND())) AS ?a) ." //
+						+ "BIND (now() as ?time) " //
+						+ "}";
 				logger.info("Sparql query: {}", sparql);
 				myQanaryUtils.updateTripleStore(sparql, endpoint);
 				count++;
