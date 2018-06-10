@@ -116,22 +116,6 @@
 						</execution>
 					</executions>
 				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>properties-maven-plugin</artifactId>
-					<version>1.0-alpha-2</version>
-					<executions>
-						<execution>
-							<phase>generate-resources</phase>
-							<goals>
-								<goal>write-project-properties</goal>
-							</goals>
-							<configuration>
-								<outputFile>${basedir}/src/main/resources/config/my.properties</outputFile>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
 			</plugins>
 	</build>
 	<repositories>
