@@ -37,7 +37,7 @@ public class AmbiverseNed extends QanaryComponent {
 	 * component
 	 */
 	@Override
-	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception{
+	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception{		
 		logger.info("process: {}", myQanaryMessage);
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
 		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage);
@@ -56,7 +56,8 @@ public class AmbiverseNed extends QanaryComponent {
 		logger.info("JsonPath {}", jsonThePath);
 
 		String urlAccessToken = "https://api.ambiverse.com/oauth/token"; // TODO: move to application.properties
-		String urlEntityLinkService = "https://api.ambiverse.com/v2/entitylinking/analyze"; // TODO: move to application.properties
+		String urlEntityLinkServicePlain = "api.ambiverse.com/v2/entitylinking/analyze"; // TODO: move to application.properties
+		String urlEntityLinkService = "https://"+urlEntityLinkServicePlain; 
 		String[] accessTokenCmd = {"curl", "-X", "POST", "--header", 
 				"Content-Type: application/x-www-form-urlencoded",
 				"-d", "grant_type=client_credentials",
@@ -150,12 +151,6 @@ public class AmbiverseNed extends QanaryComponent {
 			// TODO Auto-generated catch block
 		}
 		
-	   // }
-	   // catch(FileNotFoundException e) 
-		//{ 
-		    //handle this
-		//	logger.info("{}", e);
-		//}
 		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
 		// TODO: insert data in QanaryMessage.outgraph
 
@@ -177,8 +172,8 @@ public class AmbiverseNed extends QanaryComponent {
                     + "           ] " //
                     + "  ] . " //
                     + "  ?a oa:hasBody <" + s.link + "> ;" //
-                    + "     oa:annotatedBy <http://ambiverseNED.com> ; " //
-                    + "	    oa:AnnotatedAt ?time  " + "}} " //
+                    + "     oa:annotatedBy <urn:qanary.NED#"+urlEntityLinkService+"> ; " //
+                    + "	    oa:annotatedAt ?time  " + "}} " //
                     + "WHERE { " //
                     + "  BIND (IRI(str(RAND())) AS ?a) ."//
                     + "  BIND (now() as ?time) " //
