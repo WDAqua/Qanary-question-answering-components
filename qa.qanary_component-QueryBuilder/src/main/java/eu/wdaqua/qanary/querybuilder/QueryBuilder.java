@@ -42,86 +42,18 @@ public class QueryBuilder extends QanaryComponent {
 	@Override
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("process: {}", myQanaryMessage);
-		String detectedPattern = "";
-		String endpoint = myQanaryMessage.getEndpoint().toASCIIString();
-		List<String> classes = new ArrayList<String>();
-		List<String> properties = new ArrayList<String>();
-		List<String> entities = new ArrayList<String>();
-		String graph = "<http://dbpedia.org>";
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
 		QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 		logger.info("Question: {}", myQuestion);
-		
-		// entities
 
-		String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> "
-				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> "
-				+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> "//
-				+ "SELECT ?start ?end ?uri " + "FROM <" + myQanaryQuestion.getInGraph() + "> " //
-				+ "WHERE { " //
-				+ "    ?a a qa:AnnotationOfInstance . " + "?a oa:hasTarget [ "
-				+ "		     a               oa:SpecificResource; " //
-				+ "		     oa:hasSource    ?q; " //
-				+ "	         oa:hasSelector  [ " //
-				+ "			         a        oa:TextPositionSelector ; " //
-				+ "			         oa:start ?start ; " //
-				+ "			         oa:end   ?end " //
-				+ "		     ] " //
-				+ "    ] . " //
-				+ " ?a oa:hasBody ?uri . " + "} " + "ORDER BY ?start ";
+		String dbpediaSparqEndpoint = "http://dbpedia.org/sparql";
+		String sparql;
 
-		ResultSet r = myQanaryUtils.selectFromTripleStore(sparql);
-		while (r.hasNext()) {
-			QuerySolution s = r.next();
-
-			entities.add(s.getResource("uri").getURI());
-			logger.info("uri info {}", s.getResource("uri").getURI());
-		}
-
-		// property
-		sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-				+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> "//
-				+ "SELECT  ?uri " + "FROM <" + myQanaryQuestion.getInGraph() + "> " //
-				+ "WHERE { " //
-				+ "  ?a a qa:AnnotationOfRelation . " //
-				+ "  ?a oa:hasTarget [ " //
-				+ "        a oa:SpecificResource; " // 
-				+ "        oa:hasSource    ?q; " //
-				+ "     ]; " //
-				+ "     oa:hasBody ?uri ; }";
-
-		//	r = myQanaryUtils.selectFromTripleStore(sparql);
-		r = myQanaryUtils.selectFromTripleStore(sparql, endpoint);
-
-		while (r.hasNext()) {
-			QuerySolution s = r.next();
-			properties.add(s.getResource("uri").getURI());
-			logger.info("uri info {}", s.getResource("uri").getURI());
-		}
-
-		// classes
-		sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " // 
-				+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-				+ "SELECT  ?uri " + "FROM <" + myQanaryQuestion.getInGraph() + "> " //
-				+ "WHERE { " //
-				+ "  ?a a qa:AnnotationOfClass . " // 
-				+ "  ?a oa:hasTarget [ " //
-				+ "       a            oa:SpecificResource; " //
-				+ "       oa:hasSource ?q; " //
-				+ "     ]; " //
-				+ "     oa:hasBody ?uri ; }";
-
-		//	r = myQanaryUtils.selectFromTripleStore(sparql);
-		r = myQanaryUtils.selectFromTripleStore(sparql, endpoint);
-
-		while (r.hasNext()) {
-			QuerySolution s = r.next();
-			classes.add(s.getResource("uri").getURI());
-			logger.info("uri info {}", s.getResource("uri").getURI());
-		}
+		// get entities, properties, classes from current question
+		List<String> entities = getEntitiesFromQanaryKB(myQanaryUtils, myQanaryQuestion);
+		List<String> properties = getPropertiesFromQanaryKB(myQanaryUtils, myQanaryQuestion);
+		List<String> classes = getClassesFromQanaryKB(myQanaryUtils, myQanaryQuestion);
 
 		String generatedQuery = "";
 		if (classes.size() == 0) {
@@ -132,16 +64,18 @@ public class QueryBuilder extends QanaryComponent {
 					if (myQuestion.contains("Is") || myQuestion.contains("Did") || myQuestion.contains("do")
 							|| myQuestion.contains("Does") || myQuestion.contains("Was") || myQuestion.contains("Were")
 							|| myQuestion.contains("Are")) {
-						generatedQuery = "ASK WHERE { <" + entities.get(0) + "> <" + properties.get(0) + "> ?v1. }";
+						generatedQuery = "ASK WHERE { " //
+								+ "<" + entities.get(0) + "> <" + properties.get(0) + "> ?v1 . " //
+								+ "}";
 					} else if (myQuestion.contains("How") || myQuestion.contains("many")) {
-
-						generatedQuery = "SELECT (COUNT(DISTINCT ?x) as ?c) WHERE{ <" + entities.get(0) + "> <"
-								+ properties.get(0) + "> ?v1. }";
+						generatedQuery = "SELECT (COUNT(DISTINCT ?x) as ?c) WHERE{ " //
+								+ "<" + entities.get(0) + "> <" + properties.get(0) + "> ?v1 . " //
+								+ "}";
 
 					} else {
-
-						generatedQuery = "SELECT DISTINCT ?uri WHERE { <" + entities.get(0) + "> <" + properties.get(0)
-								+ "> ?uri }";
+						generatedQuery = "SELECT DISTINCT ?uri WHERE { " //
+								+ "<" + entities.get(0) + "> <" + properties.get(0) + "> ?uri ." //
+								+ "}";
 					}
 				}
 				if (entities.size() == 2) {
@@ -149,50 +83,61 @@ public class QueryBuilder extends QanaryComponent {
 					if (myQuestion.contains("Is") || myQuestion.contains("Did") || myQuestion.contains("do")
 							|| myQuestion.contains("Does") || myQuestion.contains("Was") || myQuestion.contains("Were")
 							|| myQuestion.contains("Are")) {
-							generatedQuery = "ASK WHERE { <" + entities.get(0) + "> <" + properties.get(0) + "> <"
-								+ entities.get(1) + "> }";
+						generatedQuery = "ASK WHERE { " //
+								+ "<" + entities.get(0) + "> <" + properties.get(0) + "> <" + entities.get(1) + "> ." //
+								+ "}";
 					}
-					if (myQuestion.contains("both")||myQuestion.contains("common")||myQuestion.contains("also")) {
+					if (myQuestion.contains("both") || myQuestion.contains("common") || myQuestion.contains("also")) {
 
-						generatedQuery = "SELECT DISTINCT ?uri WHERE { ?uri <" + properties.get(0) + "> <" + entities.get(0)
-						+ "> . ?uri <" + properties.get(0) + "> <" + entities.get(1) + "> . }";
-
+						generatedQuery = "SELECT DISTINCT ?uri WHERE {"//
+								+ " ?uri <" + properties.get(0) + "> <" + entities.get(0) + "> . " //
+								+ " ?uri <" + properties.get(0) + "> <" + entities.get(1) + "> . " //
+								+ "}";
 					}
-
 				}
 			} else if (properties.size() == 2) {
 				if (entities.size() == 1) {
 
 					if (myQuestion.contains("How") || myQuestion.contains("many")) {
 
-						generatedQuery = "SELECT (COUNT(DISTINCT ?x) as ?c) WHERE { ?x <" + properties.get(0) + "> <"
-								+ entities.get(0) + "> . ?x <" + properties.get(1) + "> ?uri . }";
+						generatedQuery = "SELECT (COUNT(DISTINCT ?x) as ?c) WHERE { " //
+								+ "?x <" + properties.get(0) + "> <" + entities.get(0) + "> . " //
+								+ "?x <" + properties.get(1) + "> ?uri . " //
+								+ "}";
 
 						Query query = QueryFactory.create(generatedQuery);
-						QueryExecution exec = QueryExecutionFactory.sparqlService("http://dbpedia.org/sparql", query);
+						QueryExecution exec = QueryExecutionFactory.sparqlService(dbpediaSparqEndpoint, query);
 						ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
+
 						if (!results.hasNext()) {
-							generatedQuery = "SELECT (COUNT(DISTINCT ?x) as ?c) WHERE { <" + entities.get(0) + "> <"
-									+ properties.get(0) + "> ?x. ?x <" + properties.get(1) + "> ?uri  }";
+							generatedQuery = "SELECT (COUNT(DISTINCT ?x) as ?c) WHERE { " //
+									+ "<" + entities.get(0) + "> <" + properties.get(0) + "> ?x . " //
+									+ "?x <" + properties.get(1) + "> ?uri . " //
+									+ "}";
 						}
 
 					} else {
-						generatedQuery = "SELECT DISTINCT ?uri WHERE { ?x <" + properties.get(0) + "> <"
-								+ entities.get(0) + "> . ?x <" + properties.get(1) + "> ?uri . }";
+						generatedQuery = "SELECT DISTINCT ?uri WHERE { " //
+								+ "?x <" + properties.get(0) + "> <" + entities.get(0) + "> . " //
+								+ "?x <" + properties.get(1) + "> ?uri . "//
+								+ "}";
 
 						Query query = QueryFactory.create(generatedQuery);
-						QueryExecution exec = QueryExecutionFactory.sparqlService("http://dbpedia.org/sparql", query);
+						QueryExecution exec = QueryExecutionFactory.sparqlService(dbpediaSparqEndpoint, query);
 						ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
 						if (!results.hasNext()) {
-							generatedQuery = "SELECT DISTINCT ?uri WHERE { <" + entities.get(0) + "> <"
-									+ properties.get(0) + "> ?x. ?x <" + properties.get(1) + "> ?uri  }";
+							generatedQuery = "SELECT DISTINCT ?uri WHERE { " //
+									+ "<" + entities.get(0) + "> <" + properties.get(0) + "> ?x . " //
+									+ "?x <" + properties.get(1) + "> ?uri . " //
+									+ "}";
 						}
 					}
 				}
 				if (entities.size() == 2) {
 
-					generatedQuery = "SELECT DISTINCT ?uri WHERE { ?uri <" + properties.get(0) + "> <" + entities.get(0)
-							+ "> . ?uri <" + properties.get(1) + "> <" + entities.get(1) + "> . }";
+					generatedQuery = "SELECT DISTINCT ?uri WHERE { " //
+							+ "?uri <" + properties.get(0) + "> <" + entities.get(0) + "> . " //
+							+ "?uri <" + properties.get(1) + "> <" + entities.get(1) + "> . }";
 				}
 			}
 
@@ -200,45 +145,50 @@ public class QueryBuilder extends QanaryComponent {
 
 			if (properties.size() == 0) {
 				if (entities.size() == 1) {
-
-				}
-				if (entities.size() == 2) {
-
+					// TODO
+				} else if (entities.size() == 2) {
+					// TODO
 				}
 			} else if (properties.size() == 1) {
 				if (entities.size() == 1) {
 
-					generatedQuery = "SELECT DISTINCT ?uri WHERE {?uri <" + properties.get(0) + "> <" + entities.get(0)
-							+ "> . ?uri <https://www.w3.org/1999/02/22-rdf-syntax-ns#type> <" + classes.get(0) + ">}";
+					generatedQuery = "SELECT DISTINCT ?uri WHERE { " //
+							+ "?uri <" + properties.get(0) + "> <" + entities.get(0) + "> . " //
+							+ "?uri <https://www.w3.org/1999/02/22-rdf-syntax-ns#type> <" + classes.get(0) + "> . " //
+							+ "}";
 
 					Query query = QueryFactory.create(generatedQuery);
-					QueryExecution exec = QueryExecutionFactory.sparqlService("http://dbpedia.org/sparql", query);
+					QueryExecution exec = QueryExecutionFactory.sparqlService(dbpediaSparqEndpoint, query);
 					ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
 					if (!results.hasNext()) {
-						generatedQuery = "SELECT DISTINCT ?uri WHERE { <" + entities.get(0) + "> <" + properties.get(0)
-								+ "> ?uri. ?uri <https://www.w3.org/1999/02/22-rdf-syntax-ns#type> <" + classes.get(0)
-								+ ">}";
+						generatedQuery = "SELECT DISTINCT ?uri WHERE { " //
+								+ "<" + entities.get(0) + "> <" + properties.get(0) + "> ?uri . " //
+								+ "?uri <https://www.w3.org/1999/02/22-rdf-syntax-ns#type> <" + classes.get(0) + "> . " //
+								+ "}";
 					}
 
 				}
 				if (entities.size() == 2) {
-
+					// TODO
 				}
 			} else if (properties.size() == 2) {
 				if (entities.size() == 1) {
-					generatedQuery = "SELECT DISTINCT ?uri WHERE { ?x <" + properties.get(0) + "> <" + entities.get(0)
-							+ "> . ?x <" + properties.get(1)
-							+ "> ?uri . ?x <https://www.w3.org/1999/02/22-rdf-syntax-ns#type> <" + classes.get(0)
-							+ ">}";
+					generatedQuery = "SELECT DISTINCT ?uri WHERE { " //
+							+ "?x <" + properties.get(0) + "> <" + entities.get(0) + "> . " //
+							+ "?x <" + properties.get(1) + "> ?uri . " //
+							+ "?x <https://www.w3.org/1999/02/22-rdf-syntax-ns#type> <" + classes.get(0) + "> . " //
+							+ "}";
 				}
 				if (entities.size() == 2) {
-					generatedQuery = "SELECT DISTINCT ?uri WHERE {?uri <" + properties.get(0) + "> <" + entities.get(0)
-							+ "> . ?uri <" + properties.get(1) + "> <" + entities.get(1)
-							+ "> . ?uri <https://www.w3.org/1999/02/22-rdf-syntax-ns#type> <" + classes.get(0) + ">}";
+					generatedQuery = "SELECT DISTINCT ?uri WHERE { " //
+							+ "?uri <" + properties.get(0) + "> <" + entities.get(0) + "> . " //
+							+ "?uri <" + properties.get(1) + "> <" + entities.get(1) + "> . " //
+							+ "?uri <https://www.w3.org/1999/02/22-rdf-syntax-ns#type> <" + classes.get(0) + "> . " //
+							+ "}";
 				}
 			}
 
-		} else if (classes.size() == 2) {
+		} else if (classes.size() == 2) { // TODO
 
 			if (properties.size() == 0) {
 				if (entities.size() == 1) {
@@ -264,9 +214,8 @@ public class QueryBuilder extends QanaryComponent {
 			}
 		}
 
-
 		logger.debug("store the generated SPARQL query in triplestore: {}", generatedQuery);
-		// STEP 3: Push the GeoSPARQL query to the triplestore
+		// STEP 3: Push the SPARQL query to the triplestore
 		if (generatedQuery != "") {
 			sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
 					+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
@@ -276,56 +225,150 @@ public class QueryBuilder extends QanaryComponent {
 					+ "  ?a a qa:AnnotationOfAnswerSPARQL . " //
 					+ "  ?a oa:hasTarget <URIAnswer> . " //
 					+ "  ?a oa:hasBody \"" + generatedQuery.replaceAll("\n", " ") + "\" ;" //
-					+ "     oa:annotatedBy <urn:qanary:QB#"+QueryBuilder.class.getName()+"> ; " //
+					+ "     oa:annotatedBy <urn:qanary:QB#" + QueryBuilder.class.getName() + "> ; " //
 					+ "	    oa:annotatedAt ?time . " //
 					+ "}} " //
 					+ "WHERE { " //
 					+ "	BIND (IRI(str(RAND())) AS ?a) ." //
 					+ "	BIND (now() as ?time) " //
 					+ "}";
-		//	myQanaryUtils.updateTripleStore(sparql);
-		myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+			myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 
 			Query query = QueryFactory.create(generatedQuery);
-			QueryExecution exec = QueryExecutionFactory.sparqlService("http://dbpedia.org/sparql", query);
+			QueryExecution exec = QueryExecutionFactory.sparqlService(dbpediaSparqEndpoint, query);
+
 			ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
 			ResultSetFormatter.outputAsJSON(outputStream, results);
 			String json = new String(outputStream.toByteArray(), "UTF-8");
 
-	        logger.info("Push the the JSON object to the named graph reserved for the answer");
-			sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> "  //
-	                	+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> "  //
-	                	+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> "  //
-	                	+ "INSERT { "  //
-	                	+ "GRAPH <" + myQanaryUtils.getOutGraph() + "> { " //
-	                	+ "  ?b a qa:AnnotationOfAnswerJSON ; " //
-	                	+ "     oa:hasTarget <URIAnswer> ; " //
-	                	+ "     oa:hasBody \"" + json.replace("\n", " ").replace("\"", "\\\"") + "\" ;" //
-	                	+ "     oa:annotatedBy <urn:qanary:QB#"+QueryBuilder.class.getName()+"> ; " //
-	                	+ "     oa:annotatedAt ?time  " //
-	                	+ "}} " //
-	                	+ "WHERE { " //
-	                	+ "  BIND (IRI(str(RAND())) AS ?b) ." //
-	                	+ "  BIND (now() as ?time) " //
-	                	+ "}";
-	        	//myQanaryUtils.updateTripleStore(sparql);
-						myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+			logger.info("Push the the JSON object to the named graph reserved for the answer.");
+			sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
+					+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
+					+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
+					+ "INSERT { " //
+					+ "GRAPH <" + myQanaryUtils.getOutGraph() + "> { " //
+					+ "  ?b a qa:AnnotationOfAnswerJSON ; " //
+					+ "     oa:hasTarget <URIAnswer> ; " // TODO: replace
+															// URIAnswer
+					+ "     oa:hasBody \"" + json.replace("\n", " ").replace("\"", "\\\"") + "\" ;" //
+					+ "     oa:annotatedBy <urn:qanary:QB#" + QueryBuilder.class.getName() + "> ; " //
+					+ "     oa:annotatedAt ?time  " //
+					+ "}} " //
+					+ "WHERE { " //
+					+ "  BIND (IRI(str(RAND())) AS ?b) ." //
+					+ "  BIND (now() as ?time) " //
+					+ "}";
+			myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 
 		}
 		return myQanaryMessage;
 	}
 
-	class Entity {
+	/**
+	 * get all annotated classes of the user's question from the Qanary
+	 * Knowledge Base / Triplestore
+	 * 
+	 * @param myQanaryUtils
+	 * @param myQanaryQuestion
+	 * @return
+	 */
+	private List<String> getClassesFromQanaryKB(QanaryUtils myQanaryUtils, QanaryQuestion<String> myQanaryQuestion) {
+		List<String> classes = new ArrayList<String>();
+		String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
+				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
+				+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
+				+ "SELECT  ?uri " //
+				+ "FROM <" + myQanaryQuestion.getInGraph() + "> " //
+				+ "WHERE { " //
+				+ "  ?a a qa:AnnotationOfClass . " //
+				+ "  ?a oa:hasTarget [ " //
+				+ "       a            oa:SpecificResource; " //
+				+ "       oa:hasSource ?q; " //
+				+ "     ]; " //
+				+ "     oa:hasBody ?uri ; }";
 
-		public int begin;
-		public int end;
-		public String namedEntity;
-		public String uri;
+		ResultSet r = myQanaryUtils.selectFromTripleStore(sparql);
 
-		public void print() {
-			System.out.println("Start: " + begin + "\t End: " + end + "\t Entity: " + namedEntity);
+		while (r.hasNext()) {
+			QuerySolution s = r.next();
+			classes.add(s.getResource("uri").getURI());
+			logger.info("class: {}", s.getResource("uri").getURI());
 		}
+
+		return classes;
 	}
+
+	/**
+	 * get all annotated properties of the user's question from the Qanary
+	 * Knowledge Base / Triplestore
+	 * 
+	 * @param myQanaryUtils
+	 * @param myQanaryQuestion
+	 * @return
+	 */
+	private List<String> getPropertiesFromQanaryKB(QanaryUtils myQanaryUtils, QanaryQuestion<String> myQanaryQuestion) {
+		List<String> properties = new ArrayList<String>();
+
+		String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
+				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
+				+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> "//
+				+ "SELECT  ?uri " + "FROM <" + myQanaryQuestion.getInGraph() + "> " //
+				+ "WHERE { " //
+				+ "  ?a a qa:AnnotationOfRelation . " //
+				+ "  ?a oa:hasTarget [ " //
+				+ "        a oa:SpecificResource; " //
+				+ "        oa:hasSource    ?q; " //
+				+ "     ]; " //
+				+ "     oa:hasBody ?uri ; }";
+
+		ResultSet r = myQanaryUtils.selectFromTripleStore(sparql);
+
+		while (r.hasNext()) {
+			QuerySolution s = r.next();
+			properties.add(s.getResource("uri").getURI());
+			logger.info("property: {}", s.getResource("uri").getURI());
+		}
+		return properties;
+	}
+
+	/**
+	 * get all annotated entities of the user's question from the Qanary
+	 * Knowledge Base / Triplestore
+	 * 
+	 * @param myQanaryUtils
+	 * @param myQanaryQuestion
+	 * @return
+	 */
+	private List<String> getEntitiesFromQanaryKB(QanaryUtils myQanaryUtils, QanaryQuestion<String> myQanaryQuestion) {
+		List<String> entities = new ArrayList<String>();
+
+		String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
+				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
+				+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> "//
+				+ "SELECT ?start ?end ?uri " + "FROM <" + myQanaryQuestion.getInGraph() + "> " //
+				+ "WHERE { " //
+				+ "    ?a a qa:AnnotationOfInstance . " + "?a oa:hasTarget [ " //
+				+ "		     a               oa:SpecificResource; " //
+				+ "		     oa:hasSource    ?q; " //
+				+ "	         oa:hasSelector  [ " //
+				+ "			         a        oa:TextPositionSelector ; " //
+				+ "			         oa:start ?start ; " //
+				+ "			         oa:end   ?end " //
+				+ "		     ] " //
+				+ "    ] . " //
+				+ " ?a oa:hasBody ?uri . " + "} " //
+				+ "ORDER BY ?start ";
+
+		ResultSet r = myQanaryUtils.selectFromTripleStore(sparql);
+		while (r.hasNext()) {
+			QuerySolution s = r.next();
+
+			entities.add(s.getResource("uri").getURI());
+			logger.info("entity: {}", s.getResource("uri").getURI());
+		}
+		return entities;
+	}
+
 }
