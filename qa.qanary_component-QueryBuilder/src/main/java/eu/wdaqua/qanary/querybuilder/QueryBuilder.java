@@ -3,6 +3,7 @@ package eu.wdaqua.qanary.querybuilder;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
@@ -49,6 +50,9 @@ public class QueryBuilder extends QanaryComponent {
 
 		String dbpediaSparqEndpoint = "http://dbpedia.org/sparql";
 		String sparql;
+		
+		// random answer URI
+		String answerID = "urn:qanary:answer:" + UUID.randomUUID().toString(); 
 
 		// get entities, properties, classes from current question
 		List<String> entities = getEntitiesFromQanaryKB(myQanaryUtils, myQanaryQuestion);
@@ -221,16 +225,18 @@ public class QueryBuilder extends QanaryComponent {
 					+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
 					+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
 					+ "INSERT { " //
-					+ "GRAPH <" + myQanaryUtils.getInGraph() + "> { " //
+					+ "GRAPH <" + myQanaryUtils.getOutGraph() + "> { " //
+					+ "  ?answer a qa:Answer . " // 
 					+ "  ?a a qa:AnnotationOfAnswerSPARQL . " //
-					+ "  ?a oa:hasTarget <URIAnswer> . " //
+					+ "  ?a oa:hasTarget ?answer . " //
 					+ "  ?a oa:hasBody \"" + generatedQuery.replaceAll("\n", " ") + "\" ;" //
 					+ "     oa:annotatedBy <urn:qanary:QB#" + QueryBuilder.class.getName() + "> ; " //
 					+ "	    oa:annotatedAt ?time . " //
 					+ "}} " //
 					+ "WHERE { " //
 					+ "	BIND (IRI(str(RAND())) AS ?a) ." //
-					+ "	BIND (now() as ?time) " //
+					+ "	BIND (now() as ?time) . " //
+					+ " BIND (<" + answerID + "> as ?answer) ." //
 					+ "}";
 			myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 
@@ -249,9 +255,9 @@ public class QueryBuilder extends QanaryComponent {
 					+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
 					+ "INSERT { " //
 					+ "GRAPH <" + myQanaryUtils.getOutGraph() + "> { " //
+					+ "  ?answer a qa:Answer . " // 
 					+ "  ?b a qa:AnnotationOfAnswerJSON ; " //
-					+ "     oa:hasTarget <URIAnswer> ; " // TODO: replace
-															// URIAnswer
+					+ "     oa:hasTarget <" + answerID + "> ; " //
 					+ "     oa:hasBody \"" + json.replace("\n", " ").replace("\"", "\\\"") + "\" ;" //
 					+ "     oa:annotatedBy <urn:qanary:QB#" + QueryBuilder.class.getName() + "> ; " //
 					+ "     oa:annotatedAt ?time  " //
@@ -259,6 +265,7 @@ public class QueryBuilder extends QanaryComponent {
 					+ "WHERE { " //
 					+ "  BIND (IRI(str(RAND())) AS ?b) ." //
 					+ "  BIND (now() as ?time) " //
+					+ "  BIND (<" + answerID + "> as ?answer) ." //
 					+ "}";
 			myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 
