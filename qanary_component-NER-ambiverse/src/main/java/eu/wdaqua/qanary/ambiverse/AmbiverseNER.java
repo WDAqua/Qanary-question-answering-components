@@ -56,7 +56,7 @@ public class AmbiverseNER extends QanaryComponent {
 		logger.info("JsonPath {}", jsonThePath);
 
 		String urlAccessToken = "https://api.ambiverse.com/oauth/token";
-		String urlEntityLinkService = "https://api.ambiverse.com/v1/entitylinking/analyze";
+		String urlEntityLinkService = "https://api.ambiverse.com/v2/entitylinking/analyze";
 		String[] accessTokenCmd = {"curl", "-X", "POST", "-H", 
 				"Content-Type: application/x-www-form-urlencoded",
 				"-d", "grant_type=client_credentials",
