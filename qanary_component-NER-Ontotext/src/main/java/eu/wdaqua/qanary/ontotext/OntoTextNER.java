@@ -55,7 +55,7 @@ public class OntoTextNER extends QanaryComponent {
 	        logger.info("Question: {}", myQuestion);
 	        //STEP2
 	        HttpClient httpclient = HttpClients.createDefault();
-	        HttpPost httppost = new HttpPost("http://tag.ontotext.com/ces-en/extract");
+	        HttpPost httppost = new HttpPost("https://tag.ontotext.com/ces-en/extract");
 	        httppost.addHeader("X-JwtToken", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRob3JpdGllcyI6WyJST0xFX1VTRVIiXSwidXNlcm5hbWUiOiJ1c2VyIn0.JMV-kAdLd9RhGcxeCgqCc0O5xG9-oQUUwI4vC83BpwU");
 	       httppost.addHeader("Accept", "application/vnd.ontotext.ces+json");
 	       httppost.addHeader("Content-Type","text/plain");
