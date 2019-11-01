@@ -1,21 +1,18 @@
 package eu.wdaqua.qanary.spotlightNED;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.*;
+import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+
+import com.google.gson.JsonArray;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
@@ -23,158 +20,129 @@ import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
 
 /**
- * represents a wrapper of the DBpedia Spotlight as NED
+ * represents a wrapper of the DBpedia Spotlight service used as NED annotator
+ * 
+ * requirements: this Qanary service expects as input a textual question (that
+ * is stored in the Qanary triplestore) written using English language
+ * 
+ * outcome: if DBpedia Spotlight has recognized named entities and was enabled
+ * to link them to DBpedia, then this information is added to the Qanary
+ * triplestore to be used by following services of this question answering
+ * process
  *
- * @author Kuldeep Singh, Dennis Diefenbach
+ * @author Kuldeep Singh, Dennis Diefenbach, Andreas Both
  */
 
 @Component
 public class DBpediaSpotlightNED extends QanaryComponent {
-    private static final Logger logger = LoggerFactory.getLogger(DBpediaSpotlightNED.class);
-    private String service = "http://spotlight.sztaki.hu:2222/rest/disambiguate/";
+	private static final Logger logger = LoggerFactory.getLogger(DBpediaSpotlightNED.class);
 
-    public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
-        logger.info("process: {}", myQanaryMessage);
+	@Inject
+	private DBpediaSpotlightConfiguration myDBpediaSpotlightConfiguration;
 
+	@Inject
+	private DBpediaSpotlightServiceFetcher myDBpediaSpotlightServiceFetcher;
 
-        long startTime = System.currentTimeMillis();
-        //STEP 1: Retrive the information needed for the computations
+	@Bean
+	public CacheManagerCustomizer<ConcurrentMapCacheManager> getCacheManagerCustomizer() {
+		logger.warn("getCacheManagerCustomizer");
+		return new CacheManagerCustomizer<ConcurrentMapCacheManager>() {
+			@Override
+			public void customize(ConcurrentMapCacheManager cacheManager) {
+				cacheManager.setAllowNullValues(false);
+			}
+		};
+	}
 
-        // retrive the question
-        QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-        QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
-        String myQuestion = myQanaryQuestion.getTextualRepresentation();
-        logger.info("Question: {}", myQuestion);
+	/**
+	 * standard method for processing a message from the central Qanary component
+	 */
+	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 
-        // Retrieves the spots from the knowledge graph
-        String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> "
-                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> "
-                + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> "//
-                + "SELECT ?start ?end " + "FROM <" + myQanaryQuestion.getInGraph() + "> " //
-                + "WHERE { " //
-                + "    ?a a qa:AnnotationOfSpotInstance . " + "?a oa:hasTarget [ "
-                + "		     a               oa:SpecificResource; " //
-                + "		     oa:hasSource    ?q; " //
-                + "	         oa:hasSelector  [ " //
-                + "			         a        oa:TextPositionSelector ; " //
-                + "			         oa:start ?start ; " //
-                + "			         oa:end   ?end " //
-                + "		     ] " //
-                + "    ] ; " //
-                + "} " //
-                + "ORDER BY ?start ";
+		// CacheManagerCustomizer<ConcurrentMapCacheManager> myCacheManagerCustomizer =
+		// this.getCacheManagerCustomizer();
 
-        ResultSet r = myQanaryUtils.selectFromTripleStore(sparql);
-        ArrayList<Link> links = new ArrayList<Link>();
-        while (r.hasNext()) {
-            QuerySolution s = r.next();
-            Link link = new Link();
-            link.begin = s.getLiteral("start").getInt();
-            link.end = s.getLiteral("end").getInt();
-            logger.info("Spot start {}, end {}", link.begin, link.end);
-            links.add(link);
-        }
+		// STEP 1: Retrieve the information needed for the computations
+		// i.e., retrieve the current question
+		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
+		QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
+		String myQuestion = myQanaryQuestion.getTextualRepresentation();
+		logger.info("process question \"{}\" with DBpedia Spotlight at {} and minimum confidence: {}", //
+				myQuestion, myDBpediaSpotlightConfiguration.getEndpoint(),
+				myDBpediaSpotlightConfiguration.getConfidenceMinimum());
+		String sparql, sparqlbind;
 
-        // STEP2: Call the DBpedia NED service
+		// STEP2: Call the DBpedia NED service
+		JsonArray resources;
+		/*
+		 * if (cache.containsKey(myQuestion)) { resources = cache.get(myQuestion); }
+		 * else { resources = getJsonFromService(myQanaryQuestion, myQanaryUtils,
+		 * myQuestion, // myDBpediaSpotlightConfiguration.getEndpoint(), //
+		 * myDBpediaSpotlightConfiguration.getConfidenceMinimum() // );
+		 * cache.put(myQuestion, resources); }
+		 */
+		resources = myDBpediaSpotlightServiceFetcher.getJsonFromService(myQanaryQuestion, myQanaryUtils, myQuestion, //
+				myDBpediaSpotlightConfiguration.getEndpoint(), //
+				myDBpediaSpotlightConfiguration.getConfidenceMinimum() //
+		);
 
-        // it will create XML content, which needs to be input in DBpedia
-        // NED with curl command
-        String content = getXmlFromQuestion(myQuestion, links);
+		// get all found DBpedia resources
+		List<FoundDBpediaResource> foundDBpediaResource = new LinkedList<>();
+		for (int i = 0; i < resources.size(); i++) {
+			foundDBpediaResource.add(new FoundDBpediaResource(resources.get(i)));
+			logger.debug("found resource ({} of {}): {} at ({},{})", //
+					i, resources.size() - 1, //
+					foundDBpediaResource.get(i).getResource(), //
+					foundDBpediaResource.get(i).getBegin(), //
+					foundDBpediaResource.get(i).getEnd() //
+			);
+		}
 
-        RestTemplate myRestTemplate = new RestTemplate();
-        //Set header
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		// STEP3: Push the result of the component to the triplestore
+		// TODO: prevent that duplicate entries are created within the
+		// triplestore, here the same data is added as already exit (see
+		// previous SELECT query)
 
-        //Set Body
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-        map.add("text", content);
+		// create one larger SPARQL INSERT query that adds all discovered named entities
+		// at once
+		sparql = "" //
+				+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
+				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
+				+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
+				+ "INSERT { ";
+		sparqlbind = "";
+		int i = 0;
+		for (FoundDBpediaResource found : foundDBpediaResource) {
+			sparql += "" //
+					+ "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
+					+ "  ?a" + i + " a qa:AnnotationOfInstance . " //
+					+ "  ?a" + i + " oa:hasTarget [ " //
+					+ "           a    oa:SpecificResource; " //
+					+ "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
+					+ "           oa:hasSelector  [ " //
+					+ "                    a oa:TextPositionSelector ; " //
+					+ "                    oa:start \"" + found.getBegin() + "\"^^xsd:nonNegativeInteger ; " //
+					+ "                    oa:end  \"" + found.getEnd() + "\"^^xsd:nonNegativeInteger  " //
+					+ "           ] " //
+					+ "  ] . " //
+					+ "  ?a" + i + " oa:hasBody <" + found.getResource() + "> ;" //
+					+ "     	 oa:annotatedBy <" + myDBpediaSpotlightConfiguration.getEndpoint() + "> ; " //
+					+ "	    	 oa:annotatedAt ?time ; " //
+					+ "     	 qa:score \"" + found.getSimilarityScore() + "\"^^xsd:decimal . " //
+					+ "	}"; // end: graph
+			sparqlbind += "  BIND (IRI(str(RAND())) AS ?a" + i + ") .";
+			i++;
+		}
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+		sparql += "" //
+				+ "} " // end: insert
+				+ "WHERE { " //
+				+ sparqlbind //
+				+ "  BIND (now() as ?time) " //
+				+ "}";
+		myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 
-        String response = myRestTemplate.postForObject(service, request, String.class);
-
-        // Now the output of DBPediaNED, which is JSON, is parsed below to
-        // fetch the corresponding URIs
-        JSONParser parser = new JSONParser();
-        JSONObject json = (JSONObject) parser.parse(response);
-        JSONArray arr = (JSONArray) json.get("Resources");
-
-        int cnt = 0;
-        if (arr != null) {
-            Iterator i = arr.iterator();
-            while (i.hasNext()) {
-                JSONObject obj = (JSONObject) i.next();
-                String uri = (String) obj.get("@URI");
-                links.get(cnt).link = uri;
-                logger.info("recognized: {} at ({},{})", uri, links.get(cnt).begin, links.get(cnt).end);
-                cnt++;
-            }
-        }
-
-        if (cnt == 0) {
-            logger.warn("nothing recognized for \"{}\": {}", myQuestion, json);
-        } else {
-            logger.info("recognized {} entities: {}", cnt, json);
-        }
-
-        logger.debug("Apply commons alignment on outgraph.");
-
-        // STEP3: Push the result of the component to the triplestore
-        // long startTime = System.currentTimeMillis();
-
-        // TODO: prevent that duplicate entries are created within the
-        // triplestore, here the same data is added as already exit (see
-        // previous SELECT query)
-        for (Link l : links) {
-            sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-                    + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-                    + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-                    + "INSERT { " + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
-                    + "  ?a a qa:AnnotationOfInstance . " //
-                    + "  ?a oa:hasTarget [ " //
-                    + "           a    oa:SpecificResource; " //
-                    + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
-                    + "           oa:hasSelector  [ " //
-                    + "                    a oa:TextPositionSelector ; " //
-                    + "                    oa:start \"" + l.begin + "\"^^xsd:nonNegativeInteger ; " //
-                    + "                    oa:end  \"" + l.end + "\"^^xsd:nonNegativeInteger  " //
-                    + "           ] " //
-                    + "  ] . " //
-                    + "  ?a oa:hasBody <" + l.link + "> ;" //
-                    + "     oa:annotatedBy <https://github.com/dbpedia-spotlight/dbpedia-spotlight> ; " //
-                    + "	    oa:AnnotatedAt ?time  " + "}} " //
-                    + "WHERE { " //
-                    + "  BIND (IRI(str(RAND())) AS ?a) ."//
-                    + "  BIND (now() as ?time) " //
-                    + "}";
-            logger.debug("Sparql query: {}", sparql);
-            myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
-        }
-        long estimatedTime = System.currentTimeMillis() - startTime;
-        logger.info("Time {}", estimatedTime);
-
-        return myQanaryMessage;
-    }
-
-    private String getXmlFromQuestion(String question, ArrayList<Link> offsets) {
-        String xmlFileContent = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><annotation text=\"" + question + "\">";
-
-        for (Link sel : offsets) {
-            int begin = sel.begin;
-            int end = sel.end;
-            String surNam = question.substring(begin, end);
-            xmlFileContent += "<surfaceForm name=\"" + surNam + "\" offset=\"" + begin + "\"/>";
-        }
-        xmlFileContent += "</annotation>";
-
-        return xmlFileContent;
-    }
-
-    class Link {
-        public int begin;
-        public int end;
-        public String link;
-    }
+		return myQanaryMessage;
+	}
 
 }

@@ -2,29 +2,44 @@ package eu.wdaqua.qanary.spotlightNED;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EnableAutoConfiguration
+@EnableCaching
 @ComponentScan("eu.wdaqua.qanary.component")
 public class Application {
+	
+	@Bean
+	public DBpediaSpotlightConfiguration myDBpediaSpotlightConfiguration( //
+			@Value("${dbpediaspotlight.confidence.minimum}") float confidenceMinimum, //
+			@Value("${dbpediaspotlight.endpoint}") String endpoint //
+	) {
+		return new DBpediaSpotlightConfiguration(confidenceMinimum, endpoint);
+	}
 
+	@Bean
+	public QanaryComponent qanaryComponent() {
+		return new DBpediaSpotlightNED();
+	}
+	
+	@Bean
+	public DBpediaSpotlightServiceFetcher myDBpediaSpotlightServiceFetcher() {
+		return new DBpediaSpotlightServiceFetcher();
+	}
 
-    @Bean
-    public QanaryComponent qanaryComponent() {
-        return new DBpediaSpotlightNED();
-    }
-
-    /**
-     * default main, can be removed later
-     */
-    public static void main(String[] args) {
-        //Properties p = new Properties();
-        //new SpringApplicationBuilder(Application.class).properties(p).run(args);
-        SpringApplication.run(Application.class, args);
-    }
+	/**
+	 * default main
+	 */
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
 }
