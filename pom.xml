@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.wdauqa.qanary</groupId>
   <artifactId>mvn.reactor</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
 
@@ -56,6 +56,7 @@
                             <module>qa.qanary_component-DiambiguationProperty-OKBQA</module>
                             <module>qa.qanary_component-QueryBuilder</module>
                             <module>qanary_component-NED-MeaningCloud</module>
+                            <module>qanary_component-QB-SimpleRealNameOfSuperHero</module>
 			</modules>
 		</profile>
 		<profile>
@@ -64,6 +65,13 @@
                             <module>qanary_component-NED-Ambiverse</module>
                             <module>qa.qanary_component-DiambiguationProperty-OKBQA</module>
                             <module>qa.qanary_component-QueryBuilder</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>tutorial2</id>
+			<modules>
+                            <module>qanary_component-NED-DBpedia-Spotlight</module>
+                            <module>qanary_component-QB-SimpleRealNameOfSuperHero</module>
 			</modules>
 		</profile>
 	</profiles>
