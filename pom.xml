@@ -66,6 +66,12 @@
                             <module>qa.qanary_component-DiambiguationProperty-OKBQA</module>
                             <module>qa.qanary_component-QueryBuilder</module>
 			</modules>
+			<id>tutorial2</id>
+			<modules>
+                            <module>qanary_component-NED-DBpedia-Spotlight</module>
+                            <module>qanary_component-QB-SimpleRealNameOfSuperHero</module>
+			</modules>
+		</profile>
 		</profile>
 		<profile>
 			<id>tutorial2</id>
