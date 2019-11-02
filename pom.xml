@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>eu.wdauqa.qanary</groupId>
+  <groupId>eu.wdaqua.qanary</groupId>
   <artifactId>mvn.reactor</artifactId>
   <version>0.1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
@@ -66,12 +66,6 @@
                             <module>qa.qanary_component-DiambiguationProperty-OKBQA</module>
                             <module>qa.qanary_component-QueryBuilder</module>
 			</modules>
-			<id>tutorial2</id>
-			<modules>
-                            <module>qanary_component-NED-DBpedia-Spotlight</module>
-                            <module>qanary_component-QB-SimpleRealNameOfSuperHero</module>
-			</modules>
-		</profile>
 		</profile>
 		<profile>
 			<id>tutorial2</id>
