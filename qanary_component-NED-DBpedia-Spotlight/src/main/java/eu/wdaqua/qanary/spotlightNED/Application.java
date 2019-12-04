@@ -1,16 +1,14 @@
 package eu.wdaqua.qanary.spotlightNED;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+
+import eu.wdaqua.qanary.component.QanaryComponent;
 
 @SpringBootApplication
 @EnableAutoConfiguration
@@ -21,7 +19,7 @@ public class Application {
 	@Bean
 	public DBpediaSpotlightConfiguration myDBpediaSpotlightConfiguration( //
 			@Value("${dbpediaspotlight.confidence.minimum}") float confidenceMinimum, //
-			@Value("${dbpediaspotlight.endpoint}") String endpoint //
+			@Value("${dbpediaspotlight.endpoint:https://api.dbpedia-spotlight.org/en/annotate}") String endpoint //
 	) {
 		return new DBpediaSpotlightConfiguration(confidenceMinimum, endpoint);
 	}

@@ -13,6 +13,61 @@ The [Qanary Framework](https://github.com/WDAqua/Qanary/) is dedicated to create
 
 In this repository, the [components of the Qanary framework](https://github.com/WDAqua/Qanary-question-answering-components)  are stored. All components are implemented in Java and provide a Docker container for lightweight maintaince.
 
+## Build and run a minimal set of components
+ 1. [Install the Qanary core components](https://github.com/WDAqua/Qanary#how-to-run-the-code)
+ 2. Clone the current repository:
+```
+git clone https://github.com/WDAqua/Qanary-question-answering-components.git
+```
+ 3. Switch to `Qanary-question-answering-components`
+```
+cd Qanary-question-answering-components
+```
+ 4. Build the minimal set of components using the Maven profile "tinytutorial" (here we skip creating the corresponding Docker images). 
+```
+mvn clean package -Ddockerfile.skip=true -P tinytutorial
+```
+    * The output should look like the following indicating that the component `qa.NED-DBpedia-Spotlight``and `qanary_component-QB-SimpleRealNameOfSuperHero` was created:
+```
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] qa.NED-DBpedia-Spotlight 2.1.0 ..................... SUCCESS [  3.717 s]
+[INFO] qanary_component-QB-SimpleRealNameOfSuperHero 2.0.0  SUCCESS [  1.083 s]
+[INFO] mvn.reactor 0.1.1-SNAPSHOT ......................... SUCCESS [  0.073 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+```
+
+ 5. Now, both components might be started using the JAR files:
+```
+java -jar qanary_component-NED-DBpedia-Spotlight/target/qa.NED-DBpedia-Spotlight-X.Y.Z.jar
+java -jar qanary_component-QB-SimpleRealNameOfSuperHero/target/qanary_component-QB-SimpleRealNameOfSuperHero-X.Y.Z.jar
+```
+
+ 6. [Build and start a Qanary pipeline](https://github.com/WDAqua/Qanary#without-creating-docker-images)
+ 
+ 7. While having installed the Qanary components and Qanary pipeline using the standard configuration you can access a trivial Question Answering frontend via http://localhost:8080/startquestionansweringwithtextquestion
+    * Use the question "What is the real name of Captain America?". 
+    * The question can be answered using the given two components. 
+    * Thereafter, the triplestore will hold a SPARQL query that was created by the QueryBuilder component `SimpleRealNameOfSuperHero` (for [DBpedia](http://DBpedia.org/SPARQL)). It could be used to retrieve the actual answer from DBpedia. The UI shows the graph ID where the computed information was stored.
+      * Retrieve the SPARQL query from your Qanary triplestore using:
+```
+PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+PREFIX qa: <http://www.wdaqua.eu/qa#> 
+
+SELECT *
+FROM <ADD-YOUR-GRAPH-ID-HERE>
+WHERE {
+    ?s a qa:AnnotationOfAnswerSPARQL.
+    ?s oa:hasBody ?sparqlQueryOnDBpedia .
+    ?s oa:annotatedBy ?annotatingService .
+}
+```
+
+
+
 ## Big Picture
  * Qanary is providing the methodology for a knowledge-driven, vocabular-based approach. Our long-term agenda is to create a knowledge-driven ecosystem for the field of Question Answering. It is part of the [WDAqua project](http://wdaqua.eu) where question answering systems are researched and developed.
  * [Qanary Framework](https://github.com/WDAqua/Qanary/) is providing the core framework for creating Question Answering systems following the Qanary methodology. You might consider the Qanary Framework as reference implementation of the Qanary framework as microserivce-based component architecture.

@@ -74,13 +74,6 @@ public class DBpediaSpotlightNED extends QanaryComponent {
 
 		// STEP2: Call the DBpedia NED service
 		JsonArray resources;
-		/*
-		 * if (cache.containsKey(myQuestion)) { resources = cache.get(myQuestion); }
-		 * else { resources = getJsonFromService(myQanaryQuestion, myQanaryUtils,
-		 * myQuestion, // myDBpediaSpotlightConfiguration.getEndpoint(), //
-		 * myDBpediaSpotlightConfiguration.getConfidenceMinimum() // );
-		 * cache.put(myQuestion, resources); }
-		 */
 		resources = myDBpediaSpotlightServiceFetcher.getJsonFromService(myQanaryQuestion, myQanaryUtils, myQuestion, //
 				myDBpediaSpotlightConfiguration.getEndpoint(), //
 				myDBpediaSpotlightConfiguration.getConfidenceMinimum() //
@@ -126,7 +119,7 @@ public class DBpediaSpotlightNED extends QanaryComponent {
 					+ "           ] " //
 					+ "  ] . " //
 					+ "  ?a" + i + " oa:hasBody <" + found.getResource() + "> ;" //
-					+ "     	 oa:annotatedBy <" + myDBpediaSpotlightConfiguration.getEndpoint() + "> ; " //
+					+ "     	 oa:annotatedBy <" + myDBpediaSpotlightConfiguration.getEndpoint() + "XXX> ; " //
 					+ "	    	 oa:annotatedAt ?time ; " //
 					+ "     	 qa:score \"" + found.getSimilarityScore() + "\"^^xsd:decimal . " //
 					+ "	}"; // end: graph

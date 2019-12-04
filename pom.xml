@@ -68,7 +68,7 @@
 			</modules>
 		</profile>
 		<profile>
-			<id>tutorial2</id>
+			<id>tinytutorial</id>
 			<modules>
                             <module>qanary_component-NED-DBpedia-Spotlight</module>
                             <module>qanary_component-QB-SimpleRealNameOfSuperHero</module>
