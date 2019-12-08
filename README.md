@@ -13,17 +13,28 @@ The [Qanary Framework](https://github.com/WDAqua/Qanary/) is dedicated to create
 
 In this repository, the [components of the Qanary framework](https://github.com/WDAqua/Qanary-question-answering-components)  are stored. All components are implemented in Java and provide a Docker container for lightweight maintaince.
 
-## Build and run a minimal set of components
+
+## Build and run a *minimal* set of components
+
+To show the Qanary methodology and it's functionality a tiny template-based Question Answering system was designed. It is capable of answering questions for a *real name* of a superhero like "What is the real name of Captain America?". For this purpose just two components were used:
+ a) [Qanary DBpedia Spotlight component](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-DBpedia-Spotlight): The component is capable of finding superhero names and linking it to the [DBpedia knowledge base](https://wiki.dbpedia.org/) (such a process is called Named Entity Recognition and Disambiguation).
+ b) [Qanary Query Builder for Superhero Names](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-QB-SimpleRealNameOfSuperHero): The component is capable of creating [SPARQL](https://www.w3.org/TR/sparql11-overview/) SELECT queries to be executed on DBpedia (such a component is typically called Query Builder) if the given question is following the template `What is the real name of <superheroname>`.
+
+Hence, given a question following the described pattern the result will be SPARQL query that might be executed, s.t., the real name of a superhero is retrieved from DBpedia.
+
+
+### Run a minimalistic Question Answering system
+
  1. [Install the Qanary core components](https://github.com/WDAqua/Qanary#how-to-run-the-code)
  2. Clone the current repository:
 ```
 git clone https://github.com/WDAqua/Qanary-question-answering-components.git
 ```
- 3. Switch to `Qanary-question-answering-components`
+ 3. Switch to the folder `Qanary-question-answering-components`:
 ```
 cd Qanary-question-answering-components
 ```
- 4. Build the minimal set of components using the Maven profile "tinytutorial" (here we skip creating the corresponding Docker images). 
+ 4. Build the minimal set of components using the Maven profile "tinytutorial" (here we skip creating the corresponding Docker images by adding the parameter `-Ddockerfile.skip=true` to the Maven command):
 ```
 mvn clean package -Ddockerfile.skip=true -P tinytutorial
 ```
