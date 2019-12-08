@@ -119,7 +119,7 @@ public class DBpediaSpotlightNED extends QanaryComponent {
 					+ "           ] " //
 					+ "  ] . " //
 					+ "  ?a" + i + " oa:hasBody <" + found.getResource() + "> ;" //
-					+ "     	 oa:annotatedBy <" + myDBpediaSpotlightConfiguration.getEndpoint() + "XXX> ; " //
+					+ "     	 oa:annotatedBy <" + myDBpediaSpotlightConfiguration.getEndpoint() + "> ; " //
 					+ "	    	 oa:annotatedAt ?time ; " //
 					+ "     	 qa:score \"" + found.getSimilarityScore() + "\"^^xsd:decimal . " //
 					+ "	}"; // end: graph
