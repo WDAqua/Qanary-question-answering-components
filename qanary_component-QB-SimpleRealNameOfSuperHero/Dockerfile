@@ -1,4 +1,4 @@
-FROM openjdk:8-jre
+FROM openjdk:11                                                                                                                                                                                                                              
 
 ENTRYPOINT ["/usr/local/openjdk-8/bin/java", "-jar", "/usr/share/qanary-components/qanary-service.jar"]
 
