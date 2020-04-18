@@ -57,6 +57,8 @@
                             <module>qa.qanary_component-QueryBuilder</module>
                             <module>qanary_component-NED-MeaningCloud</module>
                             <module>qanary_component-QB-SimpleRealNameOfSuperHero</module>
+                            <module>qanary_component-NER-ComicCharacterNameSimpleNamedEntityRecognizer</module>
+                            <module>qanary_component-QB-ComicCharacterAlterEgoSimpleDBpediaQueryBuilder</module>
 			</modules>
 		</profile>
 		<profile>
