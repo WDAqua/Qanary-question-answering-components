@@ -98,7 +98,7 @@ public class OntoTextNED extends QanaryComponent {
 				logger.info("Question: {}", myQuestion);
 				//STEP2
 				HttpClient httpclient = HttpClients.createDefault();
-				HttpPost httppost = new HttpPost("http://tag.ontotext.com/ces-en/extract");
+				HttpPost httppost = new HttpPost("https://tag.ontotext.com/ces-en/extract");
 				httppost.addHeader("X-JwtToken", "<JWT Token goes here>");
 				httppost.addHeader("Accept", "application/vnd.ontotext.ces+json");
 				httppost.addHeader("Content-Type","text/plain");
