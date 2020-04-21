@@ -12,11 +12,11 @@
         within questions.
     </p>
     <p>
-        Example:"What is the real name of Catwoman?"
-        In this case the name 'Catwoman' can be found in the DBpedie triplestore.<br>
-        After recognizing the name as a BDpedia entity the component creates an annotation containing the start and
+        Example: &quot;What is the real name of Catwoman?&quot;
+        In this case the name &quot;Catwoman&quot; can be found in the DBpedia knowledge base.<br>
+        After recognizing the name as a DBpedia entity the component creates an annotation containing the start and
         end index of the recognized name within the question
-        and writes it to the triplestore used for this pipeline.<br>
+        and stores it into the Qanary triplestore used for the current pipeline.<br>
         It does this by iterating through a list of comic character entities on DBpedia and checking
         if the question contains one of the names.
     </p>
