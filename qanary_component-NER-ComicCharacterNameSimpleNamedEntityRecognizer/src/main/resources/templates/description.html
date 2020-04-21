@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>ComicCharacterNameSimpleNamedEntityRecognizer: Qanary Service Status page</title> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <h1>ComicCharacterNameSimpleNamedEntityRecognizer</h1>
+    <p th:text="'Hello World, this is my first Qanary service!'" />
+    <p>
+        This is a Qanary component meant for recognizing and annotating DBpedia's Comic Character entities
+        within questions.
+    </p>
+    <p>
+        Example: &quot;What is the real name of Catwoman?&quot;
+        In this case the name &quot;Catwoman&quot; can be found in the DBpedia knowledge base.<br>
+        After recognizing the name as a DBpedia entity the component creates an annotation containing the start and
+        end index of the recognized name within the question
+        and stores it into the Qanary triplestore used for the current pipeline.<br>
+        It does this by iterating through a list of comic character entities on DBpedia and checking
+        if the question contains one of the names.
+    </p>
+    <p>
+        The component is meant to be used mainly for learning purposes and is designed to work
+        in a question answering pipeline together with qanary_component-QB-ComicCharacterAlterEgoSimpleDBpediaQueryBuilder.
+    </p>
+    <p>
+        Although it was originally implemented as a Named Entity Recognizer it also offers functionality
+        to store the resource link of named entities. A possible expansion for this component would be to include Named Entity Disambiguation.
+    </p>
+    <p>
+        Please visit <a href="https://github.com/WDAqua/Qanary/">Qanary on GitHub</a> to find out more about the Qanary framework. <br>
+        You can read more about Qanary pipeline components <a href="https://github.com/WDAqua/Qanary-question-answering-components/blob/master/README.md">here</a>.
+    </p>
+</body>
+</html>

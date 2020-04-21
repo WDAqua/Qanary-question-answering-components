@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>ComicCharacterAlterEgoSimpleDBpediaQueryBuilder: Qanary Service Status page</title> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <h1>ComicCharacterAlterEgoSimpleDBpediaQueryBuilder</h1>
+    <p th:text="'find the real name of fictional characters in questions'" />
+    <p>
+        This is a Qanary component that creates SPARQL queries that can be used to find the real names of fictional characters
+        in questions beginning with &quot;what is the real name of&quot;.
+    </p>
+    <p>
+        Example: &quot;What is the real name of Catwoman?&quot;<br>
+        Since the question begins with the specified prefix &quot;what is the real name of&quot;, it looks for annotations for
+        named Entities within this question that other components have stored in the triplestore.
+        If such an annotation exists this component can find the recognized name and use it to generate the query that is
+        the result of this process.<br>
+        The query itself is relatively generic. However, based on the name found in the question the component adds a filter to the query, s.t.,
+        it only shows relevant results.
+        This means that this component can only provide a possible solution, without any guarantee that the query will return an answer.
+    </p>
+    <p>
+        This query builder is meant to be mainly used for learning purposes and is designed to work
+        in a Qanary Question Answering pipeline together with qanary_component-NER-ComicCharacterNameSimpleNamedEntityRecognizer.
+    </p>
+    <p>
+        As suggested by the name this component was originally built to generate queries for the DBpedia knowledge base.
+        However, because it utilizes filters based on names and not on resource links it should be possible to
+        expand this component to generate Wikidata queries too.
+    </p>
+    <p>
+        Please visit <a href="https://github.com/WDAqua/Qanary/">Qanary on GitHub</a> to find out more about the Qanary framework. <br>
+        You can read more about Qanary pipeline components <a href="https://github.com/WDAqua/Qanary-question-answering-components/blob/master/README.md">here</a>.
+    </p>
+</body>
+</html>
