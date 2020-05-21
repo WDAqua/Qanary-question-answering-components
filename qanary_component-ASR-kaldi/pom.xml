@@ -12,7 +12,7 @@
         <version>2.1.6.RELEASE</version>
     </parent>
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>1.11</java.version>
         <qanary.version>[2.0.0,3.0.0)</qanary.version>
         <docker.image.prefix>qanary</docker.image.prefix>
         <docker.image.name>qanary_component-asr-kaldi</docker.image.name>
