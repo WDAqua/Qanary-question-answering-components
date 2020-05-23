@@ -1,5 +1,6 @@
 package TestQanaryServiceController;
 
+import eu.wdaqua.qanary.StanfordNER.Application;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
 import eu.wdaqua.qanary.component.QanaryService;
@@ -23,7 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.SpringApplicationContextLoader;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -37,7 +38,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import net.minidev.json.JSONObject;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { QanaryService.class }, loader = SpringApplicationContextLoader.class)
+@SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 public class TestQanaryServiceController {
 
