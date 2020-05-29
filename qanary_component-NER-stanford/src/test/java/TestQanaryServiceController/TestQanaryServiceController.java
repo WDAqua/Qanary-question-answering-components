@@ -155,13 +155,16 @@ public class TestQanaryServiceController {
 		JSONObject jsonObject = new JSONObject();
 		// TODO: replace key by URLs of the qa commons
 		jsonObject.put(QanaryConfiguration.endpointKey, testEndPoint);
-		jsonObject.put("ingraph", testInGraph);
-		jsonObject.put("outgraph", testOutGraph);
+		jsonObject.put("urn:qanary#inGraph", testInGraph);
+		jsonObject.put("urn:qanary#outGraph", testOutGraph);
+
+		JSONObject jsonObject1 = new JSONObject();
+		jsonObject1.put("values",jsonObject);
 
 		// create message from json string
 		QanaryMessage message;
 		try {
-			message = new QanaryMessage(jsonObject.toJSONString());
+			message = new QanaryMessage(jsonObject1.toJSONString());
 
 			URI endpointKeyUrlFromMessage = message.getEndpoint();
 			Assert.notNull(endpointKeyUrlFromMessage);
