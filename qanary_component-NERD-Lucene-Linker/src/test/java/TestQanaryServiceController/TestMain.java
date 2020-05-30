@@ -2,6 +2,7 @@ package TestQanaryServiceController;
 
 import eu.wdaqua.qanary.LuceneLinker.Index;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import static org.junit.Assert.fail;
 public class TestMain {
 
 	@Test
+	@Ignore
 	public void test() throws URISyntaxException, IOException {
 		Index index = new Index("");
 		//LuceneLinker l = new  LuceneLinker();
