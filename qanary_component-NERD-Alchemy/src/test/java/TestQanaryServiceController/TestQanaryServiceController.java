@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 
 import javax.inject.Inject;
 
+import eu.wdaqua.qanary.alchemy.Alchemy;
 import javafx.application.Application;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -39,7 +40,7 @@ import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
 import eu.wdaqua.qanary.component.QanaryServiceController;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = Application.class)
+@SpringBootTest(classes = Alchemy.class)
 @WebAppConfiguration
 public class TestQanaryServiceController {
 
