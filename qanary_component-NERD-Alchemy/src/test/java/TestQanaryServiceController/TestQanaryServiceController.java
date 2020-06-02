@@ -15,7 +15,6 @@ import java.util.Map.Entry;
 import javax.inject.Inject;
 
 import eu.wdaqua.qanary.alchemy.Alchemy;
-import javafx.application.Application;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
