@@ -79,7 +79,7 @@ public class TestQanaryServiceController {
 	 * QanaryConfiguration.annotatequestion, check if the values are the same
 	 */
 	@Test
-	@Ignore // this test cannot be executed as the triplestore needs to be mocked first
+	@Ignore //TODO this test cannot be executed as the triplestore needs to be mocked first
 	public void testMessageReceiveAndSend() {
 
 		QanaryMessage requestMessage;
@@ -147,13 +147,6 @@ public class TestQanaryServiceController {
 			fail(e.getMessage());
 		}
 
-	}
-
-	@Test
-	public void testAnnotation() {
-
-		// QanaryMessage message = new QanaryMessage()
-		// mockMvc.perform
 	}
 
 }
