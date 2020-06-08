@@ -73,7 +73,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass><!--main class location--></mainClass>
+                    <mainClass>eu.wdaqua.qanary.sina.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>
