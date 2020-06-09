@@ -5,3 +5,9 @@
 **/.project
 **/.classpath
 **/*.jar
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
