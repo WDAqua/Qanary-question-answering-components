@@ -1,4 +1,5 @@
-package eu.wdaqua.qanary.component.querybuilder;
+package eu.wdaqua.qanary.component.ner;
+
 
 import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.endpointKey;
 import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.inGraphKey;
@@ -21,8 +22,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -40,8 +39,6 @@ import eu.wdaqua.qanary.component.QanaryServiceController;
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 public class TestQanaryServiceController {
-
-	private static final Logger logger = LoggerFactory.getLogger(TestQanaryServiceController.class);
 
 	@Inject
 	QanaryServiceController controller;
@@ -64,8 +61,6 @@ public class TestQanaryServiceController {
 
 	/**
 	 * test description interface
-	 * 
-	 * @throws Exception
 	 */
 	@Test
 	public void testDescriptionAvailable() throws Exception {
@@ -128,7 +123,7 @@ public class TestQanaryServiceController {
 	 */
 	@Test
 	public void testMessageFromJson() {
-		// create message from json string
+		// create message from JSON string
 		QanaryMessage message;
 		try {
 			message = new QanaryMessage(new URI(endpointKey), new URI(inGraphKey), new URI(outGraphKey));
@@ -147,12 +142,5 @@ public class TestQanaryServiceController {
 		}
 
 	}
-
-	@Test
-	public void testAnnotation() {
-
-		// QanaryMessage message = new QanaryMessage()
-		// mockMvc.perform
-	}
-
 }
+

@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.component.querybuilder;
+package eu.wdaqua.qanary.component.ner;
 
 import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;

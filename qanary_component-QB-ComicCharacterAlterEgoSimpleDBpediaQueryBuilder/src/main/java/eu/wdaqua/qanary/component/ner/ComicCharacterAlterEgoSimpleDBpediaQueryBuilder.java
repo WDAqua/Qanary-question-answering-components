@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.component.querybuilder;
+package eu.wdaqua.qanary.component.ner;
 
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
