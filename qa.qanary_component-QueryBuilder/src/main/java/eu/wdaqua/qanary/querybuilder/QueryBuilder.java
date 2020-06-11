@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -281,7 +282,7 @@ public class QueryBuilder extends QanaryComponent {
 	 * @param myQanaryQuestion
 	 * @return
 	 */
-	private List<String> getClassesFromQanaryKB(QanaryUtils myQanaryUtils, QanaryQuestion<String> myQanaryQuestion) {
+	private List<String> getClassesFromQanaryKB(QanaryUtils myQanaryUtils, QanaryQuestion<String> myQanaryQuestion) throws SparqlQueryFailed {
 		List<String> classes = new ArrayList<String>();
 		String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
 				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
@@ -315,7 +316,7 @@ public class QueryBuilder extends QanaryComponent {
 	 * @param myQanaryQuestion
 	 * @return
 	 */
-	private List<String> getPropertiesFromQanaryKB(QanaryUtils myQanaryUtils, QanaryQuestion<String> myQanaryQuestion) {
+	private List<String> getPropertiesFromQanaryKB(QanaryUtils myQanaryUtils, QanaryQuestion<String> myQanaryQuestion) throws SparqlQueryFailed {
 		List<String> properties = new ArrayList<String>();
 
 		String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
@@ -348,7 +349,7 @@ public class QueryBuilder extends QanaryComponent {
 	 * @param myQanaryQuestion
 	 * @return
 	 */
-	private List<String> getEntitiesFromQanaryKB(QanaryUtils myQanaryUtils, QanaryQuestion<String> myQanaryQuestion) {
+	private List<String> getEntitiesFromQanaryKB(QanaryUtils myQanaryUtils, QanaryQuestion<String> myQanaryQuestion) throws SparqlQueryFailed {
 		List<String> entities = new ArrayList<String>();
 
 		String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
