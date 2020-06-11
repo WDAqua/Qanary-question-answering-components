@@ -151,12 +151,5 @@ public class TestQanaryServiceController {
 
 	}
 
-	@Test
-	public void testAnnotation() {
-
-		// QanaryMessage message = new QanaryMessage()
-		// mockMvc.perform
-	}
-
 }
 
