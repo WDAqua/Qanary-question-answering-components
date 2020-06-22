@@ -155,7 +155,7 @@ public class ComicCharacterNameSimpleNamedEntityRecognizer extends QanaryCompone
 					+ "          oa:end  \"" + foundSuperhero.getEndIndex() + "\"^^xsd:nonNegativeInteger  " //
 					+ "       ] " //
 					+ "     ] ; " //
-					+ "     oa:annotatedBy <urn:qanary:component:ComicCharacterNameSimpleNamedEntityRecognizer> ; " //
+					+ "     oa:annotatedBy <urn:qanary:component:"+ComicCharacterNameSimpleNamedEntityRecognizer.class.getName()+"> ; " //
 					+ "	    oa:AnnotatedAt ?time  " //
 					+ "}} " //
 					+ "WHERE { " //
