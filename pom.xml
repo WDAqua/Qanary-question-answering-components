@@ -17,7 +17,7 @@
 			<modules>
                             <!-- <module>qanary_component-template</module> -->
                             <module>qanary_component-ASR-kaldi</module>
-                            <module>qanary_component-LD-Shuyo</module>
+			    <!-- <module>qanary_component-LD-Shuyo</module> -->
                             <module>qanary_component-NER-stanford</module>
                             <module>qanary_component-NER-DBpedia-Spotlight</module>
                             <module>qanary_component-NER-FOX</module>
