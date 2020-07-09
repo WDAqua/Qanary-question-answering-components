@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 
 import javax.inject.Inject;
 
+import eu.wdaqua.qanary.agdistis.Application;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -20,13 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.Assert;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.endpointKey;
@@ -36,8 +35,6 @@ import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.outGraphKey;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
 import eu.wdaqua.qanary.component.QanaryServiceController;
-import eu.wdaqua.qanary.agdistis.Application;
-import net.minidev.json.JSONObject;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -53,7 +50,7 @@ public class TestQanaryServiceController {
 
 	/**
 	 * initialize local controller enabled for tests
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Before
@@ -67,6 +64,8 @@ public class TestQanaryServiceController {
 
 	/**
 	 * test description interface
+	 *
+	 * @throws Exception
 	 */
 	@Test
 	public void testDescriptionAvailable() throws Exception {
@@ -80,7 +79,7 @@ public class TestQanaryServiceController {
 	 * QanaryConfiguration.annotatequestion, check if the values are the same
 	 */
 	@Test
-	@Ignore // this test cannot be executed as the triplestore needs to be mocked first
+	@Ignore //TODO this test cannot be executed as the triplestore needs to be mocked first
 	public void testMessageReceiveAndSend() {
 
 		QanaryMessage requestMessage;
@@ -148,13 +147,6 @@ public class TestQanaryServiceController {
 			fail(e.getMessage());
 		}
 
-	}
-
-	@Test
-	public void testAnnotation() {
-
-		// QanaryMessage message = new QanaryMessage()
-		// mockMvc.perform
 	}
 
 }
