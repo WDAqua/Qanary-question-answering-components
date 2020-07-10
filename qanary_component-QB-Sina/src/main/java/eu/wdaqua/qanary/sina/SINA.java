@@ -1,15 +1,13 @@
 package eu.wdaqua.qanary.sina;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.InputStreamReader;
-
+import java.io.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -27,7 +25,14 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  *      target="_top">Github wiki howto</a>
  */
 public class SINA extends QanaryComponent {
+
+	private ResourceLoader resourceLoader;
 	private static final Logger logger = LoggerFactory.getLogger(SINA.class);
+
+	public SINA() {
+		this.resourceLoader = new DefaultResourceLoader();
+		;
+	}
 
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
@@ -38,7 +43,7 @@ public class SINA extends QanaryComponent {
 	@Override
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("process: {}", myQanaryMessage);
-		// TODO: implement processing of question
+
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
 		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage);
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
@@ -74,7 +79,7 @@ public class SINA extends QanaryComponent {
 
 			entityTemp.uri = s.getResource("uri").getURI();
 			argument += entityTemp.uri + ", ";
-			System.out.println("Getting inside================");
+
 			logger.info("uri:start:end info {}", entityTemp.uri + entityTemp.begin + entityTemp.end);
 		}
 		// relation fetch from triplestore
@@ -129,34 +134,36 @@ public class SINA extends QanaryComponent {
 			logger.info("uri info {}", s.getResource("uri").getURI());
 		}
 
-		logger.info("Sina Argument: {}", argument+": "+argument.length());
+		logger.info("Sina Arguments: {}", argument+": "+argument.length());
 		logger.info("Sina Argument Count: {}",StringUtils.countMatches(argument, "dbpedia"));
 		
 		if(argument.length() > 2 && StringUtils.countMatches(argument, "dbpedia") <=3 ) {
 			argument = argument.substring(0, argument.length() - 2);
 
-			ProcessBuilder pb = new ProcessBuilder("java", "-jar", "qanary_component-QB-Sina/src/main/resources/sina-0.0.1.jar", argument);
+			String path = new File(System.getProperty("java.class.path")).getParentFile().getAbsolutePath();
+			String sinaJar = path+"/sina-0.0.1.jar";
 
-			File output = new File("qanary_component-QB-Sina/src/main/resources/sinaoutput.txt");
+			logger.info("Path to sina jar file"+sinaJar);
 
-			pb.redirectOutput(output);
+			ProcessBuilder pb = new ProcessBuilder("java", "-jar", sinaJar, argument);
+
 			Process p = pb.start();
 			p.waitFor();
-			p.destroy();
+
 			String outputRetrived = "";
 			String line = "";
-			System.out.println("file data ===========================");
-			BufferedReader br = new BufferedReader(new FileReader(new File("qanary_component-QB-Sina/src/main/resources/sinaoutput.txt")));
+
+			BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			while ((line = br.readLine()) != null) {
 				outputRetrived += line;
-				System.out.println(line);
 			}
 			br.close();
+			p.destroy();
 
-			System.out.println("The retrived output : " + outputRetrived);
+			logger.debug("The retrived output : " + outputRetrived);
 			String ar = outputRetrived
 					.substring(outputRetrived.indexOf("list of final templates:") + "list of final templates:".length());
-			// logger.info("Check {}", result);
+
 			logger.info("Result {}", ar);
 			ar = ar.trim();
 			ar = ar.substring(1, ar.length() - 1);
@@ -189,22 +196,9 @@ public class SINA extends QanaryComponent {
 		return myQanaryMessage;
 	}
 	class Entity {
-
 		public int begin;
 		public int end;
 		public String namedEntity;
 		public String uri;
-
-		public void print() {
-			System.out.println("Start: " + begin + "\t End: " + end + "\t Entity: " + namedEntity);
-		}
-	}
-
-	private static BufferedReader getOutput(Process p) {
-		return new BufferedReader(new InputStreamReader(p.getInputStream()));
-	}
-
-	private static BufferedReader getError(Process p) {
-		return new BufferedReader(new InputStreamReader(p.getErrorStream()));
 	}
 }
