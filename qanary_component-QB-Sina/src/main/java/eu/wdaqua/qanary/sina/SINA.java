@@ -45,7 +45,7 @@ public class SINA extends QanaryComponent {
 	public SINA(@Value("${sina.jarfilelocation}") String sinaJarFileLocation) throws IOException, InterruptedException {
 		logger.info("sina.jarfilelocation: {}", sinaJarFileLocation);
 		this.sinaJarFileLocation = this.getValidSinaJarFileAbsoluteLocation(sinaJarFileLocation);
-		this.executeExternalSinaJarFile("http://dbpedia.org/resource/Berlin");
+		//this.executeExternalSinaJarFile("http://dbpedia.org/resource/Berlin");
 	}
 		
 	/**
