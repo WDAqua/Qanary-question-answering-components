@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary_component-QB-Sina</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -74,6 +74,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>eu.wdaqua.qanary.sina.Application</mainClass>
+                    <!--<includeSystemScope>true</includeSystemScope>-->
                 </configuration>
                 <executions>
                     <execution>
@@ -83,10 +84,12 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
             <!-- https://github.com/spotify/dockerfile-maven -->
             <!-- build Docker image: mvn dockerfile:build  -->
             <plugin>
@@ -109,6 +112,30 @@
                         <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
                     </buildArgs>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}</outputDirectory>   <!-- output directory -->
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/resources</directory>   <!-- source directory -->
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>sina-0.0.1.jar</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
