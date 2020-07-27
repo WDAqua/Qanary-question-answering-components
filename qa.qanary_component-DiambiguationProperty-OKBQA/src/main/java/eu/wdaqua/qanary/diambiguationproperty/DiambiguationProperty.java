@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.jena.query.ResultSet;
 import org.json.simple.JSONArray;
@@ -121,7 +122,7 @@ public class DiambiguationProperty extends QanaryComponent {
 	 * component
 	 */
 	@Override
-	public QanaryMessage process(QanaryMessage myQanaryMessage) {
+	public QanaryMessage process(QanaryMessage myQanaryMessage) throws SparqlQueryFailed {
 		long startTime = System.currentTimeMillis();
 		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
 		logger.info("process: {}", myQanaryMessage);

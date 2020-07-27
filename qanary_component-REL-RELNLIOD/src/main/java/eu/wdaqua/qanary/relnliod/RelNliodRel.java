@@ -41,7 +41,6 @@ import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.relnliod.DbpediaRecorodProperty;
-import javassist.bytecode.Descriptor.Iterator;
 
 @Component
 /**
