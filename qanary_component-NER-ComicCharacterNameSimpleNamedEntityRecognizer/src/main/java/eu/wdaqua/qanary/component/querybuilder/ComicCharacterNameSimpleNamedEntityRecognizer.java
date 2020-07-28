@@ -17,6 +17,7 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -105,6 +106,9 @@ public class ComicCharacterNameSimpleNamedEntityRecognizer extends QanaryCompone
 		return nameIndex;
 	}
 
+	@Value("${spring.application.name}")
+	private String applicationName;
+
 	/**
 	 * process the provided message from the Qanary pipeline this method is the
 	 * entry point of this Qanary component
@@ -155,7 +159,7 @@ public class ComicCharacterNameSimpleNamedEntityRecognizer extends QanaryCompone
 					+ "          oa:end  \"" + foundSuperhero.getEndIndex() + "\"^^xsd:nonNegativeInteger  " //
 					+ "       ] " //
 					+ "     ] ; " //
-					+ "     oa:annotatedBy <urn:qanary:component:"+ComicCharacterNameSimpleNamedEntityRecognizer.class.getName()+"> ; " //
+					+ "     oa:annotatedBy <urn:qanary:component:"+this.applicationName+"> ; " //
 					+ "	    oa:AnnotatedAt ?time  " //
 					+ "}} " //
 					+ "WHERE { " //
