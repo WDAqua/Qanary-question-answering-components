@@ -207,10 +207,11 @@ public class TagmeNED extends QanaryComponent {
                     + "           ] " //
                     + "  ] . " //
                     + "  ?a oa:hasBody <" + l.link + "> ;" //
-                    + "     oa:annotatedBy <https:tagmeNED.com> ; " //
-                    + "	    oa:AnnotatedAt ?time  " + "}} " //
+                    + "     oa:annotatedBy <urn:qanary:NED#" + TagmeNED.class.getName() + ">  ; " //
+                    + "	    oa:annotatedAt ?time  " //
+                    + "}} " //
                     + "WHERE { " //
-                    + "  BIND (IRI(str(RAND())) AS ?a) ."//
+                    + "  BIND (IRI(str(RAND())) AS ?a) ." //
                     + "  BIND (now() as ?time) " //
                     + "}";
             logger.debug("Sparql query: {}", sparql);
