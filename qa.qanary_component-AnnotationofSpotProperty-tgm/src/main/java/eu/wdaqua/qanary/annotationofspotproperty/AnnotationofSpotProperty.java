@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -192,25 +191,25 @@ public class AnnotationofSpotProperty extends QanaryComponent {
 		logger.info("apply vocabulary alignment on outgraph");
 		// TODO: implement this (custom for every component)
 		for (String urls : dbLinkListSet) {
-			 String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
-	                 + "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
-	                 + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> "
-	                 + "prefix dbp: <http://dbpedia.org/property/> "
-	                 + "INSERT { "
-	                 + "GRAPH <" +  myQanaryQuestion.getOutGraph()  + "> { "
-	                 + "  ?a a qa:AnnotationOfClass . "
-	                 + "  ?a oa:hasTarget [ "
-	                 + "           a    oa:SpecificResource; "
-	                 + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; "
-	                 + "  ] ; "
-	                 + "     oa:hasBody <" + urls + "> ;" 
-	                 + "     oa:annotatedBy "+this.applicationName+" ; "
-	                 + "	    oa:AnnotatedAt ?time  "
-	                 + "}} "
-	                 + "WHERE { "
-	                 + "BIND (IRI(str(RAND())) AS ?a) ."
-	                 + "BIND (now() as ?time) "
-	                 + "}";
+			 String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> " //
+	                 + "prefix oa: <http://www.w3.org/ns/openannotation/core/> " //
+	                 + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " //
+	                 + "prefix dbp: <http://dbpedia.org/property/> " //
+	                 + "INSERT { " //
+	                 + "GRAPH <" +  myQanaryQuestion.getOutGraph()  + "> { " //
+	                 + "  ?a a qa:AnnotationOfClass . " //
+	                 + "  ?a oa:hasTarget [ " //
+	                 + "           a    oa:SpecificResource; " //
+	                 + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
+	                 + "  ] ; " //
+	                 + "     oa:hasBody <" + urls + "> ;" //
+	                 + "     oa:annotatedBy "+this.applicationName+" ; " //
+	                 + "	    oa:AnnotatedAt ?time  " //
+	                 + "}} " //
+	                 + "WHERE { " //
+	                 + "BIND (IRI(str(RAND())) AS ?a) ." //
+	                 + "BIND (now() as ?time) " //
+	                 + "}"; //
 	         logger.info("Sparql query {}", sparql);
 	         myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString()); 
 	    }

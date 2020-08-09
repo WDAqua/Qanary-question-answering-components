@@ -26,6 +26,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -45,6 +46,11 @@ import eu.wdaqua.qanary.component.QanaryComponent;
 public class DiambiguationClass extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(DiambiguationClass.class);
 
+	private final String applicationName;
+
+	public DiambiguationClass(@Value("${spring.application.name}") final String applicationName) {
+		this.applicationName = applicationName;
+	}
 	public static String runCurlGetWithParam(String weburl, String data, String contentType)
 			throws ClientProtocolException, IOException {
 		String xmlResp = "";
@@ -274,13 +280,22 @@ public class DiambiguationClass extends QanaryComponent {
 			int count = 0;
 			for (String urls : allUrls.keySet()) {
 				System.out.println("Inside : Literal: " + urls);
-				sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
-						+ "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
-						+ "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " + "INSERT { " + "GRAPH <" + namedGraph+ "> { " + " ?a a qa:AnnotationOfClass . " + " ?a oa:hasTarget [ " + " a oa:SpecificClass; "
-						+ " oa:hasSource <" + uriQuestion + ">; " + " ] . " + " ?a oa:hasBody <" + urls + "> ;"
-						+ " oa:annotatedBy <http://okbqa.disambiguationclass.com> ; " + " oa:AnnotatedAt ?time "
-						+ "}} " + "WHERE { "
-						+ "BIND (IRI(str(RAND())) AS ?a) ." + "BIND (now() as ?time) " + "}";
+				sparql = "prefix qa: <http://www.wdaqua.eu/qa#> " //
+						+ "prefix oa: <http://www.w3.org/ns/openannotation/core/> " //
+						+ "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " //
+						+ "INSERT { " + "GRAPH <" + namedGraph+ "> { "  //
+						+ " ?a a qa:AnnotationOfClass . " //
+						+ " ?a oa:hasTarget [ " //
+						+ " 	a oa:SpecificClass; " //
+						+ " 	oa:hasSource <" + uriQuestion + ">; " //
+						+ " ] . " //
+						+ " ?a oa:hasBody <" + urls + "> ;" //
+						+ " oa:annotatedBy "+this.applicationName+" ; " //
+						+ " oa:AnnotatedAt ?time " //
+						+ "}} " + "WHERE { "//
+						+ "BIND (IRI(str(RAND())) AS ?a) ." //
+						+ "BIND (now() as ?time) " //
+						+ "}";//
 				logger.info("Sparql query {}", sparql);
 				loadTripleStore(sparql, endpoint);
 				count++;
