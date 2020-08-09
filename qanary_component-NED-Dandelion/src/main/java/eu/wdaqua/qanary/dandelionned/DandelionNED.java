@@ -25,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -43,6 +44,12 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  */
 public class DandelionNED extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(DandelionNED.class);
+
+	private final String applicationName;
+
+	public DandelionNED(@Value("${spring.application.name}") final String applicationName) {
+		this.applicationName = applicationName;
+	}
 
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
@@ -191,7 +198,7 @@ public class DandelionNED extends QanaryComponent {
                     + "           ] " //
                     + "  ] . " //
                     + "  ?a oa:hasBody <" + l.link + "> ;" //
-                    + "     oa:annotatedBy <https://DandilionNED.com> ; " //
+                    + "     oa:annotatedBy "+this.applicationName+" ; " //
                     + "	    oa:AnnotatedAt ?time  " + "}} " //
                     + "WHERE { " //
                     + "  BIND (IRI(str(RAND())) AS ?a) ."//
