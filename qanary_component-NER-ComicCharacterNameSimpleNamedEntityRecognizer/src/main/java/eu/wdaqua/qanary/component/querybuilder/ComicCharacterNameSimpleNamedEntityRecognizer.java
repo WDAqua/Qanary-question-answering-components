@@ -17,6 +17,7 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -31,6 +32,12 @@ import org.springframework.stereotype.Component;
  */
 public class ComicCharacterNameSimpleNamedEntityRecognizer extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(ComicCharacterNameSimpleNamedEntityRecognizer.class);
+
+	private final String applicationName;
+
+	public ComicCharacterNameSimpleNamedEntityRecognizer(@Value("${spring.application.name}") final String applicationName){
+		this.applicationName = applicationName;
+	}
 
 	/**
 	 * try to find a superhero name in the given question using a trivial string
@@ -140,27 +147,27 @@ public class ComicCharacterNameSimpleNamedEntityRecognizer extends QanaryCompone
 			logger.info("inserting annotation with start: {}, end: {}", //
 					foundSuperhero.getBeginIndex(), foundSuperhero.getEndIndex());
 			String sparqlInsert = "" //
-					+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-					+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-					+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-					+ "INSERT { " //
-					+ "GRAPH <" + qanaryQuestion.getOutGraph() + "> { " //
-					+ "  ?a a qa:AnnotationOfSpotInstance . " //
-					+ "  ?a oa:hasTarget [ " //
-					+ "       a    oa:SpecificResource; " //
-					+ "       oa:hasSource    <" + qanaryQuestion.getUri() + ">; " //
-					+ "       oa:hasSelector  [ " //
+					+ "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
+					+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> \n" //
+					+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n" //
+					+ "INSERT { \n" //
+					+ "GRAPH <" + qanaryQuestion.getOutGraph() + "> { \n" //
+					+ "  ?a a qa:AnnotationOfSpotInstance . \n" //
+					+ "  ?a oa:hasTarget [ \n" //
+					+ "       a    oa:SpecificResource; \n" //
+					+ "       oa:hasSource    <" + qanaryQuestion.getUri() + ">; \n" //
+					+ "       oa:hasSelector  [ \n" //
 					+ "          a oa:TextPositionSelector ; " //
-					+ "          oa:start \"" + foundSuperhero.getBeginIndex() + "\"^^xsd:nonNegativeInteger ; " //
-					+ "          oa:end  \"" + foundSuperhero.getEndIndex() + "\"^^xsd:nonNegativeInteger  " //
-					+ "       ] " //
-					+ "     ] ; " //
-					+ "     oa:annotatedBy <urn:qanary:component:"+ComicCharacterNameSimpleNamedEntityRecognizer.class.getName()+"> ; " //
-					+ "	    oa:AnnotatedAt ?time  " //
-					+ "}} " //
-					+ "WHERE { " //
-					+ "  BIND (IRI(str(RAND())) AS ?a) ." //
-					+ "  BIND (now() as ?time) " //
+					+ "          oa:start \"" + foundSuperhero.getBeginIndex() + "\"^^xsd:nonNegativeInteger ; \n" //
+					+ "          oa:end  \"" + foundSuperhero.getEndIndex() + "\"^^xsd:nonNegativeInteger  \n" //
+					+ "       ] \n" //
+					+ "     ] ; \n" //
+					+ "     oa:annotatedBy <urn:qanary:component:"+this.applicationName+"> ; \n" //
+					+ "	    oa:AnnotatedAt ?time  \n" //
+					+ "}} \n" //
+					+ "WHERE { \n" //
+					+ "  BIND (IRI(str(RAND())) AS ?a) .\n" //
+					+ "  BIND (now() as ?time) \n" //
 					+ "}"; //
 
 			qanaryUtils.updateTripleStore(sparqlInsert, triplestore);
