@@ -4,6 +4,7 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -29,6 +30,11 @@ import eu.wdaqua.qanary.component.QanaryComponent;
 public class ComicCharacterAlterEgoSimpleDBpediaQueryBuilder extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(ComicCharacterAlterEgoSimpleDBpediaQueryBuilder.class);
 
+	private final String applicationName;
+
+	public ComicCharacterAlterEgoSimpleDBpediaQueryBuilder(@Value("${spring.application.name}") final String applicationName) {
+		this.applicationName = applicationName;
+	}
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
 	 * component
@@ -70,7 +76,7 @@ public class ComicCharacterAlterEgoSimpleDBpediaQueryBuilder extends QanaryCompo
 				"                                     oa:end   ?endOfSpecificResource " +
 				"                                    ]" +
 				"                  ] ." +
-				"    ?a oa:annotatedBy ?annotatorComponent . " +
+				"    ?a oa:annotatedBy "+this.applicationName+" . " +
 				"    ?a oa:AnnotatedAt ?time ." +
 				"}";
 
