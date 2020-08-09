@@ -12,11 +12,18 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Monolitic extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(Monolitic.class);
+
+	private final String applicationName;
+
+	public Monolitic(@Value("${spring.application.name}") final String applicationName) {
+		this.applicationName = applicationName;
+	}
 
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
@@ -67,12 +74,12 @@ public class Monolitic extends QanaryComponent {
                 + "  ?a a qa:AnnotationOfAnswerSPARQL . "
                 + "  ?a oa:hasTarget <URIAnswer> . "
                 + "  ?a oa:hasBody \"" + sparqlAnswer.replace("\n", " ") + "\" ;"
-                + "     oa:annotatedBy <http://monolitic-component.org> ; "
+                + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; "
                 + "	    oa:AnnotatedAt ?time . "
                 + "  ?b a qa:AnnotationOfAnswerJSON . "
                 + "  ?b oa:hasTarget <URIAnswer> . "
                 + "  ?b oa:hasBody \"" + json.replace("\n", " ").replace("\"", "\\\"") + "\" ;"
-                + "     oa:annotatedBy <http://monolitic-component.org> ; "
+                + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; "
                 + "	    oa:annotatedAt ?time  "
                 + "}} "
                 + "WHERE { "

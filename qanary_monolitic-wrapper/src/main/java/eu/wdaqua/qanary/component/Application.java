@@ -1,5 +1,6 @@
 package eu.wdaqua.qanary.component;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,8 +27,8 @@ public class Application {
 	* @return
 	*/
 	@Bean
-	public QanaryComponent qanaryComponent() {
-		return new Monolitic();
+	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
+		return new Monolitic(applicationName);
 	}
 	
 	
