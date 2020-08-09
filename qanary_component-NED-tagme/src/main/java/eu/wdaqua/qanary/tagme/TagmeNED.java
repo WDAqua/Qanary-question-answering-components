@@ -214,7 +214,7 @@ public class TagmeNED extends QanaryComponent {
                     + "           ] " //
                     + "  ] . " //
                     + "  ?a oa:hasBody <" + l.link + "> ;" //
-                    + "     oa:annotatedBy "+this.applicationName+" ; " //
+                    + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
                     + "	    oa:AnnotatedAt ?time  " + "}} " //
                     + "WHERE { " //
                     + "  BIND (IRI(str(RAND())) AS ?a) ."//

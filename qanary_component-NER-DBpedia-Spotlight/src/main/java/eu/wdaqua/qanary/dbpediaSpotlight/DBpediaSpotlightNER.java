@@ -10,8 +10,10 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.jena.vocabulary.DB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -33,6 +35,11 @@ import eu.wdaqua.qanary.component.QanaryComponent;
 public class DBpediaSpotlightNER extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(DBpediaSpotlightNER.class);
 
+    private final String applicationName;
+
+    public DBpediaSpotlightNER(@Value("${spring.application.name}") final String applicationName) {
+        this.applicationName = applicationName;
+    }
     /**
      * default processor of a QanaryMessage
      */
@@ -135,7 +142,7 @@ public class DBpediaSpotlightNER extends QanaryComponent {
             // STEP3: Pass the information to the component and execute it
             // logger.info("apply commons alignment on outgraph");
 
-            DBpediaSpotlightNER qaw = new DBpediaSpotlightNER();
+            DBpediaSpotlightNER qaw = new DBpediaSpotlightNER(applicationName);
 
             List<String> stEn = new ArrayList<String>();
             stEn = qaw.getResults(myQuestion);
@@ -152,27 +159,27 @@ public class DBpediaSpotlightNER extends QanaryComponent {
             //STEP4: Push the result of the component to the triplestore
 
             for (Selection s : selections) {
-                String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
-                        + "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
-                        + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> "
-                        + "INSERT { "
-                        + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { "
-                        + "  ?a a qa:AnnotationOfSpotInstance . "
-                        + "  ?a oa:hasTarget [ "
-                        + "           a    oa:SpecificResource; "
-                        + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; "
-                        + "           oa:hasSelector  [ "
-                        + "                    a oa:TextPositionSelector ; "
-                        + "                    oa:start \"" + s.begin + "\"^^xsd:nonNegativeInteger ; "
-                        + "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  "
-                        + "           ] "
-                        + "  ] ; "
-                        + "     oa:annotatedBy <http://spotlight.sztaki.hu:2222/rest/spot> ; "
-                        + "	    oa:AnnotatedAt ?time  "
-                        + "}} "
-                        + "WHERE { "
-                        + "BIND (IRI(str(RAND())) AS ?a) ."
-                        + "BIND (now() as ?time) "
+                String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> " //
+                        + "prefix oa: <http://www.w3.org/ns/openannotation/core/> " //
+                        + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " //
+                        + "INSERT { " //
+                        + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
+                        + "  ?a a qa:AnnotationOfSpotInstance . " //
+                        + "  ?a oa:hasTarget [ " //
+                        + "           a    oa:SpecificResource; " //
+                        + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
+                        + "           oa:hasSelector  [ " //
+                        + "                    a oa:TextPositionSelector ; " //
+                        + "                    oa:start \"" + s.begin + "\"^^xsd:nonNegativeInteger ; " //
+                        + "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " //
+                        + "           ] " //
+                        + "  ] ; " //
+                        + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " // <http://spotlight.sztaki.hu:2222/rest/spot>
+                        + "	    oa:AnnotatedAt ?time  " //
+                        + "}} " //
+                        + "WHERE { " //
+                        + "BIND (IRI(str(RAND())) AS ?a) ." //
+                        + "BIND (now() as ?time) " //
                         + "}";
                 myQanaryUtils.updateTripleStore(sparql, myQanaryQuestion.getEndpoint().toString());
             }

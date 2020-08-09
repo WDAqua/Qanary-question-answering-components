@@ -127,7 +127,7 @@ public class Dandelion extends QanaryComponent {
                     + "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " //
 					+ "           ] " //
                     + "  ] ; " //
-					+ "     oa:annotatedBy "+this.applicationName+" ; " //
+					+ "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
                     + "	    oa:AnnotatedAt ?time  " //
 					+ "}} " //
 					+ "WHERE { " //

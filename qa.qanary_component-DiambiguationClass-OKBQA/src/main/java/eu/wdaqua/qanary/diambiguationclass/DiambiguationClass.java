@@ -290,7 +290,7 @@ public class DiambiguationClass extends QanaryComponent {
 						+ " 	oa:hasSource <" + uriQuestion + ">; " //
 						+ " ] . " //
 						+ " ?a oa:hasBody <" + urls + "> ;" //
-						+ " oa:annotatedBy "+this.applicationName+" ; " //
+						+ " oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
 						+ " oa:AnnotatedAt ?time " //
 						+ "}} " + "WHERE { "//
 						+ "BIND (IRI(str(RAND())) AS ?a) ." //

@@ -123,7 +123,7 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 					// as it is rule based, a high confidence is expressed
 					+ "        ?newAnnotation qa:score \"1.0\"^^xsd:float ."
 					+ "        ?newAnnotation oa:annotatedAt ?time ." //
-					+ "        ?newAnnotation oa:annotatedBy "+this.applicationName+" ." //
+					+ "        ?newAnnotation oa:annotatedBy <urn:qanary:"+this.applicationName+"> ." //
 					+ "    }" //
 					+ "}" //
 					+ "WHERE {" //

@@ -205,7 +205,7 @@ BufferedWriter buffWriter = new BufferedWriter(new FileWriter("questions.txt", t
 	                 + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
 	                 + "  ] ; " //
 	                 + "     oa:hasBody <" + urls + "> ;" //
-	                 + "     oa:annotatedBy "+this.applicationName+" ; " //
+	                 + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
 	                 + "	    oa:AnnotatedAt ?time  " //
 	                 + "}} " //
 	                 + "WHERE { " //

@@ -281,7 +281,7 @@ public class DiambiguationProperty extends QanaryComponent {
 						+ " ?a a qa:AnnotationOfRelation . " + " ?a oa:hasTarget [ " + " a oa:SpecificResource; " // 
 						+ " oa:hasSource <" + uriQuestion + ">; " + " ] . " // 
 						+ " ?a oa:hasBody <" + urls + "> ;" // 
-						+ " oa:annotatedBy "+this.applicationName+" ; " //
+						+ " oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
 						+ " oa:annotatedAt ?time "
 						+ "}} " //
 						+ "WHERE { "  //

@@ -57,28 +57,27 @@ public class ComicCharacterAlterEgoSimpleDBpediaQueryBuilder extends QanaryCompo
 			return myQanaryMessage;
 		}
 
-		String getAnnotation = "" +
-				"PREFIX qa: <http://www.wdaqua.eu/qa#> " +
-				"PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " +
-				"SELECT ?a ?dbpediaResource ?startOfSpecificResource ?endOfSpecificResource ?annotatorComponent ?time " +
-				"FROM <" + myQanaryMessage.getInGraph().toString() + "> " +
-				"WHERE {" +
-				"   VALUES ?dbpediaResource {" +
-				"      <" + qanaryQuestion.getUri().toString() + ">" +
-				"   } ." +
-				"   ?a a qa:AnnotationOfSpotInstance ." +
-				"   ?a oa:hasTarget [" +
-				"                    a               oa:SpecificResource;" +
-				"                    oa:hasSource    ?dbpediaResource;" +
-				"                    oa:hasSelector  [ " +
-				"                                     a        oa:TextPositionSelector ; " +
-				"                                     oa:start ?startOfSpecificResource ; " +
-				"                                     oa:end   ?endOfSpecificResource " +
-				"                                    ]" +
-				"                  ] ." +
-				"    ?a oa:annotatedBy "+this.applicationName+" . " +
-				"    ?a oa:AnnotatedAt ?time ." +
-				"}";
+		String getAnnotation = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
+				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
+				+ "SELECT ?a ?dbpediaResource ?startOfSpecificResource ?endOfSpecificResource ?annotatorComponent ?time " //
+				+ "FROM <" + myQanaryMessage.getInGraph().toString() + "> " //
+				+ "WHERE {" //
+				+ "   VALUES ?dbpediaResource {" //
+				+ "      <" + qanaryQuestion.getUri().toString() + ">" //
+				+ "   } ." //
+				+ "   ?a a qa:AnnotationOfSpotInstance ." //
+				+ "   ?a oa:hasTarget [" //
+				+ "                    a               oa:SpecificResource;" //
+				+ "                    oa:hasSource    ?dbpediaResource;" //
+				+ "                    oa:hasSelector  [ " //
+				+ "                                     a        oa:TextPositionSelector ; " //
+				+ "                                     oa:start ?startOfSpecificResource ; " //
+				+ "                                     oa:end   ?endOfSpecificResource " //
+				+ "                                    ]" //
+				+ "                  ] ." //
+				+ "    ?a oa:annotatedBy <urn:qanary:"+this.applicationName+"> . " //
+				+ "    ?a oa:AnnotatedAt ?time ." //
+				+ "}";
 
 
 		ResultSet resultSet = qanaryUtils.selectFromTripleStore(getAnnotation);
