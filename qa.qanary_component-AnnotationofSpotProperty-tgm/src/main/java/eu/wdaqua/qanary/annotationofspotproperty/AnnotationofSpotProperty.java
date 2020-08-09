@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -24,9 +23,8 @@ import org.apache.jena.update.UpdateProcessor;
 import org.apache.jena.update.UpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
@@ -42,6 +40,14 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  */
 public class AnnotationofSpotProperty extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(AnnotationofSpotProperty.class);
+
+	private final String applicationName;
+
+	public AnnotationofSpotProperty(@Value("${spring.applcation.name}") final String applicationName) {
+		this.applicationName = applicationName;
+	}
+
+
 	/**
      * runCurlPOSTWithParam is a function to fetch the response from a CURL command using POST.
      */
@@ -198,7 +204,7 @@ public class AnnotationofSpotProperty extends QanaryComponent {
 	                 + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; "
 	                 + "  ] ; "
 	                 + "     oa:hasBody <" + urls + "> ;" 
-	                 + "     oa:annotatedBy <http://AnnotationofSpotProperty.com> ; "
+	                 + "     oa:annotatedBy "+this.applicationName+" ; "
 	                 + "	    oa:AnnotatedAt ?time  "
 	                 + "}} "
 	                 + "WHERE { "

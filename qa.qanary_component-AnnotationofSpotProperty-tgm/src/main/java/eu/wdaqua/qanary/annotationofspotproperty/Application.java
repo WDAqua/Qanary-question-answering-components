@@ -1,10 +1,6 @@
 package eu.wdaqua.qanary.annotationofspotproperty;
 
 import java.io.File;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -13,16 +9,13 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.lang.PipedRDFIterator;
 import org.apache.jena.riot.lang.PipedRDFStream;
 import org.apache.jena.riot.lang.PipedTriplesStream;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.component.QanaryComponent;
 
 @SpringBootApplication
@@ -41,8 +34,8 @@ public class Application {
 	* @return
 	*/
 	@Bean
-	public QanaryComponent qanaryComponent() {
-		return new AnnotationofSpotProperty();
+	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
+		return new AnnotationofSpotProperty(applicationName);
 	}
 	
 	
