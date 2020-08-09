@@ -26,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -44,6 +45,12 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  */
 public class MeaningCloudNed extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(MeaningCloudNed.class);
+
+	private final String applicationName;
+
+	public MeaningCloudNed(@Value("${spring.application.name}") final String applicationName) {
+		this.applicationName = applicationName;
+	}
 
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
@@ -211,7 +218,7 @@ public class MeaningCloudNed extends QanaryComponent {
                     + "           ] " //
                     + "  ] . " //
                     + "  ?a oa:hasBody <" + s.link + "> ;" //
-                    + "     oa:annotatedBy <http://meaningCloudNED.com> ; " //
+                    + "     oa:annotatedBy "+this.applicationName+" ; " //
                     + "	    oa:AnnotatedAt ?time  " + "}} " //
                     + "WHERE { " //
                     + "  BIND (IRI(str(RAND())) AS ?a) ."//
