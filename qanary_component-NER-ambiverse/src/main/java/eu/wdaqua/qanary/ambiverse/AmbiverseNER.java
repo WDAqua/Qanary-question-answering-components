@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -35,6 +36,11 @@ public class AmbiverseNER extends QanaryComponent {
 	private final String CLIENT_ID  = "5e15e933";
 	private final String CLIENT_SECRET = "a09256c925adc9e2279435038df9d55e";
 
+	private final String applicationName;
+
+	public AmbiverseNER(@Value("${spring.application.name}") final String applicationName) {
+		this.applicationName = applicationName;
+	}
 
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
@@ -131,17 +137,28 @@ public class AmbiverseNER extends QanaryComponent {
 		logger.info("apply vocabulary alignment on outgraph");
 		// TODO: implement this (custom for every component)
 		for (Selection s : selections) {
-			String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
-					+ "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
-					+ "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " + "INSERT { " + "GRAPH <" + myQanaryMessage.getOutGraph() + "> { "
-					+ "  ?a a qa:AnnotationOfSpotInstance . " + "  ?a oa:hasTarget [ "
-					+ "           a    oa:SpecificResource; " + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; "
-					+ "           oa:hasSelector  [ " + "                    a oa:TextPositionSelector ; "
-					+ "                    oa:start \"" + s.begin + "\"^^xsd:nonNegativeInteger ; "
-					+ "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " + "           ] "
-					+ "  ] ; " + "     oa:annotatedBy <http://ambiverseNER.com> ; "
-					+ "	    oa:AnnotatedAt ?time  " + "}} " + "WHERE { " + "BIND (IRI(str(RAND())) AS ?a) ."
-					+ "BIND (now() as ?time) " + "}";
+			String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> " //
+					+ "prefix oa: <http://www.w3.org/ns/openannotation/core/> " //
+					+ "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " //
+					+ "INSERT { " + "GRAPH <" + myQanaryMessage.getOutGraph() //
+					+ "> { " //
+					+ "  ?a a qa:AnnotationOfSpotInstance . " //
+					+ "  ?a oa:hasTarget [ " //
+					+ "           a    oa:SpecificResource; " //
+					+ "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
+					+ "           oa:hasSelector  [ " //
+					+ "                    a oa:TextPositionSelector ; " //
+					+ "                    oa:start \"" + s.begin + "\"^^xsd:nonNegativeInteger ; " //
+					+ "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " //
+					+ "           ] " //
+					+ "  ] ; " //
+					+ "     oa:annotatedBy "+this.applicationName+" ; " //
+					+ "	    oa:AnnotatedAt ?time  " //
+					+ "}} " //
+					+ "WHERE { " //
+					+ "BIND (IRI(str(RAND())) AS ?a) ." //
+					+ "BIND (now() as ?time) " //
+					+ "}";
 			myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 		}
 		return myQanaryMessage;

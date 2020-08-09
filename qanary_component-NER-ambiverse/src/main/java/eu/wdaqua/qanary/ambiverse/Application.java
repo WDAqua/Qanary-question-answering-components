@@ -2,6 +2,7 @@ package eu.wdaqua.qanary.ambiverse;
 
 import java.util.TreeMap;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,8 +28,8 @@ public class Application {
 	* @return
 	*/
 	@Bean
-	public QanaryComponent qanaryComponent() {
-		return new AmbiverseNER();
+	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
+		return new AmbiverseNER(applicationName);
 	}
 	
 	
