@@ -105,8 +105,8 @@ public class FOXComponent extends QanaryComponent {
                 + "                    oa:end  ?end " //
                 + "           ] " //
                 + "  ] ; " //
-                + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ;" // <http://fox-demo.aksw.org>
-                + "	    oa:AnnotatedAt ?time  " //
+                + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ;" //
+                + "	    oa:annotatedAt ?time  " //
                 + "}} " //
                 + "WHERE { " //
                 + "	SELECT ?a ?s ?begin ?end ?time " //

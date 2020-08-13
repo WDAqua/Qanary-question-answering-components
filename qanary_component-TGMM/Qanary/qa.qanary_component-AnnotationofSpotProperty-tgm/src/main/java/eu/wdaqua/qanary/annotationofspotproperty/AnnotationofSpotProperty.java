@@ -199,7 +199,7 @@ public class AnnotationofSpotProperty extends QanaryComponent {
 	                 + "  ] ; "
 	                 + "     oa:hasBody <" + urls + "> ;" 
 	                 + "     oa:annotatedBy <http://AnnotationofSpotProperty.com> ; "
-	                 + "	    oa:AnnotatedAt ?time  "
+	                 + "	    oa:annotatedAt ?time  "
 	                 + "}} "
 	                 + "WHERE { "
 	                 + "BIND (IRI(str(RAND())) AS ?a) ."

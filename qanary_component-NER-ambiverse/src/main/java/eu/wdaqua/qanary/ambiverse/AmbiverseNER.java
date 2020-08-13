@@ -153,7 +153,7 @@ public class AmbiverseNER extends QanaryComponent {
 					+ "           ] " //
 					+ "  ] ; " //
 					+ "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
-					+ "	    oa:AnnotatedAt ?time  " //
+					+ "	    oa:annotatedAt ?time  " //
 					+ "}} " //
 					+ "WHERE { " //
 					+ "BIND (IRI(str(RAND())) AS ?a) ." //

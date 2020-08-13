@@ -126,7 +126,7 @@ public class Agdistis extends QanaryComponent {
                         + "  ] . "
                         + "  ?a oa:hasBody <" + l.link + "> ;"
                         + "     oa:annotatedBy <http://agdistis.aksw.org> ; "
-                        + "	    oa:AnnotatedAt ?time  "
+                        + "	    oa:annotatedAt ?time  "
                         + "}} "
                         + "WHERE { "
                         + "BIND (IRI(str(RAND())) AS ?a) ."

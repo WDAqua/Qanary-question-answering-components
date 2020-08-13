@@ -223,7 +223,7 @@ public class RelationLinker2 extends QanaryComponent {
                + "  ] ; "
                + "     oa:hasBody <" + l.link + "> ;" 
                + "     oa:annotatedBy <http://relationlinker2.com> ; "
-               + "	    oa:AnnotatedAt ?time  "
+               + "	    oa:annotatedAt ?time  "
                + "}} "
                + "WHERE { "
                + "BIND (IRI(str(RAND())) AS ?a) ."

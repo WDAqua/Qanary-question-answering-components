@@ -122,7 +122,7 @@ public class ReMatch extends QanaryComponent {
 //	                 + "  ] ; "
 //	                 + "     oa:hasBody <" + l.link + "> ;" 
 //	                 + "     oa:annotatedBy <http://rematch.com> ; "
-//	                 + "	    oa:AnnotatedAt ?time  "
+//	                 + "	    oa:annotatedAt ?time  "
 //	                 + "}} "
 //	                 + "WHERE { "
 //	                 + "BIND (IRI(str(RAND())) AS ?a) ."

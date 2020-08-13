@@ -199,7 +199,7 @@ public class DandelionNED extends QanaryComponent {
                     + "  ] . " //
                     + "  ?a oa:hasBody <" + l.link + "> ;" //
                     + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
-                    + "	    oa:AnnotatedAt ?time  " + "}} " //
+                    + "	    oa:annotatedAt ?time  " + "}} " //
                     + "WHERE { " //
                     + "  BIND (IRI(str(RAND())) AS ?a) ."//
                     + "  BIND (now() as ?time) " //

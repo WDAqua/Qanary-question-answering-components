@@ -206,7 +206,7 @@ BufferedWriter buffWriter = new BufferedWriter(new FileWriter("questions.txt", t
 	                 + "  ] ; " //
 	                 + "     oa:hasBody <" + urls + "> ;" //
 	                 + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
-	                 + "	    oa:AnnotatedAt ?time  " //
+	                 + "	    oa:annotatedAt ?time  " //
 	                 + "}} " //
 	                 + "WHERE { " //
 	                 + "BIND (IRI(str(RAND())) AS ?a) ." //

@@ -163,7 +163,7 @@ public class ComicCharacterNameSimpleNamedEntityRecognizer extends QanaryCompone
 					+ "       ] \n" //
 					+ "     ] ; \n" //
 					+ "     oa:annotatedBy <urn:qanary:component:"+this.applicationName+"> ; \n" //
-					+ "	    oa:AnnotatedAt ?time  \n" //
+					+ "	    oa:annotatedAt ?time  \n" //
 					+ "}} \n" //
 					+ "WHERE { \n" //
 					+ "  BIND (IRI(str(RAND())) AS ?a) .\n" //

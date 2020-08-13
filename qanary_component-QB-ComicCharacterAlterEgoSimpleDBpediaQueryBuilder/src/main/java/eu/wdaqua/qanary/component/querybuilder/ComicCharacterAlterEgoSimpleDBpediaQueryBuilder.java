@@ -76,7 +76,7 @@ public class ComicCharacterAlterEgoSimpleDBpediaQueryBuilder extends QanaryCompo
 				+ "                                    ]" //
 				+ "                  ] ." //
 				+ "    ?a oa:annotatedBy <urn:qanary:"+this.applicationName+"> . " //
-				+ "    ?a oa:AnnotatedAt ?time ." //
+				+ "    ?a oa:annotatedAt ?time ." //
 				+ "}";
 
 

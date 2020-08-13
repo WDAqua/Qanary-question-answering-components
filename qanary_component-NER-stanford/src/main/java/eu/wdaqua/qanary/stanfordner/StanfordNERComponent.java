@@ -141,7 +141,7 @@ public class StanfordNERComponent extends QanaryComponent {
 				+ "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " //
 				+ "           ] " //
 				+ "  ] ; " //
-				+ "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ;" // <http://nlp.stanford.edu/software/CRF-NER.shtml>
+				+ "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ;" //
 				+ "	    oa:annotatedAt ?time  " //
 				+ "}} " //
 				+ "WHERE { " //

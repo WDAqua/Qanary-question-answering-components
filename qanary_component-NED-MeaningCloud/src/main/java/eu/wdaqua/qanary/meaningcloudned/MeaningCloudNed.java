@@ -219,7 +219,7 @@ public class MeaningCloudNed extends QanaryComponent {
                     + "  ] . " //
                     + "  ?a oa:hasBody <" + s.link + "> ;" //
                     + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
-                    + "	    oa:AnnotatedAt ?time  " + "}} " //
+                    + "	    oa:annotatedAt ?time  " + "}} " //
                     + "WHERE { " //
                     + "  BIND (IRI(str(RAND())) AS ?a) ."//
                     + "  BIND (now() as ?time) " //

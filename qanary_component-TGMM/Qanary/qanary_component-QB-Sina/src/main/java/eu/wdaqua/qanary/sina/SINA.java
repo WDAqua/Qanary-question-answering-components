@@ -88,7 +88,7 @@ public class SINA extends QanaryComponent {
 				// + " oa:end ?end " //
 				+ "  ] ; " + "     oa:hasBody ?relationurl ;"
 				// + " oa:annotatedBy <; "
-				+ "	    oa:AnnotatedAt ?time  " + "} " //
+				+ "	    oa:annotatedAt ?time  " + "} " //
 				+ "ORDER BY ?start ";
 		logger.info("Relation: {}", sparql);
 		ResultSet r2 = myQanaryUtils.selectFromTripleStore(sparql);
@@ -116,7 +116,7 @@ public class SINA extends QanaryComponent {
 				// + " oa:end ?end " //
 				+ "  ] ; " + "     oa:hasBody ?url ;"
 				// + " oa:annotatedBy <; "
-				+ "	    oa:AnnotatedAt ?time  " + "} " //
+				+ "	    oa:annotatedAt ?time  " + "} " //
 				+ "ORDER BY ?start ";
 
 		ResultSet r3 = myQanaryUtils.selectFromTripleStore(sparql);

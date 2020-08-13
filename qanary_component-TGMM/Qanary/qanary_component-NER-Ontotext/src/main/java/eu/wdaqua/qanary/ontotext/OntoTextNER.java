@@ -121,7 +121,7 @@ public class OntoTextNER extends QanaryComponent {
                     + "                    oa:start \"" + s.begin + "\"^^xsd:nonNegativeInteger ; "
                     + "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " + "           ] "
                     + "  ] ; " + "     oa:annotatedBy <http:ontotextner.com> ; "
-                    + "	    oa:AnnotatedAt ?time  " + "}} " + "WHERE { " + "BIND (IRI(str(RAND())) AS ?a) ."
+                    + "	    oa:annotatedAt ?time  " + "}} " + "WHERE { " + "BIND (IRI(str(RAND())) AS ?a) ."
                     + "BIND (now() as ?time) " + "}";
             myQanaryUtils.updateTripleStore(sparql);
         }

@@ -198,7 +198,7 @@ public class AylienNED extends QanaryComponent {
                     + "  ] . " //
                     + "  ?a oa:hasBody <" + l.link + "> ;" //
                     + "     oa:annotatedBy <https://api.aylien.com/api/v1/concepts> ; " //
-                    + "	    oa:AnnotatedAt ?time  " + "}} " //
+                    + "	    oa:annotatedAt ?time  " + "}} " //
                     + "WHERE { " //
                     + "  BIND (IRI(str(RAND())) AS ?a) ."//
                     + "  BIND (now() as ?time) " //

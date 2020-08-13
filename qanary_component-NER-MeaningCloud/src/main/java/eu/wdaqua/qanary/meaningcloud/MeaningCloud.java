@@ -19,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -37,6 +38,12 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  */
 public class MeaningCloud extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(MeaningCloud.class);
+
+	private final String applicationName;
+
+	public MeaningCloud(@Value("${spring.application.name}") final String applicationName) {
+		this.applicationName = applicationName;
+	}
 
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
@@ -122,8 +129,8 @@ public class MeaningCloud extends QanaryComponent {
 					+ "           oa:hasSelector  [ " + "                    a oa:TextPositionSelector ; "
 					+ "                    oa:start \"" + s.begin + "\"^^xsd:nonNegativeInteger ; "
 					+ "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " + "           ] "
-					+ "  ] ; " + "     oa:annotatedBy <http://meaningCloud.com> ; "
-					+ "	    oa:AnnotatedAt ?time  " + "}} " + "WHERE { " + "BIND (IRI(str(RAND())) AS ?a) ."
+					+ "  ] ; " + "     oa:annotatedBy "+this.applicationName+" ; "
+					+ "	    oa:annotatedAt ?time  " + "}} " + "WHERE { " + "BIND (IRI(str(RAND())) AS ?a) ."
 					+ "BIND (now() as ?time) " + "}";
 			myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 		}

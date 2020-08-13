@@ -199,7 +199,7 @@ BufferedWriter buffWriter = new BufferedWriter(new FileWriter("questions.txt", t
 	                 + "  ] ; "
 	                 + "     oa:hasBody <" + urls + "> ;" 
 	                 + "     oa:annotatedBy <http://ClsNliodCls.com> ; "
-	                 + "	    oa:AnnotatedAt ?time  "
+	                 + "	    oa:annotatedAt ?time  "
 	                 + "}} "
 	                 + "WHERE { "
 	                 + "BIND (IRI(str(RAND())) AS ?a) ."

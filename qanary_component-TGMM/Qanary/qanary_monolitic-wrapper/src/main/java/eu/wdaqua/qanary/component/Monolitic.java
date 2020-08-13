@@ -68,7 +68,7 @@ public class Monolitic extends QanaryComponent {
                 + "  ?a oa:hasTarget <URIAnswer> . "
                 + "  ?a oa:hasBody \"" + sparqlAnswer.replace("\n", " ") + "\" ;"
                 + "     oa:annotatedBy <http://monolitic-component.org> ; "
-                + "	    oa:AnnotatedAt ?time . "
+                + "	    oa:annotatedAt ?time . "
                 + "  ?b a qa:AnnotationOfAnswerJSON . "
                 + "  ?b oa:hasTarget <URIAnswer> . "
                 + "  ?b oa:hasBody \"" + json.replace("\n", " ").replace("\"", "\\\"") + "\" ;"

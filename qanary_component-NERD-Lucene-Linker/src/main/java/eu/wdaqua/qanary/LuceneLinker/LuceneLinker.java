@@ -200,8 +200,8 @@ public class LuceneLinker extends QanaryComponent {
                         + "           ] " //
                         + "  ] . " //
                         + "  ?a oa:hasBody <" + a.uri + "> ;" //
-                        + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ;" //  <http://nlp.stanford.edu/software/CRF-NER.shtml>
-                        + "	    oa:AnnotatedAt ?time  " //
+                        + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ;" //
+                        + "	    oa:annotatedAt ?time  " //
                         + "}} " //
                         + "WHERE { " //
                         + "BIND (IRI(str(RAND())) AS ?a) ." //

@@ -215,7 +215,7 @@ public class AmbiverseNed extends QanaryComponent {
                     + "  ] . " //
                     + "  ?a oa:hasBody <" + s.link + "> ;" //
                     + "     oa:annotatedBy <http://ambiverseNED.com> ; " //
-                    + "	    oa:AnnotatedAt ?time  " + "}} " //
+                    + "	    oa:annotatedAt ?time  " + "}} " //
                     + "WHERE { " //
                     + "  BIND (IRI(str(RAND())) AS ?a) ."//
                     + "  BIND (now() as ?time) " //

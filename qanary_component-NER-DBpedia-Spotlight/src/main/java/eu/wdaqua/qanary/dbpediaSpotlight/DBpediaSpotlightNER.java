@@ -174,8 +174,8 @@ public class DBpediaSpotlightNER extends QanaryComponent {
                         + "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " //
                         + "           ] " //
                         + "  ] ; " //
-                        + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " // <http://spotlight.sztaki.hu:2222/rest/spot>
-                        + "	    oa:AnnotatedAt ?time  " //
+                        + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
+                        + "	    oa:annotatedAt ?time  " //
                         + "}} " //
                         + "WHERE { " //
                         + "BIND (IRI(str(RAND())) AS ?a) ." //

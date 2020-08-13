@@ -190,7 +190,7 @@ public class RelNliodRel extends QanaryComponent {
 		                 + "  ] ; "
 		                 + "     oa:hasBody <" + urls + "> ;" 
 		                 + "     oa:annotatedBy <http://RelNliodRel.com> ; "
-		                 + "	    oa:AnnotatedAt ?time  "
+		                 + "	    oa:annotatedAt ?time  "
 		                 + "}} "
 		                 + "WHERE { "
 		                 + "BIND (IRI(str(RAND())) AS ?a) ."
