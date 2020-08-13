@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.wdaqua.qanary.stanfordner.StanfordNERComponent.Selection;
+import org.springframework.beans.factory.annotation.Value;
 
 public class StanfordNERComponentTest {
 
@@ -21,8 +22,8 @@ public class StanfordNERComponentTest {
 	private static final Logger logger = LoggerFactory.getLogger(StanfordNERComponentTest.class);
 
 	@BeforeClass
-	public static void initStanfordNERComponent() {
-		myStanfordNERComponent = new StanfordNERComponent();
+	public static void initStanfordNERComponent(@Value("${spring.application.name") final String applicationName) {
+		myStanfordNERComponent = new StanfordNERComponent(applicationName);
 	}
 
 	public void extendQuestionsMap(HashMap<String, ArrayList<String>> questions, String myQuestion,
