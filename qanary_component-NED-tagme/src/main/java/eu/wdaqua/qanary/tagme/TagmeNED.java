@@ -25,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -43,6 +44,12 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  */
 public class TagmeNED extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(TagmeNED.class);
+
+    private final String applicationName;
+
+    public TagmeNED(@Value("${spring.application.name}") final String applicationName) {
+        this.applicationName = applicationName;
+    }
 
     /**
      * implement this method encapsulating the functionality of your Qanary
@@ -207,9 +214,8 @@ public class TagmeNED extends QanaryComponent {
                     + "           ] " //
                     + "  ] . " //
                     + "  ?a oa:hasBody <" + l.link + "> ;" //
-                    + "     oa:annotatedBy <urn:qanary:NED#" + TagmeNED.class.getName() + ">  ; " //
-                    + "	    oa:annotatedAt ?time  " //
-                    + "}} " //
+                    + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
+                    + "	    oa:annotatedAt ?time  " + "}} " //
                     + "WHERE { " //
                     + "  BIND (IRI(str(RAND())) AS ?a) ." //
                     + "  BIND (now() as ?time) " //

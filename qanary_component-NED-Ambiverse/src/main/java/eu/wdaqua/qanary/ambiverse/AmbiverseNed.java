@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -36,6 +37,7 @@ public class AmbiverseNed extends QanaryComponent {
 	private String urlAccessToken = "https://api.ambiverse.com/oauth/token"; // TODO: move to application.properties
 	private String urlEntityLinkServicePlain = "api.ambiverse.com/v2/entitylinking/analyze"; // TODO: move to
 																								// application.properties
+	private String applicationName;
 
 	private String urlEntityLinkService;
 	private String[] accessTokenCmd;
@@ -44,8 +46,10 @@ public class AmbiverseNed extends QanaryComponent {
 	 * constructor calling super constructor and showing printing the used command
 	 * into the info console
 	 */
-	public AmbiverseNed() {
+	public AmbiverseNed(@Value("${spring.application.name}") final String applicationName) {
 		super();
+
+		this.applicationName = applicationName;
 
 		urlEntityLinkService = "https://" + urlEntityLinkServicePlain;
 		String[] accessTokenCmd = { "curl", "-X", "POST", "--header", "Content-Type: application/x-www-form-urlencoded",
@@ -172,7 +176,7 @@ public class AmbiverseNed extends QanaryComponent {
 					+ "           ] " //
 					+ "  ] . " //
 					+ "  ?a oa:hasBody <" + s.link + "> ;" //
-					+ "     oa:annotatedBy <urn:qanary.NED#" + urlEntityLinkService + "> ; " //
+					+ "     oa:annotatedBy <urn:qanary.NED#" + this.applicationName + "> ; " //
 					+ "	    oa:annotatedAt ?time  " + "}} " //
 					+ "WHERE { " //
 					+ "  BIND (IRI(str(RAND())) AS ?a) ."//

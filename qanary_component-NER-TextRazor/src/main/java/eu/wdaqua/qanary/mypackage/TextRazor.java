@@ -2,8 +2,6 @@ package eu.wdaqua.qanary.mypackage;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,13 +14,13 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -40,6 +38,11 @@ import eu.wdaqua.qanary.component.QanaryComponent;
 public class TextRazor extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(TextRazor.class);
 
+	private final String applicationName;
+
+	public TextRazor(@Value("${spring.application.name}") final String applicationName) {
+		this.applicationName = applicationName;
+	}
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
 	 * component
@@ -105,17 +108,28 @@ public class TextRazor extends QanaryComponent {
 		logger.info("apply vocabulary alignment on outgraph");
 		// TODO: implement this (custom for every component)
 		for (Selection s : selections) {
-            String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
-                    + "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
-                    + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " + "INSERT { " + "GRAPH <" + myQanaryMessage.getOutGraph() + "> { "
-                    + "  ?a a qa:AnnotationOfSpotInstance . " + "  ?a oa:hasTarget [ "
-                    + "           a    oa:SpecificResource; " + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; "
-                    + "           oa:hasSelector  [ " + "                    a oa:TextPositionSelector ; "
-                    + "                    oa:start \"" + s.begin + "\"^^xsd:nonNegativeInteger ; "
-                    + "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " + "           ] "
-                    + "  ] ; " + "     oa:annotatedBy <http://textrazorNER.com> ; "
-                    + "	    oa:AnnotatedAt ?time  " + "}} " + "WHERE { " + "BIND (IRI(str(RAND())) AS ?a) ."
-                    + "BIND (now() as ?time) " + "}";
+            String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> " //
+                    + "prefix oa: <http://www.w3.org/ns/openannotation/core/> " //
+                    + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " //
+					+ "INSERT { " //
+					+ "GRAPH <" + myQanaryMessage.getOutGraph() + "> { " //
+                    + "  ?a a qa:AnnotationOfSpotInstance . " //
+					+ "  ?a oa:hasTarget [ " //
+                    + "           a    oa:SpecificResource; " //
+					+ "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
+                    + "           oa:hasSelector  [ " //
+					+ "                    a oa:TextPositionSelector ; " //
+                    + "                    oa:start \"" + s.begin + "\"^^xsd:nonNegativeInteger ; " //
+					+ "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " //
+					+ "           ] " //
+                    + "  ] ; " //
+					+ "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
+                    + "	    oa:annotatedAt ?time  " //
+					+ "}} " //
+					+ "WHERE { " //
+					+ "BIND (IRI(str(RAND())) AS ?a) ." //
+                    + "BIND (now() as ?time) " //
+					+ "}";
             myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
         }
 		return myQanaryMessage;

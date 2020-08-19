@@ -278,7 +278,7 @@ public class DiambiguationClass extends QanaryComponent {
 						+ "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
 						+ "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " + "INSERT { " + "GRAPH <" + namedGraph+ "> { " + " ?a a qa:AnnotationOfClass . " + " ?a oa:hasTarget [ " + " a oa:SpecificClass; "
 						+ " oa:hasSource <" + uriQuestion + ">; " + " ] . " + " ?a oa:hasBody <" + urls + "> ;"
-						+ " oa:annotatedBy <http://okbqa.disambiguationclass.com> ; " + " oa:AnnotatedAt ?time "
+						+ " oa:annotatedBy <http://okbqa.disambiguationclass.com> ; " + " oa:annotatedAt ?time "
 						+ "}} " + "WHERE { "
 						+ "BIND (IRI(str(RAND())) AS ?a) ." + "BIND (now() as ?time) " + "}";
 				logger.info("Sparql query {}", sparql);

@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -38,6 +39,12 @@ import eu.wdaqua.qanary.clsnliod.DbpediaRecorodClass;
 public class ClsNliodCls extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(ClsNliodCls.class);
 	//private HashSet<String> dbLinkListSet = new HashSet<String>();
+
+	private final String applicationName;
+
+	public ClsNliodCls(@Value("${spring.application.name}") final String applicationName ){
+		this.applicationName = applicationName;
+	}
 
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
@@ -186,24 +193,24 @@ BufferedWriter buffWriter = new BufferedWriter(new FileWriter("questions.txt", t
 		logger.info("apply vocabulary alignment on outgraph");
 		// TODO: implement this (custom for every component)
 		for (String urls : dbLinkListSet) {
-			 String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
-	                 + "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
-	                 + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> "
-	                 + "prefix dbp: <http://dbpedia.org/property/> "
-	                 + "INSERT { "
-	                 + "GRAPH <" +  myQanaryQuestion.getOutGraph()  + "> { "
-	                 + "  ?a a qa:AnnotationOfClass . "
-	                 + "  ?a oa:hasTarget [ "
-	                 + "           a    oa:SpecificResource; "
-	                 + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; "
-	                 + "  ] ; "
-	                 + "     oa:hasBody <" + urls + "> ;" 
-	                 + "     oa:annotatedBy <http://ClsNliodCls.com> ; "
-	                 + "	    oa:AnnotatedAt ?time  "
-	                 + "}} "
-	                 + "WHERE { "
-	                 + "BIND (IRI(str(RAND())) AS ?a) ."
-	                 + "BIND (now() as ?time) "
+			 String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> " //
+	                 + "prefix oa: <http://www.w3.org/ns/openannotation/core/> " //
+	                 + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " //
+	                 + "prefix dbp: <http://dbpedia.org/property/> " //
+	                 + "INSERT { " //
+	                 + "GRAPH <" +  myQanaryQuestion.getOutGraph()  + "> { " //
+	                 + "  ?a a qa:AnnotationOfClass . " //
+	                 + "  ?a oa:hasTarget [ " //
+	                 + "           a    oa:SpecificResource; " //
+	                 + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
+	                 + "  ] ; " //
+	                 + "     oa:hasBody <" + urls + "> ;" //
+	                 + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
+	                 + "	    oa:annotatedAt ?time  " //
+	                 + "}} " //
+	                 + "WHERE { " //
+	                 + "BIND (IRI(str(RAND())) AS ?a) ." //
+	                 + "BIND (now() as ?time) " //
 	                 + "}";
 	         logger.info("Sparql query {}", sparql);
 	         myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());

@@ -4,6 +4,7 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -29,6 +30,11 @@ import eu.wdaqua.qanary.component.QanaryComponent;
 public class ComicCharacterAlterEgoSimpleDBpediaQueryBuilder extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(ComicCharacterAlterEgoSimpleDBpediaQueryBuilder.class);
 
+	private final String applicationName;
+
+	public ComicCharacterAlterEgoSimpleDBpediaQueryBuilder(@Value("${spring.application.name}") final String applicationName) {
+		this.applicationName = applicationName;
+	}
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
 	 * component
@@ -51,28 +57,27 @@ public class ComicCharacterAlterEgoSimpleDBpediaQueryBuilder extends QanaryCompo
 			return myQanaryMessage;
 		}
 
-		String getAnnotation = "" +
-				"PREFIX qa: <http://www.wdaqua.eu/qa#> " +
-				"PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " +
-				"SELECT ?a ?dbpediaResource ?startOfSpecificResource ?endOfSpecificResource ?annotatorComponent ?time " +
-				"FROM <" + myQanaryMessage.getInGraph().toString() + "> " +
-				"WHERE {" +
-				"   VALUES ?dbpediaResource {" +
-				"      <" + qanaryQuestion.getUri().toString() + ">" +
-				"   } ." +
-				"   ?a a qa:AnnotationOfSpotInstance ." +
-				"   ?a oa:hasTarget [" +
-				"                    a               oa:SpecificResource;" +
-				"                    oa:hasSource    ?dbpediaResource;" +
-				"                    oa:hasSelector  [ " +
-				"                                     a        oa:TextPositionSelector ; " +
-				"                                     oa:start ?startOfSpecificResource ; " +
-				"                                     oa:end   ?endOfSpecificResource " +
-				"                                    ]" +
-				"                  ] ." +
-				"    ?a oa:annotatedBy ?annotatorComponent . " +
-				"    ?a oa:AnnotatedAt ?time ." +
-				"}";
+		String getAnnotation = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
+				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
+				+ "SELECT ?a ?dbpediaResource ?startOfSpecificResource ?endOfSpecificResource ?annotatorComponent ?time " //
+				+ "FROM <" + myQanaryMessage.getInGraph().toString() + "> " //
+				+ "WHERE {" //
+				+ "   VALUES ?dbpediaResource {" //
+				+ "      <" + qanaryQuestion.getUri().toString() + ">" //
+				+ "   } ." //
+				+ "   ?a a qa:AnnotationOfSpotInstance ." //
+				+ "   ?a oa:hasTarget [" //
+				+ "                    a               oa:SpecificResource;" //
+				+ "                    oa:hasSource    ?dbpediaResource;" //
+				+ "                    oa:hasSelector  [ " //
+				+ "                                     a        oa:TextPositionSelector ; " //
+				+ "                                     oa:start ?startOfSpecificResource ; " //
+				+ "                                     oa:end   ?endOfSpecificResource " //
+				+ "                                    ]" //
+				+ "                  ] ." //
+				+ "    ?a oa:annotatedBy <urn:qanary:"+this.applicationName+"> . " //
+				+ "    ?a oa:annotatedAt ?time ." //
+				+ "}";
 
 
 		ResultSet resultSet = qanaryUtils.selectFromTripleStore(getAnnotation);

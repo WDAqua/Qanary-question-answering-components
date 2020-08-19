@@ -100,7 +100,7 @@ public class FOXComponent extends QanaryComponent {
                 + "           ] "
                 + "  ] ; "
                 + "     oa:annotatedBy <http://fox-demo.aksw.org> ; "
-                + "	    oa:AnnotatedAt ?time  "
+                + "	    oa:annotatedAt ?time  "
                 + "}} "
                 + "WHERE { "
                 + "	SELECT ?a ?s ?begin ?end ?time "

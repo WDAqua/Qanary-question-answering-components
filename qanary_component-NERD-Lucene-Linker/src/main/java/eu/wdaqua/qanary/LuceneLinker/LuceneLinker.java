@@ -23,6 +23,7 @@ import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 import org.apache.lucene.util.AttributeSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -44,6 +45,12 @@ import java.util.List;
 @Component
 public class LuceneLinker extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(LuceneLinker.class);
+
+    private final String applicationName;
+
+    public LuceneLinker(@Value("${spring.application.name}") final String applicationName) {
+        this.applicationName = applicationName;
+    }
 
     /**
      * default processor of a QanaryMessage
@@ -177,28 +184,29 @@ public class LuceneLinker extends QanaryComponent {
             logger.info("Apply commons alignment on outgraph");
 
             for (Annotation a : annotations) {
-                sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
-                        + "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
-                        + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> "
-                        + "INSERT { "
-                        + "GRAPH <" + namedGraph + "> { "
-                        + "  ?a a qa:AnnotationOfInstance . "
-                        + "  ?a oa:hasTarget [ "
-                        + "           a    oa:SpecificResource; "
-                        + "           oa:hasSource    <" + uriQuestion + ">; "
-                        + "           oa:hasSelector  [ "
-                        + "                    a oa:TextPositionSelector ; "
-                        + "                    oa:start \"" + a.begin + "\"^^xsd:nonNegativeInteger ; "
-                        + "                    oa:end  \"" + a.end + "\"^^xsd:nonNegativeInteger  "
-                        + "           ] "
-                        + "  ] . "
-                        + "  ?a oa:hasBody <" + a.uri + "> ;"
-                        + "     oa:annotatedBy <http://nlp.stanford.edu/software/CRF-NER.shtml> ; "
-                        + "	    oa:AnnotatedAt ?time  "
-                        + "}} "
-                        + "WHERE { "
-                        + "BIND (IRI(str(RAND())) AS ?a) ."
-                        + "BIND (now() as ?time) " + "}";
+                sparql = "prefix qa: <http://www.wdaqua.eu/qa#> " //
+                        + "prefix oa: <http://www.w3.org/ns/openannotation/core/> " //
+                        + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " //
+                        + "INSERT { " //
+                        + "GRAPH <" + namedGraph + "> { " //
+                        + "  ?a a qa:AnnotationOfInstance . " //
+                        + "  ?a oa:hasTarget [ " //
+                        + "           a    oa:SpecificResource; " //
+                        + "           oa:hasSource    <" + uriQuestion + ">; " //
+                        + "           oa:hasSelector  [ " //
+                        + "                    a oa:TextPositionSelector ; " //
+                        + "                    oa:start \"" + a.begin + "\"^^xsd:nonNegativeInteger ; " //
+                        + "                    oa:end  \"" + a.end + "\"^^xsd:nonNegativeInteger  " //
+                        + "           ] " //
+                        + "  ] . " //
+                        + "  ?a oa:hasBody <" + a.uri + "> ;" //
+                        + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ;" //
+                        + "	    oa:annotatedAt ?time  " //
+                        + "}} " //
+                        + "WHERE { " //
+                        + "BIND (IRI(str(RAND())) AS ?a) ." //
+                        + "BIND (now() as ?time) " //
+                        + "}";
                 loadTripleStore(sparql, endpoint);
             }
         } catch (IOException e) {

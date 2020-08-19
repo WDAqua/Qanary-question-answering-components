@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
@@ -31,13 +32,17 @@ public class StanfordNERComponent extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(StanfordNERComponent.class);
 	private StanfordCoreNLP myStanfordCoreNLP;
 
-	public StanfordNERComponent() {
+	private final String applicationName;
+
+	public StanfordNERComponent(@Value("${spring.application.name}") final String applicationName) {
 		// ATTENTION: This should be done only ones when the component is started
 		// Define the properties needed for the pipeline of the Stanford parser
 		Properties props = new Properties();
 		props.put("annotators", "tokenize, ssplit, pos, lemma, ner");
 		props.setProperty("ner.useSUTime", "false");
 		myStanfordCoreNLP = new StanfordCoreNLP(props);
+
+		this.applicationName = applicationName;
 	}
 
 	/**
@@ -136,7 +141,7 @@ public class StanfordNERComponent extends QanaryComponent {
 				+ "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " //
 				+ "           ] " //
 				+ "  ] ; " //
-				+ "     oa:annotatedBy <http://nlp.stanford.edu/software/CRF-NER.shtml> ; " //
+				+ "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ;" //
 				+ "	    oa:annotatedAt ?time  " //
 				+ "}} " //
 				+ "WHERE { " //

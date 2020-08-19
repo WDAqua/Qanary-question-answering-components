@@ -25,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -43,6 +44,12 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  */
 public class RelationLinker2 extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(RelationLinker2.class);
+
+	private final String applicationName;
+
+	public RelationLinker2(@Value("${spring.application.name}") final String applicationName) {
+		this.applicationName = applicationName;
+	}
 
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
@@ -222,8 +229,8 @@ public class RelationLinker2 extends QanaryComponent {
                + "              oa:end  \"" + l.end + "\"^^xsd:nonNegativeInteger  " //
                + "  ] ; "
                + "     oa:hasBody <" + l.link + "> ;" 
-               + "     oa:annotatedBy <http://relationlinker2.com> ; "
-               + "	    oa:AnnotatedAt ?time  "
+               + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; "
+               + "	    oa:annotatedAt ?time  "
                + "}} "
                + "WHERE { "
                + "BIND (IRI(str(RAND())) AS ?a) ."

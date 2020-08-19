@@ -213,7 +213,7 @@ public class DBpediaSpotlightNED extends QanaryComponent {
                     + "  ] . " //
                     + "  ?a oa:hasBody <" + l.link + "> ;" //
                     + "     oa:annotatedBy <https://github.com/dbpedia-spotlight/dbpedia-spotlight> ; " //
-                    + "	    oa:AnnotatedAt ?time  " + "}} " //
+                    + "	    oa:annotatedAt ?time  " + "}} " //
                     + "WHERE { " //
                     + "  BIND (IRI(str(RAND())) AS ?a) ."//
                     + "  BIND (now() as ?time) " //

@@ -32,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 
@@ -55,6 +56,12 @@ public class RelNliodRel extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(RelNliodRel.class);
 	//private HashSet<String> dbLinkListSet = new HashSet<String>();
 	//private boolean  relationsFlag = false;
+
+	private final String applicationName;
+
+	public RelNliodRel(@Value("${spring.application.name}") final String applicationName) {
+		this.applicationName = applicationName;
+	}
 
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
@@ -178,8 +185,8 @@ public class RelNliodRel extends QanaryComponent {
 		                 + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; "
 		                 + "  ] ; "
 		                 + "     oa:hasBody <" + urls + "> ;" 
-		                 + "     oa:annotatedBy <http://RelNliodRel.com> ; "
-		                 + "	    oa:AnnotatedAt ?time  "
+		                 + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; "
+		                 + "	    oa:annotatedAt ?time  "
 		                 + "}} "
 		                 + "WHERE { "
 		                 + "BIND (IRI(str(RAND())) AS ?a) ."

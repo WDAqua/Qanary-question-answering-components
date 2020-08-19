@@ -19,6 +19,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -39,6 +40,11 @@ import eu.wdaqua.qanary.component.QanaryComponent;
 public class DiambiguationProperty extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(DiambiguationProperty.class);
 
+	private final String applicationName;
+
+	public DiambiguationProperty(@Value("${spring.application.name}") final String applicationName) {
+		this.applicationName = applicationName;
+	}
 	
 	public static String runCurlGetWithParam(String weburl, String data, String contentType)
 			throws ClientProtocolException, IOException {
@@ -275,7 +281,7 @@ public class DiambiguationProperty extends QanaryComponent {
 						+ " ?a a qa:AnnotationOfRelation . " + " ?a oa:hasTarget [ " + " a oa:SpecificResource; " // 
 						+ " oa:hasSource <" + uriQuestion + ">; " + " ] . " // 
 						+ " ?a oa:hasBody <" + urls + "> ;" // 
-						+ " oa:annotatedBy <urn:qanary:RL#okbqa.disambiguationproperty> ; " //
+						+ " oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
 						+ " oa:annotatedAt ?time "
 						+ "}} " //
 						+ "WHERE { "  //

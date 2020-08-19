@@ -8,6 +8,7 @@ import eu.wdaqua.qanary.component.QanaryComponent;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -31,6 +32,12 @@ import java.util.UUID;
 public class FOXComponent extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(FOXComponent.class);
     private static final String foxService = "http://fox-demo.aksw.org/api";
+
+    private final String applicationName;
+
+    public FOXComponent(@Value("${spring.application.name}") final String applicationName) {
+        this.applicationName = applicationName;
+    }
 
     /**
      * default processor of a QanaryMessage
@@ -83,34 +90,34 @@ public class FOXComponent extends QanaryComponent {
         myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 
         //Align to QANARY commons
-        sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
-                + "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
-                + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> "
-                + "INSERT { "
-                + "GRAPH <" + myQanaryMessage.getOutGraph() + "> { "
-                + "  ?a a qa:AnnotationOfSpotInstance . "
-                + "  ?a oa:hasTarget [ "
-                + "           a    oa:SpecificResource; "
-                + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; "
-                + "           oa:hasSelector  [ "
-                + "                    a oa:TextPositionSelector ; "
-                + "                    oa:start ?begin ; "
-                + "                    oa:end  ?end "
-                + "           ] "
-                + "  ] ; "
-                + "     oa:annotatedBy <http://fox-demo.aksw.org> ; "
-                + "	    oa:AnnotatedAt ?time  "
-                + "}} "
-                + "WHERE { "
-                + "	SELECT ?a ?s ?begin ?end ?time "
-                + "	WHERE { "
-                + "		graph <" + namedGraphTemp + "> { "
-                + "			?s	<http://ns.aksw.org/scms/beginIndex> ?begin . "
-                + "			?s  <http://ns.aksw.org/scms/endIndex> ?end . "
-                + "			BIND (IRI(str(RAND())) AS ?a) ."
-                + "			BIND (now() as ?time) "
-                + "		} "
-                + "	} "
+        sparql = "prefix qa: <http://www.wdaqua.eu/qa#> " //
+                + "prefix oa: <http://www.w3.org/ns/openannotation/core/> " //
+                + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " //
+                + "INSERT { " //
+                + "GRAPH <" + myQanaryMessage.getOutGraph() + "> { " //
+                + "  ?a a qa:AnnotationOfSpotInstance . " //
+                + "  ?a oa:hasTarget [ " //
+                + "           a    oa:SpecificResource; " //
+                + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
+                + "           oa:hasSelector  [ " //
+                + "                    a oa:TextPositionSelector ; " //
+                + "                    oa:start ?begin ; " //
+                + "                    oa:end  ?end " //
+                + "           ] " //
+                + "  ] ; " //
+                + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ;" //
+                + "	    oa:annotatedAt ?time  " //
+                + "}} " //
+                + "WHERE { " //
+                + "	SELECT ?a ?s ?begin ?end ?time " //
+                + "	WHERE { " //
+                + "		graph <" + namedGraphTemp + "> { " //
+                + "			?s	<http://ns.aksw.org/scms/beginIndex> ?begin . " //
+                + "			?s  <http://ns.aksw.org/scms/endIndex> ?end . " //
+                + "			BIND (IRI(str(RAND())) AS ?a) ." //
+                + "			BIND (now() as ?time) " //
+                + "		} " //
+                + "	} " //
                 + "}";
         myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 

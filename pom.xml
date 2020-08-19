@@ -53,16 +53,16 @@
                             <module>qa.qanary_component-AnnotationofSpotProperty-tgm</module>
                             <module>qa.qanary_component-DiambiguationClass-OKBQA</module>
                             <module>qa.qanary_component-DiambiguationProperty-OKBQA</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>needfix</id>
-			<modules>
                             <module>qanary_component-ASR-kaldi</module>
                             <module>qanary_component-NED-AGDISTIS</module>
                             <module>qanary_component-NED-Babelfy</module>
                             <module>qanary_component-NED-Dandelion</module>
                             <module>qanary_component-NED-tagme</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>needfix</id>
+			<modules>
                             <!--<module>batmanquestion.annotator</module>-->
 			</modules>
 		</profile>

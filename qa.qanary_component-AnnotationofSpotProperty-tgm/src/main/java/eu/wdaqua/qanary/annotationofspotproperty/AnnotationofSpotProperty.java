@@ -4,9 +4,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -24,9 +22,8 @@ import org.apache.jena.update.UpdateProcessor;
 import org.apache.jena.update.UpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
@@ -42,6 +39,14 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  */
 public class AnnotationofSpotProperty extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(AnnotationofSpotProperty.class);
+
+	private final String applicationName;
+
+	public AnnotationofSpotProperty(@Value("${spring.applcation.name}") final String applicationName) {
+		this.applicationName = applicationName;
+	}
+
+
 	/**
      * runCurlPOSTWithParam is a function to fetch the response from a CURL command using POST.
      */
@@ -186,25 +191,25 @@ public class AnnotationofSpotProperty extends QanaryComponent {
 		logger.info("apply vocabulary alignment on outgraph");
 		// TODO: implement this (custom for every component)
 		for (String urls : dbLinkListSet) {
-			 String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
-	                 + "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
-	                 + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> "
-	                 + "prefix dbp: <http://dbpedia.org/property/> "
-	                 + "INSERT { "
-	                 + "GRAPH <" +  myQanaryQuestion.getOutGraph()  + "> { "
-	                 + "  ?a a qa:AnnotationOfClass . "
-	                 + "  ?a oa:hasTarget [ "
-	                 + "           a    oa:SpecificResource; "
-	                 + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; "
-	                 + "  ] ; "
-	                 + "     oa:hasBody <" + urls + "> ;" 
-	                 + "     oa:annotatedBy <http://AnnotationofSpotProperty.com> ; "
-	                 + "	    oa:AnnotatedAt ?time  "
-	                 + "}} "
-	                 + "WHERE { "
-	                 + "BIND (IRI(str(RAND())) AS ?a) ."
-	                 + "BIND (now() as ?time) "
-	                 + "}";
+			 String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> " //
+	                 + "prefix oa: <http://www.w3.org/ns/openannotation/core/> " //
+	                 + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " //
+	                 + "prefix dbp: <http://dbpedia.org/property/> " //
+	                 + "INSERT { " //
+	                 + "GRAPH <" +  myQanaryQuestion.getOutGraph()  + "> { " //
+	                 + "  ?a a qa:AnnotationOfClass . " //
+	                 + "  ?a oa:hasTarget [ " //
+	                 + "           a    oa:SpecificResource; " //
+	                 + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
+	                 + "  ] ; " //
+	                 + "     oa:hasBody <" + urls + "> ;" //
+	                 + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
+	                 + "	    oa:annotatedAt ?time  " //
+	                 + "}} " //
+	                 + "WHERE { " //
+	                 + "BIND (IRI(str(RAND())) AS ?a) ." //
+	                 + "BIND (now() as ?time) " //
+	                 + "}"; //
 	         logger.info("Sparql query {}", sparql);
 	         myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString()); 
 	    }

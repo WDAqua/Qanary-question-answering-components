@@ -277,7 +277,7 @@ public class DiambiguationProperty extends QanaryComponent {
 						+ "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
 						+ "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " + "INSERT { " + "GRAPH <" + namedGraph+ "> { " + " ?a a qa:AnnotationOfRelation . " + " ?a oa:hasTarget [ " + " a oa:SpecificClass; "
 						+ " oa:hasSource <" + uriQuestion + ">; " + " ] . " + " ?a oa:hasBody <" + urls + "> ;"
-						+ " oa:annotatedBy <http://okbqa.disambiguationproperty.com> ; " + " oa:AnnotatedAt ?time "
+						+ " oa:annotatedBy <http://okbqa.disambiguationproperty.com> ; " + " oa:annotatedAt ?time "
 						+ "}} " + "WHERE { "
 						+ "BIND (IRI(str(RAND())) AS ?a) ." + "BIND (now() as ?time) " + "}";
 				logger.info("Sparql query {}", sparql);
@@ -329,7 +329,7 @@ public class DiambiguationProperty extends QanaryComponent {
 //					+ "  ?a a qa:AnnotationOfSpotProperty . " + "  ?a oa:hasTarget [ "
 //					+ "           a    oa:SpecificProperty; " + "           oa:hasSource    <" + uriQuestion + ">; "
 //					+ "  ] . " + "  ?a oa:hasBody <" + urls + "> ;"
-//					+ "     oa:annotatedBy <http://agdistis.aksw.org> ; " + "	    oa:AnnotatedAt ?time  "
+//					+ "     oa:annotatedBy <http://agdistis.aksw.org> ; " + "	    oa:annotatedAt ?time  "
 //					+ "     oa:score \"" + allUrls.get("properties").get(urls) + "\"ˆˆxsd:decimal ." + "}} "
 //					+ "WHERE { " + "BIND (IRI(str(RAND())) AS ?a) ." + "BIND (now() as ?time) " + "}";
 //			logger.info("Sparql query {}", sparql);
