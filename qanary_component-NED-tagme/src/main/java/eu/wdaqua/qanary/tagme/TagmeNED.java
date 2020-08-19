@@ -217,7 +217,7 @@ public class TagmeNED extends QanaryComponent {
                     + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
                     + "	    oa:annotatedAt ?time  " + "}} " //
                     + "WHERE { " //
-                    + "  BIND (IRI(str(RAND())) AS ?a) ."//
+                    + "  BIND (IRI(str(RAND())) AS ?a) ." //
                     + "  BIND (now() as ?time) " //
                     + "}";
             logger.debug("Sparql query: {}", sparql);

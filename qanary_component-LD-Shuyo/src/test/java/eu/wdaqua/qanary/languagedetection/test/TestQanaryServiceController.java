@@ -122,9 +122,7 @@ public class TestQanaryServiceController {
 		}
 
 	}
-	/**
-	 * test correct message format
-	 */
+
 	/**
 	 * test correct message format
 	 */
