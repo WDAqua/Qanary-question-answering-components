@@ -34,6 +34,7 @@ import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
+import org.springframework.util.ResourceUtils;
 
 
 @Component
@@ -46,20 +47,26 @@ public class TagmeNED extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(TagmeNED.class);
 
     private final String applicationName;
+    private final Boolean cacheEnabled;
+    private final String cacheFile;
 
-    public TagmeNED(@Value("${spring.application.name}") final String applicationName) {
+    public TagmeNED(@Value("${spring.application.name}") final String applicationName,
+                    @Value("${ned-tagme.cache.enabled}") final Boolean cacheEnabled,
+                    @Value("${ned-tagme.cache.file}") final String cacheFile) {
         this.applicationName = applicationName;
+        this.cacheEnabled = cacheEnabled;
+        this.cacheFile = cacheFile;
     }
 
     /**
      * implement this method encapsulating the functionality of your Qanary
      * component
+     *
      * @throws Exception
      */
     @Override
     public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
         logger.info("process: {}", myQanaryMessage);
-        // TODO: implement processing of question
 
         QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
         QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage);
@@ -68,127 +75,74 @@ public class TagmeNED extends QanaryComponent {
         ArrayList<Link> links = new ArrayList<Link>();
 
         logger.info("Question {}", myQuestion);
-        try {
-            File f = new File("../src/main/resources/questions.txt"); //File f = new File("qanary_component-NED-tagme/src/main/resources/questions.txt");
-            FileReader fr = new FileReader(f);
-            BufferedReader br  = new BufferedReader(fr);
-            int flag = 0;
-            String line;
-//			Object obj = parser.parse(new FileReader("DandelionNER.json"));
-//			JSONObject jsonObject = (JSONObject) obj;
-//			Iterator<?> keys = jsonObject.keys();
+        boolean hasCacheResult = false;
+        if (cacheEnabled) {
+            FileCacheResult cacheResult = readFromCache(myQuestion);
+            hasCacheResult = cacheResult.hasCacheResult;
+            links.addAll(cacheResult.links);
+        }
 
-            while((line = br.readLine()) != null && flag == 0) {
-                String question = line.substring(0, line.indexOf("Answer:"));
-                logger.info("{}", line);
-                logger.info("{}", myQuestion);
+        if (!hasCacheResult) {
+            logger.info("Question {}", myQuestion);
 
-                if(question.trim().equals(myQuestion))
-                {
-                    String Answer = line.substring(line.indexOf("Answer:")+"Answer:".length());
-                    logger.info("Here {}", Answer);
-                    Answer = Answer.trim();
-                    JSONArray jsonArr =new JSONArray(Answer);
-                    if(jsonArr.length()!=0)
-                    {
-                        for (int i = 0; i < jsonArr.length(); i++)
-                        {
-                            JSONObject explrObject = jsonArr.getJSONObject(i);
+            String thePath = "";
+            thePath = URLEncoder.encode(myQuestion, "UTF-8");
+            logger.info("Path {}", thePath);
 
-                            logger.info("Question: {}", explrObject);
+            HttpClient httpclient = HttpClients.createDefault();
+            HttpGet httpget = new HttpGet("https://tagme.d4science.org/tagme/tag?gcube-token=c0c5a908-eb13-4219-9516-450a9f6d3bc6-843339462&text=" + thePath);
+            //httpget.addHeader("User-Agent", USER_AGENT);
+            HttpResponse response = httpclient.execute(httpget);
+            try {
+                HttpEntity entity = response.getEntity();
+                if (entity != null) {
+                    InputStream instream = entity.getContent();
+                    // String result = getStringFromInputStream(instream);
+                    String text = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
+                    JSONObject response2 = new JSONObject(text);
+                    logger.info("response2: {}", response2);
+                    if (response2.has("annotations")) {
+                        JSONArray jsonArray = (JSONArray) response2.get("annotations");
+                        if (jsonArray.length() != 0) {
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject explrObject = jsonArray.getJSONObject(i);
+                                int begin = (int) explrObject.get("start");
+                                int end = (int) explrObject.get("end");
+                                double link_probability = explrObject.getDouble("link_probability");
+                                logger.info("Question: {}", explrObject);
+                                logger.info("Begin: {}", begin);
+                                logger.info("end: {}", end);
+                                logger.info("link_probability: {}", link_probability);
+                                String uri = (String) explrObject.get("title");
+                                String finalUri = "http://dbpedia.org/resource/" + uri.replace(" ", "_");
+                                //String finalUri1= "http://dbpedia.org/resource/"+uri.replace("%20", "_");
+                                logger.info("Here {}", finalUri);
+                                //logger.info("Here {}", finalUri1);
 
-                            Link l = new Link();
-                            l.begin = (int) explrObject.get("begin");
-                            l.end = (int) explrObject.get("end")+1;
-                            l.link= explrObject.getString("link");
-                            links.add(l);
-                        }
-                    }
-                    flag=1;
-
-                    break;
-                }
-
-
-            }
-            br.close();
-            if(flag==0)
-            {
-
-                //ArrayList<Link> links = new ArrayList<Link>();
-                logger.info("Question {}", myQuestion);
-
-                String thePath = "";
-                thePath = URLEncoder.encode(myQuestion, "UTF-8");
-                logger.info("Path {}", thePath);
-
-                HttpClient httpclient = HttpClients.createDefault();
-                HttpGet httpget = new HttpGet("https://tagme.d4science.org/tagme/tag?gcube-token=c0c5a908-eb13-4219-9516-450a9f6d3bc6-843339462&text="+thePath);
-                //httpget.addHeader("User-Agent", USER_AGENT);
-                HttpResponse response = httpclient.execute(httpget);
-                try {
-                    HttpEntity entity = response.getEntity();
-                    if (entity != null) {
-                        InputStream instream = entity.getContent();
-                        // String result = getStringFromInputStream(instream);
-                        String text = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
-                        JSONObject response2 = new JSONObject(text);
-                        logger.info("response2: {}", response2);
-                        if(response2.has("annotations")) {
-                            JSONArray jsonArray = (JSONArray) response2.get("annotations");
-                            if(jsonArray.length()!=0) {
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    JSONObject explrObject = jsonArray.getJSONObject(i);
-                                    int begin = (int) explrObject.get("start");
-                                    int end = (int) explrObject.get("end");
-                                    double link_probability = explrObject.getDouble("link_probability");
-                                    logger.info("Question: {}", explrObject);
-                                    logger.info("Begin: {}", begin);
-                                    logger.info("end: {}", end);
-                                    logger.info("link_probability: {}", link_probability);
-                                    String uri = (String) explrObject.get("title");
-                                    String finalUri = "http://dbpedia.org/resource/"+uri.replace(" ", "_");
-                                    //String finalUri1= "http://dbpedia.org/resource/"+uri.replace("%20", "_");
-                                    logger.info("Here {}", finalUri);
-                                    //logger.info("Here {}", finalUri1);
-
-                                    Link l = new Link();
-                                    l.begin = begin;
-                                    l.end = end+1;
-                                    l.link= finalUri;
-                                    if(link_probability >= 0.50) {
-                                        logger.info("Adding link_probability >= 0.65 uri {}", finalUri);
-                                        links.add(l);
-                                    }
-
+                                Link l = new Link();
+                                l.begin = begin;
+                                l.end = end + 1;
+                                l.link = finalUri;
+                                if (link_probability >= 0.50) {
+                                    logger.info("Adding link_probability >= 0.65 uri {}", finalUri);
+                                    links.add(l);
                                 }
+
                             }
                         }
                     }
-                    BufferedWriter buffWriter = new BufferedWriter(new FileWriter("qanary_component-NED-tagme/src/main/resources/questions.txt", true));
-                    Gson gson = new Gson();
-
-                    String json = gson.toJson(links);
-                    logger.info("gsonwala: {}",json);
-
-                    String MainString = myQuestion + " Answer: "+json;
-                    buffWriter.append(MainString);
-                    buffWriter.newLine();
-                    buffWriter.close();
                 }
-                catch (ClientProtocolException e) {
-                    logger.info("Exception: {}", e);
-                    // TODO Auto-generated catch block
-                } catch (IOException e1) {
-                    logger.info("Except: {}", e1);
-                    // TODO Auto-generated catch block
+
+                if (cacheEnabled) {
+                    writeToCache(myQuestion, links);
                 }
+            } catch (ClientProtocolException e) {
+                logger.info("Exception: {}", e);
+                // TODO Auto-generated catch block
+            } catch (IOException e1) {
+                logger.info("Except: {}", e1);
+                // TODO Auto-generated catch block
             }
-        }
-        catch(FileNotFoundException e)
-        {
-            //handle this
-            logger.info("{}", e);
         }
 
         logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
@@ -214,7 +168,7 @@ public class TagmeNED extends QanaryComponent {
                     + "           ] " //
                     + "  ] . " //
                     + "  ?a oa:hasBody <" + l.link + "> ;" //
-                    + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
+                    + "     oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; " //
                     + "	    oa:annotatedAt ?time  " + "}} " //
                     + "WHERE { " //
                     + "  BIND (IRI(str(RAND())) AS ?a) ." //
@@ -224,6 +178,77 @@ public class TagmeNED extends QanaryComponent {
             myQanaryUtils.updateTripleStore(sparql, myQanaryQuestion.getEndpoint().toString()); //myQanaryUtils.updateTripleStore(sparql);
         }
         return myQanaryMessage;
+    }
+
+    private FileCacheResult readFromCache(String myQuestion) throws IOException {
+        final FileCacheResult cacheResult = new FileCacheResult();
+        try {
+            File f = ResourceUtils.getFile(cacheFile);
+            FileReader fr = new FileReader(f);
+            BufferedReader br = new BufferedReader(fr);
+            String line;
+
+
+            while ((line = br.readLine()) != null && !cacheResult.hasCacheResult) {
+                String question = line.substring(0, line.indexOf("Answer:"));
+                logger.info("{}", line);
+                logger.info("{}", myQuestion);
+
+                if (question.trim().equals(myQuestion)) {
+                    String Answer = line.substring(line.indexOf("Answer:") + "Answer:".length());
+                    logger.info("Here {}", Answer);
+                    Answer = Answer.trim();
+                    JSONArray jsonArr = new JSONArray(Answer);
+                    if (jsonArr.length() != 0) {
+                        for (int i = 0; i < jsonArr.length(); i++) {
+                            JSONObject explrObject = jsonArr.getJSONObject(i);
+
+                            logger.info("Question: {}", explrObject);
+
+                            Link l = new Link();
+                            l.begin = (int) explrObject.get("begin");
+                            l.end = (int) explrObject.get("end") + 1;
+                            l.link = explrObject.getString("link");
+                            cacheResult.links.add(l);
+                        }
+                    }
+                    cacheResult.hasCacheResult = true;
+                    logger.info("hasCacheResult {}", cacheResult.hasCacheResult);
+
+                    break;
+                }
+
+
+            }
+            br.close();
+        } catch (FileNotFoundException e) {
+            //handle this
+            logger.info("{}", e);
+        }
+        return cacheResult;
+    }
+
+    private void writeToCache(String myQuestion, ArrayList<Link> links) throws IOException {
+        try {
+            BufferedWriter buffWriter = new BufferedWriter(new FileWriter("qanary_component-NED-tagme/src/main/resources/questions.txt", true));
+            Gson gson = new Gson();
+
+            String json = gson.toJson(links);
+            logger.info("gsonwala: {}", json);
+
+            String MainString = myQuestion + " Answer: " + json;
+            buffWriter.append(MainString);
+            buffWriter.newLine();
+            buffWriter.close();
+        } catch (FileNotFoundException e) {
+            //handle this
+            logger.info("{}", e);
+        }
+    }
+
+    class FileCacheResult {
+        public ArrayList<Link> links = new ArrayList<>();
+        public boolean hasCacheResult;
     }
 
     class Link {
