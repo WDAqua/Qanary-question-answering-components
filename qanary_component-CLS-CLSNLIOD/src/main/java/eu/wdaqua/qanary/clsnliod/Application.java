@@ -27,7 +27,6 @@ import eu.wdaqua.qanary.clsnliod.DbpediaRecorodClass;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 
 @SpringBootApplication
-@EnableAutoConfiguration
 @ComponentScan("eu.wdaqua.qanary.component")
 /**
  * basic class for wrapping functionality to a Qanary component
@@ -42,21 +41,21 @@ public class Application {
 	* @return
 	*/
 	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
-		return new ClsNliodCls(applicationName);
+	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName,
+										   @Value("${cls-clsnliod.cache.enabled}") final Boolean cacheEnabled,
+										   @Value("${cls-clsnliod.cache.file}") final String cacheFile) {
+		return new ClsNliodCls(applicationName, cacheEnabled, cacheFile);
 	}
 	
 	
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
-      DbpediaRecorodClass.createDbpediaRecorodClass();
-      /*  ClsNliodCls clsNliodCls =  new ClsNliodCls();
-        QanaryMessage q =new QanaryMessage();
-        clsNliodCls.process(q);*/
+        DbpediaRecorodClass.createDbpediaRecorodClass();
     }
 }
 
 class DbpediaRecorodClass{
+
 	private static TreeMap<String,String> map = new TreeMap<String,String>() ;
 	//private static final Logger logger = LoggerFactory.getLogger(DbpediaRecorodProperty.class);
 
@@ -80,7 +79,7 @@ class DbpediaRecorodClass{
 		
 		System.out.println("Starting createDbpediaRecorodProperty()");
 		try {
-			File filename = new File("src/main/resources/dbpedia_3Eng_class.ttl");
+			File filename = new File("qanary_component-CLS-CLSNLIOD/src/main/resources/dbpedia_3Eng_class.ttl");
 			//File filename = new File("src/main/resources/dbpedia_3Eng_class.ttl");
 			System.out.println(filename.getAbsolutePath());
 
