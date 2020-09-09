@@ -46,10 +46,16 @@ public class TagmeNED extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(TagmeNED.class);
 
     private final String applicationName;
+    private final Boolean workLocally;
+    private final String tagMeServiceURL;
 
-    public TagmeNED(@Value("${spring.application.name}") final String applicationName) {
-        this.applicationName = applicationName;
-    }
+	public TagmeNED(@Value("${spring.application.name}") final String applicationName,
+			@Value("${tagme.localprocessing}") final Boolean workLocally,
+			@Value("${tagme.service.url}") final String tagMeServiceURL) {
+		this.applicationName = applicationName;
+		this.workLocally = workLocally;
+		this.tagMeServiceURL = tagMeServiceURL;
+	}
 
     /**
      * implement this method encapsulating the functionality of your Qanary
@@ -59,63 +65,23 @@ public class TagmeNED extends QanaryComponent {
     @Override
     public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
         logger.info("process: {}", myQanaryMessage);
-        // TODO: implement processing of question
 
         QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage);
+        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<>(myQanaryMessage);
         String myQuestion = myQanaryQuestion.getTextualRepresentation();
 
-        ArrayList<Link> links = new ArrayList<Link>();
+        ArrayList<Link> links = new ArrayList<>();
 
-        logger.info("Question {}", myQuestion);
         try {
-            File f = new File("../src/main/resources/questions.txt"); //File f = new File("qanary_component-NED-tagme/src/main/resources/questions.txt");
-            FileReader fr = new FileReader(f);
-            BufferedReader br  = new BufferedReader(fr);
-            int flag = 0;
-            String line;
-//			Object obj = parser.parse(new FileReader("DandelionNER.json"));
-//			JSONObject jsonObject = (JSONObject) obj;
-//			Iterator<?> keys = jsonObject.keys();
+        	int flag = 0;
 
-            while((line = br.readLine()) != null && flag == 0) {
-                String question = line.substring(0, line.indexOf("Answer:"));
-                logger.info("{}", line);
-                logger.info("{}", myQuestion);
-
-                if(question.trim().equals(myQuestion))
-                {
-                    String Answer = line.substring(line.indexOf("Answer:")+"Answer:".length());
-                    logger.info("Here {}", Answer);
-                    Answer = Answer.trim();
-                    JSONArray jsonArr =new JSONArray(Answer);
-                    if(jsonArr.length()!=0)
-                    {
-                        for (int i = 0; i < jsonArr.length(); i++)
-                        {
-                            JSONObject explrObject = jsonArr.getJSONObject(i);
-
-                            logger.info("Question: {}", explrObject);
-
-                            Link l = new Link();
-                            l.begin = (int) explrObject.get("begin");
-                            l.end = (int) explrObject.get("end")+1;
-                            l.link= explrObject.getString("link");
-                            links.add(l);
-                        }
-                    }
-                    flag=1;
-
-                    break;
-                }
-
-
-            }
-            br.close();
+        	// for test purposes only
+        	if(workLocally) {
+        		flag = processLocalQuestions(myQuestion, links);
+        	}
+        	
             if(flag==0)
             {
-
-                //ArrayList<Link> links = new ArrayList<Link>();
                 logger.info("Question {}", myQuestion);
 
                 String thePath = "";
@@ -123,8 +89,10 @@ public class TagmeNED extends QanaryComponent {
                 logger.info("Path {}", thePath);
 
                 HttpClient httpclient = HttpClients.createDefault();
-                HttpGet httpget = new HttpGet("https://tagme.d4science.org/tagme/tag?gcube-token=c0c5a908-eb13-4219-9516-450a9f6d3bc6-843339462&text="+thePath);
-                //httpget.addHeader("User-Agent", USER_AGENT);
+                String serviceUrl = tagMeServiceURL+thePath;
+                logger.info("Service call: {}", serviceUrl);
+                HttpGet httpget = new HttpGet(serviceUrl);
+                
                 HttpResponse response = httpclient.execute(httpget);
                 try {
                     HttpEntity entity = response.getEntity();
@@ -165,23 +133,23 @@ public class TagmeNED extends QanaryComponent {
                             }
                         }
                     }
+                    
+                    // TODO: needs to be improved to work inside of a JAR file as expected 
                     BufferedWriter buffWriter = new BufferedWriter(new FileWriter("qanary_component-NED-tagme/src/main/resources/questions.txt", true));
                     Gson gson = new Gson();
 
                     String json = gson.toJson(links);
                     logger.info("gsonwala: {}",json);
 
-                    String MainString = myQuestion + " Answer: "+json;
-                    buffWriter.append(MainString);
+                    String mainString = myQuestion + " Answer: "+json;
+                    buffWriter.append(mainString);
                     buffWriter.newLine();
                     buffWriter.close();
                 }
                 catch (ClientProtocolException e) {
                     logger.info("Exception: {}", e);
-                    // TODO Auto-generated catch block
                 } catch (IOException e1) {
                     logger.info("Except: {}", e1);
-                    // TODO Auto-generated catch block
                 }
             }
         }
@@ -191,18 +159,15 @@ public class TagmeNED extends QanaryComponent {
             logger.info("{}", e);
         }
 
-        logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-        // TODO: insert data in QanaryMessage.outgraph
-
-        logger.info("apply vocabulary alignment on outgraph");
-        // TODO: implement this (custom for every component)
-
+        logger.info("store data in graph {}", myQanaryMessage.getEndpoint());
 
         for (Link l : links) {
-            String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
+            String sparql = "" //
+            		+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
                     + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
                     + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-                    + "INSERT { " + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
+                    + "INSERT { " // 
+                    + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
                     + "  ?a a qa:AnnotationOfInstance . " //
                     + "  ?a oa:hasTarget [ " //
                     + "           a    oa:SpecificResource; " //
@@ -214,17 +179,66 @@ public class TagmeNED extends QanaryComponent {
                     + "           ] " //
                     + "  ] . " //
                     + "  ?a oa:hasBody <" + l.link + "> ;" //
-                    + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
+                    + "     oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; " //
                     + "	    oa:annotatedAt ?time  " + "}} " //
                     + "WHERE { " //
                     + "  BIND (IRI(str(RAND())) AS ?a) ." //
                     + "  BIND (now() as ?time) " //
                     + "}";
-            logger.debug("Sparql query: {}", sparql);
-            myQanaryUtils.updateTripleStore(sparql, myQanaryQuestion.getEndpoint().toString()); //myQanaryUtils.updateTripleStore(sparql);
+            logger.debug("SPARQL query: {}", sparql);
+            myQanaryUtils.updateTripleStore(sparql, myQanaryQuestion.getEndpoint().toString()); 
         }
         return myQanaryMessage;
     }
+
+	private int processLocalQuestions(String myQuestion, ArrayList<Link> links)
+			throws FileNotFoundException, IOException {
+		// TODO: needs to be replaced with getResourceAsStream to work inside of JAR file
+		File f = new File("../src/main/resources/questions.txt"); //File f = new File("qanary_component-NED-tagme/src/main/resources/questions.txt");
+		FileReader fr = new FileReader(f);
+		BufferedReader br  = new BufferedReader(fr);
+		int flag = 0;
+		String line;
+//			Object obj = parser.parse(new FileReader("DandelionNER.json"));
+//			JSONObject jsonObject = (JSONObject) obj;
+//			Iterator<?> keys = jsonObject.keys();
+
+		while((line = br.readLine()) != null && flag == 0) {
+		    String question = line.substring(0, line.indexOf("Answer:"));
+		    logger.info("{}", line);
+		    logger.info("{}", myQuestion);
+
+		    if(question.trim().equals(myQuestion))
+		    {
+		        String answer = line.substring(line.indexOf("Answer:")+"Answer:".length());
+		        logger.info("Here {}", answer);
+		        answer = answer.trim();
+		        JSONArray jsonArr =new JSONArray(answer);
+		        if(jsonArr.length()!=0)
+		        {
+		            for (int i = 0; i < jsonArr.length(); i++)
+		            {
+		                JSONObject explrObject = jsonArr.getJSONObject(i);
+
+		                logger.info("Question: {}", explrObject);
+
+		                Link l = new Link();
+		                l.begin = (int) explrObject.get("begin");
+		                l.end = (int) explrObject.get("end")+1;
+		                l.link= explrObject.getString("link");
+		                links.add(l);
+		            }
+		        }
+		        flag=1;
+
+		        break;
+		    }
+
+
+		}
+		br.close();
+		return flag;
+	}
 
     class Link {
         public int begin;
