@@ -10,7 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
 import eu.wdaqua.qanary.component.QanaryComponent;
 
 @SpringBootApplication
-@EnableAutoConfiguration
 @ComponentScan("eu.wdaqua.qanary.component")
 /**
  * basic class for wrapping functionality to a Qanary component note: there is
@@ -26,12 +25,14 @@ public class Application {
 	 */
 	@Bean
 	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName,
-			@Value("${tagme.localprocessing}") final Boolean workLocally,
-			@Value("${tagme.service.url}") final String tagMeServiceURL) {
-		return new TagmeNED(applicationName, workLocally, tagMeServiceURL);
+			@Value("${ned-tagme.cache.enabled}") final Boolean cacheEnabled,
+			@Value("${ned-tagme.cache.file}") final String cacheFile,
+			@Value("${ned-tagme.service.url}") final String tagMeServiceURL) {
+		return new TagmeNED(applicationName, cacheEnabled, cacheFile, tagMeServiceURL);
 	}
-
+	
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
+
 }

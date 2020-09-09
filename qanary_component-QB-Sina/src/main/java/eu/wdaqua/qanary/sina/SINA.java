@@ -205,7 +205,8 @@ public class SINA extends QanaryComponent {
 		logger.info("Path to SINA JAR file: {}", sinaJarFileLocation);
 
 		String queryCandidates = executeExternalSinaJarFile(argument);
-		queryCandidates = queryCandidates.trim().substring(1, queryCandidates.length() - 1);
+		queryCandidates = queryCandidates.trim();
+		queryCandidates = queryCandidates.substring(1, queryCandidates.length() - 1);
 
 		return queryCandidates.split(",");
 	}
