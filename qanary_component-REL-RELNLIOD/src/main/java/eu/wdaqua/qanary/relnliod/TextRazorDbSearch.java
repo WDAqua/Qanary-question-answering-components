@@ -2,39 +2,29 @@ package eu.wdaqua.qanary.relnliod;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Scanner;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TextRazorDbSearch {
-	//private static final Logger logger = LoggerFactory.getLogger(TextRazorDbSearch.class);
+
 	private ArrayList<String> sentencesWord = new ArrayList<String>();
 	private ArrayList<String> propertyList = new ArrayList<String>();
-	private static ArrayList<String> filteredWordList = new ArrayList<String>();
 	private HashSet<String> dbLinkListSet = new HashSet<String>();
 	private boolean  relationsFlag = false;
+	private final DbpediaRecordProperty dbpediaRecordProperty;
+	private final RemovalList removalList;
+
+	public TextRazorDbSearch(final DbpediaRecordProperty dbpediaRecordProperty, RemovalList removalList) {
+		this.dbpediaRecordProperty = dbpediaRecordProperty;
+		this.removalList = removalList;
+	}
+
 
 	public ArrayList<String> createArrayWordsList(JSONArray jsonArraySent) {
 
@@ -139,14 +129,14 @@ public class TextRazorDbSearch {
 		System.out.println("createPropertyList: "+propertyList.toString());
 	}
 
-	public static String searchDbLinkInTTL(String myKey) {
+	public String searchDbLinkInTTL(String myKey) {
 		
 		String dbpediaProperty = null;
 		try {
 		String myKey1 = myKey.trim();
 		if(myKey1!=null && !myKey1.equals("")) {
 		System.out.println("searchDbLinkInTTL: "+myKey1);
-			for (Entry<String, String> e : DbpediaRecorodProperty.get().tailMap(myKey1).entrySet()) {
+			for (Entry<String, String> e : dbpediaRecordProperty.get().tailMap(myKey1).entrySet()) {
 				    if(e.getKey().contains(myKey1)) 
 				    {
 				     	dbpediaProperty = e.getValue();
@@ -175,12 +165,11 @@ public class TextRazorDbSearch {
 		return dbpediaProperty;
 	}
 
-	public static String RemoveSubstring(String str) {
+	public String RemoveSubstring(String str) {
 		String listString = null;
 		//System.out.println("RemoveSubstring Start: "+ str);
 		ArrayList<String> strArrayList = new ArrayList<String>(Arrays.asList(str.split("\\s+")));
-		for (String s : filteredWordList) {
-		     
+		for (String s : removalList.getFilteredWordList()) {
 			strArrayList.remove(s);
 		}
 		
@@ -200,28 +189,7 @@ public class TextRazorDbSearch {
 		System.out.println("RemoveSubstring End: "+listString.trim());
 		return listString.trim();
 	}
-	
-	public static void createFilteredWordList() {
-		System.out.println("createFilteredWordList():");
-		try {
-		File filename = new File("src/main/resources/removal_list.txt");
-		//File filename1 = new File("qanary_component-REL-RELNLIOD/src/main/resources/removal_list.txt");
-		System.out.println(filename.getPath());
-		System.out.println(filename.getAbsolutePath());
-		Scanner in = new Scanner(new FileReader(filename.getAbsolutePath()));
-		while(in.hasNext()) {
-			filteredWordList.add((in.next().toString().trim()));
-		}
-		in.close();
-		
-		System.out.println(filteredWordList.toString());
-		
-		}
-		catch(Exception e) {
-			System.out.println("createFilteredWordList: Exception "+ e.toString());
-		}
-		
-	}
+
 	public void createDbLinkListSet(ArrayList<String> arrayListWords) {
 		
 		if (!arrayListWords.isEmpty()) {
@@ -229,12 +197,12 @@ public class TextRazorDbSearch {
 			if (!propertyList.isEmpty()) {
 
 				for (int i = 0; i < propertyList.size(); i++) {
-					String str = TextRazorDbSearch.searchDbLinkInTTL(propertyList.get(i));
+					String str = searchDbLinkInTTL(propertyList.get(i));
 					if ( str!= null) 
 						dbLinkListSet.add(str);
 
 					else {
-						String str1 = TextRazorDbSearch.searchDbLinkInTTL(RemoveSubstring(propertyList.get(i)));
+						String str1 = searchDbLinkInTTL(RemoveSubstring(propertyList.get(i)));
                          	if(str1!= null)
 							dbLinkListSet.add(str1);
 					 }
