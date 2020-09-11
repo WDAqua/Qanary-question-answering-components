@@ -161,7 +161,7 @@ public class SINA extends QanaryComponent {
 							+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " // 
 							+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
 							+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-							+ "SELECT ?url " //  
+							+ "SELECT ?uri " //
 							+ "FROM <" + qanaryQuestion.getInGraph() + "> " //
 							+ "WHERE { " //
 							+ "  ?a a qa:AnnotationOfClass . " //  
@@ -169,7 +169,7 @@ public class SINA extends QanaryComponent {
 							+ "           a    oa:SpecificResource; " // 
 							+ "           oa:hasSource    <" + qanaryQuestion.getUri() + ">; " // 
 							+ "  ] ; " //  
-							+ "     oa:hasBody ?url ;" // 
+							+ "     oa:hasBody ?uri ;" //
 							+ "	    oa:annotatedAt ?time  " //  
 							+ "} " // 
 							+ "ORDER BY ?start ";
