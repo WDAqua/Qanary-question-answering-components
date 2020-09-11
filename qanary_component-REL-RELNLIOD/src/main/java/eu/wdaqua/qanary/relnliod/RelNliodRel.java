@@ -1,10 +1,6 @@
 package eu.wdaqua.qanary.relnliod;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Map.Entry;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -25,7 +21,6 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -40,7 +35,6 @@ import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.relnliod.DbpediaRecorodProperty;
 import org.springframework.util.ResourceUtils;
 
 @Component
@@ -60,17 +54,23 @@ public class RelNliodRel extends QanaryComponent {
     private final String textRazorServiceKey;
     private final Boolean cacheEnabled;
     private final String cacheFile;
+	private final DbpediaRecordProperty dbpediaRecordProperty;
+	private final RemovalList removalList;
 
-    public RelNliodRel(@Value("${spring.application.name}") final String applicationName,
+	public RelNliodRel(@Value("${spring.application.name}") final String applicationName,
                        @Value("${rel-nliod.cache.enabled}") final Boolean cacheEnabled,
                        @Value("${rel-nliod.cache.file}") final String cacheFile,
                        @Value("${rel-nliod.service.url}") final String textRazorServiceURL,
-                       @Value("${rel-nliod.service.key}") final String textRazorServiceKey) {
+                       @Value("${rel-nliod.service.key}") final String textRazorServiceKey,
+					   final DbpediaRecordProperty dbpediaRecordProperty,
+					   final RemovalList removalList) {
         this.applicationName = applicationName;
         this.textRazorServiceURL = textRazorServiceURL;
         this.cacheEnabled = cacheEnabled;
         this.cacheFile = cacheFile;
         this.textRazorServiceKey = textRazorServiceKey;
+        this.dbpediaRecordProperty = dbpediaRecordProperty;
+        this.removalList = removalList;
     }
 
     /**
@@ -101,11 +101,11 @@ public class RelNliodRel extends QanaryComponent {
             HttpPost httppost = new HttpPost(textRazorServiceURL);
             httppost.setHeader("x-textrazor-key", textRazorServiceKey);
             httppost.setHeader("Content-Type", "application/x-www-form-urlencoded");
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            List<NameValuePair> params = new ArrayList<>();
             params.add(new BasicNameValuePair("text", myQuestion.toLowerCase()));
             params.add(new BasicNameValuePair("extractors", "relations,words"));
             httppost.setEntity(new UrlEncodedFormEntity(params));
-            TextRazorDbSearch textRazorDbSearch = new TextRazorDbSearch();
+            TextRazorDbSearch textRazorDbSearch = new TextRazorDbSearch(dbpediaRecordProperty, removalList);
             try {
                 HttpResponse response = httpclient.execute(httppost);
                 HttpEntity entity = response.getEntity();
