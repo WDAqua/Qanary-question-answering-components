@@ -21,7 +21,6 @@ import org.springframework.context.annotation.ComponentScan;
 import eu.wdaqua.qanary.component.QanaryComponent;
 
 @SpringBootApplication
-@EnableAutoConfiguration
 @ComponentScan("eu.wdaqua.qanary.component")
 /**
  * basic class for wrapping functionality to a Qanary component
@@ -36,8 +35,12 @@ public class Application {
 	* @return
 	*/
 	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
-		return new RelNliodRel(applicationName);
+	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName,
+										   @Value("${rel-nliod.cache.enabled}") final Boolean cacheEnabled,
+										   @Value("${rel-nliod.cache.file}") final String cacheFile,
+										   @Value("${rel-nliod.service.url}") final String textRazorServiceURL,
+										   @Value("${rel-nliod.service.key}") final String textRazorServiceKey) {
+		return new RelNliodRel(applicationName, cacheEnabled, cacheFile, textRazorServiceURL, textRazorServiceKey);
 	}
 	
 	
