@@ -2,7 +2,6 @@ package eu.wdaqua.qanary.tagme;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -27,8 +26,9 @@ public class Application {
 	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName,
 			@Value("${ned-tagme.cache.enabled}") final Boolean cacheEnabled,
 			@Value("${ned-tagme.cache.file}") final String cacheFile,
-			@Value("${ned-tagme.service.url}") final String tagMeServiceURL) {
-		return new TagmeNED(applicationName, cacheEnabled, cacheFile, tagMeServiceURL);
+			@Value("${ned-tagme.service.url}") final String tagMeServiceURL,
+			@Value("${ned-tagme.link_propability.threshold:0.25}") final float tagMeMinimumLinkPropability) {
+		return new TagmeNED(applicationName, cacheEnabled, cacheFile, tagMeServiceURL, tagMeMinimumLinkPropability);
 	}
 	
 	public static void main(String[] args) {
