@@ -1,0 +1,7 @@
+SPARQLWrapper
+Flask
+requests
+configparser
+argparse
+waitress
+qanary-helpers
