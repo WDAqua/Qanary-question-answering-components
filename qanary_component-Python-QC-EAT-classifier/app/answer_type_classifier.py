@@ -13,7 +13,7 @@ answer_type_classifier = Blueprint('answer_type_classifier', __name__, template_
 # default config file (use -c parameter on command line specify a custom config file)
 configfile = "app.conf"
 
-configuration = Configuration(configfile, ['servicename', 'serviceversion'])
+configuration = Configuration(configfile, ['servicename', 'serviceversion', 'classificationendpoint'])
 
 @answer_type_classifier.route("/annotatequestion", methods=['POST'])
 def qanaryService():
@@ -31,7 +31,7 @@ def qanaryService():
     
     data = {'questions': [text]} # creating params dict for the service
     #TODO: move URL to config file
-    json_response = requests.post('http://webengineering.ins.hs-anhalt.de:41066/answer_type_classifier/predict', data=data) # making a request to the service
+    json_response = requests.post(configuration.classificationendpoint, data=data) # making a request to the service
     predicted_answer_type = json.loads(json_response.text)['predictions'][0]
 
     #building SPARQL query
@@ -70,10 +70,3 @@ def index():
     """an examplary GET endpoint returning "hello world (String)"""
     logging.info("host_url: %s" % (request.host_url,))
     return "Hi! \n This is Answer Type Classification component, based on DBpedia Ontology."
-
-
-@answer_type_classifier.route("/", methods=['POST'])
-def indexJson():
-    """a POST endpoint returning a hello world JSON"""
-    data = {'Hello': 'World'}
-    return jsonify(data)
