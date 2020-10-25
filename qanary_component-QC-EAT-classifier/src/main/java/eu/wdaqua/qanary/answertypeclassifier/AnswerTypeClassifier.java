@@ -26,12 +26,14 @@ import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 
-
 @Component
 /**
- * This component connected automatically to the Qanary pipeline.
- * The Qanary pipeline endpoint defined in application.properties (spring.boot.admin.url)
- * @see <a href="https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F" target="_top">Github wiki howto</a>
+ * This component connected automatically to the Qanary pipeline. The Qanary
+ * pipeline endpoint defined in application.properties (spring.boot.admin.url)
+ * 
+ * @see <a href=
+ *      "https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F"
+ *      target="_top">GitHub wiki howto</a>
  */
 public class AnswerTypeClassifier extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(AnswerTypeClassifier.class);
@@ -58,20 +60,11 @@ public class AnswerTypeClassifier extends QanaryComponent {
 
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
 
-		// STEP 1: get the required data from the Qanary triplestore (the global process
-		// memory)
-
-		// if required, then fetch the origin question (here the question is a
-		// textual/String question)
 		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<>(myQanaryMessage);
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 
-		// STEP 2: compute new knowledge about the given question
-
 		String jsonString = String.format("{\"questions\":[\"%s\"]}", myQuestion);
-		StringEntity entity = new StringEntity(
-				jsonString,
-				ContentType.APPLICATION_JSON);
+		StringEntity entity = new StringEntity(jsonString, ContentType.APPLICATION_JSON);
 
 		HttpClient client = HttpClients.custom().build();
 		HttpUriRequest request = RequestBuilder.post() //
@@ -90,34 +83,32 @@ public class AnswerTypeClassifier extends QanaryComponent {
 		JsonArray predictions = root.get("predictions").getAsJsonArray();
 		String predictedClass = predictions.get(0).toString().replace("\"", "");
 
-		// STEP 3: store computed knowledge about the given question into the Qanary
+		// store computed knowledge about the given question into the Qanary
 		// triplestore (the global process memory)
 
 		logger.info("store data in graph {} of Qanary triplestore endpoint {}", //
 				myQanaryMessage.getValues().get(myQanaryMessage.getOutGraph()), //
 				myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-		// push data to the Qanary triplestore
 
-		String sparqlUpdateQuery = String.format("PREFIX qa: <http://www.wdaqua.eu/qa#>\n" +
-						"                   PREFIX oa: <http://www.w3.org/ns/openannotation/core/>\n" +
-						"                   PREFIX dbo: <http://dbpedia.org/ontology/>\n" +
-						"\n" +
-						"                   INSERT {\n" +
-						"                   GRAPH <%s> {\n" +
-						"                       ?a a qa:AnnotationOfAnswerTypeClassifier .\n" +
-						"                       ?a qa:hasAnswerType dbo:%s .\n" +
-						"\n" +
-						"                       ?a oa:annotatedBy <urn:qanary:%s> .\n" +
-						"                       ?a oa:annotatedAt ?time .\n" +
-						"                       }\n" +
-						"                   }\n" +
-						"                   WHERE {\n" +
-						"                       BIND (IRI(str(RAND())) AS ?a) .\n" +
-						"                       BIND (now() as ?time) \n" +
-						"                   }",
-				myQanaryQuestion.getOutGraph(),
-				predictedClass,
-				this.applicationName + ":" + this.applicationVersion);
+		// push data to the Qanary triplestore
+		String sparqlUpdateQuery = String.format("" //
+				+ "PREFIX qa: <http://www.wdaqua.eu/qa#>\n" //
+				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/>\n" //
+				+ "PREFIX dbo: <http://dbpedia.org/ontology/>\n" + "\n" //
+				+ "INSERT {\n" //
+				+ "	GRAPH <%s> {\n" //
+				+ "		?a a qa:AnnotationOfAnswerTypeClassifier .\n" //
+				+ "		?a qa:hasAnswerType dbo:%s .\n" //
+				+ "		\n" //
+				+ "		?a oa:annotatedBy <urn:qanary:%s> .\n" //
+				+ "		?a oa:annotatedAt ?time .\n" //
+				+ "	}\n" //
+				+ "}\n" //
+				+ "WHERE {\n" //
+				+ "		BIND (IRI(str(RAND())) AS ?a) .\n" //
+				+ "     BIND (now() as ?time) \n" //
+				+ "}", //
+				myQanaryQuestion.getOutGraph(), predictedClass, this.applicationName + ":" + this.applicationVersion);
 
 		myQanaryUtils.updateTripleStore(sparqlUpdateQuery, myQanaryMessage.getEndpoint());
 

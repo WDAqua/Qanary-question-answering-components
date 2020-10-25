@@ -20,8 +20,8 @@ ${AnsiColor.BLUE}k@@@@QKe9QQEK@@@@L   `@@@@@Q`  'K@@@@@w   S@@@@@;   ;@@@@@r  ,@
                                                                                                \meJFaaaaor      
                                                                                                 :LuoSfc;-       
 
-${AnsiBackground.WHITE}Application Title:   ADD SOMETHING HERE (in banner.txt)             ${AnsiBackground.DEFAULT} 
-${AnsiBackground.WHITE}Short Description:   ADD SOMETHING HERE (in banner.txt)             ${AnsiBackground.DEFAULT}
-${AnsiBackground.WHITE}Framework@GitHub:    https://github.com/WDAqua/Qanary               ${AnsiBackground.DEFAULT}
+${AnsiBackground.WHITE}Application Title:   Answer Type Classifier / Question Classifier             ${AnsiBackground.DEFAULT} 
+${AnsiBackground.WHITE}Short Description:   predicts DBpedia top-level classes for a given question  ${AnsiBackground.DEFAULT}
+${AnsiBackground.WHITE}Framework@GitHub:    https://github.com/WDAqua/Qanary                         ${AnsiBackground.DEFAULT}
 ${AnsiBackground.DEFAULT}${AnsiColor.DEFAULT}Spring Boot Version: ${spring-boot.version}
                                                                          
