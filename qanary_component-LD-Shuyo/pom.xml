@@ -81,7 +81,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>eu.wdaqua.qanary.ambiverse.Application</mainClass>
+					<mainClass>eu.wdaqua.qanary.languagedetection.Application</mainClass>
 				</configuration>
 				<executions>
 					<execution>
