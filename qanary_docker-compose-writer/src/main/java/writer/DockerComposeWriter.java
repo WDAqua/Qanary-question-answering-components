@@ -30,6 +30,7 @@ public class DockerComposeWriter {
     private String imagePrefix;
 
     private String pipelineImage;
+    private int pipelinePort;
     private String configUiImage;
 
     public DockerComposeWriter() {
@@ -40,7 +41,7 @@ public class DockerComposeWriter {
     fetches configuration from config.properties
      */
     private void configureWriter() {
-        File configuration = new File("qanary_docker-compose-writer/src/main/java/writer/config.properties");
+        File configuration = new File("qanary_docker-compose-writer/src/main/config.properties");
 
         try (FileReader reader = new FileReader(configuration)) {
             Properties properties = new Properties();
@@ -50,6 +51,7 @@ public class DockerComposeWriter {
             this.basePort = Integer.parseInt(properties.getProperty("basePort"));
             this.includePipelineService = Boolean.parseBoolean(properties.getProperty("includePipelineService"));
             this.pipelineImage = properties.getProperty("pipelineImage");
+            this.pipelinePort = Integer.parseInt(properties.getProperty("pipelinePort"));
             this.includeConfigUiService = Boolean.parseBoolean(properties.getProperty("includeConfigUiService"));
             this.configUiImage = properties.getProperty("configUiImage");
             this.imagePrefix = properties.getProperty("imagePrefix");
@@ -107,8 +109,9 @@ public class DockerComposeWriter {
                         "    image: "+this.pipelineImage+"\n" +
                         "    network_mode: host\n" +
                         "    ports:\n" +
-                        "      - \""+this.basePort+":8080\"\n\n";
+                        "      - \""+this.basePort+"\"\n\n";
 
+                this.pipelinePort = basePort;
                 this.basePort ++;
                 writer.write(pipeline);
             }
@@ -120,7 +123,7 @@ public class DockerComposeWriter {
                         "   image: "+this.configUiImage+"\n" +
                         "   network_mode: host\n" +
                         "   ports:\n" +
-                        "     - \""+this.basePort+":80\"\n\n";
+                        "     - \""+this.basePort+"\"\n\n";
 
                 this.basePort ++;
                 writer.write(configUi);
@@ -143,11 +146,11 @@ public class DockerComposeWriter {
 
             String dockerCompose = "" +
                     "  " + image + ":\n" +
-                    "    entrypoint: [\"java\", \"-jar\", \"/qanary-service.jar\", \"--server.port="+newPort+"\"]\n" +
+                    "    entrypoint: [\"java\", \"-jar\", \"/qanary-service.jar\", \"--server.port="+newPort+"\", \"--spring.boot.admin.url=http://0.0.0.0:"+this.pipelinePort+"\"]\n" +
                     "    image: " + this.imagePrefix + image + ":" + version + "\n" +
                     "    network_mode: host\n" +
                     "    ports: \n" +
-                    "      - \"" + newPort + ":"+newPort+"\"\n";
+                    "      - \"" + newPort+ "\"\n";
 
             writer.write(dockerCompose);
 
