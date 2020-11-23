@@ -118,7 +118,10 @@ public class ComicCharacterAlterEgoSimpleDBpediaQueryBuilder extends QanaryCompo
 					+ "INSERT { " //
 					+ "GRAPH <" + myQanaryMessage.getInGraph().toString() + ">  {" //
 					+ "        ?newAnnotation rdf:type qa:AnnotationOfAnswerSPARQL ." //
-					+ "        ?newAnnotation oa:hasTarget <urn:question:1> ." //
+					+ "        ?newAnnotation oa:hasTarget [ " //
+					+ "                 a    oa:SpecificResource; " //
+					+ "                 oa:hasSource    <" + qanaryQuestion.getUri() + ">; " //
+					+ "        ] . " //
 					+ "        ?newAnnotation oa:hasBody \""
 					+ dbpediaQuery.replace("\"", "\\\"").replace("\n", "\\n") + "\"^^xsd:string ." //
 					+ "        ?newAnnotation qa:score \"1.0\"^^xsd:float ."
