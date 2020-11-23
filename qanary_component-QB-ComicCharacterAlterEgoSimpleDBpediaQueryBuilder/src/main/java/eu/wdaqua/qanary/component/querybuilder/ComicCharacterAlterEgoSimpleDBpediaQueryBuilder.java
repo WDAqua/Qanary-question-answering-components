@@ -45,7 +45,7 @@ public class ComicCharacterAlterEgoSimpleDBpediaQueryBuilder extends QanaryCompo
 		logger.info("process: {}", myQanaryMessage);
 
 		//read question from database
-		QanaryQuestion<String> qanaryQuestion = new QanaryQuestion<String>(myQanaryMessage);
+		QanaryQuestion<String> qanaryQuestion = new QanaryQuestion<>(myQanaryMessage);
 		String question = qanaryQuestion.getTextualRepresentation();
 		QanaryUtils qanaryUtils = this.getUtils(myQanaryMessage);
 
@@ -75,8 +75,10 @@ public class ComicCharacterAlterEgoSimpleDBpediaQueryBuilder extends QanaryCompo
 				+ "                                     oa:end   ?endOfSpecificResource " //
 				+ "                                    ]" //
 				+ "                  ] ." //
-				+ "    ?a oa:annotatedBy <urn:qanary:"+this.applicationName+"> . " //
 				+ "    ?a oa:annotatedAt ?time ." //
+// 					   The component was originally built to look specifically for
+// 					   annotations of ComicCharacterNameSimpleNamedEntityRecognizer:
+//				+ "    ?a oa:annotatedBy <urn:qanary:component:ComicCharacterNameSimpleNamedEntityRecognizer> ." //
 				+ "}";
 
 
@@ -116,12 +118,15 @@ public class ComicCharacterAlterEgoSimpleDBpediaQueryBuilder extends QanaryCompo
 					+ "INSERT { " //
 					+ "GRAPH <" + myQanaryMessage.getInGraph().toString() + ">  {" //
 					+ "        ?newAnnotation rdf:type qa:AnnotationOfAnswerSPARQL ." //
-					+ "        ?newAnnotation oa:hasTarget <urn:question:1> ." //
+					+ "        ?newAnnotation oa:hasTarget [ " //
+					+ "                 a    oa:SpecificResource; " //
+					+ "                 oa:hasSource    <" + qanaryQuestion.getUri() + ">; " //
+					+ "        ] . " //
 					+ "        ?newAnnotation oa:hasBody \""
 					+ dbpediaQuery.replace("\"", "\\\"").replace("\n", "\\n") + "\"^^xsd:string ." //
 					+ "        ?newAnnotation qa:score \"1.0\"^^xsd:float ."
 					+ "        ?newAnnotation oa:annotatedAt ?time ." //
-					+ "        ?newAnnotation oa:annotatedBy <urn:service> ." //
+					+ "        ?newAnnotation oa:annotatedBy <urn:qanary:component:"+this.applicationName+"> ." //
 					+ "    }" //
 					+ "}" //
 					+ "WHERE {" //
