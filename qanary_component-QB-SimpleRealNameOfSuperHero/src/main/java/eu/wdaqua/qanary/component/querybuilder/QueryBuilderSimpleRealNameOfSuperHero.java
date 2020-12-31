@@ -117,7 +117,7 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 					+ "INSERT { " //
 					+ "GRAPH <" + myQanaryMessage.getInGraph().toString() + ">  {" //
 					+ "        ?newAnnotation rdf:type qa:AnnotationOfAnswerSPARQL ." //
-					+ "        ?newAnnotation oa:hasTarget <urn:question:1> ." //
+					+ "        ?newAnnotation oa:hasTarget <" + myQanaryQuestion.getUri().toString() + "> ." //
 					+ "        ?newAnnotation oa:hasBody \""
 					+ createdDBpediaQuery.replace("\"", "\\\"").replace("\n", "\\n") + "\"^^xsd:string ." //
 					// as it is rule based, a high confidence is expressed
