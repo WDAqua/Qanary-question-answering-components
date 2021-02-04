@@ -1,10 +1,17 @@
 package eu.wdaqua.qanary.languagedetection;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.JarURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -34,8 +41,37 @@ public class LanguageDetection extends QanaryComponent {
 		if (!languageProfileLoaded) {
 			languageProfileLoaded = true;
 			// location of the profile directory
-			String profileLocation = "language-detection/profiles";
-			DetectorFactory.loadProfile(getClass().getClassLoader().getResource(profileLocation).getFile());
+			String profileLocation = "language-detection/profiles/";
+
+			// main problem in LangDetect exists while referring to a profile directory inside of a JAR file 
+			try {
+				// running application OUTSIDE of JAR files
+				DetectorFactory.loadProfile(getClass().getClassLoader().getResource(profileLocation).getFile());
+			} catch (Exception e) {
+				// running application INSIDE of JAR files
+				String dirname = profileLocation;
+				Enumeration<URL> en = Detector.class.getClassLoader().getResources(dirname);
+				List<String> profiles = new ArrayList<>();
+				if (en.hasMoreElements()) {
+					URL url = en.nextElement();
+					JarURLConnection urlcon = (JarURLConnection) url.openConnection();
+					try (JarFile jar = urlcon.getJarFile();) {
+						Enumeration<JarEntry> entries = jar.entries();
+						while (entries.hasMoreElements()) {
+							String entry = entries.nextElement().getName();
+							if (entry.startsWith(dirname)) {
+								try (InputStream in = Detector.class.getClassLoader().getResourceAsStream(entry);) {
+									profiles.add(IOUtils.toString(in));
+								} catch (Exception e2) {
+									e2.printStackTrace();
+								}
+							}
+						}
+					}
+				}
+
+				DetectorFactory.loadProfile(profiles);
+			}
 		}
 	}
 
