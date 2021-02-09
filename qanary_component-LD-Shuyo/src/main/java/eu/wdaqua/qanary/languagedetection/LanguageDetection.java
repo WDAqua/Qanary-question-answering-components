@@ -3,6 +3,7 @@ package eu.wdaqua.qanary.languagedetection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,14 +15,17 @@ import java.util.jar.JarFile;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
 
+import eu.wdaqua.qanary.business.QanaryConfigurator;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
 
 /**
@@ -43,7 +47,8 @@ public class LanguageDetection extends QanaryComponent {
 			// location of the profile directory
 			String profileLocation = "language-detection/profiles/";
 
-			// main problem in LangDetect exists while referring to a profile directory inside of a JAR file 
+			// main problem in LangDetect exists while referring to a profile directory
+			// inside of a JAR file
 			try {
 				// running application OUTSIDE of JAR files
 				DetectorFactory.loadProfile(getClass().getClassLoader().getResource(profileLocation).getFile());
@@ -78,19 +83,21 @@ public class LanguageDetection extends QanaryComponent {
 	@Override
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("Qanary Message: {}", myQanaryMessage);
+		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
 
-		// STEP1: Retrieve the question
+		// STEP 1: Retrieve the question
 		QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
 
 		// question string is required as input for the service call
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 		logger.info("Question: {}", myQuestion);
 
-		// STEP2: The question is send to the language recognition library
+		// STEP 2: The question is send to the language recognition library
 		ArrayList<String> languages = (ArrayList<String>) getDetectedLanguages(myQuestion);
 
 		// STEP 3: The language tag is pushed to the Qanary triple store
-		myQanaryQuestion.setLanguageText(languages);
+		this.setLanguageText(languages, myQanaryQuestion.getUri(), myQanaryMessage.getOutGraph(),
+				myQanaryMessage.getEndpoint(), myQanaryUtils);
 
 		return myQanaryMessage;
 	}
@@ -113,4 +120,30 @@ public class LanguageDetection extends QanaryComponent {
 
 		return new ArrayList<>(Arrays.asList(detectedLangOfGivenQuestion));
 	}
+
+	public void setLanguageText(List<String> languages, URI question, URI outGraph, URI endpoint,
+			QanaryUtils myQanaryUtils) throws Exception {
+		String part = "";
+		for (int i = 0; i < languages.size(); i++) {
+			part += "?a oa:hasBody \"" + languages.get(i) + "\" . ";
+		}
+		String sparql = "" //
+				+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
+				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
+				+ "INSERT { " //
+				+ "	GRAPH <" + outGraph + "> { " //
+				+ "		?a a qa:AnnotationOfQuestionLanguage . " //
+				+ part //
+				+ "		?a 	oa:hasTarget <" + question + "> ; " //
+				+ "   		oa:annotatedBy <www.wdaqua.eu/qanary> ; " //
+				+ "   		oa:annotatedAt ?time  " //
+				+ " } " //
+				+ "} " //
+				+ "WHERE { " //
+				+ "	BIND (IRI(str(RAND())) AS ?a) . " //
+				+ "	BIND (now() as ?time) . " //
+				+ "}";
+		myQanaryUtils.updateTripleStore(sparql, endpoint);
+	}
+
 }
