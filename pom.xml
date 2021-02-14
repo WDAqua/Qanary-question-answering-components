@@ -59,6 +59,7 @@
                             <module>qanary_component-NED-Dandelion</module>
                             <module>qanary_component-NED-tagme</module>
                             <module>qanary_component-QC-EAT-classifier</module>
+			    <module>qanary_component-QBE-QAnswer</module>
 			</modules>
 		</profile>
 		<profile>
