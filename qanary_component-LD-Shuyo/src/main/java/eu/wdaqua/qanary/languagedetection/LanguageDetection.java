@@ -16,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.cybozu.labs.langdetect.Detector;
@@ -39,8 +40,13 @@ import eu.wdaqua.qanary.component.QanaryComponent;
 public class LanguageDetection extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(LanguageDetection.class);
 	private static boolean languageProfileLoaded = false;
+	private final String applicationName;
 
-	public LanguageDetection() throws IOException, LangDetectException {
+	public LanguageDetection(@Value("${spring.application.name}") final String applicationName)
+			throws IOException, LangDetectException {
+
+		this.applicationName = applicationName;
+
 		// just do this once as the DetectorFactory will crash otherwise
 		if (!languageProfileLoaded) {
 			languageProfileLoaded = true;
@@ -135,7 +141,7 @@ public class LanguageDetection extends QanaryComponent {
 				+ "		?a a qa:AnnotationOfQuestionLanguage . " //
 				+ part //
 				+ "		?a 	oa:hasTarget <" + question + "> ; " //
-				+ "   		oa:annotatedBy <www.wdaqua.eu/qanary> ; " //
+				+ "   		oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; " //
 				+ "   		oa:annotatedAt ?time  " //
 				+ " } " //
 				+ "} " //

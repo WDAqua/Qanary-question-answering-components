@@ -2,6 +2,7 @@ package eu.wdaqua.qanary.languagedetection;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,20 +18,20 @@ import eu.wdaqua.qanary.component.QanaryComponent;
 @ComponentScan("eu.wdaqua.qanary.component")
 public class Application {
 	/**
-	* this method is needed to make the QanaryComponent in this project known
-	* to the QanaryServiceController in the qanary_component-template
-	* 
-	* @return
-	 * @throws LangDetectException 
-	 * @throws IOException 
-	*/
+	 * this method is needed to make the QanaryComponent in this project known to
+	 * the QanaryServiceController in the qanary_component-template
+	 * 
+	 * @return
+	 * @throws LangDetectException
+	 * @throws IOException
+	 */
 	@Bean
-	public QanaryComponent qanaryComponent() throws IOException, LangDetectException {
-		return new LanguageDetection();
+	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName)
+			throws IOException, LangDetectException {
+		return new LanguageDetection(applicationName);
 	}
-	
-	
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
 }

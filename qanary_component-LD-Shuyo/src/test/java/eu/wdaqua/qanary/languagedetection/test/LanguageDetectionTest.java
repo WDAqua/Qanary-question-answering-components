@@ -22,7 +22,7 @@ public class LanguageDetectionTest {
 
 	@BeforeClass
 	public static void initLanguageDetection() throws IOException, LangDetectException {
-		myLanguageDetection = new LanguageDetection();
+		myLanguageDetection = new LanguageDetection("LanguageDetectionTest");
 	}
 
 	/**
