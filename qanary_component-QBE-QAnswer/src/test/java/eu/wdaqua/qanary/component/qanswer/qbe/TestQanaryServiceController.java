@@ -1,6 +1,11 @@
-package eu.wdaqua.qanary.component;
+package eu.wdaqua.qanary.component.qanswer.qbe;
 
-import static org.junit.Assert.*;
+import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.endpointKey;
+import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.inGraphKey;
+import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.outGraphKey;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -26,10 +31,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-
-import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.endpointKey;
-import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.inGraphKey;
-import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.outGraphKey;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;

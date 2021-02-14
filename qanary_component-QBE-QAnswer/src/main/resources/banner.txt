@@ -20,8 +20,8 @@ ${AnsiColor.BLUE}k@@@@QKe9QQEK@@@@L   `@@@@@Q`  'K@@@@@w   S@@@@@;   ;@@@@@r  ,@
                                                                                                \meJFaaaaor      
                                                                                                 :LuoSfc;-       
 
-${AnsiBackground.WHITE}Application Title:   ADD SOMETHING HERE (in banner.txt)             ${AnsiBackground.DEFAULT} 
-${AnsiBackground.WHITE}Short Description:   ADD SOMETHING HERE (in banner.txt)             ${AnsiBackground.DEFAULT}
-${AnsiBackground.WHITE}Framework@GitHub:    https://github.com/WDAqua/Qanary               ${AnsiBackground.DEFAULT}
+${AnsiBackground.WHITE}Application Title:   ${spring.application.name}                                                                      ${AnsiBackground.DEFAULT} 
+${AnsiBackground.WHITE}Short Description:   ${spring.application.description} ${AnsiBackground.DEFAULT}
+${AnsiBackground.WHITE}Framework@GitHub:    https://github.com/WDAqua/Qanary                                                                    ${AnsiBackground.DEFAULT}
 ${AnsiBackground.DEFAULT}${AnsiColor.DEFAULT}Spring Boot Version: ${spring-boot.version}
                                                                          
