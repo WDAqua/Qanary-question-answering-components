@@ -15,7 +15,7 @@ import eu.wdaqua.qanary.component.QanaryComponent;
 
 @SpringBootApplication
 @EnableAutoConfiguration
-@ComponentScan("eu.wdaqua.qanary.component")
+@ComponentScan("eu.wdaqua.qanary.languagedetection")
 public class Application {
 	/**
 	 * this method is needed to make the QanaryComponent in this project known to
@@ -30,7 +30,7 @@ public class Application {
 			throws IOException, LangDetectException {
 		return new LanguageDetection(applicationName);
 	}
-
+	
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
