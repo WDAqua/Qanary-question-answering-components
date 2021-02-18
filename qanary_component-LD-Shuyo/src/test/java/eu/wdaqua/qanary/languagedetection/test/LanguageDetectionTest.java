@@ -25,6 +25,20 @@ public class LanguageDetectionTest {
 		myLanguageDetection = new LanguageDetection("LanguageDetectionTest");
 	}
 
+	@Test
+	public void testUncommonInput() throws LangDetectException, IOException {
+		String[] englishQuestions = { //
+				"12345", //
+				"   ", //
+				"---", //
+				".", //
+				"1" //
+		};
+
+		checkDetectedLanguageForQuestion(englishQuestions, null);
+
+	}
+
 	/**
 	 * English example questions
 	 * 
@@ -124,8 +138,13 @@ public class LanguageDetectionTest {
 			throws LangDetectException {
 
 		int countCorrectLanguageDetections = 0;
+		Boolean result;
+		
 		for (int i = 0; i < questions.length; i++) {
-			if (checkDetectedLanguageForQuestion(questions[i], expectedLanguage)) {
+			result = checkDetectedLanguageForQuestion(questions[i], expectedLanguage);
+			
+			// for null we just check if nothing was crashing
+			if (expectedLanguage == null || result == true ) {
 				countCorrectLanguageDetections++;
 			}
 		}
@@ -142,31 +161,47 @@ public class LanguageDetectionTest {
 	/**
 	 * checks a particular question
 	 * 
-	 * @param englishQuestion
+	 * @param textualQuestion
 	 * @param expectedLanguage
 	 * @return
 	 * @throws LangDetectException
 	 */
-	private boolean checkDetectedLanguageForQuestion(String englishQuestion, String expectedLanguage)
+	private Boolean checkDetectedLanguageForQuestion(String textualQuestion, String expectedLanguage)
 			throws LangDetectException {
 
 		ArrayList<String> detectedLanguages;
-		detectedLanguages = (ArrayList<String>) myLanguageDetection.getDetectedLanguages(englishQuestion);
+		detectedLanguages = (ArrayList<String>) myLanguageDetection.getDetectedLanguages(textualQuestion);
 		String detectedLanguage = detectedLanguages.get(0);
 		String logmessage;
+
+		logger.info("checkDetectedLanguageForQuestion: 0. {}", detectedLanguage);
 
 		// should be just one detected language, however, we never know
 		for (int i = 0; i < detectedLanguages.size(); i++) {
 			logmessage = String.format("For '%s' was detected (%d. of %d): %s (expected: %s)", //
-					englishQuestion, i, detectedLanguages.size(), detectedLanguages.get(i), expectedLanguage);
-			if (expectedLanguage.equalsIgnoreCase(detectedLanguage)) {
+					textualQuestion, i, detectedLanguages.size(), detectedLanguages.get(i), expectedLanguage);
+			if (expectedLanguage == null) {
+				logger.info("IGNORE (null expected): {}", logmessage);
+			} else if (expectedLanguage.equalsIgnoreCase(detectedLanguage)) {
 				logger.debug(logmessage);
 			} else {
 				logger.warn(logmessage);
 			}
 		}
 
-		return expectedLanguage.equalsIgnoreCase(detectedLanguage);
+		if (detectedLanguages.size() == 0) {
+			logger.warn("no language detected for {}", textualQuestion);
+		} else if (detectedLanguages.size() > 1) {
+			logger.warn("many ({}) languages detected for {}", detectedLanguages.size(), textualQuestion);
+		} else {
+			// standard case
+		}
+
+		if (detectedLanguage == null) {
+			return null; // 
+		} else {
+			return expectedLanguage.equalsIgnoreCase(detectedLanguage);
+		}
 	}
 
 }

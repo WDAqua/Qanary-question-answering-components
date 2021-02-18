@@ -121,7 +121,14 @@ public class LanguageDetection extends QanaryComponent {
 	public List<String> getDetectedLanguages(String myQuestion) throws LangDetectException {
 		Detector detector = DetectorFactory.create();
 		detector.append(myQuestion);
-		String detectedLangOfGivenQuestion = detector.detect();
+		String detectedLangOfGivenQuestion = null;
+		try {
+			detectedLangOfGivenQuestion = detector.detect();
+		} catch (LangDetectException lde) {
+			logger.warn(lde.getMessage());
+			detectedLangOfGivenQuestion = null;
+		}
+
 		logger.info("for question '{}' the language '{}' was detected.", myQuestion, detectedLangOfGivenQuestion);
 
 		return new ArrayList<>(Arrays.asList(detectedLangOfGivenQuestion));
