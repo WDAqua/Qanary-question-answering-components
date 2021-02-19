@@ -17,22 +17,6 @@ import eu.wdaqua.qanary.component.QanaryComponent;
 @EnableAutoConfiguration
 @ComponentScan({ "eu.wdaqua.qanary.component", "eu.wdaqua.qanary.languagedetection" })
 public class Application {
-	/**
-	 * this method is needed to make the QanaryComponent in this project known to
-	 * the QanaryServiceController in the qanary_component-template
-	 * 
-	 * @return
-	 * @throws LangDetectException
-	 * @throws IOException
-	 */
-	/*
-	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName)
-			throws IOException, LangDetectException {
-		return new LanguageDetection(applicationName);
-	}
-	*/
-
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
