@@ -73,8 +73,8 @@ public class DBpediaSpotlightNED extends QanaryComponent {
 		String sparql, sparqlbind;
 
 		// STEP2: Call the DBpedia NED service
-		JsonArray resources;
-		resources = myDBpediaSpotlightServiceFetcher.getJsonFromService(myQanaryQuestion, myQanaryUtils, myQuestion, //
+		JsonArray resources = myDBpediaSpotlightServiceFetcher.getJsonFromService( //
+				myQuestion, //
 				myDBpediaSpotlightConfiguration.getEndpoint(), //
 				myDBpediaSpotlightConfiguration.getConfidenceMinimum() //
 		);
@@ -91,13 +91,7 @@ public class DBpediaSpotlightNED extends QanaryComponent {
 			);
 		}
 
-		// STEP3: Push the result of the component to the triplestore
-		// TODO: prevent that duplicate entries are created within the
-		// triplestore, here the same data is added as already exit (see
-		// previous SELECT query)
-
-		// create one larger SPARQL INSERT query that adds all discovered named entities
-		// at once
+		// STEP3: Push the result of the component to the Qanary triplestore
 		sparql = "" //
 				+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
 				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
@@ -110,18 +104,18 @@ public class DBpediaSpotlightNED extends QanaryComponent {
 					+ "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
 					+ "  ?a" + i + " a qa:AnnotationOfInstance . " //
 					+ "  ?a" + i + " oa:hasTarget [ " //
-					+ "           a    oa:SpecificResource; " //
+					+ "           a               oa:SpecificResource; " //
 					+ "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
 					+ "           oa:hasSelector  [ " //
-					+ "                    a oa:TextPositionSelector ; " //
+					+ "                    a        oa:TextPositionSelector ; " //
 					+ "                    oa:start \"" + found.getBegin() + "\"^^xsd:nonNegativeInteger ; " //
-					+ "                    oa:end  \"" + found.getEnd() + "\"^^xsd:nonNegativeInteger  " //
+					+ "                    oa:end   \"" + found.getEnd() + "\"^^xsd:nonNegativeInteger  " //
 					+ "           ] " //
 					+ "  ] . " //
-					+ "  ?a" + i + " oa:hasBody <" + found.getResource() + "> ;" //
-					+ "     	 oa:annotatedBy <" + myDBpediaSpotlightConfiguration.getEndpoint() + "> ; " //
-					+ "	    	 oa:annotatedAt ?time ; " //
-					+ "     	 qa:score \"" + found.getSimilarityScore() + "\"^^xsd:decimal . " //
+					+ "  ?a" + i + " oa:hasBody     <" + found.getResource() + "> ;" //
+					+ "     	     oa:annotatedBy <" + myDBpediaSpotlightConfiguration.getEndpoint() + "> ; " //
+					+ "	    	     oa:annotatedAt ?time ; " //
+					+ "     	     qa:score       \"" + found.getSimilarityScore() + "\"^^xsd:decimal . " //
 					+ "	}"; // end: graph
 			sparqlbind += "  BIND (IRI(str(RAND())) AS ?a" + i + ") .";
 			i++;
