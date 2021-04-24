@@ -186,7 +186,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
 		float threshold = 0.4f;
 		String lang = "en";
 		String kb = "wikidata";
-		int min = 25;
+		int min = 2;
 		int max = 1000;
 
 		QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, lang, kb, 
