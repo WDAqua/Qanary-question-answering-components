@@ -11,12 +11,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map.Entry;
 
 import javax.inject.Inject;
 
+import org.apache.http.client.ClientProtocolException;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -35,6 +37,8 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
 import eu.wdaqua.qanary.component.QanaryServiceController;
+
+import com.google.gson.JsonArray;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -147,5 +151,38 @@ public class TestQanaryServiceController {
 			fail(e.getMessage());
 		}
 
+	}
+
+	@Test
+	public void testGetJsonFromDBpediaService() throws ClientProtocolException, IOException {
+		String question = "Who is the Mayor of Leipzig?";
+		String dbpediaEndpoint = "https://api.dbpedia-spotlight.org/en/annotate";
+		float minimumConfidence = 0.1f;
+		DBpediaSpotlightServiceFetcher dbpediaFetcher = new DBpediaSpotlightServiceFetcher();
+
+		JsonArray resources;
+
+		resources = dbpediaFetcher.getJsonFromService(
+				null, null,
+				question, dbpediaEndpoint, minimumConfidence
+				);
+		assertNotNull(resources);
+		assertTrue(resources.size() >= 0);
+		logger.info("resources: {}", resources.size());
+	}
+
+	@Test
+	public void testGetJsonFromWikidataService() throws ClientProtocolException, IOException {
+		String question = "Who is the Mayor of Leipzig?";
+		String wikidataEndpoint = "https://opentapioca.org/api/annotate";
+		WikidataServiceFetcher wikidataFetcher = new WikidataServiceFetcher();
+
+		JsonArray resources;
+		resources = wikidataFetcher.getJsonFromService(
+				question, wikidataEndpoint 
+				);
+		assertNotNull(resources);
+		assertTrue(resources.size() >= 0);
+		logger.info("resources: {}", resources.size());
 	}
 }
