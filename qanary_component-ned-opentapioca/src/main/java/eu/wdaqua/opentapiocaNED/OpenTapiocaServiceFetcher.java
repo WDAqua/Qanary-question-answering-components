@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.OpenTapiocaServiceFetcher;
+package eu.wdaqua.opentapiocaNED;
 
 import java.io.IOException;
 import java.net.URLEncoder;

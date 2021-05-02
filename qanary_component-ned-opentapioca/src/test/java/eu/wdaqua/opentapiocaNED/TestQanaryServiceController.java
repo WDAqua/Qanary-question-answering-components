@@ -6,12 +6,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map.Entry;
 
 import javax.inject.Inject;
 
+import com.google.gson.JsonArray;
+
+import org.apache.http.client.ClientProtocolException;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -147,5 +151,19 @@ public class TestQanaryServiceController {
 		}
 
 	}
+	
+	@Test
+	public void testGetJsonFromService() throws ClientProtocolException, IOException {
+		String question = "What is the real name of Batman";
+		String opentapiocaEndpoint = "https://opentapioca.org/api/annotate";
+		OpenTapiocaServiceFetcher serviceFetcher = new OpenTapiocaServiceFetcher();
 
+		JsonArray resources;
+		resources = serviceFetcher.getJsonFromService(
+				question, opentapiocaEndpoint 
+				);
+		assertNotNull(resources);
+		assertTrue(resources.size() >= 0);
+		logger.info("resources: {}", resources.size());
+	}
 }

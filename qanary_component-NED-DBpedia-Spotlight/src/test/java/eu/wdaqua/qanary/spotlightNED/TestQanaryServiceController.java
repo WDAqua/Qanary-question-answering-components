@@ -152,37 +152,4 @@ public class TestQanaryServiceController {
 		}
 
 	}
-
-	@Test
-	public void testGetJsonFromDBpediaService() throws ClientProtocolException, IOException {
-		String question = "Who is the Mayor of Leipzig?";
-		String dbpediaEndpoint = "https://api.dbpedia-spotlight.org/en/annotate";
-		float minimumConfidence = 0.1f;
-		DBpediaSpotlightServiceFetcher dbpediaFetcher = new DBpediaSpotlightServiceFetcher();
-
-		JsonArray resources;
-
-		resources = dbpediaFetcher.getJsonFromService(
-				null, null,
-				question, dbpediaEndpoint, minimumConfidence
-				);
-		assertNotNull(resources);
-		assertTrue(resources.size() >= 0);
-		logger.info("resources: {}", resources.size());
-	}
-
-	@Test
-	public void testGetJsonFromWikidataService() throws ClientProtocolException, IOException {
-		String question = "Who is the Mayor of Leipzig?";
-		String wikidataEndpoint = "https://opentapioca.org/api/annotate";
-		WikidataServiceFetcher wikidataFetcher = new WikidataServiceFetcher();
-
-		JsonArray resources;
-		resources = wikidataFetcher.getJsonFromService(
-				question, wikidataEndpoint 
-				);
-		assertNotNull(resources);
-		assertTrue(resources.size() >= 0);
-		logger.info("resources: {}", resources.size());
-	}
 }
