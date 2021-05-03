@@ -52,7 +52,7 @@ public class SuperheroRealNameQueryBuilder extends QanaryComponent {
 			return myQanaryMessage;
 		}
 
-		// look for annotations made by NED OpoenTapioca component
+		// look for annotations made by NED OpenTapioca component
 		
 		String sparqlGetAnnotation = "" //
 				+ "PREFIX dbr: <http://dbpedia.org/resource/> " //
@@ -113,7 +113,7 @@ public class SuperheroRealNameQueryBuilder extends QanaryComponent {
 				+ "    _:b ps:P734 ?familyname ." //
 				+ "    _:b ?allowedPropFamilyname ?region ." //
 				+ "  }" //
-				+ "  UNION" // 
+				+ "  UNION" // only for superman
 				+ "  {" //
 				+ "    ?superhero wdt:P735 ?firstname ." //
 				+ "    ?superhero p:P735 _:c . " //
@@ -160,7 +160,7 @@ public class SuperheroRealNameQueryBuilder extends QanaryComponent {
 					myQanaryMessage.getValues().get(myQanaryMessage.getOutGraph()), //
 					myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
 			// push data to the Qanary triplestore
-			myQanaryUtils.updateTripleStore(sparqlUpdateQuery, myQanaryMessage.getEndpoint());
+			myQanaryUtils.updateTripleStore(insertDataIntoQanaryTriplestoreQuery, myQanaryMessage.getEndpoint());
 
 		}
 		return myQanaryMessage;
