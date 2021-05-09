@@ -1,12 +1,10 @@
 package eu.wdaqua.component.querybuilder;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -24,6 +22,12 @@ import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
  */
 public class SuperheroRealNameQueryBuilder extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(SuperheroRealNameQueryBuilder.class);
+
+	private final String applicationName;
+
+	public SuperheroRealNameQueryBuilder(@Value("$P{spring.application.name}") final String applicationName) {
+		this.applicationName = applicationName;
+	}
 
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
