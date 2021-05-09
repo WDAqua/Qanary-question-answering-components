@@ -14,32 +14,28 @@ public class FoundWikidataResource {
 	public int begin;
 	public int end;
 	public URI resource;
-	public int support;
 	public double similarityScore;
 
 	public FoundWikidataResource(//
 			String surfaceForm, //
 			int offset, //
 			double similarityScore, //
-			int support, //
 			URI resource) {
 
 		this.begin = offset;
 		this.end = offset + surfaceForm.length();
 		this.similarityScore = similarityScore;
-		this.support = support;
 		this.resource = resource;
 	}
 
 	public FoundWikidataResource(JsonElement jsonElement) throws URISyntaxException {
-		// TODO: implement NIF parsing
+		// TODO: implement NIF parsing; requires functioning NIF endpoint -> add to docs?
 		this(jsonElement.getAsJsonObject().get("text").getAsString().substring(
 					jsonElement.getAsJsonObject().get("start").getAsInt(), 
 					jsonElement.getAsJsonObject().get("end").getAsInt()
 					), //
 				jsonElement.getAsJsonObject().get("start").getAsInt(),//
-				jsonElement.getAsJsonObject().get("score").getAsDouble(), //
-				0, //
+				jsonElement.getAsJsonObject().get("rank").getAsDouble(), // alternative: score
 				new URI("https://www.wikidata.org/wiki/"
 				 + jsonElement.getAsJsonObject().get("id").getAsString())
 				);
@@ -55,10 +51,6 @@ public class FoundWikidataResource {
 
 	public URI getResource() {
 		return resource;
-	}
-
-	public int getSupport() {
-		return support;
 	}
 
 	public double getSimilarityScore() {
