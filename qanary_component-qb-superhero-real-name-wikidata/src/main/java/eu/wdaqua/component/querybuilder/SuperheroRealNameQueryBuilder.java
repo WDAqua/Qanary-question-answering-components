@@ -50,7 +50,7 @@ public class SuperheroRealNameQueryBuilder extends QanaryComponent {
 		// only continue if the question contains the supported phrase
 		// "real name of"
 		String supportedQuestionPrefix = "real name of ";
-		if (!myQuestion.startsWith(supportedQuestionPrefix)) {
+		if (!myQuestion.toLowerCase().contains(supportedQuestionPrefix)) {
 			logger.info("nothing to do here as question \"{}\" is not starting with \"{}\".", myQuestion,
 					supportedQuestionPrefix);
 			return myQanaryMessage;
