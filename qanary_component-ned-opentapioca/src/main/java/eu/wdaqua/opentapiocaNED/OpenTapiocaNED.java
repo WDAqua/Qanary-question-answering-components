@@ -1,6 +1,7 @@
 package eu.wdaqua.opentapiocaNED;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
@@ -46,7 +48,7 @@ public class OpenTapiocaNED extends QanaryComponent {
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
 		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage);
 		String questionText = myQanaryQuestion.getTextualRepresentation();
-		logger.info("processin question \"{}\" with OpenTapioca at {}.", //
+		logger.info("processing question \"{}\" with OpenTapioca at {}.", //
 				questionText, openTapiocaConfiguration.getEndpoint());
 
 		String sparql, sparqlbind;
@@ -55,29 +57,38 @@ public class OpenTapiocaNED extends QanaryComponent {
 		resources = openTapiocaServiceFetcher.getJsonFromService(//
 				questionText, openTapiocaConfiguration.getEndpoint());
 
-		// get all found Wikidata resources
+		// TODO: get all found Wikidata resources
 		List<FoundWikidataResource> foundWikidataResources = new LinkedList<>();
-		for (int i = 0; i < resources.size(); i++) {
+		logger.info("found {} terms", resources.size());
 
-			foundWikidataResources.add(new FoundWikidataResource(resources.get(i)));
-			logger.debug("found resouce ({} of {}): {} at ({},{})", //
-					i, resources.size() -1, //
-					foundWikidataResources.get(i).getResource(), //
-					foundWikidataResources.get(i).getBegin(), //
-					foundWikidataResources.get(i).getEnd());
+		for (int i = 0; i < resources.size(); i++) {
+			JsonObject currentTerm = resources.get(i).getAsJsonObject();
+			int start = currentTerm.get("start").getAsInt();
+			int end = currentTerm.get("end").getAsInt();
+
+			JsonArray tags = currentTerm.get("tags").getAsJsonArray();
+			for (int j = 0; j < tags.size(); j++) {
+				JsonObject entity = tags.get(j).getAsJsonObject();
+				double score = entity.get("rank").getAsDouble();
+				String qid = entity.get("id").getAsString();
+				URI resource = new URI("https://wikidata.org/wiki/" + qid);
+
+				foundWikidataResources.add(new FoundWikidataResource(start, end, score, resource));
+				logger.info("found resouce {} for term {} at ({},{})", //
+						resource, questionText.substring(start, end), start, end);
+			}
 		}
 
 		// STEP 3: store computed knowledge about the given question into the Qanary
 		// triplestore (the global process memory)
-
 		logger.info("store data in graph {} of Qanary triplestore endpoint {}", //
-				myQanaryMessage.getValues().get(myQanaryMessage.getOutGraph()), //
-				myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
+				myQanaryMessage.getOutGraph(), //
+				myQanaryMessage.getEndpoint());
 		
 		// push data to the Qanary triplestore
 		sparql = "" //
 			+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-			+ "PREFIX oa: <http://wwww.w3.org/ns/openannotation/core/> " //
+			+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
 			+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
 			+ "INSERT {";
 		sparqlbind = "";
@@ -87,18 +98,18 @@ public class OpenTapiocaNED extends QanaryComponent {
 				+ "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
 				+ "  ?a" + i + " a qa:AnnotationOfInstance . " //
 				+ "  ?a" + i + " oa:hasTarget [ " //
-				+ "			a	oa:SpecificResource; " //
-				+ "			oa:hasSource	<" + myQanaryQuestion.getUri() + ">; " //
-				+ "			oa:hasSelector	[ " //
-				+ "					a oa:TextPositionSelector ; " //
-				+ "					oa:start \"" + found.getBegin() + "\"^^xsd:nonNegativeInteger ; " //
-				+ "					oa:end \"" + found.getEnd() + "\"^^xsd:nonNegativeInteger ; " //
-				+ "			] " //
+				+ "     a oa:SpecificResource; " //
+				+ "     oa:hasSource <" + myQanaryQuestion.getUri() + ">; " //
+				+ "     oa:hasSelector [ " //
+				+ "         a oa:TextPositionSelector ; " //
+				+ "         oa:start \"" + found.getBegin() + "\"^^xsd:nonNegativeInteger ; " //
+				+ "         oa:end \"" + found.getEnd() + "\"^^xsd:nonNegativeInteger ; " //
+				+ "    ] " //
 				+ "  ] . " //
 				+ "  ?a" + i + " oa:hasBody <" + found.getResource() + "> ;" //
-				+ "			oa:annotatedBy <" + openTapiocaConfiguration.getEndpoint() + "> ;" //
-				+ "			oa:annotatedAt ?time ; " //
-				+ "			qa:score \"" + found.getSimilarityScore() + "\"^^xsd:decimal ." //
+				+ "     oa:annotatedBy <" + openTapiocaConfiguration.getEndpoint() + "> ;" //
+				+ "     oa:annotatedAt ?time ; " //
+				+ "     qa:score \"" + found.getScore() + "\"^^xsd:decimal ." //
 				+ "}"; // end: graph
 			sparqlbind += "  BIND (IRI(str(RAND())) AS ?a" + i +") .";
 			i++;

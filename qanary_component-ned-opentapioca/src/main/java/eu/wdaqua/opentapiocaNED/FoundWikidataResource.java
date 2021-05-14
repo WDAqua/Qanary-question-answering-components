@@ -13,32 +13,19 @@ import com.google.gson.JsonElement;
 public class FoundWikidataResource {
 	public int begin;
 	public int end;
+	public double score;
 	public URI resource;
-	public double similarityScore;
 
 	public FoundWikidataResource(//
-			String surfaceForm, //
-			int offset, //
-			double similarityScore, //
+			int begin, //
+			int end, //
+			double score, //
 			URI resource) {
 
-		this.begin = offset;
-		this.end = offset + surfaceForm.length();
-		this.similarityScore = similarityScore;
+		this.begin = begin;
+		this.end = end;
+		this.score = score;
 		this.resource = resource;
-	}
-
-	public FoundWikidataResource(JsonElement jsonElement) throws URISyntaxException {
-		// TODO: implement NIF parsing; requires functioning NIF endpoint -> add to docs?
-		this(jsonElement.getAsJsonObject().get("text").getAsString().substring(
-					jsonElement.getAsJsonObject().get("start").getAsInt(), 
-					jsonElement.getAsJsonObject().get("end").getAsInt()
-					), //
-				jsonElement.getAsJsonObject().get("start").getAsInt(),//
-				jsonElement.getAsJsonObject().get("rank").getAsDouble(), // alternative: score
-				new URI("https://www.wikidata.org/wiki/"
-				 + jsonElement.getAsJsonObject().get("id").getAsString())
-				);
 	}
 
 	public int getBegin() {
@@ -49,11 +36,11 @@ public class FoundWikidataResource {
 		return end;
 	}
 
-	public URI getResource() {
-		return resource;
+	public double getScore() {
+		return score;
 	}
 
-	public double getSimilarityScore() {
-		return similarityScore;
+	public URI getResource() {
+		return resource;
 	}
 }

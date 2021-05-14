@@ -36,7 +36,7 @@ public class OpenTapiocaServiceFetcher {
 			.setHeader(HttpHeaders.ACCEPT, "applcation/json") //
 			.setEntity(new StringEntity(uriGetParameter))
 			.build();
-		logger.info("HTTP request: {}", request.getRequestLine());
+		logger.info("HTTP request: {}", request.toString());
 		HttpResponse response = client.execute(request);
 		HttpEntity responseEntity = response.getEntity();
 		String json = EntityUtils.toString(responseEntity);
