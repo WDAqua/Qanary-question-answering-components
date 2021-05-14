@@ -50,11 +50,15 @@ public class SuperheroRealNameQueryBuilder extends QanaryComponent {
 		// only continue if the question contains the supported phrase
 		// "real name of"
 		String supportedQuestionPrefix = "real name of ";
-		if (!myQuestion.toLowerCase().contains(supportedQuestionPrefix)) {
+		int foundPrefix = myQuestion.toLowerCase().indexOf(supportedQuestionPrefix);
+		if (foundPrefix == -1) {
 			logger.info("nothing to do here as question \"{}\" is not starting with \"{}\".", myQuestion,
 					supportedQuestionPrefix);
 			return myQanaryMessage;
 		}
+
+		int filterStart = foundPrefix + supportedQuestionPrefix.length();
+		logger.info("found prefix at {}", filterStart);
 
 		// look for annotations made by NED OpenTapioca component
 		
@@ -74,7 +78,7 @@ public class SuperheroRealNameQueryBuilder extends QanaryComponent {
 				+ "    ?textSelector   rdf:type    oa:TextPositionSelector ." //
 				+ "    ?textSelector   oa:start    ?start ." //
 				+ "    ?textSelector   oa:end      ?end ." //
-				+ "    FILTER(?start = " + supportedQuestionPrefix.length() + ") ." //
+				+ "    FILTER(?start = " + filterStart + ") ." //
 				+ "}";
 
 		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlGetAnnotation);
