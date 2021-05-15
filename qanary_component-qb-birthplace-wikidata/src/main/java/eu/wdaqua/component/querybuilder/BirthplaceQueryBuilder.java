@@ -24,15 +24,12 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(BirthplaceQueryBuilder.class);
 
 	private final String applicationName;
-
 	public BirthplaceQueryBuilder(@Value("$P{spring.application.name}") final String applicationName) {
 		this.applicationName = applicationName;
 	}
 
 	/**
-	 * implement this method encapsulating the functionality of your Qanary
-	 * component, some helping notes w.r.t. the typical 3 steps of implementing a
-	 * Qanary component are included in the method (you might remove all of them)
+	 * implement this method encapsulating the functionality of your Qanary component
 	 * 
 	 * @throws SparqlQueryFailed
 	 */
@@ -40,55 +37,74 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("process: {}", myQanaryMessage);
 		
-		// STEP 1: get the required data
+		// STEP 1: Get the required Data
+		//
+		// This example component requires the textual representation of the Question 
+		// as well as annotations of Wikidata entities made by the OpenTapioca NED.
+		
+		// get the question as String
 		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage);
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
 
-		// STEP 2: compute new knowledge about the given question
 
-		// only continue if the question contains the supported phrase
-		// "birthplace of"
-		String supportedQuestionPrefix = "birthplace of ";
-		int foundPrefix = myQuestion.toLowerCase().indexOf(supportedQuestionPrefix);
-		if (foundPrefix == -1) {
-			logger.info("nothing to do here as question \"{}\" is not starting with \"{}\".", myQuestion,
-					supportedQuestionPrefix);
+		// This component is only supposed to answer a specific type of question.
+		// Therefore we only need to continue if the question asks for a birthplace.
+		// For this example is is enough to simply look for the substring "birthplace of".
+		// However, a more sophisticated approach is very possible.
+
+		String supportedQuestionSubstring = "birthplace of ";
+		int foundSubstring = myQuestion.toLowerCase().indexOf(supportedQuestionSubstring);
+		if (foundSubstring == -1) {
+			// don't continue the process if the question is not supported
+			logger.info("nothing to do here as question \"{}\" does not contain \"{}\".", myQuestion,
+					supportedQuestionSubstring);
 			return myQanaryMessage;
 		}
 
-		int filterStart = foundPrefix + supportedQuestionPrefix.length();
+		// STEP 2: Get Wikidata entities that were annotated by OpenTapioca NED.
+		//
+		// In this example we are only interested in Entities that were found after the 
+		// supported substring: "what is the 'birthplace of '<name>?"
+		// Because we do not require entities that were found before that substring we can 
+		// filter our results:
 
-		// look for annotations made by NED OpenTapioca component
-		
+		int filterStart = foundSubstring + supportedQuestionSubstring.length();
+
+		// formulate a query to find existing information 
 		String sparqlGetAnnotation = "" //
 				+ "PREFIX dbr: <http://dbpedia.org/resource/> " //
 				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
 				+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
 				+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " //
-				+ "SELECT * " //
-				+ "FROM <" + myQanaryMessage.getInGraph().toString() + "> " //
+				+ "SELECT * " // 
+				+ "FROM <" + myQanaryMessage.getInGraph().toString() + "> " // the currently used graph
 				+ "WHERE { " //
-				+ "    ?annotation     oa:hasBody   ?wikidataId ." //
+				+ "    ?annotation     oa:hasBody   ?wikidataId ." // the entity in question
 				+ "    ?annotation     qa:score     ?annotationScore ." //
 				+ "    ?annotation     oa:hasTarget ?target ." //
-				+ "    ?target     oa:hasSource    <" + myQanaryQuestion.getUri().toString() + "> ." //
+				+ "    ?target     oa:hasSource    <" + myQanaryQuestion.getUri().toString() + "> ." // annotated for the current question
 				+ "    ?target     oa:hasSelector  ?textSelector ." //
 				+ "    ?textSelector   rdf:type    oa:TextPositionSelector ." //
 				+ "    ?textSelector   oa:start    ?start ." //
 				+ "    ?textSelector   oa:end      ?end ." //
-				+ "    FILTER(?start = " + filterStart + ") ." //
+				+ "    FILTER(?start = " + filterStart + ") ." // only for relevant annotations
 				+ "}";
 
+		// STEP 3: Compute SPARQL select queries that should produce the result for every identified entity
+		//
+		// Rather than computing a (textual) result this component provides a
+		// SPARQL query that might be used to answer the question.
+		// This query can the be validated and used by other components. //TODO: validate or verify?
+
+		// there might be multiple entities identified for one name
 		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlGetAnnotation);
 		while(resultset.hasNext()) {
 			QuerySolution tupel = resultset.next();
-			int start = tupel.get("start").asLiteral().getInt();
-			int end = tupel.get("end").asLiteral().getInt();
 			String wikidataId = tupel.get("wikidataId").toString();
-			logger.info("found matching resource <{}> at ({}, {})", wikidataId, start, end);
+			logger.info("creating query for resource: {}", wikidataId);
 
-			// TODO: write query for birthplace
+			// populate a generalized answer query with the specific entity (wikidata ID)
 			String createdWikiDataQuery = "" //
 				+ "PREFIX wikibase: <http://wikiba.se/ontology#> " //
 				+ "PREFIX wdt: <http://www.wikidata.org/prop/direct/> " //
@@ -97,62 +113,13 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " //
 				+ "select DISTINCT ?birthplace ?place " //
 				+ "where { " //
-				+ "  "+wikidataId+" wdt:P31 wd:Q5 . " // changed from uri to wd:Qx
-				+ "  "+wikidataId+" wdt:P19 ?birthplace . " // 
+				+ "  "+wikidataId+" wdt:P19 ?birthplace . " // this should produce the result
 				+ "  ?birthplace rdfs:label ?place . " //
 				+ "  FILTER(lang(?place)='en') . " //
 				+ "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\" } " //
 				+ "}";
-				//+ "PREFIX wikibase: <http://wikiba.se/ontology#>" //
-				//+ "PREFIX bd: <http://www.bigdata.com/rdf#>" //
-				//+ "PREFIX wdt: <http://www.wikidata.org/prop/direct/>" //
-				//+ "PREFIX wd: <http://www.wikidata.org/entity/>" //
-				//+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" //
-				//+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" //
-				//+ "PREFIX pq: <http://www.wikidata.org/prop/qualifier/>" //
-				//+ "PREFIX ps: <http://www.wikidata.org/prop/statement/>" //
-				//+ "PREFIX p: <http://www.wikidata.org/prop/> " //
-				//+ "SELECT DISTINCT ?superhero ?name ?firstnameLabel ?familynameLabel ?region WHERE {" //
-				//+ "  VALUES ?superhero {<" + wikidataResource + ">}" //
-				//+ "  VALUES ?superheroTypes { wd:Q63998451 wd:Q188784 } " //
-				//+ "  VALUES ?allowedPropFirstname { pq:P518 pq:P642 }" //
-				//+ "  VALUES ?allowedPropFamilyname { pq:P518 pq:P642 }" //
-				//+ "  ?superhero rdfs:label ?name ." //
-				//+ "  FILTER(LANG(?name) = \"en\")" //
-				//+ "  {" //
-				//+ "    ?superhero wdt:P735 ?firstname ." //
-				//+ "    ?superhero wdt:P734 ?familyname ." //
-				//+ "  }" //
-				//+ "  UNION" //  
-				//+ "  { " //
-				//+ "    ?superhero wdt:P735 ?firstname ." //
-				//+ "    ?superhero p:P735 _:a . " //
-				//+ "    _:a ps:P735 ?firstname ." //
-				//+ "    _:a ?allowedPropFirstname ?region ." //
-				//+ "    ?superhero wdt:P734 ?familyname ." //
-				//+ "    ?superhero p:P734 _:b . " //
-				//+ "    _:b ps:P734 ?familyname ." //
-				//+ "    _:b ?allowedPropFamilyname ?region ." //
-				//+ "  }" //
-				//+ "  UNION" // only for superman
-				//+ "  {" //
-				//+ "    ?superhero wdt:P735 ?firstname ." //
-				//+ "    ?superhero p:P735 _:c . " //
-				//+ "    _:c ps:P735 ?firstname ." //
-				//+ "    _:c ?allowedPropFirstname ?region" //
-				//+ "" //
-				//+ "    FILTER NOT EXISTS { " //
-				//+ "    ?superhero wdt:P734 ?familyname ." //
-				//+ "    ?superhero p:P734 _:d . " //
-				//+ "    _:d ps:P734 ?familyname ." //
-				//+ "    _:d ?allowedPropFamilyname ?region ." //
-				//+ "    }" //
-				//+ "  }" //
-				//+ "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\" } " //
-				//+ "}";
 			
-			// store the created SPARQL select query (which should compute the answer) into
-			// the Qanary triplestore
+			// store the created select query as an annotation for the current question
 			String insertDataIntoQanaryTriplestoreQuery = "" //
 					+ "PREFIX dbr: <http://dbpedia.org/resource/>" //
 					+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/>" //
@@ -165,11 +132,10 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 					+ "        ?newAnnotation rdf:type qa:AnnotationOfAnswerSPARQL ." //
 					+ "        ?newAnnotation oa:hasTarget <" + myQanaryQuestion.getUri().toString() + "> ." //
 					+ "        ?newAnnotation oa:hasBody \""
-					+ createdWikiDataQuery.replace("\"", "\\\"").replace("\n", "\\n") + "\"^^xsd:string ." //
-					// as it is rule based, a high confidence is expressed
-					+ "        ?newAnnotation qa:score \"1.0\"^^xsd:float ."
+					+ createdWikiDataQuery.replace("\"", "\\\"").replace("\n", "\\n") + "\"^^xsd:string ." // the select query that should compute the answer
+					+ "        ?newAnnotation qa:score \"1.0\"^^xsd:float ." // as it is rule based, a high confidence is expressed
 					+ "        ?newAnnotation oa:annotatedAt ?time ." //
-					+ "        ?newAnnotation oa:annotatedBy <urn:qanary:"+this.applicationName+"> ." //
+					+ "        ?newAnnotation oa:annotatedBy <urn:qanary:"+this.applicationName+"> ." // identify which component made this annotation
 					+ "    }" //
 					+ "}" //
 					+ "WHERE {" //
@@ -177,10 +143,10 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 					+ "    BIND (now() as ?time) . " //
 					+ "}";
 
+			//STEP 4: Push the computed result to the Qanary triplestore
 			logger.info("store data in graph {} of Qanary triplestore endpoint {}", //
 					myQanaryMessage.getValues().get(myQanaryMessage.getOutGraph()), //
 					myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-			// push data to the Qanary triplestore
 			myQanaryUtils.updateTripleStore(insertDataIntoQanaryTriplestoreQuery, myQanaryMessage.getEndpoint());
 
 		}
