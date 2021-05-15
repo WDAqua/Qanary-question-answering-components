@@ -43,8 +43,11 @@ public class OpenTapiocaNED extends QanaryComponent {
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("process: {}", myQanaryMessage);
 
-		// STEP 1: get the required data from the Qanary triplestore (the global process
-		// memory)
+		// STEP 1: Get the required Data
+		//
+		// This example component will find Wikidata entities in a given Question. 
+		// As such only the textual question is required.
+		
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
 		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage);
 		String questionText = myQanaryQuestion.getTextualRepresentation();
@@ -53,45 +56,63 @@ public class OpenTapiocaNED extends QanaryComponent {
 
 		String sparql, sparqlbind;
 
+		// STEP 2: Compute new Information about the question.
+		//
+		// At this point the external endpoint to an OpenTapioca implementation is used
+		// to identify Wikidata entities in the question.
 		JsonArray resources;
 		resources = openTapiocaServiceFetcher.getJsonFromService(//
 				questionText, openTapiocaConfiguration.getEndpoint());
 
-		// TODO: get all found Wikidata resources
+		// parse the results to extract the required information:
+		// - resource uri
+		// - start and end position in the question
+		// - score (rank) of the result
+
 		List<FoundWikidataResource> foundWikidataResources = new LinkedList<>();
 		logger.info("found {} terms", resources.size());
 
 		for (int i = 0; i < resources.size(); i++) {
+			// this layer only contains information about the surface form: the part of the 
+			// question String for which one or multiple entities were found.
+			
 			JsonObject currentTerm = resources.get(i).getAsJsonObject();
 			int start = currentTerm.get("start").getAsInt();
 			int end = currentTerm.get("end").getAsInt();
 
+			// the second layer contains all entities that were identified for that surface form.
 			JsonArray tags = currentTerm.get("tags").getAsJsonArray();
 			for (int j = 0; j < tags.size(); j++) {
 				JsonObject entity = tags.get(j).getAsJsonObject();
 				double score = entity.get("rank").getAsDouble();
 				String qid = entity.get("id").getAsString();
-				URI resource = new URI("https://wikidata.org/wiki/" + qid);
+				URI resource = new URI("https://wikidata.org/wiki/" + qid); 
 
+				// hold the information for every individual entity
 				foundWikidataResources.add(new FoundWikidataResource(start, end, score, resource));
 				logger.info("found resouce {} for term {} at ({},{})", //
 						resource, questionText.substring(start, end), start, end);
 			}
 		}
 
-		// STEP 3: store computed knowledge about the given question into the Qanary
-		// triplestore (the global process memory)
+		// STEP 3: Push the computed knowledge about the given question to the Qanary triplestore 
+		//
+		// This example component does not require any further cleaning of the results. All found 
+		// entities are assumed to be relevant. Depending on the specific task of the component
+		// the results could be filtered to only include specific entities.
+		
 		logger.info("store data in graph {} of Qanary triplestore endpoint {}", //
 				myQanaryMessage.getOutGraph(), //
 				myQanaryMessage.getEndpoint());
 		
-		// push data to the Qanary triplestore
 		sparql = "" //
 			+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
 			+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
 			+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
 			+ "INSERT {";
 		sparqlbind = "";
+
+		// append to the SPARQL insert query for every identified entity
 		int i = 0;
 		for (FoundWikidataResource found : foundWikidataResources) {
 			sparql += "" //
@@ -106,7 +127,7 @@ public class OpenTapiocaNED extends QanaryComponent {
 				+ "         oa:end \"" + found.getEnd() + "\"^^xsd:nonNegativeInteger ; " //
 				+ "    ] " //
 				+ "  ] . " //
-				+ "  ?a" + i + " oa:hasBody <" + found.getResource() + "> ;" //
+				+ "  ?a" + i + " oa:hasBody <" + found.getResource() + "> ;" // the identified entity
 				+ "     oa:annotatedBy <" + openTapiocaConfiguration.getEndpoint() + "> ;" //
 				+ "     oa:annotatedAt ?time ; " //
 				+ "     qa:score \"" + found.getScore() + "\"^^xsd:decimal ." //
@@ -121,6 +142,7 @@ public class OpenTapiocaNED extends QanaryComponent {
 			+ sparqlbind //
 			+ "  BIND (now() as ?time) " //
 			+ "}";
+		// update the Qanary triplestore with the created insert query
 		myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 
 		return myQanaryMessage;

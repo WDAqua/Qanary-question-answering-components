@@ -1,6 +1,7 @@
 package eu.wdaqua.opentapiocaNED;
 
 /**
+ *
  * takes the Open Tapioca properties from the current environment configuration
  *
  */
