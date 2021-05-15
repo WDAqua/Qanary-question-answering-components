@@ -80,7 +80,7 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 				+ "SELECT * " // 
 				+ "FROM <" + myQanaryMessage.getInGraph().toString() + "> " // the currently used graph
 				+ "WHERE { " //
-				+ "    ?annotation     oa:hasBody   ?wikidataId ." // the entity in question
+				+ "    ?annotation     oa:hasBody   ?wikidataResource ." // the entity in question
 				+ "    ?annotation     qa:score     ?annotationScore ." //
 				+ "    ?annotation     oa:hasTarget ?target ." //
 				+ "    ?target     oa:hasSource    <" + myQanaryQuestion.getUri().toString() + "> ." // annotated for the current question
@@ -95,14 +95,15 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 		//
 		// Rather than computing a (textual) result this component provides a
 		// SPARQL query that might be used to answer the question.
-		// This query can the be validated and used by other components. //TODO: validate or verify?
+		// This query can the used by other components. 
 
 		// there might be multiple entities identified for one name
 		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlGetAnnotation);
 		while(resultset.hasNext()) {
 			QuerySolution tupel = resultset.next();
-			String wikidataId = tupel.get("wikidataId").toString();
-			logger.info("creating query for resource: {}", wikidataId);
+			String wikidataResource = tupel.get("wikidataResource").toString();
+			logger.info("creating query for resource: {}", wikidataResource);
+			String wikidataId = wikidataResource.substring(wikidataResource.indexOf("Q"));
 
 			// populate a generalized answer query with the specific entity (wikidata ID)
 			String createdWikiDataQuery = "" //
