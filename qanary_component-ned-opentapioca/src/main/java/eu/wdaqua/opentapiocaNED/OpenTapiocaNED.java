@@ -86,7 +86,7 @@ public class OpenTapiocaNED extends QanaryComponent {
 				JsonObject entity = tags.get(j).getAsJsonObject();
 				double score = entity.get("rank").getAsDouble();
 				String qid = entity.get("id").getAsString();
-				URI resource = new URI("https://wikidata.org/wiki/" + qid); 
+				URI resource = new URI("https://wikidata.org/entity/" + qid); 
 
 				// hold the information for every individual entity
 				foundWikidataResources.add(new FoundWikidataResource(start, end, score, resource));
