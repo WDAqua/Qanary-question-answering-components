@@ -103,7 +103,6 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 			QuerySolution tupel = resultset.next();
 			String wikidataResource = tupel.get("wikidataResource").toString();
 			logger.info("creating query for resource: {}", wikidataResource);
-			String wikidataId = wikidataResource.substring(wikidataResource.indexOf("Q"));
 
 			// populate a generalized answer query with the specific entity (wikidata ID)
 			String createdWikiDataQuery = "" //
@@ -114,7 +113,7 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " //
 				+ "select DISTINCT ?birthplace ?place " //
 				+ "where { " //
-				+ "  "+wikidataId+" wdt:P19 ?birthplace . " // this should produce the result
+				+ "  <"+wikidataResource+"> wdt:P19 ?birthplace . " // this should produce the result
 				+ "  ?birthplace rdfs:label ?place . " //
 				+ "  FILTER(lang(?place)='en') . " //
 				+ "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\" } " //
