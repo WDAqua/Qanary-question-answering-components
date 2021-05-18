@@ -39,35 +39,7 @@ public class OpenTapiocaNED extends QanaryComponent {
 	@Inject
 	private OpenTapiocaServiceFetcher openTapiocaServiceFetcher;
 
-	@Override
-	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
-		logger.info("process: {}", myQanaryMessage);
-
-		// STEP 1: Get the required Data
-		//
-		// This example component will find Wikidata entities in a given Question. 
-		// As such only the textual question is required.
-		
-		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage);
-		String questionText = myQanaryQuestion.getTextualRepresentation();
-		logger.info("processing question \"{}\" with OpenTapioca at {}.", //
-				questionText, openTapiocaConfiguration.getEndpoint());
-
-		String sparql, sparqlbind;
-
-		// STEP 2: Compute new Information about the question.
-		//
-		// At this point the external endpoint to an OpenTapioca implementation is used
-		// to identify Wikidata entities in the question.
-		JsonArray resources;
-		resources = openTapiocaServiceFetcher.getJsonFromService(//
-				questionText, openTapiocaConfiguration.getEndpoint());
-
-		// parse the results to extract the required information:
-		// - resource uri
-		// - start and end position in the question
-		// - score (rank) of the result
+	public List<FoundWikidataResource> parseOpenTapiocaResults(JsonArray resources) throws Exception {
 
 		List<FoundWikidataResource> foundWikidataResources = new LinkedList<>();
 		logger.info("found {} terms", resources.size());
@@ -86,24 +58,18 @@ public class OpenTapiocaNED extends QanaryComponent {
 				JsonObject entity = tags.get(j).getAsJsonObject();
 				double score = entity.get("rank").getAsDouble();
 				String qid = entity.get("id").getAsString();
-				URI resource = new URI("https://wikidata.org/entity/" + qid); 
+				URI resource = new URI("http://www.wikidata.org/entity/" + qid); 
 
 				// hold the information for every individual entity
 				foundWikidataResources.add(new FoundWikidataResource(start, end, score, resource));
-				logger.info("found resouce {} for term {} at ({},{})", //
-						resource, questionText.substring(start, end), start, end);
 			}
 		}
+		return foundWikidataResources;
+	}
 
-		// STEP 3: Push the computed knowledge about the given question to the Qanary triplestore 
-		//
-		// This example component does not require any further cleaning of the results. All found 
-		// entities are assumed to be relevant. Depending on the specific task of the component
-		// the results could be filtered to only include specific entities.
-		
-		logger.info("store data in graph {} of Qanary triplestore endpoint {}", //
-				myQanaryMessage.getOutGraph(), //
-				myQanaryMessage.getEndpoint());
+	public String createSparqlInsertQuery(List<FoundWikidataResource> foundWikidataResources, QanaryQuestion myQanaryQuestion) throws Exception {
+
+		String sparql, sparqlbind;
 		
 		sparql = "" //
 			+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
@@ -142,9 +108,56 @@ public class OpenTapiocaNED extends QanaryComponent {
 			+ sparqlbind //
 			+ "  BIND (now() as ?time) " //
 			+ "}";
+
+		return sparql;
+	}
+
+	@Override
+	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
+		logger.info("process: {}", myQanaryMessage);
+
+		// STEP 1: Get the required Data
+		//
+		// This example component will find Wikidata entities in a given Question. 
+		// As such only the textual question is required.
+		
+		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
+		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage);
+		String questionText = myQanaryQuestion.getTextualRepresentation();
+		logger.info("processing question \"{}\" with OpenTapioca at {}.", //
+				questionText, openTapiocaConfiguration.getEndpoint());
+
+		// STEP 2: Compute new Information about the question.
+		// 
+		// At this point the external endpoint to an OpenTapioca implementation is used
+		// to identify Wikidata entities in the question.
+		JsonArray resources;
+		resources = openTapiocaServiceFetcher.getJsonFromService(//
+				questionText, openTapiocaConfiguration.getEndpoint());
+
+		// parse the results to extract the required information:
+		// - resource uri
+		// - start and end position in the question
+		// - score (rank) of the result
+		List<FoundWikidataResource> foundWikidataResources = this.parseOpenTapiocaResults(resources);
+
+		// STEP 3: Push the computed knowledge about the given question to the Qanary triplestore 
+		// TODO: refactor this step
+		// This example component does not require any further cleaning of the results. All found 
+		// entities are assumed to be relevant. Depending on the specific task of the component
+		// the results could be filtered to only include specific entities.
+		
+
+		String sparqlInsert = this.createSparqlInsertQuery(foundWikidataResources, myQanaryQuestion);
+
+		logger.info("store data in graph {} of Qanary triplestore endpoint {}", //
+				myQanaryMessage.getOutGraph(), //
+				myQanaryMessage.getEndpoint());
+		
 		// update the Qanary triplestore with the created insert query
-		myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+		myQanaryUtils.updateTripleStore(sparqlInsert, myQanaryMessage.getEndpoint().toString());
 
 		return myQanaryMessage;
 	}
 }
+
