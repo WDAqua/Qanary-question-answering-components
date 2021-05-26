@@ -151,19 +151,4 @@ public class TestQanaryServiceController {
 		}
 
 	}
-	
-	@Test
-	public void testGetJsonFromService() throws ClientProtocolException, IOException {
-		String question = "What is the real name of Batman";
-		String opentapiocaEndpoint = "https://opentapioca.org/api/annotate";
-		OpenTapiocaServiceFetcher serviceFetcher = new OpenTapiocaServiceFetcher();
-
-		JsonArray resources;
-		resources = serviceFetcher.getJsonFromService(
-				question, opentapiocaEndpoint 
-				);
-		assertNotNull(resources);
-		assertTrue(resources.size() >= 0);
-		logger.info("resources: {}", resources.size());
-	}
 }
