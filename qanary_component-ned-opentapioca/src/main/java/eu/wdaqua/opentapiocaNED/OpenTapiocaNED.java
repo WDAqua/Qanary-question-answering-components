@@ -11,11 +11,22 @@ import javax.inject.Inject;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
@@ -33,39 +44,15 @@ import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 public class OpenTapiocaNED extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(OpenTapiocaNED.class);
 
-	@Inject
-	private OpenTapiocaConfiguration openTapiocaConfiguration;
+	private final OpenTapiocaConfiguration openTapiocaConfiguration;
 
-	@Inject
-	private OpenTapiocaServiceFetcher openTapiocaServiceFetcher;
+	private final OpenTapiocaServiceFetcher openTapiocaServiceFetcher;
 
-	public List<FoundWikidataResource> parseOpenTapiocaResults(JsonArray resources) throws Exception {
-
-		List<FoundWikidataResource> foundWikidataResources = new LinkedList<>();
-		logger.info("found {} terms", resources.size());
-
-		for (int i = 0; i < resources.size(); i++) {
-			// this layer only contains information about the surface form: the part of the 
-			// question String for which one or multiple entities were found.
-			
-			JsonObject currentTerm = resources.get(i).getAsJsonObject();
-			int start = currentTerm.get("start").getAsInt();
-			int end = currentTerm.get("end").getAsInt();
-
-			// the second layer contains all entities that were identified for that surface form.
-			JsonArray tags = currentTerm.get("tags").getAsJsonArray();
-			for (int j = 0; j < tags.size(); j++) {
-				JsonObject entity = tags.get(j).getAsJsonObject();
-				double score = entity.get("rank").getAsDouble();
-				String qid = entity.get("id").getAsString();
-				URI resource = new URI("http://www.wikidata.org/entity/" + qid); 
-
-				// hold the information for every individual entity
-				foundWikidataResources.add(new FoundWikidataResource(start, end, score, resource));
-			}
-		}
-		return foundWikidataResources;
+	public OpenTapiocaNED (OpenTapiocaConfiguration openTapiocaConfiguration, OpenTapiocaServiceFetcher openTapiocaServiceFetcher) {
+		this.openTapiocaConfiguration = openTapiocaConfiguration;
+		this.openTapiocaServiceFetcher = openTapiocaServiceFetcher;
 	}
+
 
 	public String createSparqlInsertQuery(List<FoundWikidataResource> foundWikidataResources, QanaryQuestion myQanaryQuestion) throws Exception {
 
@@ -139,7 +126,7 @@ public class OpenTapiocaNED extends QanaryComponent {
 		// - resource uri
 		// - start and end position in the question
 		// - score (rank) of the result
-		List<FoundWikidataResource> foundWikidataResources = this.parseOpenTapiocaResults(resources);
+		List<FoundWikidataResource> foundWikidataResources = openTapiocaServiceFetcher.parseOpenTapiocaResults(resources);
 
 		// STEP 3: Push the computed knowledge about the given question to the Qanary triplestore 
 		// TODO: refactor this step

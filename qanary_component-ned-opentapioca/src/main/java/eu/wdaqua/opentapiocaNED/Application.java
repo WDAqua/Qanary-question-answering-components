@@ -24,13 +24,16 @@ public class Application {
 	}
 
 	@Bean
-	public QanaryComponent qanaryComponent() {
-		return new OpenTapiocaNED();
+	public OpenTapiocaServiceFetcher openTapiocaServiceFetcher() {
+		return new OpenTapiocaServiceFetcher();
 	}
 
 	@Bean
-	public OpenTapiocaServiceFetcher openTapiocaServiceFetcher() {
-		return new OpenTapiocaServiceFetcher();
+	public QanaryComponent qanaryComponent(
+			OpenTapiocaConfiguration openTapiocaConfiguration, 
+			OpenTapiocaServiceFetcher openTapiocaServiceFetcher)
+	{
+		return new OpenTapiocaNED(openTapiocaConfiguration, openTapiocaServiceFetcher);
 	}
 	
     public static void main(String[] args) {
