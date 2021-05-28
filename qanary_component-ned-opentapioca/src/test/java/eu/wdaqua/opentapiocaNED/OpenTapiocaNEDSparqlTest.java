@@ -41,33 +41,28 @@ public class OpenTapiocaNEDSparqlTest {
 
 	@Test
 	public void testCreateSparqlInsertQuery() throws Exception {
-
-//		OpenTapiocaNED openTapiocaNED = new OpenTapiocaNED(openTapiocaConfiguration, openTapiocaServiceFetcher);
+		// mock QanaryQuestion
+		URI outGraph = new URI("urn:qanary#outGraph");
+		URI questionURI = new URI("qanary-test-question-uri");
+		when(myQanaryQuestion.getOutGraph()).thenReturn(outGraph);
+		when(myQanaryQuestion.getUri()).thenReturn(questionURI);
 
 		// given one identified entity
 		int begin = 0;
 		int end = 11;
 		double score = 1.0;
 		URI resource = new URI("https://www.wikidata.org/entity/Q7259");
+
 		FoundWikidataResource foundResource = new FoundWikidataResource(begin, end, score, resource);
 		List<FoundWikidataResource> resources = new LinkedList<FoundWikidataResource>();
 		resources.add(foundResource);
 
-
-		URI outGraph = new URI("urn:qanary#outGraph");
-		URI questionURI = new URI("qanary-test-question-uri");
-		when(myQanaryQuestion.getOutGraph()).thenReturn(outGraph);
-		when(myQanaryQuestion.getUri()).thenReturn(questionURI);
-
-		assert openTapiocaNED != null;
-		assert resources != null;
-		assert myQanaryQuestion != null;
-
 		// when the sparql insert query is created
 		String sparqlInsert = openTapiocaNED.createSparqlInsertQuery(resources, myQanaryQuestion);
+
 		// then it contains the resource uri as body parameter, 
 		assertTrue(sparqlInsert.contains("?a0 oa:hasBody <" +resource.toString() + "> ;"));
-		// start and end points
+		// and start and end index
 		assertTrue(sparqlInsert.contains("oa:start \"" + begin + "\"^^xsd:nonNegativeInteger ;" ));
 		assertTrue(sparqlInsert.contains("oa:end \"" + end + "\"^^xsd:nonNegativeInteger ;" ));
 	}
