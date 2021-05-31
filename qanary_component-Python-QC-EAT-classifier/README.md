@@ -14,12 +14,12 @@ The answer type taxonomy is similar to the top-level classes of the [DBpedia Ont
 3. Build the Docker container `docker build -t eat-component:latest .`
 4. Run the Docker container with the following environment variables (the values can be changed to your individual ones):
 ```bash
-docker run -d -p 41007:8000 \
+docker run -d -p 41097:41097 \
     -e SPRING_BOOT_ADMIN_URL='http://webengineering.ins.hs-anhalt.de:43740' \
     -e SPRING_BOOT_ADMIN_USERNAME='admin' \
     -e SPRING_BOOT_ADMIN_PASSWORD='admin' \
-    -e SERVICE_HOST='127.0.0.1' \
-    -e SERVICE_PORT='41098' \
+    -e SERVICE_HOST='http://webengineering.ins.hs-anhalt.de' \
+    -e SERVICE_PORT=41097 \
     -e SERVICE_NAME_COMPONENT='EAT-Component' \
     -e SERVICE_DESCRIPTION_COMPONENT='EAT-Component-Description' \
     -e CLASSIFICATION_ENDPOINT='http://webengineering.ins.hs-anhalt.de:41066/answer_type_classifier/predict' \

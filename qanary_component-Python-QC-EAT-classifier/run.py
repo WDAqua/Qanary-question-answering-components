@@ -20,15 +20,15 @@ URL_COMPONENT = f"http://{SERVICE_HOST}:{SERVICE_PORT}"
 metadata = {
     "start": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     "description": SERVICE_DESCRIPTION_COMPONENT,
-    "about": "%s:%d%s" % (SERVICE_HOST, SERVICE_PORT, aboutendpoint),
+    "about": f"{SERVICE_HOST}:{SERVICE_PORT}{aboutendpoint}",
     "written in": "Python"
 }
 
-# initialize the registation object, to be send to the Spring Boot Admin server
+# initialize the registration object, to be send to the Spring Boot Admin server
 registration = Registration(
     name=SERVICE_NAME_COMPONENT,
-    serviceUrl="%s:%d" % (SERVICE_HOST, SERVICE_PORT),
-    healthUrl="%s:%d%s" % (SERVICE_HOST, SERVICE_PORT, healthendpoint),
+    serviceUrl=f"{SERVICE_HOST}:{SERVICE_PORT}",
+    healthUrl=f"{SERVICE_HOST}:{SERVICE_PORT}{healthendpoint}",
     metadata=metadata
 )
 
