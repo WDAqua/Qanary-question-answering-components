@@ -31,10 +31,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-// TODO: does this need an annotation?
+import io.swagger.v3.oas.annotations.Operation;
+
 public class OpenTapiocaServiceFetcher {
+
 	private static final Logger logger = LoggerFactory.getLogger(OpenTapiocaServiceFetcher.class);
 
+	@Operation(
+		summary = "Query the specified endpoint", //
+		operationId = "getJsonFromService", //
+		description = "" //
+	)
 	public JsonArray getJsonFromService( 
 			String myQuestion, String endpoint) throws ClientProtocolException, IOException {
 
@@ -66,6 +73,11 @@ public class OpenTapiocaServiceFetcher {
 		return resources;
 	}
 
+	@Operation(
+		summary = "", //
+		operationId = "", //
+		description = "" //
+	)
 	public List<FoundWikidataResource> parseOpenTapiocaResults(JsonArray resources) throws Exception {
 
 		List<FoundWikidataResource> foundWikidataResources = new LinkedList<>();

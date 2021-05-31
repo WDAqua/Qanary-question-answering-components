@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
@@ -53,53 +55,14 @@ public class OpenTapiocaNED extends QanaryComponent {
 		this.openTapiocaServiceFetcher = openTapiocaServiceFetcher;
 	}
 
-
-	public String createSparqlInsertQuery(List<FoundWikidataResource> foundWikidataResources, QanaryQuestion myQanaryQuestion) throws Exception {
-
-		String sparql, sparqlbind;
-		
-		sparql = "" //
-			+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-			+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-			+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-			+ "INSERT {";
-		sparqlbind = "";
-
-		// append to the SPARQL insert query for every identified entity
-		int i = 0;
-		for (FoundWikidataResource found : foundWikidataResources) {
-			sparql += "" //
-				+ "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
-				+ "  ?a" + i + " a qa:AnnotationOfInstance . " //
-				+ "  ?a" + i + " oa:hasTarget [ " //
-				+ "     a oa:SpecificResource; " //
-				+ "     oa:hasSource <" + myQanaryQuestion.getUri() + ">; " //
-				+ "     oa:hasSelector [ " //
-				+ "         a oa:TextPositionSelector ; " //
-				+ "         oa:start \"" + found.getBegin() + "\"^^xsd:nonNegativeInteger ; " //
-				+ "         oa:end \"" + found.getEnd() + "\"^^xsd:nonNegativeInteger ; " //
-				+ "    ] " //
-				+ "  ] . " //
-				+ "  ?a" + i + " oa:hasBody <" + found.getResource() + "> ;" // the identified entity
-				+ "     oa:annotatedBy <" + openTapiocaConfiguration.getEndpoint() + "> ;" //
-				+ "     oa:annotatedAt ?time ; " //
-				+ "     qa:score \"" + found.getScore() + "\"^^xsd:decimal ." //
-				+ "}"; // end: graph
-			sparqlbind += "  BIND (IRI(str(RAND())) AS ?a" + i +") .";
-			i++;
-		}
-
-		sparql += "" //
-			+ "} " //end: insert
-			+ "WHERE { " //
-			+ sparqlbind //
-			+ "  BIND (now() as ?time) " //
-			+ "}";
-
-		return sparql;
-	}
-
 	@Override
+	@Operation(
+		summary = "Process a Qanary question with OpenTapiocaNED", //
+		operationId = "process", //
+		description = "Encapsulates the main functionality of this component. "
+		+ "Queries the OpenTapioca endpoint to find Wikidata entities in a given Question "
+		+ "and stores the result as an annotation in the Qanary triplestore."//
+	)
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("process: {}", myQanaryMessage);
 
@@ -145,6 +108,55 @@ public class OpenTapiocaNED extends QanaryComponent {
 		myQanaryUtils.updateTripleStore(sparqlInsert, myQanaryMessage.getEndpoint().toString());
 
 		return myQanaryMessage;
+	}
+
+	@Operation(
+		summary = "Create a SPARQL query for storing identified Wikidata entities in the Triplestore", //
+		operationId = "createSparqlInsertQuery", //
+		description = "" // TODO: add description
+	)
+	public String createSparqlInsertQuery(List<FoundWikidataResource> foundWikidataResources, QanaryQuestion myQanaryQuestion) throws Exception {
+		String sparql, sparqlbind;
+		
+		sparql = "" //
+			+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
+			+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
+			+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
+			+ "INSERT {";
+		sparqlbind = "";
+
+		// append to the SPARQL insert query for every identified entity
+		int i = 0;
+		for (FoundWikidataResource found : foundWikidataResources) {
+			sparql += "" //
+				+ "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
+				+ "  ?a" + i + " a qa:AnnotationOfInstance . " //
+				+ "  ?a" + i + " oa:hasTarget [ " //
+				+ "     a oa:SpecificResource; " //
+				+ "     oa:hasSource <" + myQanaryQuestion.getUri() + ">; " //
+				+ "     oa:hasSelector [ " //
+				+ "         a oa:TextPositionSelector ; " //
+				+ "         oa:start \"" + found.getBegin() + "\"^^xsd:nonNegativeInteger ; " //
+				+ "         oa:end \"" + found.getEnd() + "\"^^xsd:nonNegativeInteger ; " //
+				+ "    ] " //
+				+ "  ] . " //
+				+ "  ?a" + i + " oa:hasBody <" + found.getResource() + "> ;" // the identified entity
+				+ "     oa:annotatedBy <" + openTapiocaConfiguration.getEndpoint() + "> ;" //
+				+ "     oa:annotatedAt ?time ; " //
+				+ "     qa:score \"" + found.getScore() + "\"^^xsd:decimal ." //
+				+ "}"; // end: graph
+			sparqlbind += "  BIND (IRI(str(RAND())) AS ?a" + i +") .";
+			i++;
+		}
+
+		sparql += "" //
+			+ "} " //end: insert
+			+ "WHERE { " //
+			+ sparqlbind //
+			+ "  BIND (now() as ?time) " //
+			+ "}";
+
+		return sparql;
 	}
 }
 
