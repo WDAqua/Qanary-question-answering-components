@@ -126,7 +126,7 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 				+ "PREFIX p: <http://www.wikidata.org/prop/> " //
 				+ "PREFIX pq: <http://www.wikidata.org/prop/qualifier/> " //
 				+ "PREFIX ps: <http://www.wikidata.org/prop/statement/> " //
-				+ "select DISTINCT ?birthPlaceLabel ?birthDateLabel " //
+				+ "select DISTINCT ?personLabel ?birthPlaceLabel ?birthDateLabel " //
 				+ "where { " //
 				+ "	 values ?allowedPropPlace { pq:P17 } " // allow 'country' as property of birthplace
 				+ "  values ?person {<"+wikidataResource+">} " //
