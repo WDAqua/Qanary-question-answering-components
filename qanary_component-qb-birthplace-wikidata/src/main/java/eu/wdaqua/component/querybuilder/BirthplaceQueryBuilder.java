@@ -24,8 +24,23 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(BirthplaceQueryBuilder.class);
 
 	private final String applicationName;
+
+	private final String supportedQuestionSubstring = "birthplace of";
+
 	public BirthplaceQueryBuilder(@Value("$P{spring.application.name}") final String applicationName) {
 		this.applicationName = applicationName;
+	}
+
+	// TODO: support more prefixes
+	private boolean isQuestionSupported(String questionString) {
+		return questionString.toLowerCase().contains(this.supportedQuestionSubstring);
+	}
+
+	// TODO: work with all prefixes
+	private int getNamePosition(String questionString) {
+		int foundSubstring = questionString.toLowerCase().indexOf(this.supportedQuestionSubstring);
+		int filterStart = foundSubstring + this.supportedQuestionSubstring.length();
+		return filterStart;
 	}
 
 	/**
@@ -48,17 +63,16 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
 
 
+		// TODO: change according to combined functionality
 		// This component is only supposed to answer a specific type of question.
 		// Therefore we only need to continue if the question asks for a birthplace.
 		// For this example is is enough to simply look for the substring "birthplace of".
 		// However, a more sophisticated approach is very possible.
 
-		String supportedQuestionSubstring = "birthplace of ";
-		int foundSubstring = myQuestion.toLowerCase().indexOf(supportedQuestionSubstring);
-		if (foundSubstring == -1) {
+		if (!this.isQuestionSupported(myQuestion)) {
 			// don't continue the process if the question is not supported
 			logger.info("nothing to do here as question \"{}\" does not contain \"{}\".", myQuestion,
-					supportedQuestionSubstring);
+					this.supportedQuestionSubstring);
 			return myQanaryMessage;
 		}
 
@@ -69,8 +83,7 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 		// Because we do not require entities that were found before that substring we can 
 		// filter our results:
 
-		int filterStart = foundSubstring + supportedQuestionSubstring.length();
-
+		int filterStart = this.getNamePosition(myQuestion);
 		// formulate a query to find existing information 
 		String sparqlGetAnnotation = "" //
 				+ "PREFIX dbr: <http://dbpedia.org/resource/> " //
@@ -107,15 +120,27 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 			// populate a generalized answer query with the specific entity (wikidata ID)
 			String createdWikiDataQuery = "" //
 				+ "PREFIX wikibase: <http://wikiba.se/ontology#> " //
-				+ "PREFIX wdt: <http://www.wikidata.org/prop/direct/> " //
 				+ "PREFIX wd: <http://www.wikidata.org/entity/> " //
+				+ "PREFIX wdt: <http://www.wikidata.org/prop/direct/> " //
 				+ "PREFIX bd: <http://www.bigdata.com/rdf#> " //
-				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " //
-				+ "select DISTINCT ?birthplace ?place " //
+				+ "PREFIX p: <http://www.wikidata.org/prop/> " //
+				+ "PREFIX pq: <http://www.wikidata.org/prop/qualifier/> " //
+				+ "PREFIX ps: <http://www.wikidata.org/prop/statement/> " //
+				+ "select DISTINCT ?birthPlaceLabel ?birthDateLabel " //
 				+ "where { " //
-				+ "  <"+wikidataResource+"> wdt:P19 ?birthplace . " // this should produce the result
-				+ "  ?birthplace rdfs:label ?place . " //
-				+ "  FILTER(lang(?place)='en') . " //
+				+ "	 values ?allowedPropPlace { pq:P17 } " // allow 'country' as property of birthplace
+				+ "  values ?person {<"+wikidataResource+">} " //
+				+ "  ?person wdt:P569 ?birthDate . " // this should produce the date of birth 
+				+ "  {" //
+				+ "  ?person wdt:P19 ?birthPlace . " // this should produce the place of birth
+				+ "  }" //
+				+ "	 UNION" //
+				+ "  {" //
+				+ "  ?person wdt:P19 ?birthPlace . " // 
+				+ "  ?person p:P19 _:a . " //			
+				+ "  _:a ps:P19 ?specificBirthPlace . " // the above place might be too specific
+				+ "  _:a ?allowedPropPlace ?birthPlace . "// get the country if it is provided
+				+ "  }" //
 				+ "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\" } " //
 				+ "}";
 			
