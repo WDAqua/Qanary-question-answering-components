@@ -126,20 +126,20 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 				+ "PREFIX p: <http://www.wikidata.org/prop/> " //
 				+ "PREFIX pq: <http://www.wikidata.org/prop/qualifier/> " //
 				+ "PREFIX ps: <http://www.wikidata.org/prop/statement/> " //
-				+ "select DISTINCT ?personLabel ?birthPlaceLabel ?birthDateLabel " //
+				+ "select DISTINCT ?personLabel ?birthplaceLabel ?birthdateLabel " //
 				+ "where { " //
 				+ "	 values ?allowedPropPlace { pq:P17 } " // allow 'country' as property of birthplace
 				+ "  values ?person {<"+wikidataResource+">} " //
-				+ "  ?person wdt:P569 ?birthDate . " // this should produce the date of birth 
+				+ "  ?person wdt:P569 ?birthdate . " // this should produce the date of birth 
 				+ "  {" //
-				+ "  ?person wdt:P19 ?birthPlace . " // this should produce the place of birth
+				+ "  ?person wdt:P19 ?birthplace . " // this should produce the place of birth
 				+ "  }" //
 				+ "	 UNION" //
 				+ "  {" //
-				+ "  ?person wdt:P19 ?birthPlace . " // 
+				+ "  ?person wdt:P19 ?birthplace . " // 
 				+ "  ?person p:P19 _:a . " //			
 				+ "  _:a ps:P19 ?specificBirthPlace . " // the above place might be too specific
-				+ "  _:a ?allowedPropPlace ?birthPlace . "// get the country if it is provided
+				+ "  _:a ?allowedPropPlace ?birthplace . "// get the country if it is provided
 				+ "  }" //
 				+ "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\" } " //
 				+ "}";
