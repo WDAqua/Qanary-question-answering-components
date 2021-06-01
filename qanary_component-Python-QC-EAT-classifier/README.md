@@ -1,18 +1,37 @@
 # Expected Answer Type (EAT) classification component
 
-The component classifies the answer type of a question. 
+The component classifies the answer type of a textual question. 
 
-For example, question: "Where was Angela Merkel born?"; 
-answer type: "Place".
+For example:
 
-The answer type taxonomy is similar to the top-level classes of the [DBpedia Ontology](http://mappings.dbpedia.org/server/ontology/classes/).
+* question: "Where was Angela Merkel born?"; 
+* answer type: "Place"
+
+The answer type taxonomy used in this component is similar to the top-level classes of the [DBpedia Ontology](http://mappings.dbpedia.org/server/ontology/classes/).
+
+The component is integrating a classification model that was pretrained using Tensorflow. The model is served as external component by [Tensorflow Serving](https://www.tensorflow.org/tfx/guide/serving). Hence, this EAT classification is following the structure of a Qanary Wrapper component.
 
 ## Usage
 
-1. Clone the repository `git clone https://github.com/WDAqua/Qanary-question-answering-components.git`
-2. Change working directory `cd Qanary-question-answering-components/qanary_component-Python-QC-EAT-classifier`
-3. Build the Docker container `docker build -t eat-component:latest .`
-4. Run the Docker container with the following environment variables (the values can be changed to your individual ones):
+1. Clone the Git repository of the collected Qanary components: 
+
+```bash
+git clone https://github.com/WDAqua/Qanary-question-answering-components.git
+```
+
+2. Switch to the component's directory: 
+
+```bash
+cd Qanary-question-answering-components/qanary_component-Python-QC-EAT-classifier
+```
+
+3. Build the Docker container: 
+
+```bash
+docker build -t eat-component:latest .
+```
+
+6. Run the Docker container with the following environment variables (here it is assumed that the service uses port 41097, all values can be changed w.r.t. your individual needs):
 ```bash
 docker run -d -p 41097:41097 \
     -e SPRING_BOOT_ADMIN_URL='http://webengineering.ins.hs-anhalt.de:43740' \
@@ -31,13 +50,13 @@ The parameters description:
 * `SPRING_BOOT_ADMIN_URL` -- URL of the Qanary pipeline (see Step 1 and Step 2 of the [tutorial](https://github.com/WDAqua/Qanary/wiki/Qanary-tutorial:-How-to-build-a-trivial-Question-Answering-pipeline))
 * `SPRING_BOOT_ADMIN_USERNAME` -- the admin username of the Qanary pipeline
 * `SPRING_BOOT_ADMIN_PASSWORD` -- the admin password of the Qanary pipeline
-* `SERVICE_HOST` -- the host of your component without protocol prefix (e.g. `http://`). It has to be visible to the Qanary pipeline
-* `SERVICE_PORT` -- the port of your component (has to be visible to the Qanary pipeline)
-* `SERVICE_NAME_COMPONENT` -- the name of your component
-* `SERVICE_DESCRIPTION_COMPONENT` -- the description of your component
-* `CLASSIFICATION_ENDPOINT` -- the endpoint of deployed classifier with Tensorflow Serving. This parameter must not be changed unless you have your own endpoint.
+* `SERVICE_HOST` -- the host of your Qanary component without protocol prefix (e.g., `http://`). It has to be visible to the Qanary pipeline (i.e., a callback from the Qanary pipeline can be executed).
+* `SERVICE_PORT` -- the port of your Qanary component (has to be visible to the Qanary pipeline)
+* `SERVICE_NAME_COMPONENT` -- the name of your Qanary component (for better identification)
+* `SERVICE_DESCRIPTION_COMPONENT` -- the description of your Qanary component
+* `CLASSIFICATION_ENDPOINT` -- the endpoint of the classifier deployed by using [Tensorflow Serving](https://www.tensorflow.org/tfx/guide/serving). This parameter must not be changed unless you have your own endpoint.
 
-After execution component creates the annotations in the graph with the following predicates:
+After execution component creates Qanary annotations in the Qanary triplestore with the following predicates:
 
 * `qa:hasAnswerType` -- the predicted answer type;
 * `oa:annotatedBy` -- the name of the component;
