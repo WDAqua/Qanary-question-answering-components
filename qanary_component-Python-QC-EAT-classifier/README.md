@@ -7,7 +7,7 @@ For example:
 * question: "Where was Angela Merkel born?"; 
 * answer type: "Place"
 
-The answer type taxonomy used in this component is similar to the top-level classes of the [DBpedia Ontology](http://mappings.dbpedia.org/server/ontology/classes/).
+The answer type taxonomy is using the top-level classes of the [DBpedia Ontology](http://mappings.dbpedia.org/server/ontology/classes/). Hence, the result is always a DBpedia concept.
 
 The component is integrating a classification model that was pretrained using Tensorflow. The model is served as external component by [Tensorflow Serving](https://www.tensorflow.org/tfx/guide/serving). Hence, this EAT classification is following the structure of a Qanary Wrapper component.
 
