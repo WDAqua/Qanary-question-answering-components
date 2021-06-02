@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo The port number is: $SERVER_PORT
+echo The port number is: $SERVICE_PORT
 echo The Qanary pipeline URL is: $SPRING_BOOT_ADMIN_URL
-if [ -n $SERVER_PORT ]
+if [ -n $SERVICE_PORT ]
 then
-    exec gunicorn -b :$SERVER_PORT --access-logfile - --error-logfile - run:app
+    exec gunicorn -b :$SERVICE_PORT --access-logfile - --error-logfile - run:app
 fi
