@@ -25,7 +25,8 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 
 	private final String applicationName;
 
-	private final String supportedQuestionSubstring = "birthplace of";
+	private final String[] supportedQuestionSubstrings = {"birthplace of"};
+	// currently only one substing, change may require better implementation in subsequent methods
 
 	public BirthplaceQueryBuilder(@Value("$P{spring.application.name}") final String applicationName) {
 		this.applicationName = applicationName;
@@ -33,13 +34,13 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 
 	// TODO: support more prefixes
 	private boolean isQuestionSupported(String questionString) {
-		return questionString.toLowerCase().contains(this.supportedQuestionSubstring);
+		return questionString.toLowerCase().contains(this.supportedQuestionSubstrings[0]);
 	}
 
 	// TODO: work with all prefixes
 	private int getNamePosition(String questionString) {
-		int foundSubstring = questionString.toLowerCase().indexOf(this.supportedQuestionSubstring);
-		int filterStart = foundSubstring + this.supportedQuestionSubstring.length();
+		int foundSubstring = questionString.toLowerCase().indexOf(this.supportedQuestionSubstrings[0]);
+		int filterStart = foundSubstring + this.supportedQuestionSubstrings[0].length();
 		return filterStart;
 	}
 
@@ -72,7 +73,7 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 		if (!this.isQuestionSupported(myQuestion)) {
 			// don't continue the process if the question is not supported
 			logger.info("nothing to do here as question \"{}\" does not contain \"{}\".", myQuestion,
-					this.supportedQuestionSubstring);
+					this.supportedQuestionSubstrings[0]);
 			return myQanaryMessage;
 		}
 
@@ -126,7 +127,7 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 				+ "PREFIX p: <http://www.wikidata.org/prop/> " //
 				+ "PREFIX pq: <http://www.wikidata.org/prop/qualifier/> " //
 				+ "PREFIX ps: <http://www.wikidata.org/prop/statement/> " //
-				+ "select DISTINCT ?personLabel ?birthplaceLabel ?birthdateLabel " //
+				+ "select DISTINCT ?personLabel ?birthplaceLabel ?birthdate " //
 				+ "where { " //
 				+ "	 values ?allowedPropPlace { pq:P17 } " // allow 'country' as property of birthplace
 				+ "  values ?person {<"+wikidataResource+">} " //
