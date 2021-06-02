@@ -25,7 +25,7 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 
 	private final String applicationName;
 
-	private final String[] supportedQuestionSubstrings = {"birthplace of"};
+	private final String[] supportedQuestionSubstrings = {"where and when was"}; //TODO: write as regex
 	// currently only one substing, change may require better implementation in subsequent methods
 
 	public BirthplaceQueryBuilder(@Value("$P{spring.application.name}") final String applicationName) {
@@ -40,7 +40,7 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 	// TODO: work with all prefixes
 	private int getNamePosition(String questionString) {
 		int foundSubstring = questionString.toLowerCase().indexOf(this.supportedQuestionSubstrings[0]);
-		int filterStart = foundSubstring + this.supportedQuestionSubstrings[0].length();
+		int filterStart = foundSubstring + this.supportedQuestionSubstrings[0].length()+1;
 		return filterStart;
 	}
 
@@ -137,7 +137,7 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 				+ "  }" //
 				+ "	 UNION" //
 				+ "  {" //
-				+ "  ?person wdt:P19 ?birthplace . " // 
+				+ "  ?person wdt:P19 ?specificBirthPlace . " // 
 				+ "  ?person p:P19 _:a . " //			
 				+ "  _:a ps:P19 ?specificBirthPlace . " // the above place might be too specific
 				+ "  _:a ?allowedPropPlace ?birthplace . "// get the country if it is provided
