@@ -7,6 +7,7 @@ import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
+import java.io.ByteArrayOutputStream;
 
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Component;
 
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
+
+import org.json.simple.JSONObject;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
@@ -38,44 +41,63 @@ import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 public class ExampleQanaryComponent extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(ExampleQanaryComponent.class);
 
-	// TODO: return Json instead of String
-	// TODO: individual queries
-	public List<BirthData> getAnswersFromWikidata(List<String> queries) {
+	// retrieve Json String Wikidata query results
+	public String getAnswersFromWikidata(String queryString) {
 
 		String wikidataEndpoint = "https://query.wikidata.org/sparql";
-		List<BirthData> answers = new LinkedList<BirthData>();
+		List<JSONObject> answers = new LinkedList<JSONObject>();
 
-   		for (String queryString : queries) {
-   			// TODO: execute queries
-   			
-   			Query query = QueryFactory.create(queryString);
-   			QueryExecution qexec = QueryExecutionFactory.sparqlService(wikidataEndpoint, queryString);
+		Query query = QueryFactory.create(queryString);
+		QueryExecution qexec = QueryExecutionFactory.sparqlService(wikidataEndpoint, queryString);
    
-   			try {
-   				ResultSet results = qexec.execSelect();
-				while (results.hasNext()) {
-					QuerySolution result = results.next();
-					
-					String personLabel = result.get("personLabel").toString();
-					String birthplace = result.get("birthplace").toString();
-					String birthdate = result.get("birthdate").toString();
-					BirthData birthData = new BirthData(personLabel, birthplace, birthdate);
-
-					logger.info("found: {}", answer);
-					answers.add(birthData);
-				}
-   			} catch (Exception e) {
-   				logger.warn("could not query wikidata endpoint {}", e.getMessage());
-   			} finally {
-   				qexec.close();
-   			}
-   		}
-		return answers;
+		try {
+			ResultSet results = qexec.execSelect();
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			ResultSetFormatter.outputAsJSON(os, results);
+			return os.toString("UTF-8");
+		} catch (Exception e) {
+			logger.warn("could not query wikidata endpoint {}", e.getMessage());
+		} finally {
+			qexec.close();
+		}
+		return null;
 	}
 
-	public String getSparqlInsertQuery() {
-		String sparql = "";
-
+	public String getSparqlInsertQuery(QanaryQuestion myQanaryQuestion, String answerJson) {
+		answerJson.replace("\"", "\\\"").replace("\n", "\\n");
+		String sparql = "" //
+					+ "PREFIX dbr: <http://dbpedia.org/resource/> \n" //
+					+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> \n" //
+					+ "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
+					+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
+					+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n" //
+					+ "" //
+					+ "INSERT { \n" //
+					+ "GRAPH <" + myQanaryMessage.getInGraph().toString() + ">  {\n" //
+					+ "  ?annotationAnswer a	qa:AnnotationAnswer ; \n" //
+					+ "			oa:hasTarget	?question ; \n" //
+					+ "			oa:hasBody		?answer ; \n" //
+					+ "			oa:annotatedBy	?service ; \n" //
+					+ "			oa:annotatedAt	?time ; \n" //
+					+ "			qa:score		?score ; \n" //
+					//
+					+ "  ?answer	a			qa:AnswerJson ;\n" //
+					+ "	   rdf:value			?answerJson . \n" // the answer
+					//?
+					+ "  qa:AnswerJson rdf:subclassOf qa:Answer . \n " //
+					//
+					+ " }\n" // end: graph
+					+ "}\n" // end: insert
+					+ "WHERE { /n" //
+					+ "  BIND (IRI(str(RAND())) AS ?annotationAnswer) . \n" //
+					+ "  BIND (IRI(str(RAND())) AS ?answer) . \n" //
+					// values
+					+ "  BIND (now() AS ?time) . \n" //
+					+ "  BIND (<"+myQanaryQuestion.getURI().toASCIIString()+"> AS ?question) . \n" //
+					+ "  BIND (<"+answerJson+"> AS ?answerJson) . \n" //
+					+ "  BIND (\"1.0\"^^xsd:float AS ?score) . \n" // rule based
+					+ "  BIND (<urn:qanary:"+this.applicationName+"> AS ?service) . \n" //
+					+"}\n";
 		return sparql;
 	}
 
@@ -130,24 +152,22 @@ public class ExampleQanaryComponent extends QanaryComponent {
 		}
 
 		// STEP 2: compute new knowledge about the given question
-		List<BirthData> answers = this.getAnswersFromWikidata(queries);
-		for (BirthData answer : answers) {
-			String sparql = this.getSparqlInsertQuery(myQanaryQuestion, answer);	
+		for (String queryString : queries) { //TODO: we can expect only one query per linked entity -> connect?
+			String answers = this.getAnswersFromWikidata(queryString);
+			String sparql = this.getSparqlInsertQuery(myQanaryQuestion, answers);
+		
+			// STEP 3: store computed knowledge about the given question into the Qanary
+			// triplestore (the global process memory)
+			
+			// TODO: individual or compound query?
+
+			logger.info("store data in graph {} of Qanary triplestore endpoint {}", //
+					myQanaryMessage.getValues().get(myQanaryMessage.getOutGraph()), //
+					myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
+			// push data to the Qanary triplestore
+			myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint());
+
 		}
-
-		
-		
-		// STEP 3: store computed knowledge about the given question into the Qanary
-		// triplestore (the global process memory)
-		
-		// TODO: individual or compound query?
-
-		logger.info("store data in graph {} of Qanary triplestore endpoint {}", //
-				myQanaryMessage.getValues().get(myQanaryMessage.getOutGraph()), //
-				myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-		// push data to the Qanary triplestore
-		myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint());
-
 		return myQanaryMessage;
 	}
 }

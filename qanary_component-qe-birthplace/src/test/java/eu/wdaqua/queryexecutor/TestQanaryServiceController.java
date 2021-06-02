@@ -90,22 +90,39 @@ public class TestQanaryServiceController {
 	public void testGetAnswersFromWikidata() {
 		List<String> queries = new LinkedList<String>();
 		queries.add("" //
-				+ "PREFIX wdt: <http://www.wikidata.org/prop/direct/>\n" 
-                + "PREFIX wd: <http://www.wikidata.org/entity/>\n" 
-                + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" 
-				+ "select ?place ?label\n " //
-				+ "where { \n" //
-				+ "  wd:Q567 wdt:P19 ?place . \n" //
-				+ "  ?place rdfs:label ?label . \n"//
-				+ "  filter(lang(?label) = \"en\"). \n" //
-				+ "} \n" //
-				+ "");
+				+ "PREFIX wikibase: <http://wikiba.se/ontology#> " //
+				+ "PREFIX wd: <http://www.wikidata.org/entity/> " //
+				+ "PREFIX wdt: <http://www.wikidata.org/prop/direct/> " //
+				+ "PREFIX bd: <http://www.bigdata.com/rdf#> " //
+				+ "PREFIX p: <http://www.wikidata.org/prop/> " //
+				+ "PREFIX pq: <http://www.wikidata.org/prop/qualifier/> " //
+				+ "PREFIX ps: <http://www.wikidata.org/prop/statement/> " //
+				+ "select DISTINCT ?personLabel ?birthplaceLabel ?birthdateLabel " //
+				+ "where { " //
+				+ "	 values ?allowedPropPlace { pq:P17 } " // allow 'country' as property of birthplace
+				+ "  values ?person {<http://www.wikidata.org/entity/Q567>} " //
+				+ "  ?person wdt:P569 ?birthdate . " // this should produce the date of birth 
+				+ "  {" //
+				+ "  ?person wdt:P19 ?birthplace . " // this should produce the place of birth
+				+ "  }" //
+				+ "	 UNION" //
+				+ "  {" //
+				+ "  ?person wdt:P19 ?specificBirthplace . " // 
+				+ "  ?person p:P19 _:a . " //			
+				+ "  _:a ps:P19 ?specificBirthPlace . " // the above place might be too specific
+				+ "  _:a ?allowedPropPlace ?birthplace . "// get the country if it is provided
+				+ "  }" //
+				+ "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\" } " //
+				+ "}");
+		logger.info("query: {}", queries.get(0));
 
 		ExampleQanaryComponent comp = new ExampleQanaryComponent();
-		List<String> results = comp.getAnswersFromWikidata(queries);
-		for (String result : results) {
-			logger.info("found: {}", result);
-		}
+		String result = comp.getAnswersFromWikidata(queries);
+		logger.info("found: {}", result);
+//		List<String> results = comp.getAnswersFromWikidata(queries);
+//		for (String result : results) {
+//			logger.info("found: {}", result);
+//		}
 
 
 	}
