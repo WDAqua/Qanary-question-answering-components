@@ -88,8 +88,7 @@ public class TestQanaryServiceController {
 
 	@Test
 	public void testGetAnswersFromWikidata() {
-		List<String> queries = new LinkedList<String>();
-		queries.add("" //
+		String query = "" //
 				+ "PREFIX wikibase: <http://wikiba.se/ontology#> " //
 				+ "PREFIX wd: <http://www.wikidata.org/entity/> " //
 				+ "PREFIX wdt: <http://www.wikidata.org/prop/direct/> " //
@@ -113,11 +112,10 @@ public class TestQanaryServiceController {
 				+ "  _:a ?allowedPropPlace ?birthplace . "// get the country if it is provided
 				+ "  }" //
 				+ "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\" } " //
-				+ "}");
-		logger.info("query: {}", queries.get(0));
+				+ "}";
 
 		ExampleQanaryComponent comp = new ExampleQanaryComponent();
-		String result = comp.getAnswersFromWikidata(queries);
+		String result = comp.getAnswersFromWikidata(query);
 		logger.info("found: {}", result);
 //		List<String> results = comp.getAnswersFromWikidata(queries);
 //		for (String result : results) {

@@ -2,6 +2,7 @@ package eu.wdaqua.queryexecutor;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
@@ -28,6 +29,7 @@ import org.json.simple.JSONObject;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 
@@ -47,8 +49,10 @@ public class ExampleQanaryComponent extends QanaryComponent {
 		String wikidataEndpoint = "https://query.wikidata.org/sparql";
 		List<JSONObject> answers = new LinkedList<JSONObject>();
 
-		Query query = QueryFactory.create(queryString);
-		QueryExecution qexec = QueryExecutionFactory.sparqlService(wikidataEndpoint, queryString);
+		logger.info("querying wikidata endpoint with query:\n{}", queryString.replace("\\\"", "\"").replace("\\n", "\n"));
+
+		Query query = QueryFactory.create(queryString.replace("\\\"", "\"").replace("\\n", "\n"));
+		QueryExecution qexec = QueryExecutionFactory.sparqlService(wikidataEndpoint, queryString.replace("\\\"", "\"").replace("\\n", "\n"));
    
 		try {
 			ResultSet results = qexec.execSelect();
@@ -63,40 +67,43 @@ public class ExampleQanaryComponent extends QanaryComponent {
 		return null;
 	}
 
-	public String getSparqlInsertQuery(QanaryQuestion myQanaryQuestion, String answerJson) {
+	public String getSparqlInsertQuery(QanaryQuestion myQanaryQuestion, String answerJson) 
+			throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed {		
+		
 		answerJson.replace("\"", "\\\"").replace("\n", "\\n");
 		String sparql = "" //
 					+ "PREFIX dbr: <http://dbpedia.org/resource/> \n" //
 					+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> \n" //
 					+ "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
 					+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
+					+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" //
 					+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n" //
 					+ "" //
 					+ "INSERT { \n" //
-					+ "GRAPH <" + myQanaryMessage.getInGraph().toString() + ">  {\n" //
+					+ "GRAPH <" + myQanaryQuestion.getOutGraph() + ">  {\n" //
 					+ "  ?annotationAnswer a	qa:AnnotationAnswer ; \n" //
 					+ "			oa:hasTarget	?question ; \n" //
 					+ "			oa:hasBody		?answer ; \n" //
 					+ "			oa:annotatedBy	?service ; \n" //
 					+ "			oa:annotatedAt	?time ; \n" //
-					+ "			qa:score		?score ; \n" //
+					+ "			qa:score		?score . \n" //
 					//
 					+ "  ?answer	a			qa:AnswerJson ;\n" //
 					+ "	   rdf:value			?answerJson . \n" // the answer
 					//?
-					+ "  qa:AnswerJson rdf:subclassOf qa:Answer . \n " //
+					+ "  qa:AnswerJson rdfs:subClassOf qa:Answer . \n " //
 					//
 					+ " }\n" // end: graph
 					+ "}\n" // end: insert
-					+ "WHERE { /n" //
+					+ "WHERE { \n" //
 					+ "  BIND (IRI(str(RAND())) AS ?annotationAnswer) . \n" //
 					+ "  BIND (IRI(str(RAND())) AS ?answer) . \n" //
 					// values
 					+ "  BIND (now() AS ?time) . \n" //
-					+ "  BIND (<"+myQanaryQuestion.getURI().toASCIIString()+"> AS ?question) . \n" //
-					+ "  BIND (<"+answerJson+"> AS ?answerJson) . \n" //
+					+ "  BIND (<"+myQanaryQuestion.getUri().toASCIIString()+"> AS ?question) . \n" //
+					+ "  BIND (\""+answerJson.replace("\"", "\\\"").replace("\n", "\\n")+"\"^^xsd:string AS ?answerJson) . \n" //
 					+ "  BIND (\"1.0\"^^xsd:float AS ?score) . \n" // rule based
-					+ "  BIND (<urn:qanary:"+this.applicationName+"> AS ?service) . \n" //
+					+ "  BIND (<urn:qanary:qe-wikidata> AS ?service) . \n" // use this.applicationName
 					+"}\n";
 		return sparql;
 	}
@@ -133,10 +140,11 @@ public class ExampleQanaryComponent extends QanaryComponent {
 				+ "SELECT * " // 
 				+ "FROM <" + myQanaryMessage.getInGraph().toString() + "> " // the currently used graph
 				+ "WHERE { " //
+				+ "	   ?annotation		a			qa:AnnotationOfAnswerSPARQL ." //
 				+ "    ?annotation     oa:hasBody   ?wikidataQuery ." // the entity in question
 				+ "    ?annotation     qa:score     ?annotationScore ." //
 				+ "    ?annotation     oa:hasTarget ?target ." //
-				+ "    ?target     oa:hasSource    <" + myQanaryQuestion.getUri().toString() + "> ." // annotated for the current question
+				//+ "    ?target     oa:hasSource    <" + myQanaryQuestion.getUri().toString() + "> ." // annotated for the current question TODO:re-anable after checking qb query
 				+ "}";
 
 		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlSelectQuery);
