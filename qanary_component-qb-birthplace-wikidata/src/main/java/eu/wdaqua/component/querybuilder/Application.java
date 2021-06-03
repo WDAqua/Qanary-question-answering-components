@@ -28,7 +28,7 @@ public class Application {
 	*/
 	@Bean
 	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
-		return new BirthplaceQueryBuilder(applicationName);
+		return new BirthDataQueryBuilder(applicationName);
 	}
 
 	@Autowired

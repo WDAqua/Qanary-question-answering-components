@@ -7,48 +7,91 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 
+import io.swagger.v3.oas.annotations.Operation;
+
+/**
+ * represents a query builder to answer questions regarding birth place and date using Wikidata
+ *
+ * requirements: expects a textual question to be stored in the Qanary triplestore, 
+ * written in English language, as well as previously annotated named entities
+ *
+ * outcome: if the question structure is supported and a previous component (NED/NER) has found 
+ * named entities then this compoent constructs a Wikidata query that might be used to compute
+ * the answer to the question
+ *
+ */
 
 @Component
-/**
- * This component connected automatically to the Qanary pipeline.
- * The Qanary pipeline endpoint defined in application.properties (spring.boot.admin.url)
- * @see <a href="https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F" target="_top">Github wiki howto</a>
- */
-public class BirthplaceQueryBuilder extends QanaryComponent {
-	private static final Logger logger = LoggerFactory.getLogger(BirthplaceQueryBuilder.class);
+public class BirthDataQueryBuilder extends QanaryComponent {
+	private static final Logger logger = LoggerFactory.getLogger(BirthDataQueryBuilder.class);
 
 	private final String applicationName;
 
-	private final String[] supportedQuestionSubstrings = {"where and when was"}; //TODO: write as regex
-	// currently only one substing, change may require better implementation in subsequent methods
+	private final String[] supportedQuestionPatterns = {"[Ww]here and when was (.*) born"};
 
-	public BirthplaceQueryBuilder(@Value("$P{spring.application.name}") final String applicationName) {
+	public BirthDataQueryBuilder(@Value("$P{spring.application.name}") final String applicationName) {
 		this.applicationName = applicationName;
 	}
 
-	// TODO: support more prefixes
+	/**
+	 * compare the question against regular expression(s) representing the supported format
+	 *
+	 * @param questionString the textual question
+	 */
+	@Operation(
+		summary="Check if the question is supported",
+		operationId="isQuestionSupported",
+		description="Compare the question against regular expression(s) representing the supported format"
+	)
 	private boolean isQuestionSupported(String questionString) {
-		return questionString.toLowerCase().contains(this.supportedQuestionSubstrings[0]);
-	}
-
-	// TODO: work with all prefixes
-	private int getNamePosition(String questionString) {
-		int foundSubstring = questionString.toLowerCase().indexOf(this.supportedQuestionSubstrings[0]);
-		int filterStart = foundSubstring + this.supportedQuestionSubstrings[0].length()+1;
-		return filterStart;
+		for (String pattern : this.supportedQuestionPatterns) {
+			if (questionString.matches(pattern))
+				return true;
+		}
+		return false;
 	}
 
 	/**
-	 * implement this method encapsulating the functionality of your Qanary component
-	 * 
-	 * @throws SparqlQueryFailed
+	 * Find the position of a name in the textual question.
+	 *
+	 * @param questionString the textual question
+	 * @param pattern a regular expression (from supportedQuestionPatterns)
 	 */
+	@Operation(
+		summary = "Find the index of the entity in the question",
+		operationId = "getNamePosition",
+		description = "Find the position of a name in the textual question." //
+					+ "The name is represented as a matched group within supportedQuestionPatterns."
+	)
+	private int getNamePosition(String questionString, String pattern) {
+		Matcher m = Pattern.compile(pattern).matcher(questionString);
+		int index = m.start(1);
+		return index;
+	}
+
+	/**
+	 * standard method for processing a message from the central Qanary component
+	 *
+	 * @param myQanaryMessage 
+	 * @throws Exception
+	 */
+	@Operation(
+		summary = "Process a Qanary question with BirthDataQueryBuilder", //
+		operationId = "process", //
+		description = "Encapsulates the main functionality of this component. " //
+					+ "Construct a Wikidata query to find birth date and place for named entities."
+	)
 	@Override
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("process: {}", myQanaryMessage);
@@ -64,27 +107,26 @@ public class BirthplaceQueryBuilder extends QanaryComponent {
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
 
 
-		// TODO: change according to combined functionality
 		// This component is only supposed to answer a specific type of question.
-		// Therefore we only need to continue if the question asks for a birthplace.
-		// For this example is is enough to simply look for the substring "birthplace of".
-		// However, a more sophisticated approach is very possible.
+		// Therefore we only need to continue if the question asks for birth place and date.
+		// For this example is is enough to match the question against a simple regular expression.
+		// However, a more sophisticated approach is possible.
 
 		if (!this.isQuestionSupported(myQuestion)) {
 			// don't continue the process if the question is not supported
-			logger.info("nothing to do here as question \"{}\" does not contain \"{}\".", myQuestion,
-					this.supportedQuestionSubstrings[0]);
+			logger.info("nothing to do here as question \"{}\" does not have the supported format:\n\"{}\".", 
+					myQuestion, this.supportedQuestionPatterns.toString());
 			return myQanaryMessage;
 		}
 
 		// STEP 2: Get Wikidata entities that were annotated by OpenTapioca NED.
 		//
-		// In this example we are only interested in Entities that were found after the 
-		// supported substring: "what is the 'birthplace of '<name>?"
-		// Because we do not require entities that were found before that substring we can 
-		// filter our results:
+		// In this example we are only interested in Entities that were found at a specifi point
+		// in the question: 'when and where was <name> born?'.
+		// Because we do not require entities that might have been found anywhere else in the 
+		// question we can filter our results:
 
-		int filterStart = this.getNamePosition(myQuestion);
+		int filterStart = this.getNamePosition(myQuestion, this.supportedQuestionPatterns[0]);
 		// formulate a query to find existing information 
 		String sparqlGetAnnotation = "" //
 				+ "PREFIX dbr: <http://dbpedia.org/resource/> " //
