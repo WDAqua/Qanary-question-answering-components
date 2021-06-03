@@ -37,12 +37,18 @@ import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 
 
-@Component
 /**
- * This component connected automatically to the Qanary pipeline.
- * The Qanary pipeline endpoint defined in application.properties (spring.boot.admin.url)
- * @see <a href="https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F" target="_top">Github wiki howto</a>
+ * represents a wrapper of the OpenTapioca service used as NED annotator for Wikidata
+ *
+ * requirements: expects a textual question to be stored in the Qanary triplestore,
+ * written in English language
+ *
+ * outcome: if named entities are recognized by OpenTapioca this information is added
+ * to the Qanary triplestore to be used by other services in the question answering process
+ *
  */
+
+@Component
 public class OpenTapiocaNED extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(OpenTapiocaNED.class);
 
@@ -55,13 +61,19 @@ public class OpenTapiocaNED extends QanaryComponent {
 		this.openTapiocaServiceFetcher = openTapiocaServiceFetcher;
 	}
 
+	/**
+	 * standard method for processing a message from the central Qanary component
+	 *
+	 * @param myQanaryMessage 
+	 * @throws Exception
+	 */
 	@Override
 	@Operation(
 		summary = "Process a Qanary question with OpenTapiocaNED", //
 		operationId = "process", //
 		description = "Encapsulates the main functionality of this component. "
-		+ "Queries the OpenTapioca endpoint to find Wikidata entities in a given Question "
-		+ "and stores the result as an annotation in the Qanary triplestore."//
+					+ "Queries the OpenTapioca endpoint to find Wikidata entities in a given "
+					+ "Question and stores the result as an annotation in the Qanary triplestore."//
 	)
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("process: {}", myQanaryMessage);
@@ -79,7 +91,7 @@ public class OpenTapiocaNED extends QanaryComponent {
 
 		// STEP 2: Compute new Information about the question.
 		// 
-		// At this point the external endpoint to an OpenTapioca implementation is used
+		// Use an external endpoint to an OpenTapioca implementation
 		// to identify Wikidata entities in the question.
 		JsonArray resources;
 		resources = openTapiocaServiceFetcher.getJsonFromService(//
@@ -88,15 +100,14 @@ public class OpenTapiocaNED extends QanaryComponent {
 		// parse the results to extract the required information:
 		// - resource uri
 		// - start and end position in the question
-		// - score (rank) of the result
+		// - score of the result
 		List<FoundWikidataResource> foundWikidataResources = openTapiocaServiceFetcher.parseOpenTapiocaResults(resources);
 
 		// STEP 3: Push the computed knowledge about the given question to the Qanary triplestore 
-		// TODO: refactor this step
-		// This example component does not require any further cleaning of the results. All found 
+		//
+		// This example component does not implement any further cleaning of the results. All found 
 		// entities are assumed to be relevant. Depending on the specific task of the component
 		// the results could be filtered to only include specific entities.
-		
 
 		String sparqlInsert = this.createSparqlInsertQuery(foundWikidataResources, myQanaryQuestion);
 
@@ -110,10 +121,19 @@ public class OpenTapiocaNED extends QanaryComponent {
 		return myQanaryMessage;
 	}
 
+	
+	/**
+	 * create a SPARQL query for storing identified Wikidata entities in the Qanary Triplestore
+	 *
+	 * @param foundWikidataResources a list of resources retrieved from OpenTapiocaServiceFetcher
+	 * @param myQanaryQuestion the QanaryQuestion currently being processed
+	 * @return sparql 
+	 */
 	@Operation(
-		summary = "Create a SPARQL query for storing identified Wikidata entities in the Triplestore", //
+		summary = "Generate a SPARQL insert query", //
 		operationId = "createSparqlInsertQuery", //
-		description = "" // TODO: add description
+		description = "Creates a SPARQL query for storing identified Wikidata entities " //
+					+ "(the result of this component) in the Qanary Triplestore" 
 	)
 	public String createSparqlInsertQuery(List<FoundWikidataResource> foundWikidataResources, QanaryQuestion myQanaryQuestion) throws Exception {
 		String sparql, sparqlbind;

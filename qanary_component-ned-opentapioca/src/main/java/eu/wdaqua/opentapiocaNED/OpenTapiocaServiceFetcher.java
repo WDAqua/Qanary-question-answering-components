@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,10 +38,19 @@ public class OpenTapiocaServiceFetcher {
 
 	private static final Logger logger = LoggerFactory.getLogger(OpenTapiocaServiceFetcher.class);
 
+	/**
+	 * Perform a POST request with the provided question to the specified endpoint
+	 *
+	 * @param myQuestion the question Text
+	 * @param endpoint the endpoint to be used
+	 * @return resources the query results as JsonArray 
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	@Operation(
-		summary = "Query the specified endpoint", //
+		summary = "Query OpenTapioca endpoint", //
 		operationId = "getJsonFromService", //
-		description = "" //
+		description = "Perform a POST request with the provided question to the specified endpoint" //
 	)
 	public JsonArray getJsonFromService( 
 			String myQuestion, String endpoint) throws ClientProtocolException, IOException {
@@ -50,35 +60,39 @@ public class OpenTapiocaServiceFetcher {
 		String uriGetParameter = "query=" + URLEncoder.encode(
 				myQuestion, StandardCharsets.UTF_8.toString());
 
+		// build the request
 		HttpClient client = HttpClients.custom().build();
 		HttpUriRequest request = RequestBuilder.post() //
 			.setUri(endpoint)	//
 			.setHeader(HttpHeaders.ACCEPT, "applcation/json") //
 			.setEntity(new StringEntity(uriGetParameter))
 			.build();
-		logger.info("HTTP request: {}", request.toString());
 		HttpResponse response = client.execute(request);
 		HttpEntity responseEntity = response.getEntity();
-		String json = EntityUtils.toString(responseEntity);
 
 		// parse the response data as JSON to get Wikidata resources
+		String json = EntityUtils.toString(responseEntity);
 		JsonElement root = JsonParser.parseString(json);
 		JsonArray resources = root.getAsJsonObject().get("annotations").getAsJsonArray();
 
-		// check for empty results
-		if (resources.size() == 0) {
-			logger.warn("nothing recognized for \"{}\": {}", myQuestion, json);
-		}
+		logger.info("found {} annotations for \"{}\"", resources.size(), myQuestion);
 
 		return resources;
 	}
 
+	/**
+	 * Create FoundWikidataResource objects from the JSON response of OpenTapioca endpoint
+	 *
+	 * @param resources JsonArray of resources
+	 * @return foundWikidataResources list of FoundWikidataResource objects
+	 * @throws URISyntaxException
+	 */
 	@Operation(
-		summary = "", //
-		operationId = "", //
-		description = "" //
+		summary = "Parse the OpenTapioca endpoint reponse", //
+		operationId = "parseOpenTapiocaResults", //
+		description = "Create FoundWikidataResource objects from the JSON response of OpenTapioca endpoint" //
 	)
-	public List<FoundWikidataResource> parseOpenTapiocaResults(JsonArray resources) throws Exception {
+	public List<FoundWikidataResource> parseOpenTapiocaResults(JsonArray resources) throws URISyntaxException {
 
 		List<FoundWikidataResource> foundWikidataResources = new LinkedList<>();
 		logger.info("found {} terms", resources.size());

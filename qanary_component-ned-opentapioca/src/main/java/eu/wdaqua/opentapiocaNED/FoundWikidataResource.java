@@ -7,7 +7,7 @@ import com.google.gson.JsonElement;
 
 /**
  *
- * data object to be initialized by the Opentapioca service response
+ * data object to be initialized by the OpenTapioca service response
  *
  */
 public class FoundWikidataResource {
