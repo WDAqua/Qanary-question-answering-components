@@ -67,7 +67,6 @@ public class OpenTapiocaNED extends QanaryComponent {
 	 * @param myQanaryMessage 
 	 * @throws Exception
 	 */
-	@Override
 	@Operation(
 		summary = "Process a Qanary question with OpenTapiocaNED", //
 		operationId = "process", //
@@ -75,6 +74,7 @@ public class OpenTapiocaNED extends QanaryComponent {
 					+ "Queries the OpenTapioca endpoint to find Wikidata entities in a given "
 					+ "Question and stores the result as an annotation in the Qanary triplestore."//
 	)
+	@Override
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("process: {}", myQanaryMessage);
 
@@ -93,6 +93,7 @@ public class OpenTapiocaNED extends QanaryComponent {
 		// 
 		// Use an external endpoint to an OpenTapioca implementation
 		// to identify Wikidata entities in the question.
+
 		JsonArray resources;
 		resources = openTapiocaServiceFetcher.getJsonFromService(//
 				questionText, openTapiocaConfiguration.getEndpoint());

@@ -33,17 +33,29 @@ import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 
+import io.swagger.v3.oas.annotations.Operation;
+
+/**
+ * represents a query executor for Wikidata
+ *
+ * requirements: 
+ */
 
 @Component
-/**
- * This component connected automatically to the Qanary pipeline.
- * The Qanary pipeline endpoint defined in application.properties (spring.boot.admin.url)
- * @see <a href="https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F" target="_top">Github wiki howto</a>
- */
 public class QueryExecutor extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(QueryExecutor.class);
 
-	// retrieve Json String Wikidata query results
+	/**
+	 * Perform a POST request with the provided query to the Wikidata endpoint
+	 *
+	 * @param queryString the Wikidata query
+	 * @return answerJson the response as JSON
+	 */
+	@Operation(
+		summary = "Query Wikidata endpoint", //
+		operationId = "getAnswersFromWikidata", //
+		description = "Perform a POST request with the provided query to the Wikidata endpoint" //
+	)
 	public String getAnswersFromWikidata(String queryString) {
 
 		String wikidataEndpoint = "https://query.wikidata.org/sparql";
@@ -67,6 +79,21 @@ public class QueryExecutor extends QanaryComponent {
 		return null;
 	}
 
+	/**
+	 * Create a query to store the computed information in the Qanary triplestore
+	 *
+	 * @param myQanaryQuestion the QanaryQuestion currently being processed
+	 * @param answerJson the JSON returned by Wikidata
+	 * @throws QanaryExceptionNoOrMultipleQuestions
+	 * @throws URISyntaxException
+	 * @throws SparqlQueryFailed
+	 * @return sparql 
+	 */
+	@Operation(
+		summary = "Create a SPARQL insert query", //
+		operationId = "getSparqlInsertQuery", //
+		description = "Create a query to store the computed information in the Qanary triplestore"
+	)
 	public String getSparqlInsertQuery(QanaryQuestion myQanaryQuestion, String answerJson) 
 			throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed {		
 		
@@ -109,29 +136,33 @@ public class QueryExecutor extends QanaryComponent {
 	}
 
 	/**
-	 * implement this method encapsulating the functionality of your Qanary
-	 * component, some helping notes w.r.t. the typical 3 steps of implementing a
-	 * Qanary component are included in the method (you might remove all of them)
-	 * 
-	 * @throws SparqlQueryFailed
+	 * standard method for processing a message from the central Qanary component
+	 *
+	 * @param myQanaryMessage 
+	 * @throws Exception
 	 */
+	@Operation(
+		summary = "Process a Qanary question with QueryExecutor", //
+		operationId = "process", //
+		description = "Encapsulates the main functionality of this component. "
+					+ "Make a POST request to Wikidata using the computed queries to answer the" //
+					+ "question and store the result as an annotation in the Qanary triplestore."//
+	)
 	@Override
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("process: {}", myQanaryMessage);
 
-		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-
-		
-		
-		// STEP 1: get the required data from the Qanary triplestore (the global process
-		// memory)
+		// STEP 1: get the required data 
+		// 
+		// This example component will execute Wikidata queries that were created and stored
+		// by previous components.
 
 		// if required, then fetch the origin question (here the question is a
 		// textual/String question)
+		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
 		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage);
 
-		// define the SPARQL query here to fetch the data that your component is
-		// requiring
+		// Here we fetch those annotations (AnnotationOfAnswerSPARQL) from the Qanary triplestore
 		String sparqlSelectQuery = "" //
 				+ "PREFIX dbr: <http://dbpedia.org/resource/> " //
 				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
@@ -144,37 +175,40 @@ public class QueryExecutor extends QanaryComponent {
 				+ "    ?annotation     oa:hasBody   ?wikidataQuery ." // the entity in question
 				+ "    ?annotation     qa:score     ?annotationScore ." //
 				+ "    ?annotation     oa:hasTarget ?target ." //
-				//+ "    ?target     oa:hasSource    <" + myQanaryQuestion.getUri().toString() + "> ." // annotated for the current question TODO:re-anable after checking qb query
+				+ "    ?target     oa:hasSource    <" + myQanaryQuestion.getUri().toString() + "> ." // annotated for the current question TODO:re-anable after checking qb query
 				+ "}";
 
+		// query the triplestore
 		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlSelectQuery);
 		List<String> queries = new LinkedList<String>();
+
 		while (resultset.hasNext()) {
 			QuerySolution tupel = resultset.next();
 			
 			String wikidataQuery = tupel.get("wikidataQuery").toString();
 			logger.info("found query {}", wikidataQuery);
 			queries.add(wikidataQuery);
-			// TODO: retrieve the data you need to implement your component's functionality
-			// is start/end (surface form) required?
 		}
 
 		// STEP 2: compute new knowledge about the given question
-		for (String queryString : queries) { //TODO: we can expect only one query per linked entity -> connect?
+		//
+		// Send a post request to the Wikidata endpoint using the queries that should 
+		// answer the question
+		
+		for (String queryString : queries) { 
+			// get the results from Wikidata
 			String answers = this.getAnswersFromWikidata(queryString);
+			// create an insert query to store new information
 			String sparql = this.getSparqlInsertQuery(myQanaryQuestion, answers);
 		
-			// STEP 3: store computed knowledge about the given question into the Qanary
-			// triplestore (the global process memory)
+			// STEP 3: Push the computed knowledge about the given question to the Qanary triplestore
 			
-			// TODO: individual or compound query?
-
 			logger.info("store data in graph {} of Qanary triplestore endpoint {}", //
 					myQanaryMessage.getValues().get(myQanaryMessage.getOutGraph()), //
 					myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-			// push data to the Qanary triplestore
+			
+			// update the Qanary triplestore withthe created insert query
 			myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint());
-
 		}
 		return myQanaryMessage;
 	}
