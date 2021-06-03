@@ -4,8 +4,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
-	<artifactId>qanary_component-qe-birthplace</artifactId>
-	<version>0.1.0</version>
+	<artifactId>qanary_component-qe-birthdata-wikidata</artifactId>
+	<version>1.0.0</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -17,7 +17,7 @@
 		<qanary.version>[2.0.0,3.0.0)</qanary.version>
 		<spring-boot-admin.version>2.1.6</spring-boot-admin.version>
 		<docker.image.prefix>qanary</docker.image.prefix>
-		<docker.image.name>qanary_component-qe-birthplace</docker.image.name>
+		<docker.image.name>qe-birthdata-wikidata</docker.image.name>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
 	</properties>
 
