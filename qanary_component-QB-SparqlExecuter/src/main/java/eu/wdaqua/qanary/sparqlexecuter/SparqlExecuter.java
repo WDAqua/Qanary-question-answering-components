@@ -56,7 +56,7 @@ public class SparqlExecuter extends QanaryComponent {
   			+ "WHERE { " //
   			+ "  ?a a qa:AnnotationOfAnswerSPARQL . " //
   			+ "  OPTIONAL {?a oa:hasBody ?sparql } " //
-  			+ "  ?a qa:hasScore ?score . " //
+  			//+ "  ?a qa:hasScore ?score . " //
             + "  ?a oa:annotatedAt ?time . " // 
             + "  { " //
             + "    SELECT ?time { " //
@@ -69,7 +69,7 @@ public class SparqlExecuter extends QanaryComponent {
 		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparql);
                 String sparqlQuery="";
                 while (resultset.hasNext()) {
-			sparqlQuery = resultset.next().get("sparql").toString();	
+			sparqlQuery = resultset.next().get("sparql").toString().replace("\\\"", "\"").replace("\\n", "\n");	
 		}
 		logger.info("Generated SPARQL query: {} ", sparqlQuery);
 		// STEP 2: execute the first sparql query
@@ -78,10 +78,12 @@ public class SparqlExecuter extends QanaryComponent {
         if (sparqlQuery.contains("http://dbpedia.org")){
         	endpoint = "http://dbpedia.org/sparql";
             logger.info("use DBpedia endpoint");
-        } else {
+        } else if (sparqlQuery.contains("http://www.wikidata.org")){
         	endpoint = "https://query.wikidata.org/sparql";
             logger.info("use Wikidata endpoint");
-        }
+        } else {
+          return myQanaryMessage;
+        } 
         // @TODO: extend functionality to use qa:TargetDataset if present
         
 		Query query = QueryFactory.create(sparqlQuery);
