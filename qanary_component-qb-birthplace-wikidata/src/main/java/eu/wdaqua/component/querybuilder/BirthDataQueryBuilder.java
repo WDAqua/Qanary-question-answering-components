@@ -38,7 +38,7 @@ public class BirthDataQueryBuilder extends QanaryComponent {
 
 	private final String applicationName;
 
-	private final String[] supportedQuestionPatterns = {"[Ww]here and when was (.*) born"};
+	private final String[] supportedQuestionPatterns = {"([Ww]here and when was )(.*)( born)"};
 
 	public BirthDataQueryBuilder(@Value("$P{spring.application.name}") final String applicationName) {
 		this.applicationName = applicationName;
@@ -56,7 +56,10 @@ public class BirthDataQueryBuilder extends QanaryComponent {
 	)
 	private boolean isQuestionSupported(String questionString) {
 		for (String pattern : this.supportedQuestionPatterns) {
-			if (questionString.matches(pattern))
+			Pattern p = Pattern.compile(pattern);
+			Matcher m = p.matcher(questionString);
+			logger.info("checking pattern \"{}\"", pattern);
+			if (m.find())
 				return true;
 		}
 		return false;
@@ -76,7 +79,8 @@ public class BirthDataQueryBuilder extends QanaryComponent {
 	)
 	private int getNamePosition(String questionString, String pattern) {
 		Matcher m = Pattern.compile(pattern).matcher(questionString);
-		int index = m.start(1);
+		m.find();
+		int index = m.start(2);
 		return index;
 	}
 
@@ -114,8 +118,8 @@ public class BirthDataQueryBuilder extends QanaryComponent {
 
 		if (!this.isQuestionSupported(myQuestion)) {
 			// don't continue the process if the question is not supported
-			logger.info("nothing to do here as question \"{}\" does not have the supported format:\n\"{}\".", 
-					myQuestion, this.supportedQuestionPatterns.toString());
+			logger.info("nothing to do here as question \"{}\" does not have the supported format", 
+					myQuestion);
 			return myQanaryMessage;
 		}
 
