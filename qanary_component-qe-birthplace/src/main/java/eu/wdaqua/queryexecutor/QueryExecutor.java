@@ -40,8 +40,8 @@ import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
  * The Qanary pipeline endpoint defined in application.properties (spring.boot.admin.url)
  * @see <a href="https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F" target="_top">Github wiki howto</a>
  */
-public class ExampleQanaryComponent extends QanaryComponent {
-	private static final Logger logger = LoggerFactory.getLogger(ExampleQanaryComponent.class);
+public class QueryExecutor extends QanaryComponent {
+	private static final Logger logger = LoggerFactory.getLogger(QueryExecutor.class);
 
 	// retrieve Json String Wikidata query results
 	public String getAnswersFromWikidata(String queryString) {

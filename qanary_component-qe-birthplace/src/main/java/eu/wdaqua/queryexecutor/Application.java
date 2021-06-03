@@ -27,7 +27,7 @@ public class Application {
 	*/
 	@Bean
 	public QanaryComponent qanaryComponent() {
-		return new ExampleQanaryComponent();
+		return new QueryExecutor();
 	}
 
 	@Autowired
