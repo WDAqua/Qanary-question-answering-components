@@ -44,11 +44,10 @@ public class Application {
 	@Bean
 	public OpenAPI customOpenAPI(@Value("${springdoc.version}") String appVersion) {
 		return new OpenAPI().info(new Info() //
-				.title("Qanary OpenTapioca Component") //
+				.title("Qanary Wikidata Birth Data Query Builder Component") //
 				.version(appVersion) //
-				.description("This is a Qanary component for identifying Wikidata resources " //
-					+ "in text questions using the OpenTapioca endpoint available at " //
-					+ "http://opentapioca.org") //
+				.description("This is a Qanary component for creating Wikidata queries " //
+					+ "to find the birth place and date of named entities in text questions.")
 				.termsOfService("http://swagger.io/terms/") //
 				.license(new License().name("Apache 2.0").url("http://springdoc.org")) //
 		);

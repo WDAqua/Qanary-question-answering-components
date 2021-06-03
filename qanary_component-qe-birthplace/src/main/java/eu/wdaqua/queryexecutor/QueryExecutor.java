@@ -174,8 +174,7 @@ public class QueryExecutor extends QanaryComponent {
 				+ "	   ?annotation		a			qa:AnnotationOfAnswerSPARQL ." //
 				+ "    ?annotation     oa:hasBody   ?wikidataQuery ." // the entity in question
 				+ "    ?annotation     qa:score     ?annotationScore ." //
-				+ "    ?annotation     oa:hasTarget ?target ." //
-				+ "    ?target     oa:hasSource    <" + myQanaryQuestion.getUri().toString() + "> ." // annotated for the current question TODO:re-anable after checking qb query
+				+ "    ?annotation     oa:hasTarget <" + myQanaryQuestion.getUri().toString() + ">" //
 				+ "}";
 
 		// query the triplestore
