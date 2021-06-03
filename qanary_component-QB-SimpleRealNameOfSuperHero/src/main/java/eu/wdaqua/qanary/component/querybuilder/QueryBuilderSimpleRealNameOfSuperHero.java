@@ -43,7 +43,6 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 	@Override
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("process: {}", myQanaryMessage);
-		// TODO: implement processing of question
 
 		// STEP 1: get the required data
 		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage);
@@ -99,7 +98,7 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 					+ "  ?resource foaf:name ?answer .\n" // real name of superhero
 					+ "  ?resource rdfs:label ?label .\n" // get the character name of the superhero
 					+ "  FILTER(LANG(?label) = \"en\") .\n" // only English names
-					+ "  ?resource dct:subject dbr:Category:Superhero_film_characters .\n" // only superheros
+					+ "  ?resource dct:subject dbr:Category:Superheroes_with_alter_egos .\n" // only superheros
 					+ "  FILTER(! strStarts(LCASE(?label), LCASE(?answer))).\n" // filter starting with the same name
 					+ "  VALUES ?resource { <" + dbpediaResource + "> } .\n" // only for this specific resource
 					+ "} \n" //
