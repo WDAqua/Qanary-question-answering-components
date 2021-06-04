@@ -106,13 +106,19 @@ public class SparqlExecuter extends QanaryComponent {
 		sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " // 
                 	+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " // 
                 	+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " // 
+                    + "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
+                    + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" //
+					+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
                 	+ "INSERT { " // 
                 	+ "GRAPH <" + myQanaryUtils.getOutGraph() + "> { " // 
                 	+ "  ?b a qa:AnnotationOfAnswerJSON ; " // 
                 	+ "     oa:hasTarget <"+myQuestionUri.toString()+"> ; " //   
-                	+ "     oa:hasBody \"" + json.replace("\n", " ").replace("\"", "\\\"") + "\" ; " // 
+                	+ "     oa:hasBody ?answer ; "// 
                 	+ "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
                 	+ "     oa:annotatedAt ?time  " // 
+                    + "  ?answer a qa:AnswerJson ; " //
+                    + "          rdf:value \"" + json.replace("\n", " ").replace("\"", "\\\"") + "\"  " //
+                    + "  qa:AnswerJson rdfs:subClassOf qa:Answer ." //
                 	+ "}} " // 
                 	+ "WHERE { " // 
                 	+ "  BIND (IRI(str(RAND())) AS ?b) ." // 
