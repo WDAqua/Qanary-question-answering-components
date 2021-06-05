@@ -1,6 +1,5 @@
 package eu.wdaqua.opentapiocaNED;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -8,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
 import eu.wdaqua.qanary.component.QanaryComponent;
 
 import io.swagger.v3.oas.models.OpenAPI;
@@ -33,11 +31,16 @@ public class Application {
 	}
 
 	@Bean
-	public QanaryComponent qanaryComponent(
+	public QanaryComponent qanaryComponent (
+			@Value("${spring.application.name}") final String applicationName,
 			OpenTapiocaConfiguration openTapiocaConfiguration, 
 			OpenTapiocaServiceFetcher openTapiocaServiceFetcher)
+
 	{
-		return new OpenTapiocaNED(openTapiocaConfiguration, openTapiocaServiceFetcher);
+		return new OpenTapiocaNED(
+				applicationName,
+				openTapiocaConfiguration,
+				openTapiocaServiceFetcher);
 	}
 	
     public static void main(String[] args) {

@@ -1,32 +1,14 @@
 package eu.wdaqua.opentapiocaNED;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.LinkedList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -34,7 +16,6 @@ import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 
 
 /**
@@ -56,7 +37,13 @@ public class OpenTapiocaNED extends QanaryComponent {
 
 	private final OpenTapiocaServiceFetcher openTapiocaServiceFetcher;
 
-	public OpenTapiocaNED (OpenTapiocaConfiguration openTapiocaConfiguration, OpenTapiocaServiceFetcher openTapiocaServiceFetcher) {
+	private final String applicationName;
+
+	public OpenTapiocaNED (
+			@Value("${spring.application.name}") final String applicationName,
+			OpenTapiocaConfiguration openTapiocaConfiguration,
+			OpenTapiocaServiceFetcher openTapiocaServiceFetcher) {
+		this.applicationName = applicationName;
 		this.openTapiocaConfiguration = openTapiocaConfiguration;
 		this.openTapiocaServiceFetcher = openTapiocaServiceFetcher;
 	}
@@ -162,7 +149,7 @@ public class OpenTapiocaNED extends QanaryComponent {
 				+ "    ] " //
 				+ "  ] . " //
 				+ "  ?a" + i + " oa:hasBody <" + found.getResource() + "> ;" // the identified entity
-				+ "     oa:annotatedBy <" + openTapiocaConfiguration.getEndpoint() + "> ;" //
+				+ "     oa:annotatedBy <urn:qanary:component:" + this.applicationName + "> ;" //
 				+ "     oa:annotatedAt ?time ; " //
 				+ "     qa:score \"" + found.getScore() + "\"^^xsd:decimal ." //
 				+ "}"; // end: graph
