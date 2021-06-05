@@ -115,9 +115,9 @@ public class SparqlExecuter extends QanaryComponent {
                 	+ "     oa:hasTarget <"+myQuestionUri.toString()+"> ; " //   
                 	+ "     oa:hasBody ?answer ; "// 
                 	+ "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
-                	+ "     oa:annotatedAt ?time  " // 
+                	+ "     oa:annotatedAt ?time . " // 
                     + "  ?answer a qa:AnswerJson ; " //
-                    + "          rdf:value \"" + json.replace("\n", " ").replace("\"", "\\\"") + "\"  " //
+                    + "          rdf:value \"" + json.replace("\n", " ").replace("\"", "\\\"") + "\" . " //
                     + "  qa:AnswerJson rdfs:subClassOf qa:Answer ." //
                 	+ "}} " // 
                 	+ "WHERE { " // 
