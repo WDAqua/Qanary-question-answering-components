@@ -1,4 +1,4 @@
-package eu.wdaqua.queryexecutor;
+package eu.wdaqua.queryexecuter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +28,7 @@ public class Application {
 	*/
 	@Bean
 	public QanaryComponent qanaryComponent() {
-		return new QueryExecutor();
+		return new QueryExecuter();
 	}
 
 	@Autowired
@@ -41,7 +41,7 @@ public class Application {
 	@Bean
 	public OpenAPI customOpenAPI(@Value("${springdoc.version}") String appVersion) {
 		return new OpenAPI().info(new Info() //
-				.title("Qanary Wikidata Query Executor Component") //
+				.title("Qanary Wikidata Query Executer Component") //
 				.version(appVersion) //
 				.description("This is a Qanary component for executing Wikidata queries " //
 					+ "to find the birth place and date for named entities in text questions.")

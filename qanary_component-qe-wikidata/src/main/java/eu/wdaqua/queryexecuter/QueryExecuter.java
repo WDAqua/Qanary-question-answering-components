@@ -1,4 +1,4 @@
-package eu.wdaqua.queryexecutor;
+package eu.wdaqua.queryexecuter;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -36,14 +36,14 @@ import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import io.swagger.v3.oas.annotations.Operation;
 
 /**
- * represents a query executor for Wikidata
+ * represents a query executer for Wikidata
  *
  * requirements: 
  */
 
 @Component
-public class QueryExecutor extends QanaryComponent {
-	private static final Logger logger = LoggerFactory.getLogger(QueryExecutor.class);
+public class QueryExecuter extends QanaryComponent {
+	private static final Logger logger = LoggerFactory.getLogger(QueryExecuter.class);
 
 	/**
 	 * Perform a POST request with the provided query to the Wikidata endpoint
@@ -142,7 +142,7 @@ public class QueryExecutor extends QanaryComponent {
 	 * @throws Exception
 	 */
 	@Operation(
-		summary = "Process a Qanary question with QueryExecutor", //
+		summary = "Process a Qanary question with QueryExecuter", //
 		operationId = "process", //
 		description = "Encapsulates the main functionality of this component. "
 					+ "Make a POST request to Wikidata using the computed queries to answer the" //

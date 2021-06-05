@@ -1,4 +1,4 @@
-package eu.wdaqua.queryexecutor;
+package eu.wdaqua.queryexecuter;
 
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -114,7 +114,7 @@ public class TestQanaryServiceController {
 				+ "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\" } " //
 				+ "}";
 
-		QueryExecutor comp = new QueryExecutor();
+		QueryExecuter comp = new QueryExecuter();
 		String result = comp.getAnswersFromWikidata(query);
 		logger.info("found: {}", result);
 //		List<String> results = comp.getAnswersFromWikidata(queries);
