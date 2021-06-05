@@ -1,11 +1,6 @@
 package eu.wdaqua.queryexecuter;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 import java.io.ByteArrayOutputStream;
@@ -20,9 +15,7 @@ import org.apache.jena.query.QueryExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
+import org.springframework.beans.factory.annotation.Value;
 
 import org.json.simple.JSONObject;
 
@@ -44,6 +37,12 @@ import io.swagger.v3.oas.annotations.Operation;
 @Component
 public class QueryExecuter extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(QueryExecuter.class);
+
+	private final String applicationName;
+
+	public QueryExecuter(@Value("${spring.application.name}") final String applicationName) {
+		this.applicationName = applicationName;
+	}
 
 	/**
 	 * Perform a POST request with the provided query to the Wikidata endpoint
@@ -130,7 +129,7 @@ public class QueryExecuter extends QanaryComponent {
 					+ "  BIND (<"+myQanaryQuestion.getUri().toASCIIString()+"> AS ?question) . \n" //
 					+ "  BIND (\""+answerJson.replace("\"", "\\\"").replace("\n", "\\n")+"\"^^xsd:string AS ?answerJson) . \n" //
 					+ "  BIND (\"1.0\"^^xsd:float AS ?score) . \n" // rule based
-					+ "  BIND (<urn:qanary:qe-wikidata> AS ?service) . \n" // use this.applicationName
+					+ "  BIND (<urn:qanary:"+this.applicationName+"> AS ?service) . \n" // use this.applicationName
 					+"}\n";
 		return sparql;
 	}

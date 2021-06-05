@@ -27,8 +27,8 @@ public class Application {
 	* @return
 	*/
 	@Bean
-	public QanaryComponent qanaryComponent() {
-		return new QueryExecuter();
+	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
+		return new QueryExecuter(applicationName);
 	}
 
 	@Autowired

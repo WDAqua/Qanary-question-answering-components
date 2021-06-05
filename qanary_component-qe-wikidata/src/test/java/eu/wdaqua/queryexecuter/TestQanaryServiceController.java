@@ -114,7 +114,7 @@ public class TestQanaryServiceController {
 				+ "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\" } " //
 				+ "}";
 
-		QueryExecuter comp = new QueryExecuter();
+		QueryExecuter comp = new QueryExecuter("executer-test");
 		String result = comp.getAnswersFromWikidata(query);
 		logger.info("found: {}", result);
 //		List<String> results = comp.getAnswersFromWikidata(queries);
