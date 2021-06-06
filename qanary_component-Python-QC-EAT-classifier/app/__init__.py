@@ -14,9 +14,6 @@ healthendpoint = "/health"
 app = Flask(__name__)
 app.register_blueprint(answer_type_classifier)
 
-# holds the configuration
-configuration = None
-
 
 @app.route(healthendpoint, methods=['GET'])
 def health():
@@ -27,5 +24,4 @@ def health():
 @app.route(aboutendpoint)
 def about():
     """optional endpoint for serving a web page with information about the web service"""
-    return render_template("about.html", configuration=configuration)
-
+    return render_template("about.html")

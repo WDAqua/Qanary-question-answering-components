@@ -7,7 +7,7 @@ RUN pip install -r requirements.txt; exit 0
 RUN pip install gunicorn
 
 COPY app app
-COPY app.conf run.py boot.sh  ./
+COPY run.py boot.sh  ./
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
