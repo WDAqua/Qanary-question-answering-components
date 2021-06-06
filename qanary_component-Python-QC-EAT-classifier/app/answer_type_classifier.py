@@ -1,26 +1,23 @@
-from flask import Blueprint, jsonify, request
-from qanary_helpers.configuration import Configuration
-from qanary_helpers.qanary_queries import get_text_question_in_graph, insert_into_triplestore
+import os
 import requests
 import json
 import logging
-
+from flask import Blueprint, jsonify, request
+from qanary_helpers.qanary_queries import get_text_question_in_graph, insert_into_triplestore
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
-
 answer_type_classifier = Blueprint('answer_type_classifier', __name__, template_folder='templates')
 
-# default config file (use -c parameter on command line specify a custom config file)
-configfile = "app.conf"
+CLASSIFICATION_ENDPOINT = os.environ['CLASSIFICATION_ENDPOINT']
+SERVICE_NAME_COMPONENT = os.environ['SERVICE_NAME_COMPONENT']
 
-configuration = Configuration(configfile, ['servicename', 'serviceversion', 'classificationendpoint'])
 
 @answer_type_classifier.route("/annotatequestion", methods=['POST'])
-def qanaryService():
+def qanary_service():
     """the POST endpoint required for a Qanary service"""
     
     triplestore_endpoint = request.json["values"]["urn:qanary#endpoint"]
-    triplestore_ingraph  = request.json["values"]["urn:qanary#inGraph"]
+    triplestore_ingraph = request.json["values"]["urn:qanary#inGraph"]
     triplestore_outgraph = request.json["values"]["urn:qanary#outGraph"]
 
     logging.info("endpoint: %s, inGraph: %s, outGraph: %s" % (triplestore_endpoint, triplestore_ingraph, triplestore_outgraph))
@@ -29,12 +26,12 @@ def qanaryService():
     
     logging.info(f'Question Text: {text}')
     
-    data = {'questions': [text]} # creating params dict for the service
-    #TODO: move URL to config file
-    json_response = requests.post(configuration.classificationendpoint, data=data) # making a request to the service
+    data = {'questions': [text]}  # creating params dict for the service
+
+    json_response = requests.post(CLASSIFICATION_ENDPOINT, data=data)  # making a request to the service
     predicted_answer_type = json.loads(json_response.text)['predictions'][0]
 
-    #building SPARQL query
+    # building SPARQL query
     SPARQLquery = """
                     PREFIX qa: <http://www.wdaqua.eu/qa#>
                     PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
@@ -56,14 +53,15 @@ def qanaryService():
                 """.format(
                     uuid=triplestore_ingraph,
                     answer_type=predicted_answer_type,
-                    app_name="{0}:{1}:Python".format(configuration.servicename, configuration.serviceversion)
+                    app_name="{0}:Python".format(SERVICE_NAME_COMPONENT)
                 )
     
     logging.info(f'SPARQL: {SPARQLquery}')
-
-    insert_into_triplestore(triplestore_endpoint, triplestore_ingraph, SPARQLquery) #inserting new data to the triplestore
+    # inserting new data to the triplestore
+    insert_into_triplestore(triplestore_endpoint, SPARQLquery)
 
     return jsonify(request.get_json())
+
 
 @answer_type_classifier.route("/", methods=['GET'])
 def index():
