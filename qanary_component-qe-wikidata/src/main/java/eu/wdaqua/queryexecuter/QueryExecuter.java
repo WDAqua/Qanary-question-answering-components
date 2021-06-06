@@ -107,7 +107,7 @@ public class QueryExecuter extends QanaryComponent {
 					+ "" //
 					+ "INSERT { \n" //
 					+ "GRAPH <" + myQanaryQuestion.getOutGraph() + ">  {\n" //
-					+ "  ?annotationAnswer a	qa:AnnotationAnswer ; \n" //
+					+ "  ?annotationAnswer a	qa:AnnotationOfAnswerJson ; \n" //
 					+ "			oa:hasTarget	?question ; \n" //
 					+ "			oa:hasBody		?answer ; \n" //
 					+ "			oa:annotatedBy	?service ; \n" //
