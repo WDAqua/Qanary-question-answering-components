@@ -8,8 +8,6 @@ import java.io.ByteArrayOutputStream;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFormatter;
-import org.apache.jena.query.QueryFactory;
-import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryExecution;
 import org.slf4j.Logger;
@@ -17,7 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 
-import org.json.simple.JSONObject;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONSerializer;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
@@ -58,13 +58,8 @@ public class QueryExecuter extends QanaryComponent {
 	public String getAnswersFromWikidata(String queryString) {
 
 		String wikidataEndpoint = "https://query.wikidata.org/sparql";
-		List<JSONObject> answers = new LinkedList<JSONObject>();
-
-		logger.info("querying wikidata endpoint with query:\n{}", queryString.replace("\\\"", "\"").replace("\\n", "\n"));
-
-		Query query = QueryFactory.create(queryString.replace("\\\"", "\"").replace("\\n", "\n"));
 		QueryExecution qexec = QueryExecutionFactory.sparqlService(wikidataEndpoint, queryString.replace("\\\"", "\"").replace("\\n", "\n"));
-   
+
 		try {
 			ResultSet results = qexec.execSelect();
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -134,6 +129,22 @@ public class QueryExecuter extends QanaryComponent {
 		return sparql;
 	}
 
+	public boolean isAnswerValid(String answerJson) {
+		try {
+			JSONObject obj = (JSONObject) JSONSerializer.toJSON(answerJson);
+			JSONObject results = obj.getJSONObject("results");
+			logger.info("results: {}", results.toString());
+			JSONArray bindings = results.getJSONArray("bindings");
+			logger.info("bindings: {}", bindings.toString());
+			logger.info("size: {}", bindings.size());
+			if (bindings.size() > 0) 
+				return true;
+		} catch (Exception e) {
+			logger.info("the provided JSON could not be parsed");
+		}
+		return false;
+	}
+
 	/**
 	 * standard method for processing a message from the central Qanary component
 	 *
@@ -196,17 +207,19 @@ public class QueryExecuter extends QanaryComponent {
 		for (String queryString : queries) { 
 			// get the results from Wikidata
 			String answers = this.getAnswersFromWikidata(queryString);
-			// create an insert query to store new information
-			String sparql = this.getSparqlInsertQuery(myQanaryQuestion, answers);
-		
-			// STEP 3: Push the computed knowledge about the given question to the Qanary triplestore
+			if (isAnswerValid(answers)){
+				// create an insert query to store new information
+				String sparql = this.getSparqlInsertQuery(myQanaryQuestion, answers);
 			
-			logger.info("store data in graph {} of Qanary triplestore endpoint {}", //
-					myQanaryMessage.getValues().get(myQanaryMessage.getOutGraph()), //
-					myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-			
-			// update the Qanary triplestore withthe created insert query
-			myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint());
+				// STEP 3: Push the computed knowledge about the given question to the Qanary triplestore
+				
+				logger.info("store data in graph {} of Qanary triplestore endpoint {}", //
+						myQanaryMessage.getValues().get(myQanaryMessage.getOutGraph()), //
+						myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
+				
+				// update the Qanary triplestore withthe created insert query
+				myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint());
+			}
 		}
 		return myQanaryMessage;
 	}

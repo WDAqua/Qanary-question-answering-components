@@ -6,31 +6,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
-import org.apache.jena.query.ResultSetFormatter;
-import org.apache.jena.query.QueryFactory;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map.Entry;
 
-import java.util.LinkedList;
-import java.util.List;
 import javax.inject.Inject;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -121,8 +109,16 @@ public class TestQanaryServiceController {
 //		for (String result : results) {
 //			logger.info("found: {}", result);
 //		}
+	}
 
+	@Test
+	public void testIsAnswerValid() {
+		QueryExecuter qe = new QueryExecuter("executer-test");
+		String answerJsonValid = "{   \"head\": {     \"vars\": [ \"resource\" , \"answer\" , \"label\" ]   } ,   \"results\": {     \"bindings\": [       {         \"resource\": { \"type\": \"uri\" , \"value\": \"http://dbpedia.org/resource/Batman\" } ,         \"answer\": { \"type\": \"literal\" , \"xml:lang\": \"en\" , \"value\": \"Bruce Wayne\" } ,         \"label\": { \"type\": \"literal\" , \"xml:lang\": \"en\" , \"value\": \"Batman\" }       }     ]   } } ";
+		assertTrue(qe.isAnswerValid(answerJsonValid));
 
+		String answerJsonInvalid = "{   \"head\": {     \"vars\": [ \"resource\" , \"answer\" , \"label\" ]   } ,   \"results\": {     \"bindings\": []   } } ";
+		assertFalse(qe.isAnswerValid(answerJsonInvalid));
 	}
 
 	/**
