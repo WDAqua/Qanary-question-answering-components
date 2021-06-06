@@ -111,17 +111,19 @@ public class SparqlExecuter extends QanaryComponent {
 					+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
                 	+ "INSERT { " // 
                 	+ "GRAPH <" + myQanaryUtils.getOutGraph() + "> { " // 
-                	+ "  ?b a qa:AnnotationOfAnswerJSON ; " // 
+                	+ "  ?b a qa:AnnotationOfAnswerJson ; " // 
                 	+ "     oa:hasTarget <"+myQuestionUri.toString()+"> ; " //   
                 	+ "     oa:hasBody ?answer ; "// 
                 	+ "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
                 	+ "     oa:annotatedAt ?time . " // 
                     + "  ?answer a qa:AnswerJson ; " //
-                    + "          rdf:value \"" + json.replace("\n", " ").replace("\"", "\\\"") + "\" . " //
+                    + "          rdf:value ?jsonAnswer . " //
                     + "  qa:AnswerJson rdfs:subClassOf qa:Answer ." //
                 	+ "}} " // 
                 	+ "WHERE { " // 
                 	+ "  BIND (IRI(str(RAND())) AS ?b) ." // 
+                	+ "  BIND (IRI(str(RAND())) AS ?answer) ." // 
+                    + "  BIND (\"" + json.replace("\n", " ").replace("\"", "\\\"") + "\"^^xsd:string AS ?jsonAnswer) ." //
                 	+ "  BIND (now() as ?time) " // 
                 	+ "}";
         myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
