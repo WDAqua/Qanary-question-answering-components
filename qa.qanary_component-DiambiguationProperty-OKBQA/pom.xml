@@ -73,7 +73,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>eu.wdaqua.qanary.annotationofspotproperty.Application</mainClass>
+                    <mainClass>eu.wdaqua.qanary.diambiguationproperty.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>
