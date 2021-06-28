@@ -1,11 +1,6 @@
-package eu.wdaqua.qanary.spotlightNED;
+package eu.wdaqua.opentapiocaNED;
 
-import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.endpointKey;
-import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.inGraphKey;
-import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.outGraphKey;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -17,6 +12,8 @@ import java.net.URISyntaxException;
 import java.util.Map.Entry;
 
 import javax.inject.Inject;
+
+import com.google.gson.JsonArray;
 
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Before;
@@ -34,11 +31,13 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.endpointKey;
+import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.inGraphKey;
+import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.outGraphKey;
+
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
 import eu.wdaqua.qanary.component.QanaryServiceController;
-
-import com.google.gson.JsonArray;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
@@ -54,7 +53,7 @@ public class TestQanaryServiceController {
 
 	/**
 	 * initialize local controller enabled for tests
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Before
@@ -68,7 +67,7 @@ public class TestQanaryServiceController {
 
 	/**
 	 * test description interface
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -83,7 +82,7 @@ public class TestQanaryServiceController {
 	 * QanaryConfiguration.annotatequestion, check if the values are the same
 	 */
 	@Test
-	@Ignore // this test cannot be executed as the triplestore needs to be mocked first
+	@Ignore //TODO this test cannot be executed as the triplestore needs to be mocked first
 	public void testMessageReceiveAndSend() {
 
 		QanaryMessage requestMessage;
