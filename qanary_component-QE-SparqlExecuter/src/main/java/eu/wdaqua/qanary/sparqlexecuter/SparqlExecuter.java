@@ -56,7 +56,7 @@ public class SparqlExecuter extends QanaryComponent {
   			+ "WHERE { " //
   			+ "  ?a a qa:AnnotationOfAnswerSPARQL . " //
   			+ "  OPTIONAL {?a oa:hasBody ?sparql } " //
-  			+ "  ?a qa:hasScore ?score . " //
+  			//+ "  ?a qa:hasScore ?score . " //
             + "  ?a oa:annotatedAt ?time . " // 
             + "  { " //
             + "    SELECT ?time { " //
@@ -69,7 +69,7 @@ public class SparqlExecuter extends QanaryComponent {
 		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparql);
                 String sparqlQuery="";
                 while (resultset.hasNext()) {
-			sparqlQuery = resultset.next().get("sparql").toString();	
+			sparqlQuery = resultset.next().get("sparql").toString().replace("\\\"", "\"").replace("\\n", "\n");	
 		}
 		logger.info("Generated SPARQL query: {} ", sparqlQuery);
 		// STEP 2: execute the first sparql query
@@ -78,10 +78,12 @@ public class SparqlExecuter extends QanaryComponent {
         if (sparqlQuery.contains("http://dbpedia.org")){
         	endpoint = "http://dbpedia.org/sparql";
             logger.info("use DBpedia endpoint");
-        } else {
+        } else if (sparqlQuery.contains("http://www.wikidata.org")){
         	endpoint = "https://query.wikidata.org/sparql";
             logger.info("use Wikidata endpoint");
-        }
+        } else {
+          return myQanaryMessage;
+        } 
         // @TODO: extend functionality to use qa:TargetDataset if present
         
 		Query query = QueryFactory.create(sparqlQuery);
@@ -104,16 +106,24 @@ public class SparqlExecuter extends QanaryComponent {
 		sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " // 
                 	+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " // 
                 	+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " // 
+                    + "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
+                    + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" //
+					+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
                 	+ "INSERT { " // 
                 	+ "GRAPH <" + myQanaryUtils.getOutGraph() + "> { " // 
-                	+ "  ?b a qa:AnnotationOfAnswerJSON ; " // 
+                	+ "  ?b a qa:AnnotationOfAnswerJson ; " // 
                 	+ "     oa:hasTarget <"+myQuestionUri.toString()+"> ; " //   
-                	+ "     oa:hasBody \"" + json.replace("\n", " ").replace("\"", "\\\"") + "\" ; " // 
+                	+ "     oa:hasBody ?answer ; "// 
                 	+ "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
-                	+ "     oa:annotatedAt ?time  " // 
+                	+ "     oa:annotatedAt ?time . " // 
+                    + "  ?answer a qa:AnswerJson ; " //
+                    + "          rdf:value ?jsonAnswer . " //
+                    + "  qa:AnswerJson rdfs:subClassOf qa:Answer ." //
                 	+ "}} " // 
                 	+ "WHERE { " // 
                 	+ "  BIND (IRI(str(RAND())) AS ?b) ." // 
+                	+ "  BIND (IRI(str(RAND())) AS ?answer) ." // 
+                    + "  BIND (\"" + json.replace("\n", " ").replace("\"", "\\\"") + "\"^^xsd:string AS ?jsonAnswer) ." //
                 	+ "  BIND (now() as ?time) " // 
                 	+ "}";
         myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
