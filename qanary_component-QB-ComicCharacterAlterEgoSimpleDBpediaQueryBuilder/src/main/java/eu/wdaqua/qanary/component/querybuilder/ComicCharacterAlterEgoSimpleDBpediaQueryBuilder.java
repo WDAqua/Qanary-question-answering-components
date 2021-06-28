@@ -101,10 +101,13 @@ public class ComicCharacterAlterEgoSimpleDBpediaQueryBuilder extends QanaryCompo
 					+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" //
 					+ "PREFIX dbp: <http://dbpedia.org/property/>\n" //
 					+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" //
+					+ "PREFIX dct: <http://purl.org/dc/terms/>\n" //
 					+ "SELECT * WHERE {\n" //
 					+ "  ?resource dbp:alterEgo ?answer .\n" //
 					+ "  ?resource rdfs:label ?label .\n" //
+					+ "  ?resource dct:subject dbr:Category:Superheroes_with_alter_egos .\n" // only superheros
 					+ "  FILTER(LANG(?label) = \"en\") .\n" //
+					+ "  FILTER(! strStarts(LCASE(?label), LCASE(?answer))).\n" // filter starting with the same name
 					+ "  FILTER(CONTAINS(STR(?label), '"+name+"')) .\n" //
 					+ "} \n";
 
