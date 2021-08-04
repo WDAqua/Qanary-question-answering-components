@@ -1,0 +1,7 @@
+transformers
+torch
+SentencePiece
+qanary-helpers
+SPARQLWrapper
+Flask
+langid

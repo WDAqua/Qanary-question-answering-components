@@ -1,0 +1,5 @@
+SPARQLWrapper
+Flask
+requests
+waitress
+qanary-helpers
