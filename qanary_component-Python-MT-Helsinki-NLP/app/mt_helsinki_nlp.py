@@ -44,28 +44,28 @@ def qanary_service():
 
     # building SPARQL query
     SPARQLquery = """
-                    PREFIX qa: <http://www.wdaqua.eu/qa#>
-                    PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+        PREFIX qa: <http://www.wdaqua.eu/qa#>
+        PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
 
-                    INSERT {{
-                    GRAPH <{uuid}> {{
-                        ?a a qa:AnnotationOfQuestionLanguage .
-                        ?a qa:translationResult "{result}" .
-                        ?a qa:sourceLanguage "{src_lang}" .
-                        ?a oa:annotatedBy <urn:qanary:{app_name}> .
-                        ?a oa:annotatedAt ?time .
-                        }}
-                    }}
-                    WHERE {{
-                        BIND (IRI(str(RAND())) AS ?a) .
-                        BIND (now() as ?time) 
-                    }}
-                """.format(
-                    uuid=triplestore_ingraph,
-                    result=result,
-                    src_lang=lang,
-                    app_name="{0}:Python".format(SERVICE_NAME_COMPONENT)
-                )
+        INSERT {{
+        GRAPH <{uuid}> {{
+            ?a a qa:AnnotationOfQuestionLanguage .
+            ?a qa:translationResult "{result}" .
+            ?a qa:sourceLanguage "{src_lang}" .
+            ?a oa:annotatedBy <urn:qanary:{app_name}> .
+            ?a oa:annotatedAt ?time .
+            }}
+        }}
+        WHERE {{
+            BIND (IRI(str(RAND())) AS ?a) .
+            BIND (now() as ?time) 
+        }}
+    """.format(
+        uuid=triplestore_ingraph,
+        result=result,
+        src_lang=lang,
+        app_name="{0}:Python".format(SERVICE_NAME_COMPONENT)
+    )
     
     logging.info(f'SPARQL: {SPARQLquery}')
     # inserting new data to the triplestore

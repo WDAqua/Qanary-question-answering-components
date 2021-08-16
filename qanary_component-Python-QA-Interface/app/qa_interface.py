@@ -28,18 +28,19 @@ def qanary_service():
 
     # check if translation was involved
     SPARQLquery = """
-                    PREFIX qa: <http://www.wdaqua.eu/qa#>
-                    PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+        PREFIX qa: <http://www.wdaqua.eu/qa#>
+        PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
 
-                    SELECT ?val
-                    FROM <{uuid}> {{
-                        ?s a qa:AnnotationOfQuestionLanguage ;
-                            qa:translationResult ?val .
-                    }}
+        SELECT ?val
+        FROM <{uuid}> {{
+            ?s a qa:AnnotationOfQuestionLanguage ;
+                qa:translationResult ?val .
+        }}
     """.format(uuid=triplestore_ingraph)
 
     translation = select_from_triplestore(triplestore_endpoint, SPARQLquery)
-    logging.info(f"!!!!!!!!!!!!!!!!!!!!!!! {translation}")
+    logging.info(f" {translation}")
+
     if 'results' in translation.keys() and len(translation['results']['bindings']) > 0:
         text = list(translation['results']['bindings'][0].values())[0]['value']
     else:
@@ -48,7 +49,6 @@ def qanary_service():
     logging.info(f'Question Text: {text}')
     
     QA_SYSTEM_PARAMS['question'] = text
-    # TODO if machine translation was detected
 
     json_response = requests.get(QA_SYSTEM_URL.format(**QA_SYSTEM_PARAMS)).json()  # making a request to a service
     if len(json_response['answer']) > 0 and 'http' in json_response['answer'][0]:
@@ -60,30 +60,29 @@ def qanary_service():
 
     # building SPARQL query
     SPARQLquery = """
-                    PREFIX qa: <http://www.wdaqua.eu/qa#>
-                    PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
-
-                    INSERT {{
-                    GRAPH <{uuid}> {{
-                        ?a a qa:AnnotationOfQaInterface .
-                        ?a qa:QaSystemName "{qa_system_name}" .
-                        ?a qa:QaSystemURL "{qa_system_url}" .
-                        ?a qa:answerResults {results} .
-                        ?a oa:annotatedBy <urn:qanary:{app_name}> .
-                        ?a oa:annotatedAt ?time .
-                        }}
-                    }}
-                    WHERE {{
-                        BIND (IRI(str(RAND())) AS ?a) .
-                        BIND (now() as ?time) 
-                    }}
-                """.format(
-                    uuid=triplestore_ingraph,
-                    qa_system_name=QA_SYSTEM_NAME,
-                    qa_system_url=QA_SYSTEM_URL.format(**QA_SYSTEM_PARAMS),
-                    results=results,
-                    app_name="{0}:Python".format(SERVICE_NAME_COMPONENT)
-                )
+        PREFIX qa: <http://www.wdaqua.eu/qa#>
+        PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        
+        INSERT {{
+        GRAPH <{uuid}> {{
+                ?a a qa:AnnotationOfQaInterface ;
+                    oa:annotatedBy <urn:qanary:{app_name}:{qa_system_name}> ;
+                    oa:annotatedAt ?time ;
+                    oa:answerResult {results} .
+            }}
+        }}
+        WHERE {{
+            BIND (IRI(str(RAND())) AS ?a) .
+            BIND (now() as ?time) 
+        }}
+    """.format(
+        uuid=triplestore_ingraph,
+        qa_system_name=QA_SYSTEM_NAME,
+        qa_system_url=QA_SYSTEM_URL.format(**QA_SYSTEM_PARAMS),
+        results=results,
+        app_name="{0}:Python".format(SERVICE_NAME_COMPONENT)
+    )
     
     logging.info(f'SPARQL: {SPARQLquery}')
     # inserting new data to the triplestore
