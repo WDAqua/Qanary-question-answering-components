@@ -85,7 +85,7 @@ public class DBpediaSpotlightNER extends QanaryComponent {
     private List<String> getResults(String input) {
         /*
 		 * This can be an alternative for passing text using API String
-		 * SpotterService = "http://spotlight.sztaki.hu:2222/rest/spot";
+		 * SpotterService = "https://api.dbpedia-spotlight.org/en/spot?text=";
 		 * UriComponentsBuilder service =
 		 * UriComponentsBuilder.fromHttpUrl(SpotterService) .queryParam("text",
 		 * qns); logger.info("Service request "+service); RestTemplate
@@ -96,7 +96,8 @@ public class DBpediaSpotlightNER extends QanaryComponent {
 		 */
 
         // TODO: Should move to the config
-        String madeUrlFromInput = "http://spotlight.sztaki.hu:2222/rest/spot?text=";
+        //more information about API available at: https://www.dbpedia-spotlight.org/api
+        String madeUrlFromInput = "https://api.dbpedia-spotlight.org/en/spot?text=";
 		/*
 		 * String qns[] = input.split(" "); String append = String.join("%20",
 		 * qns);
