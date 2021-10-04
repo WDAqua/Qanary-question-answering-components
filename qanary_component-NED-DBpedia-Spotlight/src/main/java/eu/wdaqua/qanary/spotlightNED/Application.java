@@ -18,7 +18,7 @@ public class Application {
 	
 	@Bean
 	public DBpediaSpotlightConfiguration myDBpediaSpotlightConfiguration( //
-			@Value("${dbpediaspotlight.confidence.minimum}") float confidenceMinimum, //
+			@Value("${dbpediaspotlight.confidence}") float confidenceMinimum, //
 			@Value("${dbpediaspotlight.endpoint:https://api.dbpedia-spotlight.org/en/annotate}") String endpoint //
 	) {
 		return new DBpediaSpotlightConfiguration(confidenceMinimum, endpoint);
