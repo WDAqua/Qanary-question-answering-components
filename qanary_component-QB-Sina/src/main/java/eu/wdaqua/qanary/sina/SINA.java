@@ -222,10 +222,10 @@ public class SINA extends QanaryComponent {
 	protected String executeExternalSinaJarFile(String argument) throws IOException, InterruptedException {
 		logger.info("executeExternalSinaJarFile: argument={} on {}", argument, sinaJarFileLocation);
 
-		final ProcessBuilder pb = new ProcessBuilder("java", "-jar", sinaJarFileLocation, argument);
+		final ProcessBuilder pb = new ProcessBuilder("java", "-jar", "qanary_component-QB-Sina/src/main/resources/sina-0.0.1.jar", argument);
 		pb.redirectErrorStream(true);
 		final Process p = pb.start();
-		p.waitFor();
+		//p.waitFor();
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		String outputRetrieved = "";
