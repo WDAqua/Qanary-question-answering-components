@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -72,7 +73,7 @@ public class RelationLinker2 extends QanaryComponent {
 
 		logger.info("Question: {}", myQuestion);
 		try {
-			File f = new File("qanary_component-REL-RelationLinker2/src/main/resources/questions.txt");
+			File f = new ClassPathResource("questions.txt", this.getClass().getClassLoader()).getFile();
 			FileReader fr = new FileReader(f);
 			BufferedReader br  = new BufferedReader(fr);
 			int flag = 0;
