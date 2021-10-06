@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -31,6 +32,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -73,7 +77,7 @@ public class RelationLinker2 extends QanaryComponent {
 
 		logger.info("Question: {}", myQuestion);
 		try {
-			File f = new ClassPathResource("questions.txt", this.getClass().getClassLoader()).getFile();
+			File f = new File(getValidFileAbsoluteLocation("questions.txt"));
 			FileReader fr = new FileReader(f);
 			BufferedReader br  = new BufferedReader(fr);
 			int flag = 0;
@@ -224,6 +228,29 @@ public class RelationLinker2 extends QanaryComponent {
 		public int begin;
 		public int end;
 		public String link;
+	}
+
+	protected String getValidFileAbsoluteLocation(String FileName) throws IOException {
+
+		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+		Resource[] resources = resolver.getResources("classpath*:" + FileName);
+		String fileAbsoluteLocation = "";
+
+		for(Resource r: resources) {
+			InputStream inputStream = r.getInputStream();
+			File somethingFile = File.createTempFile(r.getFilename(), ".cxl");
+			try {
+				FileUtils.copyInputStreamToFile(inputStream, somethingFile);
+			} finally {
+				IOUtils.closeQuietly(inputStream);
+			}
+			logger.info("File Path is {}", somethingFile.getAbsolutePath());
+			fileAbsoluteLocation = somethingFile.getAbsolutePath();
+		}
+
+
+
+		return fileAbsoluteLocation;
 	}
 
 
