@@ -5,15 +5,15 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary_component-QB-SimpleRealNameOfSuperHero</artifactId>
-	<version>2.0.3</version>
+	<version>3.0.0</version>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.6.RELEASE</version>
+		<version>2.5.5</version>
 	</parent>
 	<properties>
 		<java.version>11</java.version>
-		<qanary.version>[2.0.0,3.0.0)</qanary.version>
+		<qanary.version>[2.0.0,4.0.0)</qanary.version>
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<docker.image.name>qanary_component-qb-simplerealnameofsuperhero</docker.image.name>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
