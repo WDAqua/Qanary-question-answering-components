@@ -13,7 +13,7 @@
     </parent>
     <properties>
         <java.version>11</java.version>
-        <qanary.version>[2.0.0,3.0.0)</qanary.version>
+        <qanary.version>[2.0.0,4.0.0)</qanary.version>
         <docker.image.prefix>qanary</docker.image.prefix>
         <docker.image.name>monolithic-wrapper</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
