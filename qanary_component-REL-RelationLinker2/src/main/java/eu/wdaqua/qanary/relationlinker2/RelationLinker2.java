@@ -55,7 +55,7 @@ public class RelationLinker2 extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(RelationLinker2.class);
 
 	private final String applicationName;
-	private final String falconAPI = "https://labs.tib.eu/falcon/falcon2/api?mode=long&db=1";
+	private final String falconAPI = "http://172.18.0.1:5001";
 
 	public RelationLinker2(@Value("${spring.application.name}") final String applicationName) {
 		this.applicationName = applicationName;
