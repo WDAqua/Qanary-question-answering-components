@@ -14,9 +14,8 @@ import java.util.Map;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.jena.query.ResultSet;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -223,12 +222,10 @@ public class DiambiguationProperty extends QanaryComponent {
 		}
 		logger.info("The output template is: {}", output1);
 
-		JSONParser parser = new JSONParser();
-		
 		Map<String, Map<String, Double>> allProperties = new HashMap<String, Map<String, Double>>();
 		try {
 
-			JSONObject json = (JSONObject) parser.parse(output1);
+			JSONObject json = new JSONObject(output1);
 
 			JSONArray characters = (JSONArray) json.get("ned");
 			Iterator i = characters.iterator();
