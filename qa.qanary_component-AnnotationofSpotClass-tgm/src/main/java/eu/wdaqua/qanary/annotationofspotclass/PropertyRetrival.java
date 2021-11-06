@@ -3,9 +3,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 // this code is to parse the generated JSON template, and fetch the needed information out of it.
 // Remember, there can be multiple resource, multiple classes, multiple properties generated.
@@ -23,10 +22,9 @@ public class PropertyRetrival {
 		List<String> tempList = new ArrayList<String>();
 		
 		//Json parser to parse the needed information
-		JSONParser parser = new JSONParser();
 		try{
 			
-			JSONArray json = (JSONArray) parser.parse(s);
+			JSONArray json = new JSONArray(s);
 			
 			//JSONArray characters = (JSONArray) json.get("slots");
 			Iterator i = json.iterator();
