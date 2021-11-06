@@ -21,9 +21,8 @@ import org.apache.jena.update.UpdateExecutionFactory;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateProcessor;
 import org.apache.jena.update.UpdateRequest;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -229,12 +228,10 @@ public class DiambiguationClass extends QanaryComponent {
 		}
 		System.out.println("The output template is:" + output1);
 
-		JSONParser parser = new JSONParser();
-
 		Map<String, Map<String, Double>> allClassses = new HashMap<String, Map<String, Double>>();
 		try {
 
-			JSONObject json = (JSONObject) parser.parse(output1);
+			JSONObject json = new JSONObject(output1);
 
 			JSONArray characters = (JSONArray) json.get("ned");
 			Iterator i = characters.iterator();
