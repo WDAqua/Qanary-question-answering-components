@@ -17,7 +17,7 @@
 		<qanary.version>[2.0.0,4.0.0)</qanary.version>
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<!-- Replace the name of the docker image to be generated -->
-		<docker.image.name>language-detection-shuyo</docker.image.name>
+		<docker.image.name>ld-shuyo</docker.image.name>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
 		<profile_directory>${basedir}/src/main/resources/language-detection/profiles</profile_directory>
 	</properties>
