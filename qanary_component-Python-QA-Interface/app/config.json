@@ -1,0 +1,43 @@
+{
+    "QAnswer": {
+        "QA_SYSTEM_URL": "https://webengineering.ins.hs-anhalt.de:41021/qanswer/answer?question={question}&lang={lang}&kb={kb}",
+        "QA_SYSTEM_PARAMS": {
+            "question": "to be replaced",
+            "lang": "en",
+            "kb": "dbpedia"
+        }
+    },
+    "DeepPavlov": {
+        "QA_SYSTEM_URL": "https://webengineering.ins.hs-anhalt.de:41021/deeppavlov/answer?question={question}&lang={lang}",
+        "QA_SYSTEM_PARAMS": {
+            "question": "to be replaced",
+            "lang": "en"
+        }
+    },
+    "Platypus": {
+        "QA_SYSTEM_URL": "https://webengineering.ins.hs-anhalt.de:41021/platypus/answer?question={question}&lang={lang}",
+        "QA_SYSTEM_PARAMS": {
+            "question": "to be replaced",
+            "lang": "en"
+        }
+    },
+    "gAnswer": {
+        "QA_SYSTEM_URL": "https://webengineering.ins.hs-anhalt.de:41021/gAnswer/answer?question={question}",
+        "QA_SYSTEM_PARAMS": {
+            "question": "to be replaced"
+        }
+    },
+    "RuBQ": {
+        "QA_SYSTEM_URL": "https://webengineering.ins.hs-anhalt.de:41021/rubq/answer?question={question}",
+        "QA_SYSTEM_PARAMS": {
+            "question": "to be replaced"
+        }
+    },
+    "TeBaQA": {
+        "QA_SYSTEM_URL": "https://webengineering.ins.hs-anhalt.de:41021/tebaqa/answer?question={question}&lang={lang}",
+        "QA_SYSTEM_PARAMS": {
+            "question": "to be replaced",
+            "lang": "en"
+        }
+    }
+}
