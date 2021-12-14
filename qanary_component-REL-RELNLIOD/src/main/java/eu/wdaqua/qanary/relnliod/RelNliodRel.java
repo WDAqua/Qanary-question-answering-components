@@ -193,7 +193,7 @@ public class RelNliodRel extends QanaryComponent {
                     logger.info("Here {}", Answer);
                     Answer = Answer.trim();
                     Answer = Answer.substring(1, Answer.length() - 1);
-                    String[] values = Answer.split(",");
+                    String[] values = Answer.split(", ");
                     for (int i = 0; i < values.length; i++) {
                         cacheResult.links.add(values[i]);
                     }

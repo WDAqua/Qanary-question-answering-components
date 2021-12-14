@@ -26,8 +26,9 @@ public class Application {
 	* @return
 	*/
 	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
-		return new MeaningCloudNed(applicationName);
+	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName,
+										   @Value("${ned-meaningcloud.cache.file}") final String cacheFilePath) {
+		return new MeaningCloudNed(applicationName, cacheFilePath);
 	}
 	
 	

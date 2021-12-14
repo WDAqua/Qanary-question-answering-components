@@ -47,9 +47,12 @@ public class MeaningCloudNed extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(MeaningCloudNed.class);
 
 	private final String applicationName;
+	private final String cacheFilePath;
 
-	public MeaningCloudNed(@Value("${spring.application.name}") final String applicationName) {
+	public MeaningCloudNed(@Value("${spring.application.name}") final String applicationName,
+						   @Value("${ned-meaningcloud.cache.file}") final String cacheFilePath) {
 		this.applicationName = applicationName;
+		this.cacheFilePath = cacheFilePath;
 	}
 
 	/**
@@ -69,7 +72,7 @@ public class MeaningCloudNed extends QanaryComponent {
 		ArrayList<Selection> selections = new ArrayList<Selection>();
 		logger.info("Question {}", myQuestion);
 		 try {
-				File f = new File("questions.txt");
+				File f = new File(cacheFilePath);
 		    	FileReader fr = new FileReader(f);
 		    	BufferedReader br  = new BufferedReader(fr);
 				int flag = 0;
@@ -170,7 +173,7 @@ public class MeaningCloudNed extends QanaryComponent {
 					}
 				}
 			}
-			BufferedWriter buffWriter = new BufferedWriter(new FileWriter("questions.txt", true));
+			BufferedWriter buffWriter = new BufferedWriter(new FileWriter(cacheFilePath, true));
 	        Gson gson = new Gson();
 	        
 	        String json = gson.toJson(selections);
