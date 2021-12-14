@@ -12,19 +12,16 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.lang.PipedRDFIterator;
 import org.apache.jena.riot.lang.PipedRDFStream;
 import org.apache.jena.riot.lang.PipedTriplesStream;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.clsnliod.DbpediaRecorodClass;
-import eu.wdaqua.qanary.commons.QanaryMessage;
 
 @SpringBootApplication
 @ComponentScan("eu.wdaqua.qanary.component")
@@ -127,11 +124,9 @@ class PropertyRetrival {
 		List<String> classRdf = new ArrayList<String>();*/
 		List<String> tempList = new ArrayList<String>();
 		
-		//Json parser to parse the needed information
-		JSONParser parser = new JSONParser();
 		try{
 			
-			JSONArray json = (JSONArray) parser.parse(s);
+			JSONArray json = new JSONArray(s);
 			
 			//JSONArray characters = (JSONArray) json.get("slots");
 			Iterator i = json.iterator();
