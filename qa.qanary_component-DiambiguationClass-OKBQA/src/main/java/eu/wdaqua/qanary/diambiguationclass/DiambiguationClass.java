@@ -134,7 +134,7 @@ public class DiambiguationClass extends QanaryComponent {
 	 */
 	@Override
 	public QanaryMessage process(QanaryMessage myQanaryMessage) {
-		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
+		//org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
 		logger.info("process: {}", myQanaryMessage);
 		// TODO: implement processing of question
 
