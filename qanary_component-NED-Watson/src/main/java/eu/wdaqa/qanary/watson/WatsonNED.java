@@ -69,7 +69,7 @@ public class WatsonNED extends QanaryComponent {
 		logger.info("process: {}", myQanaryMessage);
 
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<>(myQanaryMessage);
+		QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
 
 		// textual representation/String of question
 		String myQuestionText = myQanaryQuestion.getTextualRepresentation();
@@ -92,26 +92,28 @@ public class WatsonNED extends QanaryComponent {
 		}
 
 		for (NamedEntity namedEntity : namedEntityList) {
-			// the sparql query to push all entities into the triplestore
-			String sparqlUpdateQuery = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
+			// the SPARQL query to push all entities into the triplestore
+			String sparqlUpdateQuery = // 
+					"PREFIX qa: <http://www.wdaqua.eu/qa#> " //
 					+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/>  " //
 					+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>" //
 					+ "INSERT { " //
 					+ "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
 					+ "?a a qa:AnnotationOfInstance . " //
 					+ "?a oa:hasTarget [ " //
-					+ "a    oa:SpecificResource; " //
-					+ "oa:hasSource    <" + myQanaryQuestion.getUri() + ">; \n" //
-					+ "oa:hasSelector  [ " //
-					+ "a oa:TextPositionSelector ; " //
-					+ "oa:start \"" + namedEntity.getBegin() + "\"^^xsd:nonNegativeInteger ; " //
-					+ "oa:end  \"" + namedEntity.getEnd() + "\"^^xsd:nonNegativeInteger ; " //
-					+ "qa:score \"" + namedEntity.getConfidence() + "\"^^xsd:float " //
-					+ "] " //
+					+ "	a oa:SpecificResource; " //
+					+ "	oa:hasSource    <" + myQanaryQuestion.getUri() + ">; \n" //
+					+ "	oa:hasSelector  [ " //
+					+ "		a oa:TextPositionSelector ; " //
+					+ "		oa:start \"" + namedEntity.getBegin() + "\"^^xsd:nonNegativeInteger ; " //
+					+ "		oa:end  \"" + namedEntity.getEnd() + "\"^^xsd:nonNegativeInteger ; " //
+					+ "		qa:score \"" + namedEntity.getConfidence() + "\"^^xsd:float " //
+					+ "	] " //
 					+ "] . " //
 					+ "?a oa:hasBody <" + namedEntity.getUri() + "> ; \n" //
 					+ "oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; " //
-					+ "oa:annotatedAt ?time  " + "}} " //
+					+ "oa:annotatedAt ?time  " //  
+					+ "}} " //
 					+ "WHERE { " //
 					+ "BIND (IRI(str(RAND())) AS ?a) . " //
 					+ "BIND (now() as ?time) " //
@@ -128,7 +130,7 @@ public class WatsonNED extends QanaryComponent {
 	 * @return a List with all found Named Entities, which will be further processed in "process"
 	 * @throws IOException
 	 */
-	private List<NamedEntity> retrieveDataFromWebService(String myQuestionText) throws IOException {
+	protected List<NamedEntity> retrieveDataFromWebService(String myQuestionText) throws IOException {
 		logger.info("Retrieving data from Webservice for Question: {}", myQuestionText);
 		ArrayList<NamedEntity> namedEntityArrayList = new ArrayList<>();
 
@@ -207,7 +209,7 @@ public class WatsonNED extends QanaryComponent {
 							JSONObject responseEntity = responseEntitiesArray.getJSONObject(i);
 							logger.info("responseEntity: {}", responseEntity);
 
-							// check if entity has a disambiguation Array that contains the dbpedia URI
+							// check if entity has a disambiguation Array that contains the DBpedia URI
 							if (responseEntity.has("disambiguation")) {
 								// get location in the question of the entity
 								JSONArray locationsArray = (JSONArray) responseEntity.getJSONArray("mentions").getJSONObject(0).get("location");
@@ -217,7 +219,7 @@ public class WatsonNED extends QanaryComponent {
 								// get the confidence assigned by Watson
 								double confidence = (double) responseEntity.get("confidence");
 
-								// get the disambiguated dbpedia uri
+								// get the disambiguated DBpedia URI
 								String uri = (String) responseEntity.getJSONObject("disambiguation").get("dbpedia_resource");
 								logger.info("dbpedia_resource: {}, begin: {}, end: {}, confidence: {}", uri, begin, end, confidence);
 
