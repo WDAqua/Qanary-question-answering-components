@@ -39,4 +39,17 @@ public class NamedEntity {
     public String toString() {
         return (uri + " at location: (" + this.getBegin() + ", " + this.getEnd() + ") with probability: " + this.getConfidence());
     }
+    
+    public boolean equals(NamedEntity anotherNamedEntity) {
+    	// do not compare the confidence score
+    	if( this.getUri().compareTo(anotherNamedEntity.getUri()) != 0) {
+    		return false;
+    	} else if ( this.getBegin() != anotherNamedEntity.getBegin()) {
+    		return false;
+    	} else if ( this.getEnd() != anotherNamedEntity.getEnd()) {
+    		return false;
+    	} else {
+    		return true;
+    	}
+    }
 }
