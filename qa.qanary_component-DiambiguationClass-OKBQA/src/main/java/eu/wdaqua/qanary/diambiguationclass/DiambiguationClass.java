@@ -43,6 +43,9 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  *      "https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F"
  *      target="_top">Github wiki howto</a>
  */
+// TODO: replace System.out.println by logger.debug
+// TODO: remove try catch blocks with empty catch blocks
+// TODO: move Agdistis URL to configuration file 
 public class DiambiguationClass extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(DiambiguationClass.class);
 
