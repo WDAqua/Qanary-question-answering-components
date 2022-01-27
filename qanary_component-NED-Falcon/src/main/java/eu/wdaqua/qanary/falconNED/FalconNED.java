@@ -86,121 +86,72 @@ public class FalconNED extends QanaryComponent {
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 		ArrayList<Link> links = new ArrayList<Link>();
 
-		System.out.println( myQuestion);
+		logger.info("process: {}", myQanaryMessage);
+
+		HttpClient httpclient = HttpClients.createDefault();
+		HttpPost httppost = new HttpPost(falconAPI);
+		httppost.addHeader("Content-Type", "application/json");
+
+		String json = new JSONObject()
+				.put("text", myQuestion).toString();
+		StringEntity entitytemp = new StringEntity(json);
+		httppost.setEntity(entitytemp);
 		try {
-			File f = new File(getValidFileAbsoluteLocation("entity_questions.txt"));
-			FileReader fr = new FileReader(f);
-			BufferedReader br  = new BufferedReader(fr);
-			int flag = 0;
-			String line;
-//
+			HttpResponse response = httpclient.execute(httppost);
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				InputStream instream = entity.getContent();
+				// String result = getStringFromInputStream(instream);
+				String text2 = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
 
-			while((line = br.readLine()) != null && flag == 0) {
-				String question = line.substring(0, line.indexOf("Answer:"));
-				logger.info("{}", line);
-				logger.info("{}", myQuestion);
-
-				if(question.trim().equals(myQuestion))
+				String text = text2.substring(text2.indexOf('{'));
+				logger.info("Question: {}", text);
+				JSONObject jsonObject = new JSONObject(text);
+				JSONArray jsonArray = (JSONArray) jsonObject.get("entities_dbpedia");
+				System.out.println("dsds");
+				System.out.println(jsonArray);
+				for ( int i =0 ; i < jsonArray.length();i++)
 				{
-					String Answer = line.substring(line.indexOf("Answer:")+"Answer:".length());
-					logger.info("Here {}", Answer);
-					Answer = Answer.trim();
-					JSONArray jsonArr =new JSONArray(Answer);
-					if(jsonArr.length()!=0)
-					{
-						for (int i = 0; i < jsonArr.length(); i++)
-						{
-							JSONObject explrObject = jsonArr.getJSONObject(i);
-
-							logger.info("Question: {}", explrObject);
-
-							Link l = new Link();
-							l.begin = (int) explrObject.get("begin");
-							l.end = (int) explrObject.get("end");
-							l.link= explrObject.getString("link");
-							links.add(l);
-						}
-					}
-					flag=1;
-
-					break;
+					JSONArray jsonArray1 = (JSONArray) jsonArray.get(i);
+					String link_temp = (String) jsonArray1.get(0);
+					String link_text = (String) jsonArray1.get(1);
+					Link l = new Link();
+					l.begin = myQuestion.indexOf(link_text);
+					l.end = l.begin + link_text.length();
+					l.link = link_temp;
+					links.add(l);
+					logger.info(l.link);
 				}
-
-
-			}
-			br.close();
-			if(flag==0)
-			{
-
-
-				HttpClient httpclient = HttpClients.createDefault();
-				HttpPost httppost = new HttpPost(falconAPI);
-				httppost.addHeader("Content-Type", "application/json");
-
-				String json = new JSONObject()
-						.put("text", myQuestion).toString();
-				StringEntity entitytemp = new StringEntity(json);
-				httppost.setEntity(entitytemp);
+				logger.info("Question: {}", text);
+				//logger.info("Question: {}", jsonArray);
 				try {
-					HttpResponse response = httpclient.execute(httppost);
-					HttpEntity entity = response.getEntity();
-					if (entity != null) {
-						InputStream instream = entity.getContent();
-						// String result = getStringFromInputStream(instream);
-						String text2 = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
-
-						String text = text2.substring(text2.indexOf('{'));
-						logger.info("Question: {}", text);
-						JSONObject jsonObject = new JSONObject(text);
-						JSONArray jsonArray = (JSONArray) jsonObject.get("entities_dbpedia");
-						System.out.println("dsds");
-						System.out.println(jsonArray);
-						for ( int i =0 ; i < jsonArray.length();i++)
-						{
-							JSONArray jsonArray1 = (JSONArray) jsonArray.get(i);
-							String link_temp = (String) jsonArray1.get(0);
-							String link_text = (String) jsonArray1.get(1);
-							Link l = new Link();
-							l.begin = myQuestion.indexOf(link_text);
-							l.end = l.begin + link_text.length();
-							l.link = link_temp;
-							links.add(l);
-							logger.info(l.link);
-						}
-						logger.info("Question: {}", text);
-						//logger.info("Question: {}", jsonArray);
-						try {
-							// do something useful
-						} finally {
-							instream.close();
-						}
-					}
-
-					//BufferedWriter buffWriter = new BufferedWriter(new FileWriter("qanary_component-NED-Falcon/src/main/resources/questions.txt", true));
-					Gson gson = new Gson();
-
-					String joson = gson.toJson(links);
-					logger.info("gsonwala: {}",json);
-
-					String MainString = myQuestion + " Answer: "+joson;
-					//buffWriter.append(MainString);
-					//buffWriter.newLine();
-					//	buffWriter.close();
-				}
-				catch (ClientProtocolException e) {
-					logger.info("Exception: {}", myQuestion);
-					// TODO Auto-generated catch block
-				} catch (IOException e1) {
-					logger.info("Except: {}", e1);
-					// TODO Auto-generated catch block
+					// do something useful
+				} finally {
+					instream.close();
 				}
 			}
+
+			//BufferedWriter buffWriter = new BufferedWriter(new FileWriter("qanary_component-NED-Falcon/src/main/resources/questions.txt", true));
+			Gson gson = new Gson();
+
+			String joson = gson.toJson(links);
+			logger.info("gsonwala: {}",json);
+
+			String MainString = myQuestion + " Answer: "+joson;
+			//buffWriter.append(MainString);
+			//buffWriter.newLine();
+			//	buffWriter.close();
 		}
-		catch(FileNotFoundException e)
-		{
-			//handle this
-			logger.info("{}", e);
+		catch (ClientProtocolException e) {
+			logger.info("Exception: {}", myQuestion);
+			// TODO Auto-generated catch block
+		} catch (IOException e1) {
+			logger.info("Except: {}", e1);
+			// TODO Auto-generated catch block
 		}
+
+
+
 		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
 		// TODO: insert data in QanaryMessage.outgraph
 
