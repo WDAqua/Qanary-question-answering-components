@@ -22,6 +22,7 @@
                             <module>qanary_component-NERD-Lucene-Linker</module>
                             <module>qanary_component-NER-stanford</module>
                             <module>qanary_component-NER-DBpedia-Spotlight</module>
+                            <module>qanary_component-NED-Falcon</module>
                             <module>qanary_component-NED-DBpedia-Spotlight</module>
                             <module>qanary_component-NER-EntityClassifier</module>
                             <module>qanary_component-NER-EntityClassifier2</module>
