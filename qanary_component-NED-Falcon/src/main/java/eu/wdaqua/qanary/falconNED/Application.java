@@ -18,8 +18,8 @@ public class Application {
 
 
 	@Bean
-	public QanaryComponent qanaryComponent() {
-		return new FalconNED();
+	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
+		return new FalconNED(applicationName);
 	}
 
 
