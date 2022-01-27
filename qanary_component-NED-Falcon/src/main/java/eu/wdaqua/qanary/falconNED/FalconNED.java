@@ -86,7 +86,7 @@ public class FalconNED extends QanaryComponent {
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 		ArrayList<Link> links = new ArrayList<Link>();
 
-		logger.info("Question: {}", myQuestion);
+		System.out.println( myQuestion);
 		try {
 			File f = new File(getValidFileAbsoluteLocation("entity_questions.txt"));
 			FileReader fr = new FileReader(f);
@@ -153,6 +153,8 @@ public class FalconNED extends QanaryComponent {
 						logger.info("Question: {}", text);
 						JSONObject jsonObject = new JSONObject(text);
 						JSONArray jsonArray = (JSONArray) jsonObject.get("entities_dbpedia");
+						System.out.println("dsds");
+						System.out.println(jsonArray);
 						for ( int i =0 ; i < jsonArray.length();i++)
 						{
 							JSONArray jsonArray1 = (JSONArray) jsonArray.get(i);
