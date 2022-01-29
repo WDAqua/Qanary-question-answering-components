@@ -16,7 +16,7 @@
 		<java.version>11</java.version>
 		<qanary.version>[2.0.0,3.0.0)</qanary.version>
 		<docker.image.prefix>qanary</docker.image.prefix>
-		<docker.image.name>qanary_component-ned-falcon-Enriched</docker.image.name>
+		<docker.image.name>qanary_component-ned-falcon-enriched</docker.image.name>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
 	</properties>
 
