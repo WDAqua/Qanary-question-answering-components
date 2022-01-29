@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
-    <artifactId>qanary_component-REL-RelationLinker2</artifactId>
+    <artifactId>qanary_component-REL-RelationLinker3</artifactId>
     <version>2.0.0</version>
 
     <parent>
@@ -16,7 +16,7 @@
         <java.version>11</java.version>
         <qanary.version>[2.0.0,3.0.0)</qanary.version>
         <docker.image.prefix>qanary</docker.image.prefix>
-        <docker.image.name>qanary_component-rel-relationlinker2</docker.image.name>
+        <docker.image.name>qanary_component-rel-relationlinker3</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
     </properties>
 
@@ -80,7 +80,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>eu.wdaqua.qanary.relationlinker2.Application</mainClass>
+                    <mainClass>eu.wdaqua.qanary.relationlinker3.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>
