@@ -1,6 +1,5 @@
 package eu.wdaqua.qanary.relationlinker3;
 
-import eu.wdaqua.qanary.relationlinker3.RelationLinker3;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
