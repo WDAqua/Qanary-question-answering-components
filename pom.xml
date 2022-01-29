@@ -23,6 +23,7 @@
                             <module>qanary_component-NER-stanford</module>
                             <module>qanary_component-NER-DBpedia-Spotlight</module>
                             <module>qanary_component-NED-Falcon</module>
+                            <module>qanary_component-NED-Falcon-Enriched</module>
                             <module>qanary_component-NED-DBpedia-Spotlight</module>
                             <module>qanary_component-NER-EntityClassifier</module>
                             <module>qanary_component-NER-EntityClassifier2</module>
@@ -43,6 +44,7 @@
                             <module>qanary_component-REL-RelationLinker1</module>
                             <module>qanary_component-REL-ReMatch</module>
                             <module>qanary_component-REL-RelationLinker2</module>
+                            <module>qanary_component-REL-RelationLinker3</module>
                             <module>qanary_component-REL-RELNLIOD</module>
                             <module>qanary_component-CLS-CLSNLIOD</module>
                             <module>qanary_component-QB-Sina</module>
