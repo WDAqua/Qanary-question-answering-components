@@ -48,6 +48,7 @@
                             <module>qanary_component-REL-RELNLIOD</module>
                             <module>qanary_component-CLS-CLSNLIOD</module>
                             <module>qanary_component-QB-Sina</module>
+                            <module>qanary_component-QB-SQG</module>
                             <module>qanary_component-QE-SparqlExecuter</module>
                             <module>qanary_component-QB-SimpleRealNameOfSuperHero</module>
                             <module>qanary_component-QB-ComicCharacterAlterEgoSimpleDBpediaQueryBuilder</module>
