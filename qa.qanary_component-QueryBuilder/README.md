@@ -2,7 +2,7 @@
 
 ## Description
 
-Receives 3 optional data structures: AnnotationOfClass, AnnotationOfRelation, and AnnotationOfInstance. Depending on the availability of them, generates a query over DBpedia and stores it.
+Receives 3 optional data structures: `AnnotationOfClass`, `AnnotationOfRelation`, and `AnnotationOfInstance`. Depending on the availability of them, generates a query over DBpedia and stores it.
 
 ## Input specification
 
@@ -12,9 +12,9 @@ Receives 3 optional data structures: AnnotationOfClass, AnnotationOfRelation, an
 
 <urn:qanary:input> a qa:AnnotationOfClass .
 <urn:qanary:input> oa:hasTarget [
-    a oa:SpecificResource ;
-    oa:hasSource ?q ;
-];
+        a oa:SpecificResource ;
+        oa:hasSource ?q ;
+    ];
     oa:hasBody ?uri .
 ```
 
@@ -24,9 +24,9 @@ Receives 3 optional data structures: AnnotationOfClass, AnnotationOfRelation, an
 
 <urn:qanary:input> a qa:AnnotationOfRelation .
 <urn:qanary:input> oa:hasTarget [
-    a oa:SpecificResource ;
-    oa:hasSource ?q ;
-];
+        a oa:SpecificResource ;
+        oa:hasSource ?q ;
+    ];
     oa:hasBody ?uri .
 ```
 
@@ -36,7 +36,7 @@ Receives 3 optional data structures: AnnotationOfClass, AnnotationOfRelation, an
 
 <urn:qanary:input> a qa:AnnotationOfInstance .
 <urn:qanary:input> oa:hasTarget [
-    a    oa:SpecificResource;
+    a   oa:SpecificResource;
         oa:hasSource ?q ;
         oa:hasSelector  [
             a oa:TextPositionSelector ;
@@ -71,6 +71,6 @@ Receives 3 optional data structures: AnnotationOfClass, AnnotationOfRelation, an
     oa:hasBody "jsonString"^^xsd:string ;
     oa:annotatedBy <urn:qanary:QB#applicationName > ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
-
-# in SparqlExecuter ?answer a qa:AnswerJson is used
 ```
+
+Remark: in SparqlExecuter `?answer a qa:AnswerJson` is used
