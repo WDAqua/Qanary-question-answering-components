@@ -32,7 +32,7 @@ An example is available at [https://qanswer-frontend.univ-st-etienne.fr/](https:
 
 ## Output specification
 
-Comment: sparql query is stored as a complex structure; `annotationOfAnswerType` is never used
+Comment: the SPARQL query is stored as a complex structure; `annotationOfAnswerType` is never used
 
 ```ttl
 @prefix qa: <http://www.wdaqua.eu/qa#> .
@@ -45,8 +45,8 @@ Comment: sparql query is stored as a complex structure; `annotationOfAnswerType`
 	oa:annotatedAt  "2001-10-26T21:32:52"^^xsd:dateTime ;
 	qa:score        "0.5"^^xsd:double .
 
-?sparql a              qa:SparqlQuery ;
-  rdf:value       ?sparqlQueryString .
+?sparql a               qa:SparqlQuery ;
+  	rdf:value       ?sparqlQueryString .
 
 ?annotationImprovedQuestion  a 	qa:AnnotationOfImprovedQuestion ;
 	oa:hasTarget    <urn:qanary:myQanaryQuestion> ;
@@ -56,27 +56,29 @@ Comment: sparql query is stored as a complex structure; `annotationOfAnswerType`
 	qa:score        "0.5"^^xsd:double .
   
 ?improvedQuestion a    qa:ImprovedQuestion ;
-  rdf:value "improved question text"^^xsd:string .
+  	rdf:value "improved question text"^^xsd:string .
 
 ?annotationAnswer a    qa:AnnotationAnswer ;
-  oa:hasTarget    <urn:qanary:myQanaryQuestion> ;
-  oa:hasBody      ?answer ;
+  	oa:hasTarget    <urn:qanary:myQanaryQuestion> ;
+  	oa:hasBody      ?answer ;
 	oa:annotatedBy  <urn:qanary:applicationName> ;
 	oa:annotatedAt  "2001-10-26T21:32:52"^^xsd:dateTime ;
 	qa:score        "0.5"^^xsd:double .
 
 ?answer a qa:Answer ;
-  rdf:value       [ a rdf:Seq wd:Resource, wd:Resource1 ]  .
+	rdf:value [ 
+	  	a rdf:Seq wd:Resource, wd:Resource1 
+	] .
 
 ?annotationAnswerType a qa:AnnotationOfAnswerType ;
-  oa:hasTarget    <urn:qanary:myQanaryQuestion> ;
-  oa:hasBody      ?annotationOfAnswerType ;
+ 	oa:hasTarget    <urn:qanary:myQanaryQuestion> ;
+  	oa:hasBody      ?annotationOfAnswerType ;
 	oa:annotatedBy  <urn:qanary:applicationName> ;
 	oa:annotatedAt  "2001-10-26T21:32:52"^^xsd:dateTime ;
 	qa:score        "0.5"^^xsd:double .
 
 ?answerType a qa:AnswerType ;
-  rdf:value <xsd:dataType> ;
+ 	rdf:value <xsd:dataType> ;
 ```
 
 ## Examples
@@ -123,10 +125,14 @@ SELECT * FROM <YOURGRAPHURI> WHERE {
     ?s ?p ?o ; 
         a ?type. 
     VALUES ?t { 
-        qa:AnnotationOfAnswerSPARQL qa:SparqlQuery
-        qa:AnnotationOfImprovedQuestion qa:ImprovedQuestion 
-        qa:AnnotationAnswer qa:Answer 
-        qa:AnnotationOfAnswerType qa:AnswerType 
+        qa:AnnotationOfAnswerSPARQL 
+	qa:SparqlQuery
+        qa:AnnotationOfImprovedQuestion 
+	qa:ImprovedQuestion 
+        qa:AnnotationAnswer 
+	qa:Answer 
+        qa:AnnotationOfAnswerType 
+	qa:AnswerType 
     }
 }
 ORDER BY ?type
