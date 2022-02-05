@@ -7,7 +7,7 @@ Receives a textual question, forwards it to DBpedia Spotlight API and writes res
 ## Input specification
 
 ```ttl
-None
+# TODO: get textual representation of question
 ```
 
 ## Output specification
@@ -18,7 +18,7 @@ None
 
 <urn:qanary:output> a qa:AnnotationOfInstance .
 <urn:qanary:output> oa:hasTarget [
-    a    oa:SpecificResource;
+    a   oa:SpecificResource;
         oa:hasSource    <urn:qanary:myQanaryQuestion> ;
         oa:hasSelector  [
             a oa:TextPositionSelector ;
@@ -29,6 +29,5 @@ None
 <urn:qanary:output> oa:hasBody <dbr:Resource> ;
     oa:annotatedBy <urn:qanary:myDBpediaSpotlightConfiguration:getEndpoint> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
-    qa:score "0.5"^^xsd:decimal . "
-}
+    qa:score "0.5"^^xsd:decimal .
 ```
