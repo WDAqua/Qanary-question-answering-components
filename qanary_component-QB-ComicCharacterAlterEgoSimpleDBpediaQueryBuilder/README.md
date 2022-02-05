@@ -6,7 +6,7 @@ Receives a disambiguated entity and builds a SPARQL query over Wikidata about al
 
 ## Input specification
 
-Comment: non standard type `qa:AnnotationOfSpotInstance` is used
+Comment: non-standard type `qa:AnnotationOfSpotInstance` is used
 
 ```ttl
 @prefix qa: <http://www.wdaqua.eu/qa#> .
@@ -35,9 +35,9 @@ Comment: complex `oa:hasTarget` is used
 
 <urn:qanary:output> a qa:AnnotationOfAnswerSPARQL ;
     oa:hasTarget [
-		a    oa:SpecificResource ;
+	    a    oa:SpecificResource ;
 	    oa:hasSource    <urn:qanary:qanaryQuestion.getUri> ;
-	] ;
+    ] ;
     oa:hasBody "sparql query" ;
     qa:score "0.5"^^xsd:float ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
