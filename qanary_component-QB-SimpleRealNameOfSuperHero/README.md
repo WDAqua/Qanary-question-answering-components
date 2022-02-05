@@ -18,8 +18,8 @@ This rule-based Qanary component is intended to create a SPARQL query that can b
         a oa:TextPositionSelector ;
         oa:start "0"^^xsd:nonNegativeInteger ;
         oa:end  "5"^^xsd:nonNegativeInteger
-      ]
-  ] .
+   ]
+] .
 ```
 
 ## Output specification
@@ -39,12 +39,14 @@ This rule-based Qanary component is intended to create a SPARQL query that can b
 ## Example 
 
 ### Question of the Qanary process
+
 ```
 What is the real name of Captain America?
 ```
 
 ### Expected SPARQL query to be stored in the Qanary triplestore
-```
+
+```sparql
 PREFIX dbr: <http://dbpedia.org/resource/>
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -72,6 +74,7 @@ ORDER BY ?resource
 
 The component stores the result (the aforementioned SPARQL query) into the `body oa:hasBody` of an annotation of type `qa:AnnotationOfAnswerSPARQL`. 
 The following SPARQL query to retrieve this information from the Qanary triplestore:
+
 ```sparql
 PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
 PREFIX qa: <http://www.wdaqua.eu/qa#> 
@@ -90,10 +93,13 @@ WHERE {
 ### Build with Maven
 
 Like all Qanary component created using the [Qanary Maven archetype](https://github.com/WDAqua/Qanary/tree/master/qanary-component-archetype) it can be built using the following commands:
+
 ```
 mvn package
 ```
+
 To exclude the building of a corresponding Docker container use:
+
 ```
 mvn package -DskipDockerBuild 
 ```
@@ -101,7 +107,9 @@ mvn package -DskipDockerBuild
 ### Run 
 
 To run the JAR file directly use (`X.Y.Z` refers to the current version of the component):
-```
+
+```shell
 java -jar target/qanary_component-QB-SimpleRealNameOfSuperHero-X.Y.Z.jar
 ```
+
 While using the Docker image, start the image `qanary_component-QB-SimpleRealNameOfSuperHero`.
