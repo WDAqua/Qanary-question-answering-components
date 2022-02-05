@@ -1,6 +1,6 @@
 # QB SINA component
 
-Receives 3 data structures: AnnotationOfClass, AnnotationOfRelation, and AnnotationOfInstance. Depending on the availability of them, generates a query and stores it.
+Receives 3 data structures: `AnnotationOfClass`, `AnnotationOfRelation`, and `AnnotationOfInstance`. Depending on the availability of them, generates a query and stores it.
 
 ## Input specification
 
@@ -12,9 +12,9 @@ Comment: `qa:AnnotationOfInstance` does not have `oa:annotatedAt`
 
 <urn:qanary:input> a qa:AnnotationOfClass .
 <urn:qanary:input> oa:hasTarget [
-    a oa:SpecificResource ;
-    oa:hasSource ?q ;
-];
+        a oa:SpecificResource ;
+        oa:hasSource ?q ;
+    ]; 
     oa:hasBody ?uri ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ```
@@ -25,9 +25,9 @@ Comment: `qa:AnnotationOfInstance` does not have `oa:annotatedAt`
 
 <urn:qanary:input> a qa:AnnotationOfRelation .
 <urn:qanary:input> oa:hasTarget [
-    a oa:SpecificResource ;
-    oa:hasSource ?q ;
-];
+        a oa:SpecificResource ;
+        oa:hasSource ?q ;
+    ];
     oa:hasBody ?uri ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ```
@@ -38,7 +38,7 @@ Comment: `qa:AnnotationOfInstance` does not have `oa:annotatedAt`
 
 <urn:qanary:input> a qa:AnnotationOfInstance .
 <urn:qanary:input> oa:hasTarget [
-    a    oa:SpecificResource;
+    a   oa:SpecificResource;
         oa:hasSource ?q ;
         oa:hasSelector  [
             a oa:TextPositionSelector ;
