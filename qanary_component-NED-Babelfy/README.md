@@ -1,14 +1,16 @@
-# NED DBpedia Spotlight
+# NED Babelfy
 
 ## Description
 
-Receives a textual question, forwards it to DBpedia Spotlight API and writes result in JSON format.
+Receives a textual question recognizes and disambiguates named entities and stores them.
 
 ## Input specification
 
 Not applicable as the textual question is a default parameter
 
 ## Output specification
+
+Comment: no score in the output
 
 ```ttl
 @prefix qa: <http://www.wdaqua.eu/qa#> .
@@ -25,7 +27,6 @@ Not applicable as the textual question is a default parameter
         ]
     ] .
 <urn:qanary:output> oa:hasBody <dbr:Resource> ;
-    oa:annotatedBy <urn:qanary:myDBpediaSpotlightConfiguration:getEndpoint> ;
-    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
-    qa:score "0.5"^^xsd:decimal .
+    oa:annotatedBy <urn:qanary:Babelfy> ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ```

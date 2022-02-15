@@ -1,8 +1,8 @@
-# NED DBpedia Spotlight
+# NED Tagme
 
 ## Description
 
-Receives a textual question, forwards it to DBpedia Spotlight API and writes result in JSON format.
+Receives a textual question recognizes and disambiguates named entities and stores them.
 
 ## Input specification
 
@@ -25,7 +25,7 @@ Not applicable as the textual question is a default parameter
         ]
     ] .
 <urn:qanary:output> oa:hasBody <dbr:Resource> ;
-    oa:annotatedBy <urn:qanary:myDBpediaSpotlightConfiguration:getEndpoint> ;
+    oa:annotatedBy <urn:qanary:Tagme> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
     qa:score "0.5"^^xsd:decimal .
 ```
