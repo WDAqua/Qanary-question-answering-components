@@ -1,14 +1,18 @@
-# NED DBpedia Spotlight
+# NER DBpedia Spotlight
 
 ## Description
 
 Receives a textual question, forwards it to DBpedia Spotlight API and writes result in JSON format.
+
+Comment: This component does the same thing as the corresponding NED, but just saves not all the information.
 
 ## Input specification
 
 Not applicable as the textual question is a default parameter
 
 ## Output specification
+
+Comment: no score in the output
 
 ```ttl
 @prefix qa: <http://www.wdaqua.eu/qa#> .
@@ -24,8 +28,6 @@ Not applicable as the textual question is a default parameter
             oa:end  "5"^^xsd:nonNegativeInteger
         ]
     ] .
-<urn:qanary:output> oa:hasBody <dbr:Resource> ;
-    oa:annotatedBy <urn:qanary:DBpediaSpotlightConfiguration> ;
-    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
-    qa:score "0.5"^^xsd:decimal .
+<urn:qanary:output> oa:annotatedBy <urn:qanary:DBpediaSpotlight> ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ```
