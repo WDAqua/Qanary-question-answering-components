@@ -64,6 +64,7 @@
                             <module>qanary_component-qb-birthdata-wikidata</module>
                             <module>qanary_component-qe-wikidata</module>
 			    <module>qanary_component-QBE-QAnswer</module>
+			    <module>qanary_component-qb-platypus-wrapper</module>
 			</modules>
 		</profile>
 		<profile>
