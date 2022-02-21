@@ -22,7 +22,7 @@ Comment: the name of the component is "property" but class annotated
 	a oa:SpecificResource ;
  	oa:hasSource <urn:myQanaryQuestion> ;
 ] .
-<urn:qanary:output> oa:hasBody <dbr:disambiguatedClass> ;
+<urn:qanary:output> oa:hasBody <urn:dbr:disambiguatedClass> ;
     oa:annotatedBy <urn:qanary:AnnotationofSpotProperty> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime  .
 ```
