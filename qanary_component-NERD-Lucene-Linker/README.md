@@ -1,10 +1,8 @@
-# NER Tagme
+# NER Lucene Linker
 
 ## Description
 
-Receives a textual question forwards it to the API of TagMe, gets back recognized entities and stores them.
-
-Comment: This component does the same thing as the corresponding NED, but just saves not all the information.
+Receives a textual question, tokenizes it with Lucene, links named entities given a static textual file and stores them.
 
 ## Input specification
 
@@ -28,6 +26,7 @@ Comment: no score in the output.
             oa:end  "5"^^xsd:nonNegativeInteger
         ]
     ] .
-<urn:qanary:output> oa:annotatedBy <urn:qanary:Tagme> ;
+<urn:qanary:output> oa:hasBody <dbr:Entity> ;
+    oa:annotatedBy <urn:qanary:LuceneLinker> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ```

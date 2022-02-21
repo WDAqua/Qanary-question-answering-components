@@ -1,18 +1,14 @@
-# NER Tagme
+# NER Alchemy
 
 ## Description
 
-Receives a textual question forwards it to the API of TagMe, gets back recognized entities and stores them.
-
-Comment: This component does the same thing as the corresponding NED, but just saves not all the information.
+Receives a textual question recognizes and links named entities with the Alchemy API and stores them.
 
 ## Input specification
 
 Not applicable as the textual question is a default parameter
 
 ## Output specification
-
-Comment: no score in the output.
 
 ```ttl
 @prefix qa: <http://www.wdaqua.eu/qa#> .
@@ -28,6 +24,8 @@ Comment: no score in the output.
             oa:end  "5"^^xsd:nonNegativeInteger
         ]
     ] .
-<urn:qanary:output> oa:annotatedBy <urn:qanary:Tagme> ;
+<urn:qanary:output> oa:hasBody <dbr:Entity> ;
+    qa:score "0.5"^^xsd:decimal ;
+    oa:annotatedBy <urn:qanary:Alchemy> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ```

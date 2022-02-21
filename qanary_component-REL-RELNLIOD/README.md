@@ -27,6 +27,6 @@ Comment: no score in the output.
         ]
     ] .
 <urn:qanary:output> oa:hasBody <dbr:Relation> ;
-    oa:annotatedBy <urn:qanary:Textrazor> ;
+    oa:annotatedBy <urn:qanary:RELNLIOD> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ```
