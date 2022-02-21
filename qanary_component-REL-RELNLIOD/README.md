@@ -1,8 +1,8 @@
-# NER Text Razor
+# REL RELNLIOD
 
 ## Description
 
-Receives a textual question forwards it to the API of Text Razor, gets back recognized entities and stores them.
+Receives a textual question forwards it to some local API, gets back recognized DBpedia relations and stores them.
 
 ## Input specification
 
@@ -16,7 +16,7 @@ Comment: no score in the output.
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
-<urn:qanary:output> a qa:AnnotationOfInstance .
+<urn:qanary:output> a qa:AnnotationOfRelation .
 <urn:qanary:output> oa:hasTarget [
     a   oa:SpecificResource;
         oa:hasSource    <urn:qanary:myQanaryQuestion> ;
@@ -26,6 +26,7 @@ Comment: no score in the output.
             oa:end  "5"^^xsd:nonNegativeInteger
         ]
     ] .
-<urn:qanary:output> oa:annotatedBy <urn:qanary:Textrazor> ;
+<urn:qanary:output> oa:hasBody <dbr:Relation> ;
+    oa:annotatedBy <urn:qanary:Textrazor> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ```
