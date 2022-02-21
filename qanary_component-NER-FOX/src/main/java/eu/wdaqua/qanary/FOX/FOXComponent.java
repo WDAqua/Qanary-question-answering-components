@@ -44,7 +44,6 @@ public class FOXComponent extends QanaryComponent {
      */
     public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
         long startTime = System.currentTimeMillis();
-        org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
         logger.info("Qanary Message: {}", myQanaryMessage);
 
         // STEP1: Retrieve the named graph and the endpoint
