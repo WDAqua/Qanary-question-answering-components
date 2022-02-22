@@ -11,7 +11,7 @@ Not applicable as the textual question is a default parameter
 
 ## Output specification
 
-Comment: `qa:score` is in `oa:hasSelector` and is `xsd:float`.
+Comment: `qa:score` is in `oa:hasSelector` and is of type `xsd:float`.
 
 ```ttl
 @prefix qa: <http://www.wdaqua.eu/qa#> .
@@ -28,9 +28,9 @@ Comment: `qa:score` is in `oa:hasSelector` and is `xsd:float`.
             qa:score "0.5"^^xsd:float .
         ]
     ] .
-<urn:qanary:output> oa:hasBody <dbr:Resource> ;
+<urn:qanary:output> oa:hasBody <urn:dbr:Resource> ;
     oa:annotatedBy <urn:qanary:Watson> ;
-    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ```
 
 ## Remarks

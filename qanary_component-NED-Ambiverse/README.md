@@ -28,7 +28,7 @@ Comment: no score in the output
             oa:end  "5"^^xsd:nonNegativeInteger
         ]
     ] .
-<urn:qanary:output> oa:hasBody <dbr:Resource> ;
+<urn:qanary:output> oa:hasBody <urn:dbr:Resource> ;
     oa:annotatedBy <urn:qanary.NED#Ambiverse> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ```

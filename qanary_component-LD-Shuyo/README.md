@@ -47,7 +47,7 @@ Not applicable as the textual question is a default parameter
 <urn:qanary:output> oa:hasTarget <urn:myQanaryQuestion> ; 
   oa:hasBody "lang-id"^^xsd:string ;
   oa:annotatedBy <urn:qanary:LDShuyo> ;
-	oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
+  oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ```
 
 ### API documentation

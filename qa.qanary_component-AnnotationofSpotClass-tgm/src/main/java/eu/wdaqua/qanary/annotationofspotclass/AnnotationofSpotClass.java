@@ -40,14 +40,12 @@ public class AnnotationofSpotClass extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(AnnotationofSpotClass.class);
 
 	
-	/**
+   /**
      * runCurlPOSTWithParam is a function to fetch the response from a CURL command using POST.
      */
-    public static String runCurlPOSTWithParam(String weburl,String data,String contentType) throws Exception
-	{
-		
+    public static String runCurlPOSTWithParam(String weburl,String data,String contentType) throws Exception {	
     	
-    	String xmlResp = "";
+    		String xmlResp = "";
 		try {
 			URL url = new URL(weburl);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -72,9 +70,9 @@ public class AnnotationofSpotClass extends QanaryComponent {
 			in.close();
 			xmlResp = response.toString();
 
-			System.out.println("Curl Response: \n" + xmlResp);
+			System.out.println("Curl Response: \n" + xmlResp); // TODO: replace by logger
 			logger.info("Response {}", xmlResp);
-		} catch (Exception e) {
+		} catch (Exception e) { // TODO: replace structure by actual exception handling
 		}
 		return (xmlResp);
 
@@ -94,30 +92,30 @@ public class AnnotationofSpotClass extends QanaryComponent {
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 		String question = "";
 		question = URLEncoder.encode(myQuestion, "UTF-8");
-        String questionlang = "";
-        String language1 = "en";
-        logger.info("Langauge of the Question: {}",language1);
+        	String questionlang = "";
+        	String language1 = "en";
+        	logger.info("Language of the Question: {}", language1);
         
        
         
-        String url = "";
+        	String url = "";
 		String data = "";
 		String contentType = "application/json";
 		 
 		//url = "http://ws.okbqa.org:1515/templategeneration/rocknrole";
-		url  = "http://121.254.173.90:1515/templategeneration/rocknrole";
-		data = "{  \"string\":\""+myQuestion+"\",\"language\":\""+language1+"\"}";//"{  \"string\": \"Which river flows through Seoul?\",  \"language\": \"en\"}";
-		System.out.println("\ndata :" +data);
-		System.out.println("\nComponent : 21");
+		url  = "http://121.254.173.90:1515/templategeneration/rocknrole"; // TODO: needs to be moved to the configuration
+		data = "{  \"string\":\""+myQuestion+"\",\"language\":\""+language1+"\"}";//"{  \"string\": \"Which river flows through Seoul?\",  \"language\": \"en\"}"; // TODO: should be replaced by safe JSON operations
+		// System.out.println("\ndata :" +data);
+		// System.out.println("\nComponent : 21");
 		String output1="";
 		// pass the input in CURL command and call the function.
 		
 		try
 		{
-		output1= AnnotationofSpotClass.runCurlPOSTWithParam(url, data, contentType);
-		}catch(Exception e){}
+		output1 = AnnotationofSpotClass.runCurlPOSTWithParam(url, data, contentType);
+		}catch(Exception e){} // TODO: replace structure by actual exception handling
 //		System.out.println("The output template is:" +output1);
-		logger.info("The output template is: {}",output1);
+		logger.info("The output template is: {}", output1);
 
         Property property= PropertyRetrival.retrival(output1);
         
@@ -132,16 +130,16 @@ public class AnnotationofSpotClass extends QanaryComponent {
 					ms.begin=question.indexOf(wrd);
 					ms.end=ms.begin+wrd.length();
 					posLstl.add(ms);
-		            System.out.println("classRdf: "+wrd);
+		            System.out.println("classRdf: "+wrd); // TODO: replace by logger
 				}
 				
-				logger.info("Apply vocabulary alignment on outgraph");
+				logger.debug("Apply vocabulary alignment on outgraph");
 	          
 	           
 		return myQanaryMessage;
 	}
 
-	private void loadTripleStore(String sparqlQuery, String endpoint) {
+    private void loadTripleStore(String sparqlQuery, String endpoint) {
         UpdateRequest request = UpdateFactory.create(sparqlQuery);
         UpdateProcessor proc = UpdateExecutionFactory.createRemote(request, endpoint);
         proc.execute();

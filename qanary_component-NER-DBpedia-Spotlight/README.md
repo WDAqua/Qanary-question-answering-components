@@ -18,7 +18,7 @@ Comment: no score in the output
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
-<urn:qanary:output> a qa:AnnotationOfInstance .
+<urn:qanary:output> a qa:AnnotationOfSpotInstance .
 <urn:qanary:output> oa:hasTarget [
     a   oa:SpecificResource;
         oa:hasSource    <urn:qanary:myQanaryQuestion> ;
@@ -28,6 +28,6 @@ Comment: no score in the output
             oa:end  "5"^^xsd:nonNegativeInteger
         ]
     ] .
-<urn:qanary:output> oa:annotatedBy <urn:qanary:DBpediaSpotlight> ;
+<urn:qanary:output> oa:annotatedBy <urn:qanary:NER-DBpediaSpotlight> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ```

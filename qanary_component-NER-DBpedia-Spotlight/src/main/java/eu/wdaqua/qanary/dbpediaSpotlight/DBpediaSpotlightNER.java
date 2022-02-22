@@ -122,7 +122,6 @@ public class DBpediaSpotlightNER extends QanaryComponent {
 
     public QanaryMessage process(QanaryMessage myQanaryMessage) {
         long startTime = System.currentTimeMillis();
-        org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
         logger.info("Qanary Message: {}", myQanaryMessage);
 
         try {

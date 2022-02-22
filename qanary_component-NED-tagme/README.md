@@ -24,7 +24,7 @@ Not applicable as the textual question is a default parameter
             oa:end  "5"^^xsd:nonNegativeInteger
         ]
     ] .
-<urn:qanary:output> oa:hasBody <dbr:Resource> ;
+<urn:qanary:output> oa:hasBody <urn:dbr:Resource> ;
     oa:annotatedBy <urn:qanary:Tagme> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
     qa:score "0.5"^^xsd:decimal .

@@ -16,7 +16,7 @@ Comment: no score in the output.
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
-<urn:qanary:output> a qa:AnnotationOfInstance .
+<urn:qanary:output> a qa:AnnotationOfSPotInstance .
 <urn:qanary:output> oa:hasTarget [
     a   oa:SpecificResource;
         oa:hasSource    <urn:qanary:myQanaryQuestion> ;

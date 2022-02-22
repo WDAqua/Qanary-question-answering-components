@@ -20,7 +20,7 @@ Not applicable as the textual question is a default parameter
 	a oa:SpecificResource ;
  	oa:hasSource <urn:myQanaryQuestion> ;
 ] .
-<urn:qanary:output> oa:hasBody <dbr:disambiguatedClass> ;
-    oa:annotatedBy <urn:qanary:AnnotationofSpotProperty> ;
+<urn:qanary:output> oa:hasBody <urn:dbr:disambiguatedClass> ;
+    oa:annotatedBy <urn:qanary:AnnotationOfSpotClass> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime  .
 ```
