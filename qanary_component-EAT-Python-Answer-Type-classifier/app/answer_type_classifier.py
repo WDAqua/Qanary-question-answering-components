@@ -39,11 +39,11 @@ def qanary_service():
 
                     INSERT {{
                     GRAPH <{uuid}> {{
-                        ?a a qa:AnnotationOfAnswerTypeClassifier .
-                        ?a qa:hasAnswerType dbo:{answer_type} .
-
-                        ?a oa:annotatedBy <urn:qanary:{app_name}> .
-                        ?a oa:annotatedAt ?time .
+                        ?a a qa:qa:AnnotationOfQuestionAnswerType .
+                            oa:hasTarget <{qanary_question_uri}> ; 
+                            oa:hasBody dbo:{answer_type} ;
+                            oa:annotatedBy <urn:qanary:{app_name}> ;
+                            oa:annotatedAt ?time .
                         }}
                     }}
                     WHERE {{
@@ -52,6 +52,7 @@ def qanary_service():
                     }}
                 """.format(
                     uuid=triplestore_ingraph,
+                    qanary_question_uri=triplestore_endpoint,
                     answer_type=predicted_answer_type,
                     app_name="{0}:Python".format(SERVICE_NAME_COMPONENT)
                 )

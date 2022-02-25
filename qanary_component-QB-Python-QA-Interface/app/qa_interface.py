@@ -33,8 +33,8 @@ def qanary_service():
 
         SELECT ?val
         FROM <{uuid}> {{
-            ?s a qa:AnnotationOfQuestionLanguage ;
-                qa:translationResult ?val .
+            ?s a qa:AnnotationOfQuestionTranslation ;
+                oa:hasBody ?val .
         }}
     """.format(uuid=triplestore_ingraph)
 
@@ -50,6 +50,7 @@ def qanary_service():
     
     QA_SYSTEM_PARAMS['question'] = text
 
+    # TODO: change the response structure in the API either to SPARQL query or JSON answer
     json_response = requests.get(QA_SYSTEM_URL.format(**QA_SYSTEM_PARAMS)).json()  # making a request to a service
     if len(json_response['answer']) > 0 and 'http' in json_response['answer'][0]:
         results = ', '.join('<' + uri + '>' for uri in json_response['answer'])
@@ -66,10 +67,11 @@ def qanary_service():
         
         INSERT {{
         GRAPH <{uuid}> {{
-                ?a a qa:AnnotationOfQaInterface ;
-                    oa:annotatedBy <urn:qanary:{app_name}:{qa_system_name}> ;
-                    oa:annotatedAt ?time ;
-                    oa:answerResult {results} .
+            ?a a qa:AnnotationOfAnswerSPARQL ;
+                oa:hasTarget <{qanary_question_uri}> ; 
+                oa:hasBody "{sparql_result}"^^xsd:string ;
+                oa:annotatedBy <urn:qanary:{app_name}:{qa_system_name}> ;
+                oa:annotatedAt ?time .
             }}
         }}
         WHERE {{
@@ -80,7 +82,8 @@ def qanary_service():
         uuid=triplestore_ingraph,
         qa_system_name=QA_SYSTEM_NAME,
         qa_system_url=QA_SYSTEM_URL.format(**QA_SYSTEM_PARAMS),
-        results=results,
+        sparql_result=results,
+        qanary_question_uri=triplestore_endpoint, # TODO: get question URI from triplestore
         app_name="{0}:Python".format(SERVICE_NAME_COMPONENT)
     )
     

@@ -42,27 +42,36 @@ def qanary_service():
     translation = models[lang].generate(**batch)
     result = tokenizers[lang].batch_decode(translation, skip_special_tokens=True)[0]
 
-    # building SPARQL query
+    # building SPARQL query TODO: verify this annotation AnnotationOfQuestionTranslation ??
     SPARQLquery = """
         PREFIX qa: <http://www.wdaqua.eu/qa#>
         PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
         INSERT {{
         GRAPH <{uuid}> {{
-            ?a a qa:AnnotationOfQuestionLanguage .
-            ?a qa:translationResult "{result}" .
-            ?a qa:sourceLanguage "{src_lang}" .
-            ?a oa:annotatedBy <urn:qanary:{app_name}> .
-            ?a oa:annotatedAt ?time .
+            ?a a qa:AnnotationOfQuestionTranslation ;
+                oa:hasTarget <{qanary_question_uri}> ; 
+                oa:hasBody "{translation_result}"@en ;
+                oa:annotatedBy <urn:qanary:{app_name}> ;
+                oa:annotatedAt ?time .
+
+            ?b a qa:AnnotationOfQuestionLanguage ;
+                oa:hasTarget <{qanary_question_uri}> ;
+                oa:hasBody "{src_lang}"^^xsd:string ;
+                oa:annotatedBy <urn:qanary:{app_name}> ;
+                oa:annotatedAt ?time .
             }}
         }}
         WHERE {{
             BIND (IRI(str(RAND())) AS ?a) .
+            BIND (IRI(str(RAND())) AS ?b) .
             BIND (now() as ?time) 
         }}
     """.format(
         uuid=triplestore_ingraph,
-        result=result,
+        qanary_question_uri=triplestore_endpoint_url, # TODO: change to actual URI when issue #8 is fixed
+        translation_result=result,
         src_lang=lang,
         app_name="{0}:Python".format(SERVICE_NAME_COMPONENT)
     )
