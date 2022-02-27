@@ -2,14 +2,11 @@ package eu.wdaqua.qanary.platypus_wrapper;
 
 import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.platypus_wrapper.messages.PlatypusResult;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -29,13 +26,15 @@ import java.net.URISyntaxException;
 
 @Component
 /**
- * TODO beschreibung anpassen
+ * This Qanary component fetches the SPARQL query for
+ * the enriched question from the Platypus API
+ *
  * This component connected automatically to the Qanary pipeline.
  * The Qanary pipeline endpoint defined in application.properties (spring.boot.admin.url)
  * @see <a href="https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F" target="_top">Github wiki howto</a>
  */
-public class PlatypusQueryBuilderAndExecutor extends QanaryComponent {
-    private static final Logger logger = LoggerFactory.getLogger(PlatypusQueryBuilderAndExecutor.class);
+public class PlatypusQueryBuilder extends QanaryComponent {
+    private static final Logger logger = LoggerFactory.getLogger(PlatypusQueryBuilder.class);
     private QanaryUtils myQanaryUtils;
     private float threshold;
     private URI endpoint;
@@ -43,11 +42,11 @@ public class PlatypusQueryBuilderAndExecutor extends QanaryComponent {
     private String langDefault;
     private final String applicationName;
 
-    public PlatypusQueryBuilderAndExecutor(//
-		   @Qualifier("langDefault") String langDefault, //
-		   @Qualifier("endpointUrl") URI endpoint, //
-		   @Value("${spring.application.name}") final String applicationName, //
-		   RestTemplate restTemplate //
+    public PlatypusQueryBuilder(//
+								@Qualifier("langDefault") String langDefault, //
+								@Qualifier("endpointUrl") URI endpoint, //
+								@Value("${spring.application.name}") final String applicationName, //
+								RestTemplate restTemplate //
     ) throws URISyntaxException {
 
         assert threshold >= 0 : "threshold has to be >= 0: " + threshold;

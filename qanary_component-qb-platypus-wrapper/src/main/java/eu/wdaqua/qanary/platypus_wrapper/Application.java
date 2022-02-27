@@ -55,7 +55,7 @@ public class Application {
 			@Value("${spring.application.name}") final String applicationName, //
 			RestTemplate restTemplate //
 	) throws URISyntaxException {
-		return new PlatypusQueryBuilderAndExecutor(langDefault, endpoint, applicationName, restTemplate);
+		return new PlatypusQueryBuilder(langDefault, endpoint, applicationName, restTemplate);
 	}
 
 	/*
