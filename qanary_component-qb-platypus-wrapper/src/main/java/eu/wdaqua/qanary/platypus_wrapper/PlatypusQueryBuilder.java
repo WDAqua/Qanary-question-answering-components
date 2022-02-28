@@ -1,6 +1,7 @@
 package eu.wdaqua.qanary.platypus_wrapper;
 
 import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
+import eu.wdaqua.qanary.platypus_wrapper.messages.PlatypusRequest;
 import eu.wdaqua.qanary.platypus_wrapper.messages.PlatypusResult;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -142,17 +143,11 @@ public class PlatypusQueryBuilder extends QanaryComponent {
     }
 
     protected PlatypusResult requestPlatypusWebService(URI uri, String questionString, String lang) throws URISyntaxException {
-        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
-        // TODO please replace strings with final static properties
-        parameters.add("question", questionString);
-        parameters.add("lang", lang);
+        PlatypusRequest platypusRequest = new PlatypusRequest(uri, questionString, lang);
 
-        UriComponentsBuilder url = UriComponentsBuilder.fromUri(uri).queryParams(parameters);
-        logger.info("request to {}", url.toUriString());
+        HttpEntity<JSONObject> response = myRestTemplate.getForEntity(platypusRequest.getPlatypusQuestionUrlAsString(), JSONObject.class);
 
-        HttpEntity<JSONObject> response = myRestTemplate.getForEntity(url.toUriString(), JSONObject.class);
-
-        return new PlatypusResult(response.getBody(), questionString, uri, lang);
+        return new PlatypusResult(response.getBody(), platypusRequest.getQuestion(), platypusRequest.getPlatypusEndpointUrl(), platypusRequest.getLanguage());
     }
 
     private String cleanStringForSparqlQuery(String myString) {

@@ -1,11 +1,18 @@
 package eu.wdaqua.qanary.platypus_wrapper.messages;
 
+import eu.wdaqua.qanary.platypus_wrapper.PlatypusQueryBuilder;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.constraints.NotBlank;
 import java.net.URI;
 
 public class PlatypusRequest {
+    private static final Logger logger = LoggerFactory.getLogger(PlatypusRequest.class);
     @Schema(description = "Endpoint URL of Platypus API (default is already available)", example = "", required = false)
     private URI platypusEndpointUrl;
     @NotBlank
@@ -39,6 +46,17 @@ public class PlatypusRequest {
 
     public void setPlatypusEndpointUrl(URI endpoint) {
         this.platypusEndpointUrl = endpoint;
+    }
+
+    public String getPlatypusQuestionUrlAsString() {
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+        parameters.add("question", getQuestion());
+        parameters.add("lang", getLanguage());
+
+        UriComponentsBuilder url = UriComponentsBuilder.fromUri(getPlatypusEndpointUrl()).queryParams(parameters);
+        logger.info("request to {}", url.toUriString());
+
+        return url.toUriString();
     }
 
     public String getQuestion() {
