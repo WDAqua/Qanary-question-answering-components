@@ -143,11 +143,12 @@ public class PlatypusQueryBuilder extends QanaryComponent {
 
     protected PlatypusResult requestPlatypusWebService(URI uri, String questionString, String lang) throws URISyntaxException {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+        // TODO please replace strings with final static properties
         parameters.add("question", questionString);
         parameters.add("lang", lang);
 
         UriComponentsBuilder url = UriComponentsBuilder.fromUri(uri).queryParams(parameters);
-        logger.warn("request to {}", url.toUriString());
+        logger.info("request to {}", url.toUriString());
 
         HttpEntity<JSONObject> response = myRestTemplate.getForEntity(url.toUriString(), JSONObject.class);
 
