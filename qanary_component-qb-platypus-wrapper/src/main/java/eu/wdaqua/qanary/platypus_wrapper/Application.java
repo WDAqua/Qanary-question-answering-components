@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 @SpringBootApplication
 @EnableAutoConfiguration
@@ -26,37 +27,49 @@ import java.net.URISyntaxException;
  */
 public class Application {
 
-	/**
-	* this method is needed to make the QanaryComponent in this project known
-	* to the QanaryServiceController in the qanary_component-template
-	* 
-	* @return
-	*/
+    /**
+     * this method is needed to make the QanaryComponent in this project known
+     * to the QanaryServiceController in the qanary_component-template
+     *
+     * @return
+     */
 
-	@Bean(name = "langDefault")
-	String langDefault(@Value("${platypus.endpoint.language.default:en}") String langDefault) {
-		return langDefault;
-	}
+    @Bean
+    float threshold(@Value("${platypus.threshold:0.5}") float threshold) {
+        return threshold;
+    }
 
-	@Bean(name = "endpointUrl")
-	URI endpointUrl(@Value("${platypus.endpoint.url}") String endpointUrl) throws URISyntaxException {
-		return new URI(endpointUrl);
-	}
+    @Bean(name = "platypus.langDefault")
+    String langDefault(@Value("${platypus.endpoint.language.default:en}") String langDefault) {
+        return langDefault;
+    }
 
-	@Bean
-	public RestTemplate restTemplate(RestTemplateBuilder builder) {
-		return builder.build();
-	}
+    @Bean(name = "platypus.supportedLang")
+    ArrayList<String> supportedLang(@Value("${platypus.endpoint.language.supported:en}") ArrayList<String> supportedLang) {
+        return supportedLang;
+    }
 
-	@Bean
-	public QanaryComponent qanaryComponent( //
-			@Qualifier("langDefault") String langDefault, //
-			@Qualifier("endpointUrl") URI endpoint, //
-			@Value("${spring.application.name}") final String applicationName, //
-			RestTemplate restTemplate //
-	) throws URISyntaxException {
-		return new PlatypusQueryBuilder(langDefault, endpoint, applicationName, restTemplate);
-	}
+    @Bean(name = "platypus.endpointUrl")
+    URI endpointUrl(@Value("${platypus.endpoint.url}") String endpointUrl) throws URISyntaxException {
+        return new URI(endpointUrl);
+    }
+
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        return builder.build();
+    }
+
+    @Bean
+    public QanaryComponent qanaryComponent( //
+                                            float threshold, //
+                                            @Qualifier("platypus.langDefault") String langDefault, //
+                                            @Qualifier("platypus.supportedLang") ArrayList<String> supportedLang, //
+                                            @Qualifier("platypus.endpointUrl") URI endpoint, //
+                                            @Value("${spring.application.name}") final String applicationName, //
+                                            RestTemplate restTemplate //
+    ) throws URISyntaxException {
+        return new PlatypusQueryBuilder(threshold, langDefault, supportedLang, endpoint, applicationName, restTemplate);
+    }
 
 	/*
 	@Bean
@@ -72,9 +85,9 @@ public class Application {
 	}
 	*/
 
-	@Autowired
-	public QanaryComponentConfiguration qanaryComponentConfiguration;
-	
+    @Autowired
+    public QanaryComponentConfiguration qanaryComponentConfiguration;
+
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
