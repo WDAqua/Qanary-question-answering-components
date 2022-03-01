@@ -65,6 +65,7 @@
                             <module>qanary_component-qe-wikidata</module>
 			    <module>qanary_component-QBE-QAnswer</module>
 			    <module>qanary_component-qb-platypus-wrapper</module>
+			    <module>qanary_component-qb-g_answer-wrapper</module>
 			</modules>
 		</profile>
 		<profile>
