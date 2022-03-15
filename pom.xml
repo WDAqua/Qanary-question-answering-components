@@ -67,6 +67,7 @@
 			    <module>qanary_component-qb-platypus-wrapper</module>
 			    <module>qanary_component-qb-g_answer-wrapper</module>
 			    <module>qanary_component-qb-rubq-wrapper</module>
+			    <module>qanary_component-qb-tebaqa-wrapper</module>
 			</modules>
 		</profile>
 		<profile>
