@@ -74,7 +74,8 @@ public class DBpediaSpotlightNED extends QanaryComponent {
 
 		// STEP2: Call the DBpedia NED service
 		JsonArray resources;
-		resources = myDBpediaSpotlightServiceFetcher.getJsonFromService(myQanaryQuestion, myQanaryUtils, myQuestion, //
+		resources = myDBpediaSpotlightServiceFetcher.getJsonFromService(
+				myQuestion, //
 				myDBpediaSpotlightConfiguration.getEndpoint(), //
 				myDBpediaSpotlightConfiguration.getConfidenceMinimum() //
 		);

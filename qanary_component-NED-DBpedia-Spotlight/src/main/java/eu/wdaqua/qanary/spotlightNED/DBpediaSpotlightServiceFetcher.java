@@ -21,9 +21,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryUtils;
-
 public class DBpediaSpotlightServiceFetcher {
 	private static final Logger logger = LoggerFactory.getLogger(DBpediaSpotlightServiceFetcher.class);
 
@@ -40,7 +37,7 @@ public class DBpediaSpotlightServiceFetcher {
 	 * @throws IOException
 	 */
     @Cacheable(value = "json", key="#myQuestion")
-	public JsonArray getJsonFromService(QanaryQuestion<String> myQanaryQuestion, QanaryUtils myQanaryUtils,
+	public JsonArray getJsonFromService(
 			String myQuestion, String endpoint, float minimumConfidence) throws ClientProtocolException, IOException {
 
 		String uriGetParameter = "?text=" + URLEncoder.encode(myQuestion, StandardCharsets.UTF_8.toString())
