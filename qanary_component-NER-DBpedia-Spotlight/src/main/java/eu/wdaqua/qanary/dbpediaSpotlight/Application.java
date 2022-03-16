@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.exceptions.DBpediaSpotlightServiceNotAvailable;
 
 /**
  * Created by didier on 27.03.16.
