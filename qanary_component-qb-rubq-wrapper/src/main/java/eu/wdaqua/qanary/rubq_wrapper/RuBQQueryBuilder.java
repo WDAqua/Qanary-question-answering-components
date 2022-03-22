@@ -3,14 +3,11 @@ package eu.wdaqua.qanary.rubq_wrapper;
 import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.rubq_wrapper.messages.RuBQRequest;
 import eu.wdaqua.qanary.rubq_wrapper.messages.RuBQResult;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -19,10 +16,7 @@ import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -38,8 +32,8 @@ import java.util.ArrayList;
  * The Qanary pipeline endpoint defined in application.properties (spring.boot.admin.url)
  * @see <a href="https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F" target="_top">Github wiki howto</a>
  */
-public class RuBQQueryBuilderAndExecutor extends QanaryComponent {
-    private static final Logger logger = LoggerFactory.getLogger(RuBQQueryBuilderAndExecutor.class);
+public class RuBQQueryBuilder extends QanaryComponent {
+    private static final Logger logger = LoggerFactory.getLogger(RuBQQueryBuilder.class);
     private QanaryUtils myQanaryUtils;
     private float threshold;
     private URI endpoint;
@@ -48,13 +42,13 @@ public class RuBQQueryBuilderAndExecutor extends QanaryComponent {
     private ArrayList<String> supportedLang;
     private final String applicationName;
 
-    public RuBQQueryBuilderAndExecutor(//
-                                       float threshold, //
-                                       @Qualifier("rubq.langDefault") String langDefault, //
-                                       @Qualifier("rubq.langDefault") ArrayList<String> supportedLang, //
-                                       @Qualifier("rubq.endpointUrl") URI endpoint, //
-                                       @Value("${spring.application.name}") final String applicationName, //
-                                       RestTemplate restTemplate //
+    public RuBQQueryBuilder(//
+                            float threshold, //
+                            @Qualifier("rubq.langDefault") String langDefault, //
+                            @Qualifier("rubq.langDefault") ArrayList<String> supportedLang, //
+                            @Qualifier("rubq.endpointUrl") URI endpoint, //
+                            @Value("${spring.application.name}") final String applicationName, //
+                            RestTemplate restTemplate //
     ) throws URISyntaxException {
 
         assert threshold >= 0 : "threshold has to be >= 0: " + threshold;

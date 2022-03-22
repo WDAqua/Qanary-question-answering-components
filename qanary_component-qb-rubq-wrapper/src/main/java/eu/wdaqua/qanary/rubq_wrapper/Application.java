@@ -68,7 +68,7 @@ public class Application {
                                             @Value("${spring.application.name}") final String applicationName, //
                                             RestTemplate restTemplate //
     ) throws URISyntaxException {
-        return new RuBQQueryBuilderAndExecutor(threshold, langDefault, supportedLang, endpoint, applicationName, restTemplate);
+        return new RuBQQueryBuilder(threshold, langDefault, supportedLang, endpoint, applicationName, restTemplate);
     }
 
 	/*
