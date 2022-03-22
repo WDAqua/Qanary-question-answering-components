@@ -61,8 +61,9 @@ public class RuBQResult {
      */
     private void initData(JsonArray answers) throws URISyntaxException {
         logger.debug("responseQuestion: {}", answers);
-        // TODO init data
 
+        logger.debug("0. sparql: {}", answers.get(0).getAsString());
+        this.sparql = answers.get(0).getAsString();
     }
 
     public JsonParser getJsonParser() {
