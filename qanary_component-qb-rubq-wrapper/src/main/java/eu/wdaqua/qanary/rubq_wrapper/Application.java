@@ -1,5 +1,6 @@
 package eu.wdaqua.qanary.rubq_wrapper;
 
+import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
@@ -57,10 +58,8 @@ import java.util.ArrayList;
         return new URI(endpointUrl);
     }
 
-    @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.build();
-    }
+    @Autowired
+    public RestTemplateWithCaching restTemplate;
 
     @Bean
     public QanaryComponent qanaryComponent( //
@@ -77,7 +76,7 @@ import java.util.ArrayList;
     @Bean
     public OpenAPI customOpenAPI(@Value("${springdoc.version}") String appVersion) {
         return new OpenAPI().info(new Info() //
-                .title("SimpleSpringService Data API") //
+                .title("RuBQ wrapper component") //
                 .version(appVersion) //
                 .description("This is a sample Foobar server created using springdocs - " + "a library for OpenAPI 3 with spring boot.").termsOfService("http://swagger.io/terms/") //
                 .license(new License().name("Apache 2.0").url("http://springdoc.org")) //
