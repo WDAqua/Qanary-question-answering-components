@@ -1,5 +1,6 @@
 package eu.wdaqua.qanary.g_answer_wrapper;
 
+import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
@@ -57,10 +57,8 @@ import java.util.ArrayList;
         return new URI(endpointUrl);
     }
 
-    @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.build();
-    }
+    @Autowired
+    public RestTemplateWithCaching restTemplate;
 
     @Bean
     public QanaryComponent qanaryComponent( //
@@ -77,7 +75,7 @@ import java.util.ArrayList;
     @Bean
     public OpenAPI customOpenAPI(@Value("${springdoc.version}") String appVersion) {
         return new OpenAPI().info(new Info() //
-                .title("SimpleSpringService Data API") //
+                .title("gAnswer wrapper component") //
                 .version(appVersion) //
                 .description("This is a sample Foobar server created using springdocs - " + "a library for OpenAPI 3 with spring boot.").termsOfService("http://swagger.io/terms/") //
                 .license(new License().name("Apache 2.0").url("http://springdoc.org")) //
