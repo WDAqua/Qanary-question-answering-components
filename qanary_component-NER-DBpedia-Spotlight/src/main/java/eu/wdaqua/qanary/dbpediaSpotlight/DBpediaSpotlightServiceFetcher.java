@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.spotlightNED;
+package eu.wdaqua.qanary.dbpediaSpotlight;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -27,8 +27,6 @@ public class DBpediaSpotlightServiceFetcher {
 	/**
 	 * fetch data from the configured DBpedia Spotlight endpoint
 	 * 
-	 * @param myQanaryQuestion
-	 * @param myQanaryUtils
 	 * @param myQuestion
 	 * @param endpoint
 	 * @param minimumConfidence
@@ -37,8 +35,7 @@ public class DBpediaSpotlightServiceFetcher {
 	 * @throws IOException
 	 */
     @Cacheable(value = "json", key="#myQuestion")
-	public JsonArray getJsonFromService(
-			String myQuestion, String endpoint, float minimumConfidence) throws ClientProtocolException, IOException {
+	public JsonArray getJsonFromService(String myQuestion, String endpoint, float minimumConfidence) throws ClientProtocolException, IOException {
 
 		String uriGetParameter = "?text=" + URLEncoder.encode(myQuestion, StandardCharsets.UTF_8.toString())
 				+ "&confidence=" + minimumConfidence;
