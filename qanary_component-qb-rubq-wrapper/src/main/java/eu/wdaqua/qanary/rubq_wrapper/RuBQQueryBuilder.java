@@ -1,26 +1,28 @@
 package eu.wdaqua.qanary.rubq_wrapper;
 
-import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
-import eu.wdaqua.qanary.rubq_wrapper.messages.RuBQRequest;
-import eu.wdaqua.qanary.rubq_wrapper.messages.RuBQResult;
-import net.minidev.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Value;
-
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryUtils;
-import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-import org.springframework.web.client.RestTemplate;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
+import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
+import eu.wdaqua.qanary.rubq_wrapper.messages.RuBQRequest;
+import eu.wdaqua.qanary.rubq_wrapper.messages.RuBQResult;
+import net.minidev.json.JSONObject;
 
 
 @Component
@@ -41,16 +43,21 @@ public class RuBQQueryBuilder extends QanaryComponent {
     private String langDefault;
     private ArrayList<String> supportedLang;
     private final String applicationName;
+    
+    @Autowired
+    private CacheOfRestTemplateResponse myCacheOfResponses;
 
     public RuBQQueryBuilder(//
                             float threshold, //
                             @Qualifier("rubq.langDefault") String langDefault, //
-                            @Qualifier("rubq.langDefault") ArrayList<String> supportedLang, //
+                            @Qualifier("rubq.endpoint.language.supported") ArrayList<String> supportedLang, //
                             @Qualifier("rubq.endpointUrl") URI endpoint, //
                             @Value("${spring.application.name}") final String applicationName, //
                             RestTemplate restTemplate //
     ) throws URISyntaxException {
-
+    	
+    	logger.info("supportedLang: {}", supportedLang);
+    	
         assert threshold >= 0 : "threshold has to be >= 0: " + threshold;
         assert !(endpoint == null) : //
                 "endpointUrl cannot be null: " + endpoint;
@@ -116,7 +123,7 @@ public class RuBQQueryBuilder extends QanaryComponent {
 
         // STEP 1: get the required data from the Qanary triplestore (the global process
         // memory)
-        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<>(myQanaryMessage);
+        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
         String questionString = myQanaryQuestion.getTextualRepresentation();
 
         // STEP 2: enriching of query and fetching data from the RuBQ API
@@ -124,7 +131,7 @@ public class RuBQQueryBuilder extends QanaryComponent {
 
         // STEP 3: add information to Qanary triplestore
         String sparql = getSparqlInsertQuery(myQanaryQuestion, result);
-        myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint());
+        myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 
         return myQanaryMessage;
     }
@@ -142,7 +149,15 @@ public class RuBQQueryBuilder extends QanaryComponent {
     protected RuBQResult requestRuBQWebService(URI uri, String questionString, String lang) throws URISyntaxException {
         RuBQRequest ruBQRequest = new RuBQRequest(uri, questionString, lang);
 
+        long requestBefore = myCacheOfResponses.getNumberOfExecutedRequests();
+
         HttpEntity<JSONObject> response = myRestTemplate.getForEntity(ruBQRequest.getRuBQQuestionUrlAsString(), JSONObject.class);
+
+        if( myCacheOfResponses.getNumberOfExecutedRequests() - requestBefore == 0) {
+        	logger.warn("request was cached: {}", ruBQRequest);
+        } else {
+        	logger.info("request was actually executed: {}", ruBQRequest);
+        }
 
         return new RuBQResult(response.getBody(), ruBQRequest.getQuestion(), ruBQRequest.getRuBQEndpointUrl(), ruBQRequest.getLanguage());
     }

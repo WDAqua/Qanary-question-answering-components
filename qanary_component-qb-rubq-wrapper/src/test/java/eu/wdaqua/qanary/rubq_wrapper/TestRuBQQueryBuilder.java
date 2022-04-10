@@ -25,71 +25,78 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 public class TestRuBQQueryBuilder {
-    private static final Logger logger = LoggerFactory.getLogger(TestRuBQQueryBuilder.class);
-    private final String applicationName = "PlatypusQueryBuilder";
+	private static final Logger logger = LoggerFactory.getLogger(TestRuBQQueryBuilder.class);
+	private final String applicationName = "RuBQQueryBuilder";
 
-    @Autowired
-    private Environment env;
+	@Autowired
+	private Environment env;
 
-    URI endpoint;
-    RestTemplate restTemplate;
+	URI endpoint;
+	RestTemplate restTemplate;
 
+	// define here the required configuration parameters
+	static {
+		System.setProperty("rubq.langDefault", "en");
+		System.setProperty("rubq.endpoint.language.supported", "en,fr,es");
+	}
 
-    @Before
-    public void init() throws URISyntaxException {
+	@Before
+	public void init() throws URISyntaxException {
 
-        this.endpoint = new URI(env.getProperty("rubq.endpoint.url"));
-        assert (this.endpoint != null) : "rubq.endpoint.url cannot be empty";
+		this.endpoint = new URI(env.getProperty("rubq.endpoint.url"));
+		assert (this.endpoint != null) : "rubq.endpoint.url cannot be empty";
 
-        this.restTemplate = new RestTemplate();
-        assert this.restTemplate != null : "restTemplate cannot be null";
-    }
+		this.restTemplate = new RestTemplate();
+		assert this.restTemplate != null : "restTemplate cannot be null";
+	}
 
-    /**
-     * test supported Languages
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testIsLangSuppoerted() throws Exception {
-        float threshold = 0.5f;
-        String langDefault = "en";
-        ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en", "fr", "es"));
+	/**
+	 * test supported Languages
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testIsLangSuppoerted() throws Exception {
+		float threshold = 0.5f;
+		String langDefault = "en";
+		ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en", "fr", "es"));
 
-        RuBQQueryBuilder ruBQQueryBuilder = new RuBQQueryBuilder(threshold, langDefault, supportedLang, this.endpoint, this.applicationName, this.restTemplate);
+		logger.warn("supportedLang: {}", supportedLang);
+		RuBQQueryBuilder ruBQQueryBuilder = new RuBQQueryBuilder(threshold, langDefault, supportedLang, this.endpoint,
+				this.applicationName, this.restTemplate);
 
-        assertTrue(ruBQQueryBuilder.isLangSuppoerted("en"));
-        assertTrue(ruBQQueryBuilder.isLangSuppoerted("fr"));
-        assertTrue(ruBQQueryBuilder.isLangSuppoerted("es"));
+		assertTrue(ruBQQueryBuilder.isLangSuppoerted("en"));
+		assertTrue(ruBQQueryBuilder.isLangSuppoerted("fr"));
+		assertTrue(ruBQQueryBuilder.isLangSuppoerted("es"));
 
-        assertFalse(ruBQQueryBuilder.isLangSuppoerted("ne"));
-        assertFalse(ruBQQueryBuilder.isLangSuppoerted("de"));
-        assertFalse(ruBQQueryBuilder.isLangSuppoerted("se"));
-    }
+		assertFalse(ruBQQueryBuilder.isLangSuppoerted("ne"));
+		assertFalse(ruBQQueryBuilder.isLangSuppoerted("de"));
+		assertFalse(ruBQQueryBuilder.isLangSuppoerted("se"));
+	}
 
-    /**
-     * @throws URISyntaxException
-     */
-    @Test
-    public void testWebServicePopulationOfFranceResultNumber() throws URISyntaxException {
-        float threshold = 0.5f;
-        String langDefault = "en";
-        ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en"));
+	/**
+	 * @throws URISyntaxException
+	 */
+	@Test
+	public void testWebServicePopulationOfFranceResultNumber() throws URISyntaxException {
+		float threshold = 0.5f;
+		String langDefault = "en";
+		ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en"));
 
-        RuBQQueryBuilder ruBQQueryBuilder = new RuBQQueryBuilder(threshold, langDefault, supportedLang, this.endpoint, this.applicationName, this.restTemplate);
+		RuBQQueryBuilder ruBQQueryBuilder = new RuBQQueryBuilder(threshold, langDefault, supportedLang, this.endpoint,
+				this.applicationName, this.restTemplate);
 
-        String question = "population of france";
-        RuBQResult result0 = testWebService(ruBQQueryBuilder, question, langDefault);
+		String question = "population of france";
+		RuBQResult result0 = testWebService(ruBQQueryBuilder, question, langDefault);
 
-        String expectetSparql = "PREFIX wdt: <http://www.wikidata.org/prop/direct/> PREFIX wd: <http://www.wikidata.org/entity/> SELECT ?uri WHERE { ?uri ?p ?o }";
+		String expectetSparql = "PREFIX wdt: <http://www.wikidata.org/prop/direct/> PREFIX wd: <http://www.wikidata.org/entity/> SELECT ?uri WHERE { ?uri ?p ?o }";
 
-        assertTrue(result0.getSparql().equals(expectetSparql));
-    }
+		assertTrue(result0.getSparql().equals(expectetSparql));
+	}
 
-    private RuBQResult testWebService(RuBQQueryBuilder myApp, String question, String lang)
-            throws URISyntaxException {
-        RuBQResult result = myApp.requestRuBQWebService(this.endpoint, question, lang);
-        assertFalse(result.getSparql().isEmpty());
-        return result;
-    }
+	private RuBQResult testWebService(RuBQQueryBuilder myApp, String question, String lang) throws URISyntaxException {
+		RuBQResult result = myApp.requestRuBQWebService(this.endpoint, question, lang);
+		assertFalse(result.getSparql().isEmpty());
+		return result;
+	}
 }
