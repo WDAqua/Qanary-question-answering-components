@@ -29,17 +29,17 @@
 			<groupId>eu.wdaqua.qanary</groupId>
 			<artifactId>qa.component</artifactId>
 			<version>${qanary.version}</version>
-        <exclusions>
+			<exclusions>
 				<exclusion>
 					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>log4j-to-slf4j</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
-        <dependency>
+		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
-		    <artifactId>log4j-to-slf4j</artifactId>
-		    <version>[2.15.0,3.)</version>
+			<artifactId>log4j-to-slf4j</artifactId>
+			<version>[2.15.0,3.)</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.logging.log4j</groupId>
@@ -102,6 +102,12 @@
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.minidev/json-smart -->
+		<dependency>
+			<groupId>net.minidev</groupId>
+			<artifactId>json-smart</artifactId>
+			<version>2.4.8</version>
 		</dependency>
 	</dependencies>
 	<build>
