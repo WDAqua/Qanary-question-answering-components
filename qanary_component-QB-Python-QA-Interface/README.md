@@ -1,6 +1,36 @@
 # QA Interface Component
 
+## Description
+
 QA Interface component is a customizable wrapper for black-box KGQA systems
+
+## Input specification
+
+Comment: **optional**
+
+```ttl
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:qanary:input> a qa:AnnotationOfQuestionTranslation ;
+    oa:hasTarget <urn:myQanaryQuestion>;
+    oa:hasBody "translation_result"@en .
+```
+
+## Output specification
+
+```ttl
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:qanary:output> a qa:AnnotationOfAnswerSPARQL ;
+    oa:hasTarget <urn:qanary:myQanaryQuestion> ;
+    oa:hasBody "sparql query"^^xsd:string ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
+    oa:annotatedBy <urn:qanary:QBPythonQAInterface > .
+```
 
 ## Usage
 

@@ -1,6 +1,26 @@
 # Expected Answer Type (EAT) classification component
 
-The component classifies the answer type of a textual question. 
+## Description
+
+The component classifies the DBpedia answer type of a textual question. 
+
+## Input specification
+
+Not applicable as the textual question is a default parameter
+
+## Output specification
+
+```ttl
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+@prefix dbo: <http://dbpedia.org/ontology/> .
+
+<urn:qanary:output> a qa:AnnotationOfQuestionTranslation ;
+    oa:hasTarget <urn:myQanaryQuestion>; 
+    oa:hasBody dbo:Answer_Type ;
+    oa:annotatedBy <urn:qanary:PythonEATclassifier> ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
+```
 
 For example:
 

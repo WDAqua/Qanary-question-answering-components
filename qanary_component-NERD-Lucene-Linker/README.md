@@ -1,14 +1,16 @@
-# NED DBpedia Spotlight
+# NER Lucene Linker
 
 ## Description
 
-Receives a textual question, forwards it to DBpedia Spotlight API and writes result in JSON format.
+Receives a textual question, tokenizes it with Lucene, links named entities given a static textual file and stores them.
 
 ## Input specification
 
 Not applicable as the textual question is a default parameter
 
 ## Output specification
+
+Comment: no score in the output.
 
 ```ttl
 @prefix qa: <http://www.wdaqua.eu/qa#> .
@@ -24,8 +26,7 @@ Not applicable as the textual question is a default parameter
             oa:end  "5"^^xsd:nonNegativeInteger
         ]
     ] .
-<urn:qanary:output> oa:hasBody <urn:dbr:Resource> ;
-    oa:annotatedBy <https://api.dbpedia-spotlight.org/en/annotate> ;
-    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
-    qa:score "0.5"^^xsd:decimal .
+<urn:qanary:output> oa:hasBody <dbr:Entity> ;
+    oa:annotatedBy <urn:qanary:LuceneLinker> ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ```

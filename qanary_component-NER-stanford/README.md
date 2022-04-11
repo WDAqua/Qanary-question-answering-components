@@ -1,14 +1,16 @@
-# NED DBpedia Spotlight
+# NER Stanford
 
 ## Description
 
-Receives a textual question, forwards it to DBpedia Spotlight API and writes result in JSON format.
+Receives a textual question, and uses Stanford NLP library to for NER task. Saves resulting named entities.
 
 ## Input specification
 
 Not applicable as the textual question is a default parameter
 
 ## Output specification
+
+Comment: no score in the output
 
 ```ttl
 @prefix qa: <http://www.wdaqua.eu/qa#> .
@@ -24,8 +26,6 @@ Not applicable as the textual question is a default parameter
             oa:end  "5"^^xsd:nonNegativeInteger
         ]
     ] .
-<urn:qanary:output> oa:hasBody <urn:dbr:Resource> ;
-    oa:annotatedBy <https://api.dbpedia-spotlight.org/en/annotate> ;
-    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
-    qa:score "0.5"^^xsd:decimal .
+<urn:qanary:output> oa:annotatedBy <urn:qanary:StanfordNLP> ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ```

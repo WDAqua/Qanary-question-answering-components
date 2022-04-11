@@ -1,8 +1,8 @@
-# NED DBpedia Spotlight
+# NER Alchemy
 
 ## Description
 
-Receives a textual question, forwards it to DBpedia Spotlight API and writes result in JSON format.
+Receives a textual question recognizes and links named entities with the Alchemy API and stores them.
 
 ## Input specification
 
@@ -24,8 +24,8 @@ Not applicable as the textual question is a default parameter
             oa:end  "5"^^xsd:nonNegativeInteger
         ]
     ] .
-<urn:qanary:output> oa:hasBody <urn:dbr:Resource> ;
-    oa:annotatedBy <https://api.dbpedia-spotlight.org/en/annotate> ;
-    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
-    qa:score "0.5"^^xsd:decimal .
+<urn:qanary:output> oa:hasBody <dbr:Entity> ;
+    qa:score "0.5"^^xsd:decimal ;
+    oa:annotatedBy <urn:qanary:Alchemy> ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ```

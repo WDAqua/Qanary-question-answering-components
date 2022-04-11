@@ -1,6 +1,32 @@
 # MT Helsinki NLP component
 
+## Description
+
 MT tool that uses pre-trained models by Helsinki NLP implemented in transformers library
+
+## Input specification
+
+Not applicable as the textual question is a default parameter
+
+## Output specification
+
+```ttl
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:qanary:output1> a qa:AnnotationOfQuestionTranslation ;
+    oa:hasTarget <urn:myQanaryQuestion>; 
+    oa:hasBody "translation_result"@en ;
+    oa:annotatedBy <urn:qanary:PythonMTHelsinkiNLP> ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
+
+<urn:qanary:output2> a qa:AnnotationOfQuestionLanguage .
+  oa:hasTarget <urn:myQanaryQuestion> ; 
+  oa:hasBody "lang-id"^^xsd:string ;
+  oa:annotatedBy <urn:qanary:PythonMTHelsinkiNLP> ;
+  oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
+```
 
 ## Usage
 
