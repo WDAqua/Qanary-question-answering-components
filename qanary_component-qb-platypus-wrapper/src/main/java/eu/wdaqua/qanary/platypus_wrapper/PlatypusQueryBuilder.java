@@ -1,29 +1,28 @@
 package eu.wdaqua.qanary.platypus_wrapper;
 
-import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
-import eu.wdaqua.qanary.platypus_wrapper.messages.PlatypusRequest;
-import eu.wdaqua.qanary.platypus_wrapper.messages.PlatypusResult;
-import net.minidev.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Value;
-
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryUtils;
-import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
+import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
+import eu.wdaqua.qanary.platypus_wrapper.messages.PlatypusRequest;
+import eu.wdaqua.qanary.platypus_wrapper.messages.PlatypusResult;
+import net.minidev.json.JSONObject;
 
 
 @Component
@@ -38,21 +37,26 @@ import java.util.ArrayList;
 public class PlatypusQueryBuilder extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(PlatypusQueryBuilder.class);
     private QanaryUtils myQanaryUtils;
-    private float threshold;
-    private URI endpoint;
-    private RestTemplate myRestTemplate;
-    private String langDefault;
-    private ArrayList<String> supportedLang;
+    private final float threshold;
+    private final URI endpoint;
+    private final RestTemplate myRestTemplate;
+    private final String langDefault;
+    private final ArrayList<String> supportedLang;
     private final String applicationName;
+
+    @Autowired
+    private CacheOfRestTemplateResponse myCacheOfResponses;
 
     public PlatypusQueryBuilder(//
                                 float threshold, //
                                 @Qualifier("platypus.langDefault") String langDefault, //
-                                @Qualifier("langDefault") ArrayList<String> supportedLang, //
+                                @Qualifier("platypus.endpoint.language.supported") ArrayList<String> supportedLang, //
                                 @Qualifier("platypus.endpointUrl") URI endpoint, //
                                 @Value("${spring.application.name}") final String applicationName, //
                                 RestTemplate restTemplate //
     ) throws URISyntaxException {
+
+        logger.info("supportedLang: {}", supportedLang);
 
         assert threshold >= 0 : "threshold has to be >= 0: " + threshold;
         assert !(endpoint == null) : //
@@ -119,7 +123,7 @@ public class PlatypusQueryBuilder extends QanaryComponent {
 
         // STEP 1: get the required data from the Qanary triplestore (the global process
         // memory)
-        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<>(myQanaryMessage);
+        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
         String questionString = myQanaryQuestion.getTextualRepresentation();
 
         // STEP 2: enriching of query and fetching data from the Platypus API
@@ -127,7 +131,7 @@ public class PlatypusQueryBuilder extends QanaryComponent {
 
         // STEP 3: add information to Qanary triplestore
         String sparql = getSparqlInsertQuery(myQanaryQuestion, result);
-        myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint());
+        myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 
         return myQanaryMessage;
     }
@@ -145,7 +149,15 @@ public class PlatypusQueryBuilder extends QanaryComponent {
     protected PlatypusResult requestPlatypusWebService(URI uri, String questionString, String lang) throws URISyntaxException {
         PlatypusRequest platypusRequest = new PlatypusRequest(uri, questionString, lang);
 
+        long requestBefore = myCacheOfResponses.getNumberOfExecutedRequests();
+
         HttpEntity<JSONObject> response = myRestTemplate.getForEntity(platypusRequest.getPlatypusQuestionUrlAsString(), JSONObject.class);
+
+        if (myCacheOfResponses.getNumberOfExecutedRequests() - requestBefore == 0) {
+            logger.warn("request was cached: {}", platypusRequest);
+        } else {
+            logger.info("request was actually executed: {}", platypusRequest);
+        }
 
         return new PlatypusResult(response.getBody(), platypusRequest.getQuestion(), platypusRequest.getPlatypusEndpointUrl(), platypusRequest.getLanguage());
     }

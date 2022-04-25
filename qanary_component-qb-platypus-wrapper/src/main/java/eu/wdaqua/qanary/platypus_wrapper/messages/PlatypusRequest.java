@@ -1,6 +1,5 @@
 package eu.wdaqua.qanary.platypus_wrapper.messages;
 
-import eu.wdaqua.qanary.platypus_wrapper.PlatypusQueryBuilder;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

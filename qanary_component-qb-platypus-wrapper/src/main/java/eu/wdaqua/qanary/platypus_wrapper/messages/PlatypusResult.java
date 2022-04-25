@@ -16,11 +16,11 @@ import net.minidev.json.JSONObject;
 public class PlatypusResult {
     private static final Logger logger = LoggerFactory.getLogger(PlatypusResult.class);
 
-    private com.google.gson.JsonParser jsonParser;
+    private final com.google.gson.JsonParser jsonParser;
 
-    private URI endpoint;
-    private String language;
-    private String question;
+    private final URI endpoint;
+    private final String language;
+    private final String question;
 
     private String sparql;
     private List<String> values;
@@ -66,7 +66,7 @@ public class PlatypusResult {
         this.sparql = wikidataPrefixes() + answers.get("platypus:sparql").getAsString();
     }
 
-    private String wikidataPrefixes(){
+    private String wikidataPrefixes() {
         String prefixes = "PREFIX wd: <http://www.wikidata.org/entity/>\n" +
                 "PREFIX wds: <http://www.wikidata.org/entity/statement/>\n" +
                 "PREFIX wdv: <http://www.wikidata.org/value/>\n" +
