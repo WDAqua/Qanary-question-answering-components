@@ -37,13 +37,13 @@ import net.minidev.json.JSONObject;
 public class RuBQQueryBuilder extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(RuBQQueryBuilder.class);
     private QanaryUtils myQanaryUtils;
-    private float threshold;
-    private URI endpoint;
-    private RestTemplate myRestTemplate;
-    private String langDefault;
-    private ArrayList<String> supportedLang;
+    private final float threshold;
+    private final URI endpoint;
+    private final RestTemplate myRestTemplate;
+    private final String langDefault;
+    private final ArrayList<String> supportedLang;
     private final String applicationName;
-    
+
     @Autowired
     private CacheOfRestTemplateResponse myCacheOfResponses;
 
@@ -55,9 +55,9 @@ public class RuBQQueryBuilder extends QanaryComponent {
                             @Value("${spring.application.name}") final String applicationName, //
                             RestTemplate restTemplate //
     ) throws URISyntaxException {
-    	
-    	logger.info("supportedLang: {}", supportedLang);
-    	
+
+        logger.info("supportedLang: {}", supportedLang);
+
         assert threshold >= 0 : "threshold has to be >= 0: " + threshold;
         assert !(endpoint == null) : //
                 "endpointUrl cannot be null: " + endpoint;
@@ -153,10 +153,10 @@ public class RuBQQueryBuilder extends QanaryComponent {
 
         HttpEntity<JSONObject> response = myRestTemplate.getForEntity(ruBQRequest.getRuBQQuestionUrlAsString(), JSONObject.class);
 
-        if( myCacheOfResponses.getNumberOfExecutedRequests() - requestBefore == 0) {
-        	logger.warn("request was cached: {}", ruBQRequest);
+        if (myCacheOfResponses.getNumberOfExecutedRequests() - requestBefore == 0) {
+            logger.warn("request was cached: {}", ruBQRequest);
         } else {
-        	logger.info("request was actually executed: {}", ruBQRequest);
+            logger.info("request was actually executed: {}", ruBQRequest);
         }
 
         return new RuBQResult(response.getBody(), ruBQRequest.getQuestion(), ruBQRequest.getRuBQEndpointUrl(), ruBQRequest.getLanguage());

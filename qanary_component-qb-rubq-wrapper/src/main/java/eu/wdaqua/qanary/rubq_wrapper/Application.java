@@ -21,71 +21,71 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 
 @SpringBootApplication
-@ComponentScan(basePackages = { "eu.wdaqua.qanary" })
+@ComponentScan(basePackages = {"eu.wdaqua.qanary"})
 /**
  * basic class for wrapping functionality to a Qanary component note: there is
  * no need to change something here
  */
 public class Application {
 
-	private static ApplicationContext applicationContext;
+    private static ApplicationContext applicationContext;
 
-	/**
-	 * this method is needed to make the QanaryComponent in this project known to
-	 * the QanaryServiceController in the qanary_component-template
-	 *
-	 * @return
-	 */
+    /**
+     * this method is needed to make the QanaryComponent in this project known to
+     * the QanaryServiceController in the qanary_component-template
+     *
+     * @return
+     */
 
-	@Bean
-	float threshold(@Value("${rubq.threshold:0.5}") float threshold) {
-		return threshold;
-	}
+    @Bean
+    float threshold(@Value("${rubq.threshold:0.5}") float threshold) {
+        return threshold;
+    }
 
-	@Bean(name = "rubq.langDefault")
-	String langDefault(@Value("${rubq.endpoint.language.default:en}") String langDefault) {
-		return langDefault;
-	}
+    @Bean(name = "rubq.langDefault")
+    String langDefault(@Value("${rubq.endpoint.language.default:en}") String langDefault) {
+        return langDefault;
+    }
 
-	@Bean(name = "rubq.supportedLang")
-	ArrayList<String> supportedLang(@Value("${rubq.endpoint.language.supported:en}") ArrayList<String> supportedLang) {
-		return supportedLang;
-	}
+    @Bean(name = "rubq.endpoint.language.supported")
+    ArrayList<String> supportedLang(@Value("${rubq.endpoint.language.supported:en}") ArrayList<String> supportedLang) {
+        return supportedLang;
+    }
 
-	@Bean(name = "rubq.endpointUrl")
-	URI endpointUrl(@Value("${rubq.endpoint.url}") String endpointUrl) throws URISyntaxException {
-		return new URI(endpointUrl);
-	}
+    @Bean(name = "rubq.endpointUrl")
+    URI endpointUrl(@Value("${rubq.endpoint.url}") String endpointUrl) throws URISyntaxException {
+        return new URI(endpointUrl);
+    }
 
-	@Bean
-	public QanaryComponent qanaryComponent( //
-			float threshold, //
-			@Qualifier("rubq.langDefault") String langDefault, //
-			@Qualifier("rubq.supportedLang") ArrayList<String> supportedLang, //
-			@Qualifier("rubq.endpointUrl") URI endpoint, //
-			@Value("${spring.application.name}") final String applicationName, //
-			RestTemplateWithCaching restTemplate //
-	) throws URISyntaxException {
-		return new RuBQQueryBuilder(threshold, langDefault, supportedLang, endpoint, applicationName, restTemplate);
-	}
+    @Bean
+    public QanaryComponent qanaryComponent( //
+                                            float threshold, //
+                                            @Qualifier("rubq.langDefault") String langDefault, //
+                                            @Qualifier("rubq.endpoint.language.supported") ArrayList<String> supportedLang, //
+                                            @Qualifier("rubq.endpointUrl") URI endpoint, //
+                                            @Value("${spring.application.name}") final String applicationName, //
+                                            RestTemplateWithCaching restTemplate //
+    ) throws URISyntaxException {
+        return new RuBQQueryBuilder(threshold, langDefault, supportedLang, endpoint, applicationName, restTemplate);
+    }
 
-	@Bean
-	public OpenAPI customOpenAPI(@Value("${springdoc.version}") String appVersion) {
-		return new OpenAPI().info(new Info() //
-				.title("RuBQ wrapper component") //
-				.version(appVersion) //
-				.description(
-						"This is a sample Foobar server created using springdocs - a library for OpenAPI 3 with spring boot.")
-				.termsOfService("http://swagger.io/terms/") //
-				.license(new License().name("Apache 2.0").url("http://springdoc.org")) //
-		);
-	}
+    @Bean
+    public OpenAPI customOpenAPI(@Value("${springdoc.version}") String appVersion) {
+        return new OpenAPI().info(new Info() //
+                .title("RuBQ wrapper component") //
+                .version(appVersion) //
+                .description(
+                        "This is a sample Foobar server created using springdocs - a library for OpenAPI 3 with spring boot.")
+                .termsOfService("http://swagger.io/terms/") //
+                .license(new License().name("Apache 2.0").url("http://springdoc.org")) //
+        );
+    }
 
-	@Autowired
-	public QanaryComponentConfiguration qanaryComponentConfiguration;
+    @Autowired
+    public QanaryComponentConfiguration qanaryComponentConfiguration;
 
-	public static void main(String[] args) {
-		applicationContext = SpringApplication.run(Application.class, args);
-	}
+    public static void main(String[] args) {
+        applicationContext = SpringApplication.run(Application.class, args);
+    }
 
 }
