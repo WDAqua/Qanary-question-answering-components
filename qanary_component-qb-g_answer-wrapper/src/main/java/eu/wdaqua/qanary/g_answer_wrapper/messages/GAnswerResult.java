@@ -2,15 +2,12 @@ package eu.wdaqua.qanary.g_answer_wrapper.messages;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import io.swagger.v3.oas.annotations.Hidden;
@@ -19,11 +16,11 @@ import net.minidev.json.JSONObject;
 public class GAnswerResult {
     private static final Logger logger = LoggerFactory.getLogger(GAnswerResult.class);
 
-    private com.google.gson.JsonParser jsonParser;
+    private final com.google.gson.JsonParser jsonParser;
 
-    private URI endpoint;
-    private String language;
-    private String question;
+    private final URI endpoint;
+    private final String language;
+    private final String question;
 
     private String sparql;
     private List<String> values;
@@ -67,7 +64,7 @@ public class GAnswerResult {
 
     }
 
-    private String wikidataPrefixes(){
+    private String wikidataPrefixes() {
         String prefixes = "PREFIX wd: <http://www.wikidata.org/entity/>\n" +
                 "PREFIX wds: <http://www.wikidata.org/entity/statement/>\n" +
                 "PREFIX wdv: <http://www.wikidata.org/value/>\n" +
