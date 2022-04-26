@@ -43,9 +43,7 @@ public class PlatypusQueryBuilder extends QanaryComponent {
     private final String langDefault;
     private final ArrayList<String> supportedLang;
     private final String applicationName;
-
-    @Autowired
-    private CacheOfRestTemplateResponse myCacheOfResponses;
+    private final CacheOfRestTemplateResponse myCacheOfResponses;
 
     public PlatypusQueryBuilder(//
                                 float threshold, //
@@ -53,7 +51,8 @@ public class PlatypusQueryBuilder extends QanaryComponent {
                                 @Qualifier("platypus.endpoint.language.supported") ArrayList<String> supportedLang, //
                                 @Qualifier("platypus.endpointUrl") URI endpoint, //
                                 @Value("${spring.application.name}") final String applicationName, //
-                                RestTemplate restTemplate //
+                                RestTemplate restTemplate, //
+                                CacheOfRestTemplateResponse myCacheOfResponses //
     ) throws URISyntaxException {
 
         logger.info("supportedLang: {}", supportedLang);
@@ -79,6 +78,7 @@ public class PlatypusQueryBuilder extends QanaryComponent {
         this.supportedLang = supportedLang;
         this.myRestTemplate = restTemplate;
         this.applicationName = applicationName;
+        this.myCacheOfResponses = myCacheOfResponses;
     }
 
     public float getThreshold() {

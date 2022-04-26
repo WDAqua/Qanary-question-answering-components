@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
+import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,6 +57,9 @@ import io.swagger.v3.oas.models.info.License;
         return new URI(endpointUrl);
     }
 
+    @Autowired
+    CacheOfRestTemplateResponse myCacheOfResponses;
+
     @Bean
     public QanaryComponent qanaryComponent( //
                                             float threshold, //
@@ -65,7 +69,7 @@ import io.swagger.v3.oas.models.info.License;
                                             @Value("${spring.application.name}") final String applicationName, //
                                             RestTemplateWithCaching restTemplate //
     ) throws URISyntaxException {
-        return new PlatypusQueryBuilder(threshold, langDefault, supportedLang, endpoint, applicationName, restTemplate);
+        return new PlatypusQueryBuilder(threshold, langDefault, supportedLang, endpoint, applicationName, restTemplate, myCacheOfResponses);
     }
 
     @Bean
