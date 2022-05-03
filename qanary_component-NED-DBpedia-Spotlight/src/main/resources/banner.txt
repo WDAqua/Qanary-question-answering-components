@@ -20,7 +20,8 @@ ${AnsiColor.BLUE}k@@@@QKe9QQEK@@@@L   `@@@@@Q`  'K@@@@@w   S@@@@@;   ;@@@@@r  ,@
                                                                                                \meJFaaaaor      
                                                                                                 :LuoSfc;-       
 
-${AnsiBackground.WHITE}Application Title:   DBpedia Spotlight Qanary Wrapper Component                                                   ${AnsiBackground.DEFAULT}
+${AnsiBackground.WHITE}Application Title:   ${spring.application.description}                                                   ${AnsiBackground.DEFAULT}
 ${AnsiBackground.WHITE}Framework@GitHub:    https://github.com/WDAqua/Qanary                                                             ${AnsiBackground.DEFAULT}
+${AnsiBackground.DEFAULT}${AnsiColor.DEFAULT}Component Version:   ${application.version}                                                 ${AnsiBackground.DEFAULT}
 ${AnsiBackground.DEFAULT}${AnsiColor.DEFAULT}Spring Boot Version: ${spring-boot.version}                                                 ${AnsiBackground.DEFAULT}
                                                                                                 
