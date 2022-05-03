@@ -1,18 +1,5 @@
 package eu.wdaqua.qanary.g_answer_wrapper;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-
 import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
@@ -23,6 +10,18 @@ import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import eu.wdaqua.qanary.g_answer_wrapper.messages.GAnswerRequest;
 import eu.wdaqua.qanary.g_answer_wrapper.messages.GAnswerResult;
 import net.minidev.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 
 @Component
@@ -53,7 +52,8 @@ public class GAnswerQueryBuilder extends QanaryComponent {
                                @Qualifier("g_answer.endpoint.language.supported") ArrayList<String> supportedLang, //
                                @Qualifier("g_answer.endpointUrl") URI endpoint, //
                                @Value("${spring.application.name}") final String applicationName, //
-                               RestTemplate restTemplate //
+                               RestTemplate restTemplate, //
+                               CacheOfRestTemplateResponse myCacheOfResponses //
     ) throws URISyntaxException {
 
         logger.info("supportedLang: {}", supportedLang);
@@ -79,6 +79,7 @@ public class GAnswerQueryBuilder extends QanaryComponent {
         this.supportedLang = supportedLang;
         this.myRestTemplate = restTemplate;
         this.applicationName = applicationName;
+        this.myCacheOfResponses = myCacheOfResponses;
     }
 
     public float getThreshold() {

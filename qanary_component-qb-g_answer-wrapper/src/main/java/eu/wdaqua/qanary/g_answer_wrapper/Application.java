@@ -1,9 +1,12 @@
 package eu.wdaqua.qanary.g_answer_wrapper;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-
+import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
+import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
+import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,12 +16,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"eu.wdaqua.qanary"})
@@ -56,6 +56,9 @@ import io.swagger.v3.oas.models.info.License;
         return new URI(endpointUrl);
     }
 
+    @Autowired
+    CacheOfRestTemplateResponse myCacheOfResponses;
+
     @Bean
     public QanaryComponent qanaryComponent( //
                                             float threshold, //
@@ -65,7 +68,7 @@ import io.swagger.v3.oas.models.info.License;
                                             @Value("${spring.application.name}") final String applicationName, //
                                             RestTemplateWithCaching restTemplate //
     ) throws URISyntaxException {
-        return new GAnswerQueryBuilder(threshold, langDefault, supportedLang, endpoint, applicationName, restTemplate);
+        return new GAnswerQueryBuilder(threshold, langDefault, supportedLang, endpoint, applicationName, restTemplate, myCacheOfResponses);
     }
 
     @Bean
@@ -84,4 +87,5 @@ import io.swagger.v3.oas.models.info.License;
     public static void main(String[] args) {
         applicationContext = SpringApplication.run(Application.class, args);
     }
+
 }
