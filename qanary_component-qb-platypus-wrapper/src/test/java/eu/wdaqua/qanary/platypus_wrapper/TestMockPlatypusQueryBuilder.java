@@ -106,7 +106,7 @@ public class TestMockPlatypusQueryBuilder {
                 "\twd:Q142 wdt:P1082 ?result2 .\n" +
                 "} LIMIT 100";
 
-        assertEquals(result0.getSparql(), expectetSparql);
+        assertEquals(expectetSparql, result0.getSparql());
     }
 
     private PlatypusResult testWebService(PlatypusQueryBuilder myApp, String question, String lang)
