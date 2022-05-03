@@ -9,7 +9,7 @@ The result from the API will be processed in to SPARQL and stored in the triple 
 The component use a cache to minimise the processing time. 
 For the configuration you can change the following parameter as u need:
 ```
-qanary.webservicecalls.cache.specs=maximumSize=10000,expireAfterAccess=5s
+qanary.webservicecalls.cache.specs=maximumSize=10000,expireAfterAccess=3600s
 ```
 
 For the platypus API you can change the following parameter as u need:
