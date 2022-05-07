@@ -18,6 +18,7 @@ import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
 
 /**
  * represents a wrapper of the DBpedia Spotlight service used as NED annotator
@@ -36,6 +37,9 @@ import eu.wdaqua.qanary.component.QanaryComponent;
 @Component
 public class DBpediaSpotlightNED extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(DBpediaSpotlightNED.class);
+	
+	@Inject
+	private QanaryComponentConfiguration myQanaryComponentConfiguration;
 
 	@Inject
 	private DBpediaSpotlightConfiguration myDBpediaSpotlightConfiguration;
@@ -105,6 +109,7 @@ public class DBpediaSpotlightNED extends QanaryComponent {
 				+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
 				+ "INSERT { ";
 		sparqlbind = "";
+		String name = this.myQanaryComponentConfiguration.getApplicationName();
 		int i = 0;
 		for (FoundDBpediaResource found : foundDBpediaResource) {
 			sparql += "" //
@@ -120,7 +125,7 @@ public class DBpediaSpotlightNED extends QanaryComponent {
 					+ "           ] " //
 					+ "  ] . " //
 					+ "  ?a" + i + " oa:hasBody <" + found.getResource() + "> ;" //
-					+ "     	 oa:annotatedBy <" + myDBpediaSpotlightConfiguration.getEndpoint() + "> ; " //
+					+ "     	 oa:annotatedBy <urn:qanary:" + name + "> ; " //
 					+ "	    	 oa:annotatedAt ?time ; " //
 					+ "     	 qa:score \"" + found.getSimilarityScore() + "\"^^xsd:decimal . " //
 					+ "	}"; // end: graph
