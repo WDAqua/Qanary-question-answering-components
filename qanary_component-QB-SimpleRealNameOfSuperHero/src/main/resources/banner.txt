@@ -20,8 +20,10 @@ ${AnsiColor.BLUE}k@@@@QKe9QQEK@@@@L   `@@@@@Q`  'K@@@@@w   S@@@@@;   ;@@@@@r  ,@
                                                                                                \meJFaaaaor      
                                                                                                 :LuoSfc;-       
 
-${AnsiBackground.WHITE}Application Title:   Simple Query Builder for computing the real name of superheros on the DBpedia knowledge base ${AnsiBackground.DEFAULT} 
-${AnsiBackground.WHITE}Short Description:   It will only work if the question starts exactly with "What is the real name of"             ${AnsiBackground.DEFAULT}
-${AnsiBackground.WHITE}Framework@GitHub:    https://github.com/WDAqua/Qanary                                                             ${AnsiBackground.DEFAULT}
-${AnsiBackground.DEFAULT}${AnsiColor.DEFAULT}Spring Boot Version: ${spring-boot.version}
-                                                                         
+${AnsiBackground.WHITE}Application Title:        ${spring.application.name} ${AnsiBackground.DEFAULT}
+${AnsiBackground.WHITE}Application Description:  ${spring.application.description} ${AnsiBackground.DEFAULT}
+${AnsiBackground.WHITE}Framework@GitHub:         https://github.com/WDAqua/Qanary ${AnsiBackground.DEFAULT}
+${AnsiBackground.DEFAULT}${AnsiColor.DEFAULT}Component Version:   ${application.version} ${AnsiBackground.DEFAULT}
+${AnsiBackground.DEFAULT}${AnsiColor.DEFAULT}Spring Boot Version: ${spring-boot.version} ${AnsiBackground.DEFAULT}
+${AnsiBackground.DEFAULT}${AnsiColor.DEFAULT}Java Version:        ${java.version} ${AnsiBackground.DEFAULT}
+                                                                                                

@@ -1,21 +1,19 @@
 package eu.wdaqua.qanary.component.querybuilder;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
-import org.junit.Before;
-
-import eu.wdaqua.qanary.business.QanaryConfigurator;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryUtils;
-
 import java.net.URI;
-import org.slf4j.LoggerFactory;
+
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
 
 
 public class TestQueryBuilder {
@@ -27,7 +25,7 @@ public class TestQueryBuilder {
 
     @Before
     public void setUp() {
-        qb = new QueryBuilderSimpleRealNameOfSuperHero("qb-simplerealname-test");
+        qb = new QueryBuilderSimpleRealNameOfSuperHero();
         testQuery = "" // 
 					+ "PREFIX dbr: <http://dbpedia.org/resource/> \n" //
 					+ "PREFIX dct: <http://purl.org/dc/terms/> \n" //
@@ -63,7 +61,7 @@ public class TestQueryBuilder {
 	public void testCreateAndInsertAnswerSPARQL() throws Exception {
         // given a QanaryMessage, QanaryQuestion and created Query
 		QanaryMessage qanaryMessage = mock(QanaryMessage.class);
-		QanaryQuestion qanaryQuestion = mock(QanaryQuestion.class);
+		QanaryQuestion<?> qanaryQuestion = mock(QanaryQuestion.class);
 
         URI ingraph = new URI("urn:qanary:ingraph");
         URI uri = new URI("test_question_uri");

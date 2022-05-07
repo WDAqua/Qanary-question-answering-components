@@ -1,5 +1,7 @@
 package eu.wdaqua.qanary.component.querybuilder;
 
+import java.net.URISyntaxException;
+
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.slf4j.Logger;
@@ -7,12 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.net.URISyntaxException;
-
+import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
-import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 
@@ -24,7 +24,7 @@ import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
  * @see <a href=
  *      "https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F"
  *      target="_top">GitHub wiki howto</a>
- *      
+ * 
  * @see <a href=
  *      "https://github.com/WDAqua/Qanary-question-answering-components/qanary_component-QB-SimpleRealNameOfSuperHero"
  *      target="_top">Intention and usage of this component</a>
@@ -32,12 +32,17 @@ import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(QueryBuilderSimpleRealNameOfSuperHero.class);
 
-	private final String applicationName;
+	@Value("${spring.application.name}")
+	private String applicationName;
 
 	private String supportedQuestionPrefix = "What is the real name of ";
 
-	public QueryBuilderSimpleRealNameOfSuperHero(@Value("${spring.application.name}") final String applicationName) {
-		this.applicationName = applicationName;
+	public String getApplicationName() {
+		return this.applicationName;
+	}
+
+	public QueryBuilderSimpleRealNameOfSuperHero() {
+		logger.warn("getApplicationName: ", this.getApplicationName());
 	}
 
 	/**
@@ -51,9 +56,9 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 		logger.info("process: {}", myQanaryMessage);
 
 		// STEP 1: get the required data
-		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage);
-		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
+		QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
+		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 
 		// STEP 2: compute new knowledge about the given question
 		// in this simple case we check if the question starts with the phrase that is
@@ -61,11 +66,17 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 		// if the question does not start with the support phrase, then nothing needs to
 		// be done.
 		if (!isQuestionSupported(myQuestion)) {
-			logger.info("nothing to do here as question \"{}\" is not starting with \"{}\".", myQuestion,
-					supportedQuestionPrefix);
+			logger.info("nothing to do here as question \"{}\" is not starting with \"{}\".", //
+					myQuestion, supportedQuestionPrefix);
 			return myQanaryMessage;
 		}
 
+		// the Qanary message contains the URL of the triplestore endpoint of the
+		// current process
+		String tripleStoreEndpoint = myQanaryMessage.getEndpoint().toASCIIString();
+
+		// the SPARQL query to get the annotations of named entities created by another
+		// component
 		String sparqlGetAnnotation = "" //
 				+ "PREFIX dbr: <http://dbpedia.org/resource/> " //
 				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
@@ -85,7 +96,8 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 				+ "    FILTER(?start = " + supportedQuestionPrefix.length() + ") ." //
 				+ "}";
 
-		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlGetAnnotation);
+		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlGetAnnotation, tripleStoreEndpoint);
+
 		while (resultset.hasNext()) {
 			QuerySolution tupel = resultset.next();
 			int start = tupel.get("start").asLiteral().getInt();
@@ -98,11 +110,12 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 
 			// store the created SPARQL select query (which should compute the answer) into
 			// the Qanary triplestore
-			String insertDataIntoQanaryTriplestoreQuery = getInsertQuery(myQanaryMessage, myQanaryQuestion, createdDBpediaQuery);
+			String insertDataIntoQanaryTriplestoreQuery = getInsertQuery(myQanaryMessage, myQanaryQuestion,
+					createdDBpediaQuery);
 
 			// STEP 3: Store new information in the Qanary triplestore
 			logger.info("The answer might be computed via: \n{}", createdDBpediaQuery);
-			myQanaryUtils.updateTripleStore(insertDataIntoQanaryTriplestoreQuery, myQanaryMessage.getEndpoint());
+			myQanaryUtils.updateTripleStore(insertDataIntoQanaryTriplestoreQuery, tripleStoreEndpoint);
 		}
 
 		return myQanaryMessage;
@@ -114,26 +127,26 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 
 	public String getDBpediaQuery(String dbpediaResource) {
 		String dbpediaQuery = "" //
-					+ "PREFIX dbr: <http://dbpedia.org/resource/> \n" //
-					+ "PREFIX dct: <http://purl.org/dc/terms/> \n" //
-					+ "PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n" //
-					+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
-					+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" //
-					+ "SELECT * WHERE { \n" //
-					+ "  ?resource foaf:name ?answer . \n" // real name of superhero
-					+ "  ?resource rdfs:label ?label . \n" // get the character name of the superhero
-					+ "  FILTER(LANG(?label) = \"en\") . \n" // only English names
-					+ "  ?resource dct:subject dbr:Category:Superheroes_with_alter_egos . \n" // only superheros
-					+ "  FILTER(! strStarts(LCASE(?label), LCASE(?answer))). \n" // filter starting with the same name
-					+ "  VALUES ?resource { <" + dbpediaResource + "> } . \n" // only for this specific resource
-					+ "} \n" //
-					+ "ORDER BY ?resource";
+				+ "PREFIX dbr: <http://dbpedia.org/resource/> \n" //
+				+ "PREFIX dct: <http://purl.org/dc/terms/> \n" //
+				+ "PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n" //
+				+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
+				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" //
+				+ "SELECT * WHERE { \n" //
+				+ "  ?resource foaf:name ?answer . \n" // real name of superhero
+				+ "  ?resource rdfs:label ?label . \n" // get the character name of the superhero
+				+ "  FILTER(LANG(?label) = \"en\") . \n" // only English names
+				+ "  ?resource dct:subject dbr:Category:Superheroes_with_alter_egos . \n" // only superheros
+				+ "  FILTER(! strStarts(LCASE(?label), LCASE(?answer))). \n" // filter starting with the same name
+				+ "  VALUES ?resource { <" + dbpediaResource + "> } . \n" // only for this specific resource
+				+ "} \n" //
+				+ "ORDER BY ?resource";
 		return dbpediaQuery;
 	}
 
-	public String getInsertQuery(QanaryMessage myQanaryMessage, 
-			QanaryQuestion myQanaryQuestion, 
-			String createdDBpediaQuery) throws SparqlQueryFailed, URISyntaxException, QanaryExceptionNoOrMultipleQuestions {
+	public String getInsertQuery(QanaryMessage myQanaryMessage, QanaryQuestion myQanaryQuestion,
+			String createdDBpediaQuery)
+			throws SparqlQueryFailed, URISyntaxException, QanaryExceptionNoOrMultipleQuestions {
 		String insertDataIntoQanaryTriplestoreQuery = "" //
 				+ "PREFIX dbr: <http://dbpedia.org/resource/>" //
 				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/>" //
@@ -150,7 +163,7 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 				// as it is rule based, a high confidence is expressed
 				+ "        ?newAnnotation qa:score \"1.0\"^^xsd:float ."
 				+ "        ?newAnnotation oa:annotatedAt ?time ." //
-				+ "        ?newAnnotation oa:annotatedBy <urn:qanary:"+this.applicationName+"> ." //
+				+ "        ?newAnnotation oa:annotatedBy <urn:qanary:" + this.applicationName + "> ." //
 				+ "    }" //
 				+ "}" //
 				+ "WHERE {" //

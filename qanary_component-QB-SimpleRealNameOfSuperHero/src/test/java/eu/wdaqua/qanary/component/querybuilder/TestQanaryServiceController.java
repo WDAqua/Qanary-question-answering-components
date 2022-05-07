@@ -69,6 +69,7 @@ public class TestQanaryServiceController {
 	 */
 	@Test
 	public void testDescriptionAvailable() throws Exception {
+		logger.debug("testDescriptionAvailable");
 		mockMvc.perform(get(QanaryConfiguration.description)) // fetch
 				.andExpect(status().isOk()) // HTTP 200
 				.andReturn(); //
@@ -81,7 +82,7 @@ public class TestQanaryServiceController {
 	@Test
 	@Ignore // this test cannot be executed as the triplestore needs to be mocked first
 	public void testMessageReceiveAndSend() {
-
+		logger.debug("testMessageReceiveAndSend");
 		QanaryMessage requestMessage;
 		try {
 			requestMessage = new QanaryMessage(new URI(endpointKey), new URI(inGraphKey), new URI(outGraphKey));
@@ -128,7 +129,7 @@ public class TestQanaryServiceController {
 	 */
 	@Test
 	public void testMessageFromJson() {
-		// create message from json string
+		logger.debug("testMessageFromJson");
 		QanaryMessage message;
 		try {
 			message = new QanaryMessage(new URI(endpointKey), new URI(inGraphKey), new URI(outGraphKey));
