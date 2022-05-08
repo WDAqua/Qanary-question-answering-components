@@ -25,6 +25,7 @@ import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.qanswer.qbe.messages.NoLiteralFieldFoundException;
 import eu.wdaqua.qanary.component.qanswer.qbe.messages.QAnswerRequest;
@@ -57,7 +58,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
 			@Qualifier("knowledgeBaseDefault") String knowledgeBaseDefault, //
 			@Qualifier("endpointUrl") URI endpoint, //
 			@Value("${spring.application.name}") final String applicationName, //
-			RestTemplate restTemplate //
+			RestTemplateWithCaching restTemplate //
 	) throws URISyntaxException {
 
 		assert threshold >= 0 : "threshold has to be >= 0: " + threshold;
@@ -77,6 +78,8 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
 		this.knowledgeBaseDefault = knowledgeBaseDefault;
 		this.myRestTemplate = restTemplate;
 		this.applicationName = applicationName;
+		
+		logger.debug("RestTemplate: {}", restTemplate);
 	}
 
 	public float getThreshold() {
@@ -108,10 +111,12 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
 		if (knowledgeBaseId == null) {
 			knowledgeBaseId = knowledgeBaseDefault;
 		}
+		
+		URI endpoint = myQanaryMessage.getEndpoint();
 
 		// STEP 1: get the required data from the Qanary triplestore (the global process
 		// memory)
-		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<>(myQanaryMessage);
+		QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
 		String questionString = myQanaryQuestion.getTextualRepresentation();
 		List<NamedEntity> retrievedNamedEntities = getNamedEntitiesOfQuestion(myQanaryQuestion,
 				myQanaryQuestion.getInGraph());
@@ -123,7 +128,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
 
 		// STEP 3: add information to Qanary triplestore
 		String sparql = getSparqlInsertQuery(myQanaryQuestion, result);
-		myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint());
+		myQanaryUtils.updateTripleStore(sparql, endpoint);
 
 		return myQanaryMessage;
 	}
@@ -193,7 +198,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
 		int end;
 		QuerySolution tupel;
 
-		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlGetAnnotation);
+		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlGetAnnotation, endpoint.toASCIIString());
 		while (resultset.hasNext()) {
 			tupel = resultset.next();
 			start = tupel.get("start").asLiteral().getInt();

@@ -17,16 +17,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
+import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
 import eu.wdaqua.qanary.component.qanswer.qbe.messages.NoLiteralFieldFoundException;
 import eu.wdaqua.qanary.component.qanswer.qbe.messages.QAnswerResult;
 import net.minidev.json.parser.ParseException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ComponentScan("eu.wdaqua.qanary")
 @AutoConfigureWebClient
 public class QAnswerQueryBuilderAndExecutorTest {
 	private static final Logger logger = LoggerFactory.getLogger(QAnswerQueryBuilderAndExecutorTest.class);
@@ -34,6 +37,9 @@ public class QAnswerQueryBuilderAndExecutorTest {
 
 	@Autowired
 	private Environment env;
+	
+	@Autowired
+	private RestTemplateWithCaching restTemplate;
 
 	// TODO: replace by CachingRestTemplate when release in qanary.commons
 	private RestTemplate restClient;
@@ -63,7 +69,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
 	public void testTransformationOfNamedEntites() throws URISyntaxException {
 		float threshold = 0.5f;
 		QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, "en", "dbpedia", 
-				new URI("urn:no:endpoint"), applicationName, restClient);
+				new URI("urn:no:endpoint"), applicationName, restTemplate);
 		List<TestData> myTestData = new LinkedList<>();
 
 		List<NamedEntity> entities0 = new LinkedList<>();
@@ -86,7 +92,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
 	public void testThresholdBehavior() throws URISyntaxException {
 		float threshold = 0.4f;
 		QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, "en", "wikidata", 
-				new URI("urn:no:endpoint"), applicationName, restClient);
+				new URI("urn:no:endpoint"), applicationName, restTemplate);
 		List<TestData> myTestData = new LinkedList<>();
 
 		List<NamedEntity> entities0 = new LinkedList<>();
@@ -142,7 +148,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
 		String kb = "wikidata";
 
 		QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, lang, kb,
-				this.realEndpoint, applicationName, restClient);
+				this.realEndpoint, applicationName, restTemplate);
 		String question = "What is the capital of Germany?";
 		QAnswerResult result0 = testWebService(myApp, question, lang, kb);
 
@@ -190,7 +196,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
 		int max = 1000;
 
 		QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, lang, kb, 
-				this.realEndpoint, applicationName, restClient);
+				this.realEndpoint, applicationName, restTemplate);
 		String question = "Person born in France.";
 		QAnswerResult result0 = testWebService(myApp, question, lang, kb);
 		assertTrue("problem: not " + result0.getValues().size() + " >= " + min, result0.getValues().size() >= min);
@@ -245,7 +251,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
 		String kb = "wikidata";
 
 		QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, lang, kb, 
-				this.realEndpoint, applicationName, restClient);
+				this.realEndpoint, applicationName, restTemplate);
 		String question = "Is Berlin the capital of Germany";
 		QAnswerResult result0 = testWebService(myApp, question, lang, kb);
 
@@ -293,7 +299,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
 		String kb = "wikidata";
 
 		QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, lang, kb, 
-				this.realEndpoint, applicationName, restClient);
+				this.realEndpoint, applicationName, restTemplate);
 		String question = "population of france";
 		QAnswerResult result0 = testWebService(myApp, question, lang, kb);
 
@@ -338,7 +344,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
 		String kb = "wikidata";
 
 		QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, lang, kb, 
-				this.realEndpoint, applicationName, restClient);
+				this.realEndpoint, applicationName, restTemplate);
 		String question = "what is the nickname of Rome";
 		QAnswerResult result0 = testWebService(myApp, question, lang, kb);
 
