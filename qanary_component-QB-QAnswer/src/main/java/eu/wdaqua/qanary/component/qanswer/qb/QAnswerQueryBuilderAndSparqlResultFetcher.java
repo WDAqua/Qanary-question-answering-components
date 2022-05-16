@@ -152,7 +152,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
 		parameters.put("lang", lang);
 		parameters.put("kb", knowledgeBaseId);
 
-		String urlTemplate = UriComponentsBuilder.fromHttpUrl(qanaryApiUri.toURL().toURI().toASCIIString()) //
+		String urlTemplate = UriComponentsBuilder.fromHttpUrl(this.endpoint.toURL().toURI().toASCIIString()) //
 				.queryParam("question", "{question}") //
 				.queryParam("lang", "{lang}") //
 				.queryParam("kb", "{kb}") //
