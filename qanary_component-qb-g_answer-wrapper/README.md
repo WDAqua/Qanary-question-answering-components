@@ -2,9 +2,7 @@
 
 ## Description
 
-This Qanary component fetches the SPARQL query for the submitted question.
-The question text attribute will be sent to the g Answer API.
-The result from the API will be processed in to SPARQL and stored in the triple store.
+The main task of this component is to manage the communication between the Qanary pipeline and the g Answer API and to prepare the data. To do this, the component fetches the submitted question and sends the text attribute to the g Answer API. The result from the API is processed, stored in the triple store and is then available in the Qanary pipeline.
 
 ## Configuration
 
