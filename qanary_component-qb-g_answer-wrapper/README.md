@@ -8,15 +8,13 @@ The result from the API will be processed in to SPARQL and stored in the triple 
 
 ## Configuration
 
-The component use a cache to minimise the processing time.
-For the configuration you can change the following parameter as u need:
-
+The component uses a cache to minimise the processing time.
+For the configuration you can change the following parameter as you need:
 ```
 qanary.webservicecalls.cache.specs=maximumSize=10000,expireAfterAccess=3600s
 ```
 
-For the g Answer API you can change the following parameter as u need:
-
+For the g Answer API you can change the following parameter as you need:
 ```
 g_answer.endpoint.url=
 g_answer.threshold=0.5
