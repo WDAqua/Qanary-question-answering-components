@@ -26,8 +26,6 @@ make sure that the API accepts requests with the parameter
 
 **g_answer.threshold**: The threshold for the answer.
 
-**g_answer.endpoint.language.default**: The default language of the API for
-the query.
+**g_answer.endpoint.language.default**: The default language of the API.
 
-**g_answer.endpoint.language.supported**: The supported languages of the API for
-the query.
+**g_answer.endpoint.language.supported**: The list of supported languages of the API, e.g. `g_answer.endpoint.language.supported=en,fr,ru`.
