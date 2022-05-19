@@ -129,7 +129,7 @@ public class MeaningCloud extends QanaryComponent {
                     + "           oa:hasSelector  [ " + "                    a oa:TextPositionSelector ; "
                     + "                    oa:start \"" + s.begin + "\"^^xsd:nonNegativeInteger ; "
                     + "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " + "           ] "
-                    + "  ] ; " + "     oa:annotatedBy " + this.applicationName + " ; "
+                    + "  ] ; " + "     oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; "
                     + "	    oa:annotatedAt ?time  " + "}} " + "WHERE { " + "BIND (IRI(str(RAND())) AS ?a) ."
                     + "BIND (now() as ?time) " + "}";
             myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
