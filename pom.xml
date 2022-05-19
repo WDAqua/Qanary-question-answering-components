@@ -30,7 +30,7 @@
                             <module>qanary_component-NER-Babelfy</module>
                             <module>qanary_component-NER-FOX</module>
                             <module>qanary_component-NER-TextRazor</module>
-                            <module>qanary_component-NER-MeaningCloud</module>
+                            <module>qanary-component-NER-MeaningCloud</module>
                             <module>qanary_component-NED-MeaningCloud</module>
                             <module>qanary_component-NER-Dandelion</module>
                             <module>qanary_component-NER-tagme</module>
