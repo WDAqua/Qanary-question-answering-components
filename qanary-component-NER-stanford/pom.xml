@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
-    <artifactId>qanary-component-NER-standford</artifactId>
+    <artifactId>qanary-component-NER-stanford</artifactId>
     <version>3.1.1</version>
     <parent>
         <groupId>org.springframework.boot</groupId>
