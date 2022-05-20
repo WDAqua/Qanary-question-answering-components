@@ -85,7 +85,7 @@ public class RelNliodRel extends QanaryComponent {
         HashSet<String> dbLinkListSet = new HashSet<>();
         logger.info("process: {}", myQanaryMessage);
         QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage);
+        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
         String myQuestion = myQanaryQuestion.getTextualRepresentation();
 
 
