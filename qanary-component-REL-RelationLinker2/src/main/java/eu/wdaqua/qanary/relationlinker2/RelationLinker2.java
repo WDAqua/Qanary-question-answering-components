@@ -61,7 +61,7 @@ public class RelationLinker2 extends QanaryComponent {
 		logger.info("process: {}", myQanaryMessage);
 		// TODO: implement processing of question
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-		  QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage);
+		  QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
 	      String myQuestion = myQanaryQuestion.getTextualRepresentation();
 	      ArrayList<Link> links = new ArrayList<Link>();
 
