@@ -40,7 +40,7 @@
                             <module>qanary_component-NED-Aylien</module>
                             <module>qanary_component-NED-Ambiverse</module>
                             <module>qanary_component-REL-RelationLinker1</module>
-                            <module>qanary_component-REL-ReMatch</module>
+                            <module>qanary-component-REL-ReMatch</module>
                             <module>qanary_component-REL-RelationLinker2</module>
                             <module>qanary_component-REL-RELNLIOD</module>
                             <module>qanary_component-CLS-CLSNLIOD</module>
