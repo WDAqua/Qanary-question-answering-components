@@ -20,7 +20,7 @@
                             <module>qanary_monolitic-wrapper</module>
                             <module>qanary_component-NERD-Alchemy</module>
                             <module>qanary_component-NERD-Lucene-Linker</module>
-                            <module>qanary_component-NER-stanford</module>
+                            <module>qanary-component-NER-stanford</module>
                             <module>qanary_component-NER-DBpedia-Spotlight</module>
                             <module>qanary_component-NED-DBpedia-Spotlight</module>
                             <module>qanary_component-NER-EntityClassifier</module>
