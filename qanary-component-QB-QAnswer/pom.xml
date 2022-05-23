@@ -4,8 +4,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
-	<artifactId>qanary-component-qb-qanswer</artifactId>
-	<version>0.1.0</version>
+	<artifactId>qanary-component-QB-QAnswer</artifactId>
+	<version>3.1.0</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
