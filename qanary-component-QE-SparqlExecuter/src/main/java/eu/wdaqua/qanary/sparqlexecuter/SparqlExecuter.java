@@ -45,7 +45,7 @@ public class SparqlExecuter extends QanaryComponent {
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("process: {}", myQanaryMessage);
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-	      QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage);
+	      QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
 	      String myQuestion = myQanaryQuestion.getTextualRepresentation();
 	      URI myQuestionUri = myQanaryQuestion.getUri();
 		// TODO: implement processing of question
@@ -66,7 +66,7 @@ public class SparqlExecuter extends QanaryComponent {
             + "  } " //
   			+ "} "
   			+ "ORDER BY DESC(?score) LIMIT 1"  ;
-		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparql);
+		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
                 String sparqlQuery="";
                 while (resultset.hasNext()) {
 			sparqlQuery = resultset.next().get("sparql").toString().replace("\\\"", "\"").replace("\\n", "\n");	
