@@ -1,8 +1,6 @@
 package eu.wdaqua.qanary.component.qanswer.qbe;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -11,7 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @SpringBootApplication
 @EnableAutoConfiguration

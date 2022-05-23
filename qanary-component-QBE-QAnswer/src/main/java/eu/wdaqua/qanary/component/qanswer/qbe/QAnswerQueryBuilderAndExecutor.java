@@ -1,11 +1,16 @@
 package eu.wdaqua.qanary.component.qanswer.qbe;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
+import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
+import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.component.qanswer.qbe.messages.NoLiteralFieldFoundException;
+import eu.wdaqua.qanary.component.qanswer.qbe.messages.QAnswerRequest;
+import eu.wdaqua.qanary.component.qanswer.qbe.messages.QAnswerResult;
+import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
+import net.minidev.json.JSONObject;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.slf4j.Logger;
@@ -21,17 +26,11 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
-import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryUtils;
-import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.component.qanswer.qbe.messages.NoLiteralFieldFoundException;
-import eu.wdaqua.qanary.component.qanswer.qbe.messages.QAnswerRequest;
-import eu.wdaqua.qanary.component.qanswer.qbe.messages.QAnswerResult;
-import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-import net.minidev.json.JSONObject;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 @Component
 /**

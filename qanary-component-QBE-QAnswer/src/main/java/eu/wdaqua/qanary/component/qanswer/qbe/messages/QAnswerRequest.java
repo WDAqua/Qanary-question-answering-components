@@ -1,10 +1,9 @@
 package eu.wdaqua.qanary.component.qanswer.qbe.messages;
 
-import java.net.URI;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.NotBlank;
-
-import io.swagger.v3.oas.annotations.media.Schema;
+import java.net.URI;
 
 public class QAnswerRequest {
 	@Schema(description = "Endpoint URL of QAnswer API (default is already available)", example = "http://qanswer-core1.univ-st-etienne.fr/api/gerbil", required = false)
