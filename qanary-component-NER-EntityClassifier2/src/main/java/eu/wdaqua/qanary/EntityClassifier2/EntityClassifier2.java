@@ -59,7 +59,7 @@ public class EntityClassifier2 extends QanaryComponent {
 		 // STEP1: Retrieve the named graph and the endpoint
 		
       QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-      QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage);
+      QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
       String myQuestion = myQanaryQuestion.getTextualRepresentation();
       ArrayList<Selection> selections = new ArrayList<Selection>();
 

@@ -24,7 +24,7 @@
                             <module>qanary_component-NER-DBpedia-Spotlight</module>
                             <module>qanary_component-NED-DBpedia-Spotlight</module>
                             <module>qanary_component-NER-EntityClassifier</module>
-                            <module>qanary_component-NER-EntityClassifier2</module>
+                            <module>qanary-component-NER-EntityClassifier2</module>
                             <module>qanary_component-NER-Ontotext</module>
                             <module>qanary_component-NED-Ontotext</module>
                             <module>qanary_component-NER-Babelfy</module>
