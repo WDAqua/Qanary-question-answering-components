@@ -20,9 +20,10 @@ ${AnsiColor.BLUE}k@@@@QKe9QQEK@@@@L   `@@@@@Q`  'K@@@@@w   S@@@@@;   ;@@@@@r  ,@
                                                                                                \meJFaaaaor      
                                                                                                 :LuoSfc;-       
 
-${AnsiBackground.WHITE}Application Title:   Qanary TAGME service wrapper component                                                       ${AnsiBackground.DEFAULT}
-${AnsiBackground.WHITE}Description:         Annotated named entities using the TAGME service.                                            ${AnsiBackground.DEFAULT}
-${AnsiBackground.WHITE}Framework@GitHub:    https://github.com/WDAqua/Qanary                                                             ${AnsiBackground.DEFAULT}
-${AnsiBackground.DEFAULT}${AnsiColor.DEFAULT}Spring Boot Version: ${spring-boot.version}                                                 
-
+${AnsiBackground.WHITE}Application Title:        ${spring.application.name} ${AnsiBackground.DEFAULT}
+${AnsiBackground.WHITE}Application Description:  ${spring.application.description} ${AnsiBackground.DEFAULT}
+${AnsiBackground.WHITE}Framework@GitHub:         https://github.com/WDAqua/Qanary ${AnsiBackground.DEFAULT}
+${AnsiBackground.DEFAULT}${AnsiColor.DEFAULT}Component Version:   ${application.version} ${AnsiBackground.DEFAULT}
+${AnsiBackground.DEFAULT}${AnsiColor.DEFAULT}Spring Boot Version: ${spring-boot.version} ${AnsiBackground.DEFAULT}
+${AnsiBackground.DEFAULT}${AnsiColor.DEFAULT}Java Version:        ${java.version} ${AnsiBackground.DEFAULT}
                                                                                                 

@@ -71,7 +71,7 @@ public class TagmeNED extends QanaryComponent {
 		logger.info("process: {}", myQanaryMessage);
 
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<>(myQanaryMessage);
+		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 
 		List<NamedEntity> links = new ArrayList<>();
