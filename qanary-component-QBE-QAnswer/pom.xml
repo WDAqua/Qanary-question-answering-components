@@ -118,16 +118,16 @@
 							<goal>push</goal>
 						</goals>
 					</execution>
-			        <execution>
-			          <id>default-2</id>
-			          <goals>
-			            <goal>tag</goal>
-			            <goal>push</goal>
-			          </goals>
-			          <configuration>
-			            <tag>latest</tag>
-			          </configuration>
-			        </execution>
+					<execution>
+						<id>default-2</id>
+						<goals>
+							<goal>tag</goal>
+							<goal>push</goal>
+						</goals>
+						<configuration>
+							<tag>latest</tag>
+						</configuration>
+					</execution>
 				</executions>
 				<configuration>
 					<repository>${docker.image.prefix}/${docker.image.name}</repository>

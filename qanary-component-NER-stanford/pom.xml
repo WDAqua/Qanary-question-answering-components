@@ -106,15 +106,25 @@
                 <version>${dockerfile-maven-version}</version>
                 <executions>
                     <execution>
-                        <id>default-2</id>
+                        <id>default</id>
                         <goals>
                             <goal>build</goal>
                             <goal>push</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>default-2</id>
+                        <goals>
+                            <goal>tag</goal>
+                            <goal>push</goal>
+                        </goals>
+                        <configuration>
+                            <tag>latest</tag>
+                        </configuration>
+                    </execution>
                 </executions>
                 <configuration>
-                    <repository>${docker.image.name}</repository>
+                    <repository>${docker.image.prefix}/${docker.image.name}</repository>
                     <tag>${project.version}</tag>
                     <buildArgs>
                         <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
