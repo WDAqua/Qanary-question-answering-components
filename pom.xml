@@ -47,7 +47,7 @@
                             <module>qanary-component-QB-Sina</module>
                             <module>qanary-component-QE-SparqlExecuter</module>
                             <module>qanary-component-QB-SimpleRealNameOfSuperHero</module>
-                            <module>qanary_component-QB-ComicCharacterAlterEgoSimpleDBpediaQueryBuilder</module>
+                            <module>qanary-component-QB-ComicCharacterAlterEgoSimpleDBpedia</module>
                             <module>qa.qanary_component-QueryBuilder</module>
                             <module>qa.qanary_component-AnnotationofSpotClass-tgm</module>
                             <module>qa.qanary_component-AnnotationofSpotProperty-tgm</module>

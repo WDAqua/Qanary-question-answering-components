@@ -45,9 +45,9 @@ public class ComicCharacterAlterEgoSimpleDBpediaQueryBuilder extends QanaryCompo
 		logger.info("process: {}", myQanaryMessage);
 
 		//read question from database
-		QanaryQuestion<String> qanaryQuestion = new QanaryQuestion<>(myQanaryMessage);
-		String question = qanaryQuestion.getTextualRepresentation();
 		QanaryUtils qanaryUtils = this.getUtils(myQanaryMessage);
+		QanaryQuestion<String> qanaryQuestion = new QanaryQuestion<>(myQanaryMessage, qanaryUtils.getQanaryTripleStoreConnector());
+		String question = qanaryQuestion.getTextualRepresentation();
 
 		String prefix = "what is the real name of";
 		
@@ -82,7 +82,7 @@ public class ComicCharacterAlterEgoSimpleDBpediaQueryBuilder extends QanaryCompo
 				+ "}";
 
 
-		ResultSet resultSet = qanaryUtils.selectFromTripleStore(getAnnotation);
+		ResultSet resultSet = qanaryUtils.selectFromTripleStore(getAnnotation, qanaryUtils.getEndpoint().toString());
 
 		if(!resultSet.hasNext()){
 			logger.warn("no matching resource could be found!");
