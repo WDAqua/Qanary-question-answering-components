@@ -170,7 +170,7 @@ public class QueryExecuter extends QanaryComponent {
 		// if required, then fetch the origin question (here the question is a
 		// textual/String question)
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage);
+		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
 
 		// Here we fetch those annotations (AnnotationOfAnswerSPARQL) from the Qanary triplestore
 		String sparqlSelectQuery = "" //
@@ -188,7 +188,7 @@ public class QueryExecuter extends QanaryComponent {
 				+ "}";
 
 		// query the triplestore
-		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlSelectQuery);
+		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlSelectQuery, myQanaryUtils.getEndpoint().toString());
 		List<String> queries = new LinkedList<String>();
 
 		while (resultset.hasNext()) {
