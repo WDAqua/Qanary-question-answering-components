@@ -58,7 +58,7 @@
                             <module>qanary_component-NED-Babelfy</module>
                             <module>qanary_component-NED-Dandelion</module>
                             <module>qanary-component-NED-Tagme</module>
-                            <module>qanary_component-QC-EAT-classifier</module>
+                            <module>qanary-component-QC-AnswerTypeClassifier</module>
                             <module>qanary_component-ned-opentapioca</module>
                             <module>qanary_component-qb-birthdata-wikidata</module>
                             <module>qanary-component-QE-Wikidata</module>

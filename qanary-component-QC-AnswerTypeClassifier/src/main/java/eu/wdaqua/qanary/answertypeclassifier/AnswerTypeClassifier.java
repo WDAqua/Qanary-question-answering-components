@@ -60,7 +60,7 @@ public class AnswerTypeClassifier extends QanaryComponent {
 
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
 
-		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<>(myQanaryMessage);
+		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 
 		String jsonString = String.format("{\"questions\":[\"%s\"]}", myQuestion);
