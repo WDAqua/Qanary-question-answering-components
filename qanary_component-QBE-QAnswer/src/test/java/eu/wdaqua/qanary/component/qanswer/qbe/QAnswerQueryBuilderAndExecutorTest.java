@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
@@ -66,7 +67,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
 	}
 
 	@Test
-	public void testTransformationOfNamedEntites() throws URISyntaxException {
+	public void testTransformationOfNamedEntites() throws URISyntaxException, MalformedURLException {
 		float threshold = 0.5f;
 		QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, "en", "dbpedia", 
 				new URI("urn:no:endpoint"), applicationName, restTemplate);
@@ -89,7 +90,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
 	}
 
 	@Test
-	public void testThresholdBehavior() throws URISyntaxException {
+	public void testThresholdBehavior() throws URISyntaxException, MalformedURLException {
 		float threshold = 0.4f;
 		QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, "en", "wikidata", 
 				new URI("urn:no:endpoint"), applicationName, restTemplate);
@@ -140,9 +141,10 @@ public class QAnswerQueryBuilderAndExecutorTest {
 	 * @throws URISyntaxException
 	 * @throws ParseException
 	 * @throws NoLiteralFieldFoundException 
+	 * @throws MalformedURLException 
 	 */
 	@Test
-	public void testWebServiceWhatIsTheCapitalOfGermanyResultOneResource() throws URISyntaxException, ParseException, NoLiteralFieldFoundException {
+	public void testWebServiceWhatIsTheCapitalOfGermanyResultOneResource() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
 		float threshold = 0.4f;
 		String lang = "en";
 		String kb = "wikidata";
@@ -186,9 +188,10 @@ public class QAnswerQueryBuilderAndExecutorTest {
 	 * @throws URISyntaxException
 	 * @throws ParseException
 	 * @throws NoLiteralFieldFoundException 
+	 * @throws MalformedURLException 
 	 */
 	@Test
-	public void testWebServicePersonBornInFranceResultManyResources() throws URISyntaxException, ParseException, NoLiteralFieldFoundException {
+	public void testWebServicePersonBornInFranceResultManyResources() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
 		float threshold = 0.4f;
 		String lang = "en";
 		String kb = "wikidata";
@@ -243,9 +246,10 @@ public class QAnswerQueryBuilderAndExecutorTest {
 	 * @throws URISyntaxException
 	 * @throws ParseException
 	 * @throws NoLiteralFieldFoundException 
+	 * @throws MalformedURLException 
 	 */
 	@Test
-	public void testWebServiceIsBerlinTheCapitalOfGermanyResultBoolean() throws URISyntaxException, ParseException, NoLiteralFieldFoundException {
+	public void testWebServiceIsBerlinTheCapitalOfGermanyResultBoolean() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
 		float threshold = 0.4f;
 		String lang = "en";
 		String kb = "wikidata";
@@ -291,9 +295,10 @@ public class QAnswerQueryBuilderAndExecutorTest {
 	 * @throws URISyntaxException
 	 * @throws ParseException
 	 * @throws NoLiteralFieldFoundException 
+	 * @throws MalformedURLException 
 	 */
 	@Test
-	public void testWebServicePopulationOfFranceResultNumber() throws URISyntaxException, ParseException, NoLiteralFieldFoundException {
+	public void testWebServicePopulationOfFranceResultNumber() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
 		float threshold = 0.4f;
 		String lang = "en";
 		String kb = "wikidata";
@@ -335,9 +340,10 @@ public class QAnswerQueryBuilderAndExecutorTest {
 	 * @throws URISyntaxException
 	 * @throws ParseException
 	 * @throws NoLiteralFieldFoundException
+	 * @throws MalformedURLException 
 	 */
 	@Test
-	public void testWebServiceWhatIsTheNicknameOfRomeResultString() throws URISyntaxException, ParseException, NoLiteralFieldFoundException {
+	public void testWebServiceWhatIsTheNicknameOfRomeResultString() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
 	
 		float threshold = 0.4f;
 		String lang = "en";
