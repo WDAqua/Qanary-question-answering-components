@@ -22,7 +22,7 @@
                             <module>qanary_component-NERD-Lucene-Linker</module>
                             <module>qanary-component-NER-stanford</module>
                             <module>qanary_component-NER-DBpedia-Spotlight</module>
-                            <module>qanary_component-NED-DBpedia-Spotlight</module>
+                            <module>qanary-component-NED-DBpediaSpotlight</module>
                             <module>qanary-component-NER-EntityClassifier</module>
                             <module>qanary_component-NER-EntityClassifier2</module>
                             <module>qanary_component-NER-Ontotext</module>
@@ -83,7 +83,7 @@
 		<profile>
 			<id>tinytutorial</id>
 			<modules>
-                            <module>qanary_component-NED-DBpedia-Spotlight</module>
+                            <module>qanary-component-NED-DBpediaSpotlight</module>
                             <module>qanary_component-QB-SimpleRealNameOfSuperHero</module>
 			</modules>
 		</profile>
