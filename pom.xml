@@ -16,7 +16,7 @@
 			</activation>
 			<modules>
                             <!-- <module>qanary_component-template</module> -->
-                            <module>qanary_component-LD-Shuyo</module>
+                            <module>qanary-component-LD-Shuyo</module>
                             <module>qanary_monolitic-wrapper</module>
                             <module>qanary_component-NERD-Alchemy</module>
                             <module>qanary_component-NERD-Lucene-Linker</module>
