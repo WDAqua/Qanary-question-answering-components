@@ -56,7 +56,7 @@
                             <module>qanary-component-ASR-Kaldi</module>
                             <module>qanary-component-NED-AGDISTIS</module>
                             <module>qanary-component-NED-Babelfly</module>
-                            <module>qanary_component-NED-Dandelion</module>
+                            <module>qanary-component-NED-Dandelion</module>
                             <module>qanary_component-NED-tagme</module>
                             <module>qanary_component-QC-EAT-classifier</module>
                             <module>qanary_component-ned-opentapioca</module>
