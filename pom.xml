@@ -23,22 +23,22 @@
                             <module>qanary_component-NER-stanford</module>
                             <module>qanary_component-NER-DBpedia-Spotlight</module>
                             <module>qanary_component-NED-DBpedia-Spotlight</module>
-                            <module>qanary_component-NER-EntityClassifier</module>
+                            <module>qanary-component-ner-entityclassifier</module>
                             <module>qanary_component-NER-EntityClassifier2</module>
                             <module>qanary_component-NER-Ontotext</module>
                             <module>qanary_component-NED-Ontotext</module>
                             <module>qanary_component-NER-Babelfy</module>
-                            <module>qanary_component-NER-FOX</module>
+                            <module>qanary-component-ner-fox</module>
                             <module>qanary_component-NER-TextRazor</module>
                             <module>qanary_component-NER-MeaningCloud</module>
                             <module>qanary_component-NED-MeaningCloud</module>
                             <module>qanary_component-NER-Dandelion</module>
                             <module>qanary_component-NER-tagme</module>
-                            <module>qanary_component-NER-ambiverse</module>
+                            <module>qanary-component-ner-ambiverse</module>
                             <module>qanary_component-NER-ComicCharacterNameSimpleNamedEntityRecognizer</module>
                             <module>qanary_component-NER-Aylien</module>
                             <module>qanary_component-NED-Aylien</module>
-                            <module>qanary_component-NED-Ambiverse</module>
+                            <module>qanary-component-ned-ambiverse</module>
                             <module>qanary_component-REL-RelationLinker1</module>
                             <module>qanary_component-REL-ReMatch</module>
                             <module>qanary_component-REL-RelationLinker2</module>
@@ -53,7 +53,7 @@
                             <module>qa.qanary_component-AnnotationofSpotProperty-tgm</module>
                             <module>qa.qanary_component-DiambiguationClass-OKBQA</module>
                             <module>qa.qanary_component-DiambiguationProperty-OKBQA</module>
-                            <module>qanary_component-ASR-kaldi</module>
+                            <module>qanary-component-asr-kaldi</module>
                             <module>qanary_component-NED-AGDISTIS</module>
                             <module>qanary_component-NED-Babelfy</module>
                             <module>qanary_component-NED-Dandelion</module>
@@ -75,7 +75,7 @@
 		<profile>
 			<id>tutorial</id>
 			<modules>
-                            <module>qanary_component-NED-Ambiverse</module>
+                            <module>qanary-component-ned-ambiverse</module>
                             <module>qa.qanary_component-DiambiguationProperty-OKBQA</module>
                             <module>qa.qanary_component-QueryBuilder</module>
 			</modules>
