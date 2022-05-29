@@ -55,7 +55,7 @@
                             <module>qa.qanary_component-DiambiguationProperty-OKBQA</module>
                             <module>qanary-component-ASR-Kaldi</module>
                             <module>qanary-component-NED-AGDISTIS</module>
-                            <module>qanary_component-NED-Babelfy</module>
+                            <module>qanary-component-NED-Babelfy</module>
                             <module>qanary_component-NED-Dandelion</module>
                             <module>qanary_component-NED-tagme</module>
                             <module>qanary_component-QC-EAT-classifier</module>
