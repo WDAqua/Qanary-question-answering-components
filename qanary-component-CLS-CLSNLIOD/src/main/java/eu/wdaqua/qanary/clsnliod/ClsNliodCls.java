@@ -52,7 +52,7 @@ public class ClsNliodCls extends QanaryComponent {
     public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
         logger.info("process: {}", myQanaryMessage);
         QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage);
+        QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
         String myQuestion = myQanaryQuestion.getTextualRepresentation();
         //ArrayList<Selection> selections = new ArrayList<Selection>();
 
