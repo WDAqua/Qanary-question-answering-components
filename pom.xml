@@ -37,7 +37,7 @@
                             <module>qanary-component-NER-Ambiverse</module>
                             <module>qanary_component-NER-ComicCharacterNameSimpleNamedEntityRecognizer</module>
                             <module>qanary_component-NER-Aylien</module>
-                            <module>qanary_component-NED-Aylien</module>
+                            <module>qanary-component-NED-Aylien</module>
                             <module>qanary-component-NED-Ambiverse</module>
                             <module>qanary-component-REL-RelationLinker1</module>
                             <module>qanary-component-REL-ReMatch</module>
@@ -55,7 +55,7 @@
                             <module>qa.qanary_component-DiambiguationProperty-OKBQA</module>
                             <module>qanary-component-ASR-Kaldi</module>
                             <module>qanary-component-NED-AGDISTIS</module>
-                            <module>qanary-component-NED-Babelfy</module>
+                            <module>qanary-component-NED-Babelfly</module>
                             <module>qanary_component-NED-Dandelion</module>
                             <module>qanary_component-NED-tagme</module>
                             <module>qanary_component-QC-EAT-classifier</module>
