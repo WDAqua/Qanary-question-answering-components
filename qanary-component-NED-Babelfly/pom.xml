@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
-    <artifactId>qanary-component-ner-meaningcloud</artifactId>
+    <artifactId>qanary-component-ned-babelfly</artifactId>
     <version>3.1.0</version>
 
     <parent>
@@ -15,11 +14,17 @@
         <java.version>11</java.version>
         <qanary.version>[3.1.2,4.0.0)</qanary.version>
         <docker.image.prefix>qanary</docker.image.prefix>
-        <docker.image.name>qanary-component-ner-meaning-cloud</docker.image.name>
+        <docker.image.name>qanary-component-ned-babelfy</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.5</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>eu.wdaqua.qanary</groupId>
             <artifactId>qa.component</artifactId>
@@ -73,7 +78,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>eu.wdaqua.qanary.meaningcloud.Application</mainClass>
+                    <mainClass>eu.wdaqua.qanary.mypackage.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>

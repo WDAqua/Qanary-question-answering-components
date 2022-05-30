@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <artifactId>qanary-component-ned-agdistis</artifactId>
     <groupId>eu.wdaqua.qanary.component</groupId>
-    <artifactId>qanary-component-ner-meaningcloud</artifactId>
-    <version>3.1.0</version>
+    <version>4.1.0</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -15,7 +15,7 @@
         <java.version>11</java.version>
         <qanary.version>[3.1.2,4.0.0)</qanary.version>
         <docker.image.prefix>qanary</docker.image.prefix>
-        <docker.image.name>qanary-component-ner-meaning-cloud</docker.image.name>
+        <docker.image.name>qanary-component-ned-agdistis</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
     </properties>
 
@@ -73,7 +73,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>eu.wdaqua.qanary.meaningcloud.Application</mainClass>
+                    <mainClass>eu.wdaqua.qanary.agdistis.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>
@@ -88,38 +88,38 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <!-- https://github.com/spotify/dockerfile-maven -->
-            <!-- build Docker image: mvn dockerfile:build  -->
-            <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>dockerfile-maven-plugin</artifactId>
-                <version>${dockerfile-maven-version}</version>
-                <executions>
-                    <execution>
-                        <id>default</id>
-                        <goals>
-                            <goal>build</goal>
-                            <goal>push</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>default-2</id>
-                        <goals>
-                            <goal>tag</goal>
-                            <goal>push</goal>
-                        </goals>
-                        <configuration>
-                            <tag>latest</tag>
-                        </configuration>
-                    </execution>
-                </executions>
-                <configuration>
-                    <repository>${docker.image.prefix}/${docker.image.name}</repository>
-                    <tag>${project.version}</tag>
-                    <buildArgs>
-                        <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-                    </buildArgs>
-                </configuration>
-            </plugin>
+                <!-- build Docker image: mvn dockerfile:build  -->
+                <plugin>
+                    <groupId>com.spotify</groupId>
+                    <artifactId>dockerfile-maven-plugin</artifactId>
+                    <version>${dockerfile-maven-version}</version>
+                    <executions>
+                        <execution>
+                            <id>default</id>
+                            <goals>
+                                <goal>build</goal>
+                                <goal>push</goal>
+                            </goals>
+                        </execution>
+ 			<execution>
+			    <id>default-2</id>
+			    <goals>
+			        <goal>tag</goal>
+			        <goal>push</goal>
+			    </goals>
+			    <configuration>
+			        <tag>latest</tag>
+			    </configuration>
+			</execution>
+                    </executions>
+                    <configuration>
+                        <repository>${docker.image.prefix}/${docker.image.name}</repository>
+                        <tag>${project.version}</tag>
+                        <buildArgs>
+                            <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+                        </buildArgs>
+                    </configuration>
+                </plugin>
         </plugins>
     </build>
 </project>
