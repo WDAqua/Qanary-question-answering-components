@@ -1,7 +1,8 @@
 package eu.wdaqua.qanary.dbpediaSpotlight;
 
 import com.google.gson.JsonArray;
-
+import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.exceptions.DBpediaSpotlightServiceNotAvailable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,9 +11,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-
-import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.exceptions.DBpediaSpotlightServiceNotAvailable;
 
 /**
  * Created by didier on 27.03.16.

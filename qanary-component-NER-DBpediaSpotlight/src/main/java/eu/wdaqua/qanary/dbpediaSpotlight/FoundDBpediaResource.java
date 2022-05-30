@@ -1,9 +1,9 @@
 package eu.wdaqua.qanary.dbpediaSpotlight;
 
+import com.google.gson.JsonElement;
+
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import com.google.gson.JsonElement;
 
 /**
  * 

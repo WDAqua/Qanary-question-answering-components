@@ -21,7 +21,7 @@
                             <module>qanary_component-NERD-Alchemy</module>
                             <module>qanary-component-NERD-LuceneLinker</module>
                             <module>qanary-component-NER-stanford</module>
-                            <module>qanary_component-NER-DBpedia-Spotlight</module>
+                            <module>qanary-component-NER-DBpediaSpotlight</module>
                             <module>qanary-component-NED-DBpediaSpotlight</module>
                             <module>qanary-component-NER-EntityClassifier</module>
                             <module>qanary-component-NER-EntityClassifier2</module>
