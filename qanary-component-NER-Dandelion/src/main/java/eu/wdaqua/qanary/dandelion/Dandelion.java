@@ -1,13 +1,9 @@
 package eu.wdaqua.qanary.dandelion;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.component.QanaryComponent;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -22,10 +18,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryUtils;
-import eu.wdaqua.qanary.component.QanaryComponent;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 
 @Component
@@ -54,8 +51,8 @@ public class Dandelion extends QanaryComponent {
 		// TODO: implement processing of question
 
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-	      QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage);
-	      String myQuestion = myQanaryQuestion.getTextualRepresentation();
+		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
+		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 	      ArrayList<Selection> selections = new ArrayList<Selection>();
 	      //ArrayList<Link> links = new ArrayList<Link>();
 	      logger.info("Question {}", myQuestion);
