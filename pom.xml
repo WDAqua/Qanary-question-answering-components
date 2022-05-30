@@ -35,7 +35,7 @@
                             <module>qanary-component-NER-Dandelion</module>
                             <module>qanary_component-NER-tagme</module>
                             <module>qanary-component-NER-Ambiverse</module>
-                            <module>qanary_component-NER-ComicCharacterNameSimpleNamedEntityRecognizer</module>
+                            <module>qanary-component-NER-ComicCharacterNameSimpleNamedEntityRecognizer</module>
                             <module>qanary_component-NER-Aylien</module>
                             <module>qanary-component-NED-Aylien</module>
                             <module>qanary-component-NED-Ambiverse</module>

@@ -5,11 +5,7 @@ import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
-
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-
-import java.net.URISyntaxException;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -20,12 +16,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.net.URISyntaxException;
+
 @Component
 /**
  * This Qanary component is annotating DBpedia's Superhero entities within
  * questions. Example: "What is the real name of Catwoman?" with the entity
  * "Catwoman" as it is a Superhero name found in the DBpedia triplestore.
- * 
+ *
  * This component connected automatically to the Qanary pipeline. The Qanary
  * pipeline endpoint defined in application.properties (spring.boot.admin.url)
  * 
