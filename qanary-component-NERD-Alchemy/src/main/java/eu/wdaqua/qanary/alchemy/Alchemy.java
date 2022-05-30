@@ -1,9 +1,10 @@
 package eu.wdaqua.qanary.alchemy;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.ontology.TextPositionSelector;
+import eu.wdaqua.qanary.component.QanaryComponent;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Node;
@@ -19,11 +20,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryUtils;
-import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.commons.ontology.TextPositionSelector;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * represents a wrapper of the Alchemy API as a Entity Linking Tool

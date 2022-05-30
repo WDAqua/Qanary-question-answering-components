@@ -18,7 +18,7 @@
                             <!-- <module>qanary_component-template</module> -->
                             <module>qanary-component-LD-Shuyo</module>
                             <module>qanary_monolitic-wrapper</module>
-                            <module>qanary_component-NERD-Alchemy</module>
+                            <module>qanary-component-NERD-Alchemy</module>
                             <module>qanary-component-NERD-LuceneLinker</module>
                             <module>qanary-component-NER-stanford</module>
                             <module>qanary-component-NER-DBpediaSpotlight</module>
