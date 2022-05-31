@@ -1,5 +1,10 @@
 package eu.wdaqua.component.querybuilder;
 
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.component.QanaryComponent;
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.slf4j.Logger;
@@ -7,18 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryUtils;
-import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-
-import io.swagger.v3.oas.annotations.Operation;
 
 /**
  * represents a query builder to answer questions regarding birth place and date using Wikidata
@@ -99,17 +94,16 @@ public class BirthDataQueryBuilder extends QanaryComponent {
 	@Override
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("process: {}", myQanaryMessage);
-		
+
 		// STEP 1: Get the required Data
 		//
 		// This example component requires the textual representation of the Question 
 		// as well as annotations of Wikidata entities made by the OpenTapioca NED.
-		
-		// get the question as String
-		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage);
-		String myQuestion = myQanaryQuestion.getTextualRepresentation();
-		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
 
+		// get the question as String
+		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
+		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
+		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 
 		// This component is only supposed to answer a specific type of question.
 		// Therefore we only need to continue if the question asks for birth place and date.
@@ -158,7 +152,7 @@ public class BirthDataQueryBuilder extends QanaryComponent {
 		// This query can the used by other components. 
 
 		// there might be multiple entities identified for one name
-		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlGetAnnotation);
+		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlGetAnnotation, myQanaryUtils.getEndpoint().toString());
 		while(resultset.hasNext()) {
 			QuerySolution tupel = resultset.next();
 			String wikidataResource = tupel.get("wikidataResource").toString();

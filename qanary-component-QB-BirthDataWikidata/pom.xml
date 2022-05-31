@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
-	<artifactId>qanary_component-qb-birthdata-wikidata</artifactId>
-	<version>2.0.0</version>
+	<artifactId>qanary-component-QB-BirthDataWikidata</artifactId>
+	<version>3.1.0</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.5.5</version>
+		<version>2.6.7</version>
 	</parent>
 	<properties>
 		<java.version>11</java.version>
-		<qanary.version>[2.0.0,4.0.0)</qanary.version>
-		<spring-boot-admin.version>2.1.6</spring-boot-admin.version>
+		<qanary.version>[3.1.2,4.0.0)</qanary.version>
+		<spring-boot-admin.version>2.6.7</spring-boot-admin.version>
 		<docker.image.prefix>qanary</docker.image.prefix>
-		<docker.image.name>qb-birthdata-wikidata</docker.image.name>
+		<docker.image.name>qanary-component-qb-birthdatawikidata</docker.image.name>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
 	</properties>
 
@@ -72,13 +72,13 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-data-rest</artifactId>
-			<version>1.5.2</version>
+			<version>2.6.7</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
-			<version>1.5.2</version>
+			<version>2.6.7</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -115,9 +115,19 @@
 							<goal>push</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>default-2</id>
+						<goals>
+							<goal>tag</goal>
+							<goal>push</goal>
+						</goals>
+						<configuration>
+							<tag>latest</tag>
+						</configuration>
+					</execution>
 				</executions>
 				<configuration>
-					<repository>${docker.image.name}</repository>
+					<repository>${docker.image.prefix}/${docker.image.name}</repository>
 					<tag>${project.version}</tag>
 					<buildArgs>
 						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
