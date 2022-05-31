@@ -1,22 +1,17 @@
 package eu.wdaqua.qanary.stanfordner;
 
-import static org.junit.Assert.assertTrue;
+import eu.wdaqua.qanary.stanfordner.StanfordNERComponent.Selection;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import eu.wdaqua.qanary.stanfordner.StanfordNERComponent.Selection;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import static org.junit.Assert.assertTrue;
 
 public class StanfordNERComponentTest {
 
