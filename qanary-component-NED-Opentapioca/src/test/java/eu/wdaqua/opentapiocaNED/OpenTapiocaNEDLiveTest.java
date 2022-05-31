@@ -1,24 +1,15 @@
 package eu.wdaqua.opentapiocaNED;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.http.client.ClientProtocolException;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
-import java.lang.IllegalArgumentException;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Map.Entry;
 
-import org.apache.http.client.ClientProtocolException;
+import static org.junit.Assert.*;
 
 public class OpenTapiocaNEDLiveTest {
 	

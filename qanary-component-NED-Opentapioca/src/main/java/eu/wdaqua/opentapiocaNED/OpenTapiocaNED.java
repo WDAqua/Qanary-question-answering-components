@@ -1,21 +1,17 @@
 package eu.wdaqua.opentapiocaNED;
 
-import java.util.List;
-
 import com.google.gson.JsonArray;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Value;
-
-import io.swagger.v3.oas.annotations.Operation;
-
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
+import io.swagger.v3.oas.annotations.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 
 /**
@@ -69,9 +65,9 @@ public class OpenTapiocaNED extends QanaryComponent {
 		//
 		// This example component will find Wikidata entities in a given Question. 
 		// As such only the textual question is required.
-		
+
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage);
+		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
 		String questionText = myQanaryQuestion.getTextualRepresentation();
 		logger.info("processing question \"{}\" with OpenTapioca at {}.", //
 				questionText, openTapiocaConfiguration.getEndpoint());

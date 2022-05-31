@@ -1,9 +1,6 @@
 package eu.wdaqua.opentapiocaNED;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-
-import com.google.gson.JsonElement;
 
 /**
  *
