@@ -1,11 +1,9 @@
 package eu.wdaqua.qanary.smapherd;
 
-import java.net.URISyntaxException;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.net.URI;
-
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.ontology.TextPositionSelector;
+import eu.wdaqua.qanary.component.QanaryComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
@@ -14,10 +12,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.ontology.TextPositionSelector;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 @Component
 public class SmaphErd extends QanaryComponent {

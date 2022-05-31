@@ -53,6 +53,7 @@
                 <module>qa.qanary_component-AnnotationofSpotProperty-tgm</module>
                 <module>qa.qanary_component-DiambiguationClass-OKBQA</module>
                 <module>qa.qanary_component-DiambiguationProperty-OKBQA</module>
+                <module>qanary-component-NERD-SMAPH</module>
                 <module>qanary-component-ASR-Kaldi</module>
                 <module>qanary-component-NED-AGDISTIS</module>
                 <module>qanary-component-NED-Babelfly</module>
