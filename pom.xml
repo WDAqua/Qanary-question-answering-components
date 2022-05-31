@@ -33,7 +33,7 @@
                             <module>qanary-component-NER-MeaningCloud</module>
                             <module>qanary-component-NED-MeaningCloud</module>
                             <module>qanary-component-NER-Dandelion</module>
-                            <module>qanary_component-NER-tagme</module>
+                            <module>qanary-component-NER-Tagme</module>
                             <module>qanary-component-NER-Ambiverse</module>
                             <module>qanary-component-NER-ComicCharacterNameSimpleNamedEntityRecognizer</module>
                             <module>qanary-component-NER-Aylien</module>
