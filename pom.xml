@@ -75,7 +75,7 @@
 		<profile>
 			<id>tutorial</id>
 			<modules>
-                            <module>qanary-component-ned-ambiverse</module>
+                            <module>qanary-component-NED-Ambiverse</module>
                             <module>qa.qanary_component-DiambiguationProperty-OKBQA</module>
                             <module>qa.qanary_component-QueryBuilder</module>
 			</modules>
@@ -84,7 +84,7 @@
 			<id>tinytutorial</id>
 			<modules>
                             <module>qanary-component-NED-DBpediaSpotlight</module>
-                            <module>qanary_component-QB-SimpleRealNameOfSuperHero</module>
+                <module>qanary-component-QB-SimpleRealNameOfSuperHero</module>
 			</modules>
 		</profile>
 	</profiles>
