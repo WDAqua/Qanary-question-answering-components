@@ -1,10 +1,6 @@
 package eu.wdaqua.qanary.annotationofspotproperty;
 
-import java.io.File;
-import java.util.TreeMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
+import eu.wdaqua.qanary.component.QanaryComponent;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.lang.PipedRDFIterator;
 import org.apache.jena.riot.lang.PipedRDFStream;
@@ -16,7 +12,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
+import java.io.File;
+import java.util.TreeMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @SpringBootApplication
 @EnableAutoConfiguration

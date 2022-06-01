@@ -1,17 +1,8 @@
 package eu.wdaqua.qanary.annotationofspotproperty;
 
-import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Map.Entry;
-
-import javax.inject.Inject;
-
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
+import eu.wdaqua.qanary.component.QanaryServiceController;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -27,13 +18,17 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.endpointKey;
-import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.inGraphKey;
-import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.outGraphKey;
+import javax.inject.Inject;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Map.Entry;
 
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
-import eu.wdaqua.qanary.component.QanaryServiceController;
+import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.*;
+import static org.junit.Assert.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)

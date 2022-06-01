@@ -1,16 +1,17 @@
 package eu.wdaqua.qanary.annotationofspotproperty;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 // this code is to parse the generated JSON template, and fetch the needed information out of it.
 // Remember, there can be multiple resource, multiple classes, multiple properties generated.
 public class PropertyRetrival {
-	
-	public Property retrival(String s){
+
+	public Property retrival(String s) {
 		Property p = new Property();
 		//String input="";
 		
