@@ -51,7 +51,7 @@
                 <module>qa.qanary_component-QueryBuilder</module>
                 <module>qanary-component-QB-AnnotationOfSpotClassTGM</module>
                 <module>qanary-component-RD-AnnotaitonOfSpotProperty-OKBQA</module>
-                <module>qa.qanary_component-DiambiguationClass-OKBQA</module>
+                <module>qanary-component-NED-DiambiguationClass-OKBQA</module>
                 <module>qa.qanary_component-DiambiguationProperty-OKBQA</module>
                 <module>qanary-component-NERD-SMAPH</module>
                 <module>qanary-component-ASR-Kaldi</module>
