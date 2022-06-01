@@ -1,13 +1,11 @@
 package eu.wdaqua.qanary.annotationofspotclass;
 
+import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-
-import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.commons.QanaryMessage;
 
 @SpringBootApplication
 @EnableAutoConfiguration
@@ -18,22 +16,21 @@ import eu.wdaqua.qanary.commons.QanaryMessage;
  */
 public class Application {
 
-	/**
-	* this method is needed to make the QanaryComponent in this project known
-	* to the QanaryServiceController in the qanary_component-template
-	* 
-	* @return
-	*/
-	@Bean
-	public QanaryComponent qanaryComponent() {
-		return new AnnotationofSpotClass();
-	}
-	
-	
     public static void main(String[] args) {
-     SpringApplication.run(Application.class, args);
+        SpringApplication.run(Application.class, args);
    /* 	AnnotationofSpotClass annotationofSpotClass =  new AnnotationofSpotClass();
     	QanaryMessage yQanaryMessage= new QanaryMessage();
     	annotationofSpotClass.process(yQanaryMessage);*/
+    }
+
+    /**
+     * this method is needed to make the QanaryComponent in this project known
+     * to the QanaryServiceController in the qanary_component-template
+     *
+     * @return
+     */
+    @Bean
+    public QanaryComponent qanaryComponent() {
+        return new AnnotationofSpotClass();
     }
 }
