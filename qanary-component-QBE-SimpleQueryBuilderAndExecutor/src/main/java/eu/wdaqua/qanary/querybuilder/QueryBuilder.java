@@ -1,28 +1,20 @@
 package eu.wdaqua.qanary.querybuilder;
 
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
-import org.apache.jena.query.ResultSetFactory;
-import org.apache.jena.query.ResultSetFormatter;
+import org.apache.jena.query.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryUtils;
-import eu.wdaqua.qanary.component.QanaryComponent;
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Component
 /**
@@ -35,6 +27,9 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  */
 public class QueryBuilder extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(QueryBuilder.class);
+
+	@Value("${dbpedia.sparql.endpoint:http://dbpedia.org/sparql}")
+	String dbpediaSparqlEndpoint;
 
 	private final String applicationName;
 
@@ -56,7 +51,6 @@ public class QueryBuilder extends QanaryComponent {
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 		logger.info("Question: {}", myQuestion);
 
-		String dbpediaSparqEndpoint = "http://dbpedia.org/sparql";
 		String sparql;
 		
 		// random answer URI
@@ -118,7 +112,7 @@ public class QueryBuilder extends QanaryComponent {
 								+ "}";
 
 						Query query = QueryFactory.create(generatedQuery);
-						QueryExecution exec = QueryExecutionFactory.sparqlService(dbpediaSparqEndpoint, query);
+						QueryExecution exec = QueryExecutionFactory.sparqlService(dbpediaSparqlEndpoint, query);
 						ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
 
 						if (!results.hasNext()) {
@@ -135,7 +129,7 @@ public class QueryBuilder extends QanaryComponent {
 								+ "}";
 
 						Query query = QueryFactory.create(generatedQuery);
-						QueryExecution exec = QueryExecutionFactory.sparqlService(dbpediaSparqEndpoint, query);
+						QueryExecution exec = QueryExecutionFactory.sparqlService(dbpediaSparqlEndpoint, query);
 						ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
 						if (!results.hasNext()) {
 							generatedQuery = "SELECT DISTINCT ?uri WHERE { " //
@@ -170,7 +164,7 @@ public class QueryBuilder extends QanaryComponent {
 							+ "}";
 
 					Query query = QueryFactory.create(generatedQuery);
-					QueryExecution exec = QueryExecutionFactory.sparqlService(dbpediaSparqEndpoint, query);
+					QueryExecution exec = QueryExecutionFactory.sparqlService(dbpediaSparqlEndpoint, query);
 					ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
 					if (!results.hasNext()) {
 						generatedQuery = "SELECT DISTINCT ?uri WHERE { " //
@@ -249,7 +243,7 @@ public class QueryBuilder extends QanaryComponent {
 			myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 
 			Query query = QueryFactory.create(generatedQuery);
-			QueryExecution exec = QueryExecutionFactory.sparqlService(dbpediaSparqEndpoint, query);
+			QueryExecution exec = QueryExecutionFactory.sparqlService(dbpediaSparqlEndpoint, query);
 
 			ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -304,7 +298,7 @@ public class QueryBuilder extends QanaryComponent {
 				+ "     ]; " //
 				+ "     oa:hasBody ?uri ; }";
 
-		ResultSet r = myQanaryUtils.selectFromTripleStore(sparql);
+		ResultSet r = myQanaryUtils.selectFromTripleStore(sparql, myQanaryUtils.getEndpoint().toString());
 
 		while (r.hasNext()) {
 			QuerySolution s = r.next();
@@ -338,7 +332,7 @@ public class QueryBuilder extends QanaryComponent {
 				+ "     ]; " //
 				+ "     oa:hasBody ?uri ; }";
 
-		ResultSet r = myQanaryUtils.selectFromTripleStore(sparql);
+		ResultSet r = myQanaryUtils.selectFromTripleStore(sparql, myQanaryUtils.getEndpoint().toString());
 
 		while (r.hasNext()) {
 			QuerySolution s = r.next();
@@ -376,7 +370,7 @@ public class QueryBuilder extends QanaryComponent {
 				+ " ?a oa:hasBody ?uri . " + "} " //
 				+ "ORDER BY ?start ";
 
-		ResultSet r = myQanaryUtils.selectFromTripleStore(sparql);
+		ResultSet r = myQanaryUtils.selectFromTripleStore(sparql, myQanaryUtils.getEndpoint().toString());
 		while (r.hasNext()) {
 			QuerySolution s = r.next();
 
