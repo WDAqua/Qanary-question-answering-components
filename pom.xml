@@ -17,7 +17,7 @@
             <modules>
                 <!-- <module>qanary_component-template</module> -->
                 <module>qanary-component-LD-Shuyo</module>
-                <module>qanary_monolitic-wrapper</module>
+                <module>qanary-component-QB-MonoliticWrapper</module>
                 <module>qanary-component-NERD-Alchemy</module>
                 <module>qanary-component-NERD-LuceneLinker</module>
                 <module>qanary-component-NER-Stanford</module>
