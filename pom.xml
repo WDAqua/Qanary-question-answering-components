@@ -49,7 +49,7 @@
                 <module>qanary-component-QB-SimpleRealNameOfSuperHero</module>
                 <module>qanary-component-QB-ComicCharacterAlterEgoSimpleDBpedia</module>
                 <module>qanary-component-QBE-SimpleQueryBuilderAndExecutor</module>
-                <module>qanary-component-QB-AnnotationOfSpotClassTGM</module>
+                <module>qanary-component-QB-AnnotationOfSpotClass-OKBQA</module>
                 <module>qanary-component-RD-AnnotaitonOfSpotProperty-OKBQA</module>
                 <module>qanary-component-NED-DiambiguationClass-OKBQA</module>
                 <module>qanary-component-RD-DiambiguationProperty-OKBQA</module>
@@ -78,8 +78,8 @@
             <id>tutorial</id>
             <modules>
                 <module>qanary-component-NED-Ambiverse</module>
-                <module>qa.qanary_component-DiambiguationProperty-OKBQA</module>
-                <module>qa.qanary_component-QueryBuilder</module>
+                <module>qanary-component-RD-DiambiguationProperty-OKBQA</module>
+                <module>qanary-component-QBE-SimpleQueryBuilderAndExecutor</module>
             </modules>
         </profile>
         <profile>
