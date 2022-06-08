@@ -339,7 +339,8 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
 					+ "  ?sparql" + counter + " a              qa:SparqlQuery ; \n" //
 					+ "         qa:hasPosition  \"" + counter + "\"^^xsd:nonNegativeInteger ; \n" // 
 					+ "         rdf:value       \"\"\"" + answer.get("query").getAsString() + "\"\"\"^^xsd:string . \n"; //
-			bindForInsert += "  BIND (IRI(str(RAND())) AS ?annotationSPARQL" + counter + ") . \n"; //
+			bindForInsert += "  BIND (IRI(str(RAND())) AS ?annotationSPARQL" + counter + ") . \n" //
+					+ "  BIND (IRI(str(RAND())) AS ?sparql" + counter + ") . \n"; //
 
 			counter++;
 		}
