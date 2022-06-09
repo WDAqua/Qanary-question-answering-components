@@ -1,9 +1,15 @@
 package eu.wdaqua.qanary.component.qanswer.qbe;
 
-import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.qanswer.qbe.messages.NoLiteralFieldFoundException;
-import eu.wdaqua.qanary.component.qanswer.qbe.messages.QAnswerResult;
-import net.minidev.json.parser.ParseException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,12 +23,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.LinkedList;
-import java.util.List;
-
-import static org.junit.Assert.*;
+import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
+import eu.wdaqua.qanary.component.qanswer.qbe.messages.NoLiteralFieldFoundException;
+import eu.wdaqua.qanary.component.qanswer.qbe.messages.QAnswerResult;
+import net.minidev.json.parser.ParseException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -63,7 +67,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
 	}
 
 	@Test
-	public void testTransformationOfNamedEntites() throws URISyntaxException {
+	public void testTransformationOfNamedEntites() throws URISyntaxException, MalformedURLException {
 		float threshold = 0.5f;
 		QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, "en", "dbpedia", 
 				new URI("urn:no:endpoint"), applicationName, restTemplate);
@@ -86,7 +90,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
 	}
 
 	@Test
-	public void testThresholdBehavior() throws URISyntaxException {
+	public void testThresholdBehavior() throws URISyntaxException, MalformedURLException {
 		float threshold = 0.4f;
 		QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, "en", "wikidata", 
 				new URI("urn:no:endpoint"), applicationName, restTemplate);
@@ -137,9 +141,10 @@ public class QAnswerQueryBuilderAndExecutorTest {
 	 * @throws URISyntaxException
 	 * @throws ParseException
 	 * @throws NoLiteralFieldFoundException 
+	 * @throws MalformedURLException
 	 */
 	@Test
-	public void testWebServiceWhatIsTheCapitalOfGermanyResultOneResource() throws URISyntaxException, ParseException, NoLiteralFieldFoundException {
+	public void testWebServiceWhatIsTheCapitalOfGermanyResultOneResource() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
 		float threshold = 0.4f;
 		String lang = "en";
 		String kb = "wikidata";
@@ -183,9 +188,10 @@ public class QAnswerQueryBuilderAndExecutorTest {
 	 * @throws URISyntaxException
 	 * @throws ParseException
 	 * @throws NoLiteralFieldFoundException 
+	 * @throws MalformedURLException
 	 */
 	@Test
-	public void testWebServicePersonBornInFranceResultManyResources() throws URISyntaxException, ParseException, NoLiteralFieldFoundException {
+	public void testWebServicePersonBornInFranceResultManyResources() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
 		float threshold = 0.4f;
 		String lang = "en";
 		String kb = "wikidata";
@@ -240,9 +246,10 @@ public class QAnswerQueryBuilderAndExecutorTest {
 	 * @throws URISyntaxException
 	 * @throws ParseException
 	 * @throws NoLiteralFieldFoundException 
+	 * @throws MalformedURLException
 	 */
 	@Test
-	public void testWebServiceIsBerlinTheCapitalOfGermanyResultBoolean() throws URISyntaxException, ParseException, NoLiteralFieldFoundException {
+	public void testWebServiceIsBerlinTheCapitalOfGermanyResultBoolean() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
 		float threshold = 0.4f;
 		String lang = "en";
 		String kb = "wikidata";
@@ -288,9 +295,10 @@ public class QAnswerQueryBuilderAndExecutorTest {
 	 * @throws URISyntaxException
 	 * @throws ParseException
 	 * @throws NoLiteralFieldFoundException 
+	 * @throws MalformedURLException
 	 */
 	@Test
-	public void testWebServicePopulationOfFranceResultNumber() throws URISyntaxException, ParseException, NoLiteralFieldFoundException {
+	public void testWebServicePopulationOfFranceResultNumber() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
 		float threshold = 0.4f;
 		String lang = "en";
 		String kb = "wikidata";
@@ -332,9 +340,10 @@ public class QAnswerQueryBuilderAndExecutorTest {
 	 * @throws URISyntaxException
 	 * @throws ParseException
 	 * @throws NoLiteralFieldFoundException
+	 * @throws MalformedURLException
 	 */
 	@Test
-	public void testWebServiceWhatIsTheNicknameOfRomeResultString() throws URISyntaxException, ParseException, NoLiteralFieldFoundException {
+	public void testWebServiceWhatIsTheNicknameOfRomeResultString() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
 	
 		float threshold = 0.4f;
 		String lang = "en";

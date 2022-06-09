@@ -1,16 +1,17 @@
 package eu.wdaqua.qanary.component.qanswer.qbe;
 
-import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryUtils;
-import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.component.qanswer.qbe.messages.NoLiteralFieldFoundException;
-import eu.wdaqua.qanary.component.qanswer.qbe.messages.QAnswerRequest;
-import eu.wdaqua.qanary.component.qanswer.qbe.messages.QAnswerResult;
-import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-import net.minidev.json.JSONObject;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.AbstractMap;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.slf4j.Logger;
@@ -26,11 +27,17 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
+import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.component.qanswer.qbe.messages.NoLiteralFieldFoundException;
+import eu.wdaqua.qanary.component.qanswer.qbe.messages.QAnswerRequest;
+import eu.wdaqua.qanary.component.qanswer.qbe.messages.QAnswerResult;
+import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
+import net.minidev.json.JSONObject;
 
 @Component
 /**
@@ -45,24 +52,26 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(QAnswerQueryBuilderAndExecutor.class);
 	private QanaryUtils myQanaryUtils;
 	private float threshold;
-	private URI endpoint;
+	private URI qanswerEndpoint;
 	private RestTemplate myRestTemplate;
 	private String langDefault;
 	private String knowledgeBaseDefault;
 	private final String applicationName;
 
+	public final Map<String, URL> knowledgeGraphEndpoints;
+
 	public QAnswerQueryBuilderAndExecutor( //
 			float threshold, //
 			@Qualifier("langDefault") String langDefault, //
 			@Qualifier("knowledgeBaseDefault") String knowledgeBaseDefault, //
-			@Qualifier("endpointUrl") URI endpoint, //
+			@Qualifier("endpointUrl") URI qanswerEndpoint, //
 			@Value("${spring.application.name}") final String applicationName, //
 			RestTemplateWithCaching restTemplate //
-	) throws URISyntaxException {
+	) throws URISyntaxException, MalformedURLException {
 
 		assert threshold >= 0 : "threshold has to be >= 0: " + threshold;
-		assert !(endpoint == null) : //
-				"endpointUrl cannot be null: " + endpoint;
+		assert !(qanswerEndpoint == null) : //
+				"qanswerEndpoint cannot be null: " + qanswerEndpoint;
 		assert !(langDefault == null || langDefault.trim().isEmpty()) : //
 				"langDefault cannot be null or empty: " + langDefault;
 		assert (langDefault.length() == 2) : //
@@ -72,12 +81,18 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
 				"knowledgeBaseDefault cannot be null or empty: " + knowledgeBaseDefault;
 
 		this.threshold = threshold;
-		this.endpoint = endpoint;
+		this.qanswerEndpoint= qanswerEndpoint;
 		this.langDefault = langDefault;
 		this.knowledgeBaseDefault = knowledgeBaseDefault;
 		this.myRestTemplate = restTemplate;
 		this.applicationName = applicationName;
-		
+
+		// define the names of supported triplestore endpoints
+		knowledgeGraphEndpoints = Stream.of( //
+				  new AbstractMap.SimpleEntry<>("wikidata", new URL("https://query.wikidata.org/bigdata/namespace/wdq/sparql")), //
+				  new AbstractMap.SimpleEntry<>("dbpedia",  new URL("https://dbpedia.org/sparql"))) //
+				  .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));	//
+
 		logger.debug("RestTemplate: {}", restTemplate);
 	}
 
@@ -85,8 +100,8 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
 		return threshold;
 	}
 
-	public URI getEndpoint() {
-		return endpoint;
+	public URI getQanswerEndpoint() {
+		return qanswerEndpoint;
 	}
 
 	/**
@@ -123,10 +138,10 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
 		// STEP 2: enriching of query and fetching data from the QAnswer API
 		String questionStringWithResources = computeQuestionStringWithReplacedResources(questionString,
 				retrievedNamedEntities, threshold);
-		QAnswerResult result = requestQAnswerWebService(endpoint, questionStringWithResources, lang, knowledgeBaseId);
+		QAnswerResult result = requestQAnswerWebService(this.getQanswerEndpoint(), questionStringWithResources, lang, knowledgeBaseId);
 
 		// STEP 3: add information to Qanary triplestore
-		String sparql = getSparqlInsertQuery(myQanaryQuestion, result);
+		String sparql = getSparqlInsertQuery(myQanaryQuestion, result, knowledgeBaseId);
 		myQanaryUtils.updateTripleStore(sparql, endpoint);
 
 		return myQanaryMessage;
@@ -197,7 +212,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
 		int end;
 		QuerySolution tupel;
 
-		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlGetAnnotation, endpoint.toASCIIString());
+		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlGetAnnotation, myQanaryQuestion.getEndpoint().toASCIIString());
 		while (resultset.hasNext()) {
 			tupel = resultset.next();
 			start = tupel.get("start").asLiteral().getInt();
@@ -307,7 +322,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
 	 * @throws URISyntaxException
 	 * @throws SparqlQueryFailed
 	 */
-	private String getSparqlInsertQuery(QanaryQuestion<String> myQanaryQuestion, QAnswerResult result)
+	private String getSparqlInsertQuery(QanaryQuestion<String> myQanaryQuestion, QAnswerResult result, String usedKnowledgeGraph)
 			throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed {
 
 		// the computed answer's SPARQL query needs to be cleaned
@@ -340,7 +355,8 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
 				+ " 		oa:hasBody      ?sparql ; \n" //
 				+ " 		oa:annotatedBy  ?service ; \n" //
 				+ " 		oa:annotatedAt  ?time ; \n" //
-				+ " 		qa:score        ?score . \n" //
+				+ " 		qa:score        ?score ; \n" //
+				+ "         qa:overKnowledgeGraph ?knowledgeGraph . \n" //
 				//
 				+ "  ?sparql a              qa:SparqlQuery ; \n" //
 				+ "         rdf:value       ?sparqlQueryString . \n" //
@@ -395,9 +411,12 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
 				+ "  BIND (<urn:qanary:" + this.applicationName + "> AS ?service ) . \n" //
 				+ "  BIND (\"" + createdAnswerSparqlQuery + "\"^^xsd:string AS ?sparqlQueryString ) . \n" //
 				+ "  BIND (\"" + improvedQuestion + "\"^^xsd:string  AS ?improvedQuestionText ) . \n" //
-				+ "  BIND ( <" + result.getDatatype() + "> AS ?answerDataType)" + "} \n";
+				+ "  BIND ( <" + result.getDatatype() + "> AS ?answerDataType) . \n" //
+				+ "  BIND ( <" + knowledgeGraphEndpoints.get(usedKnowledgeGraph) + "> AS ?knowledgeGraph) . \n" //
+				+ "}\n";
 
-		logger.info("SPARQL insert for adding data to Qanary triplestore", sparql);
+
+		logger.info("SPARQL INSERT for adding data to the Qanary triplestore: ", sparql);
 		return sparql;
 	}
 
