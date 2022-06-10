@@ -8,9 +8,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
@@ -31,7 +28,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
-import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
@@ -63,7 +59,7 @@ public class OntoTextNED extends QanaryComponent {
 		logger.info("process: {}", myQanaryMessage);
 		// TODO: implement processing of question
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-	    QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage);
+	    QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
 	    String myQuestion = myQanaryQuestion.getTextualRepresentation();
 	    ArrayList<Link> links = new ArrayList<Link>();
 	    try {
@@ -95,7 +91,7 @@ public class OntoTextNED extends QanaryComponent {
 			    	        l.link= explrObject.getString("link");
 			                links.add(l);
 			            }
-			           }
+			        }
 				    flag=1;
 				    break;	
 				}
@@ -135,7 +131,7 @@ public class OntoTextNED extends QanaryComponent {
 									l.end = end;
 									l.link = uriLink;
 									links.add(l);
-									}
+								}
 							}
 						}
 //	            JSONObject jsnobject = new JSONObject(text);
@@ -171,8 +167,8 @@ public class OntoTextNED extends QanaryComponent {
 					// TODO Auto-generated catch block
 		 		} 
 				catch (IOException e1) {
-	    	logger.info("Except: {}", e1);
-	        // TODO Auto-generated catch block
+					logger.info("Except: {}", e1);
+					// TODO Auto-generated catch block
 	    		}
 			}
 		}
@@ -191,7 +187,8 @@ public class OntoTextNED extends QanaryComponent {
             String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
                     + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
                     + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-                    + "INSERT { " + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
+                    + "INSERT { " // 
+                    + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
                     + "  ?a a qa:AnnotationOfInstance . " //
                     + "  ?a oa:hasTarget [ " //
                     + "           a    oa:SpecificResource; " //
@@ -209,7 +206,7 @@ public class OntoTextNED extends QanaryComponent {
                     + "  BIND (IRI(str(RAND())) AS ?a) ."//
                     + "  BIND (now() as ?time) " //
                     + "}";
-            logger.debug("Sparql query: {}", sparql);
+            logger.debug("SPARQL query: {}", sparql);
             myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
         }
 		return myQanaryMessage;
