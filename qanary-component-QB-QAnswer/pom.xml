@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary-component-QB-QAnswer</artifactId>
-	<version>3.1.0</version>
+	<version>3.1.1</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -112,14 +110,14 @@
 				<version>${dockerfile-maven-version}</version>
 				<executions>
 					<execution>
-						<id>default</id>
+						<id>build-and-push-versioned-image</id>
 						<goals>
 							<goal>build</goal>
 							<goal>push</goal>
 						</goals>
 					</execution>
 					<execution>
-						<id>default-2</id>
+						<id>build-and-push-latest-image</id>
 						<goals>
 							<goal>tag</goal>
 							<goal>push</goal>

@@ -152,7 +152,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
 		parameters.put("lang", lang);
 		parameters.put("kb", knowledgeBaseId);
 
-		String urlTemplate = UriComponentsBuilder.fromHttpUrl(qanaryApiUri.toURL().toURI().toASCIIString()) //
+		String urlTemplate = UriComponentsBuilder.fromHttpUrl(this.endpoint.toURL().toURI().toASCIIString()) //
 				.queryParam("question", "{question}") //
 				.queryParam("lang", "{lang}") //
 				.queryParam("kb", "{kb}") //
@@ -339,7 +339,8 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
 					+ "  ?sparql" + counter + " a              qa:SparqlQuery ; \n" //
 					+ "         qa:hasPosition  \"" + counter + "\"^^xsd:nonNegativeInteger ; \n" // 
 					+ "         rdf:value       \"\"\"" + answer.get("query").getAsString() + "\"\"\"^^xsd:string . \n"; //
-			bindForInsert += "  BIND (IRI(str(RAND())) AS ?annotationSPARQL" + counter + ") . \n"; //
+			bindForInsert += "  BIND (IRI(str(RAND())) AS ?annotationSPARQL" + counter + ") . \n" //
+					+ "  BIND (IRI(str(RAND())) AS ?sparql" + counter + ") . \n"; //
 
 			counter++;
 		}
