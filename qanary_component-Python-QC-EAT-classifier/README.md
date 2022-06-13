@@ -45,12 +45,38 @@ docker run -d -p 41097:41097 \
     eat-component:latest
 ```
 
+The component can be run with HTTPS. For this you need to start the container with a volume
+pointing to a certificate (.cert) and keyfile (.key).
+The file paths to certificate and keyfile are passed with parameters `SERVER_SSL_CERTIFICATE` and
+`SERVER_SSL_KEY`.
+The `SERVICE_HOST` parameter has to be set to `https://...`.
+
+The run command could look something like this:
+
+```bash
+docker run -d -p 41097:41097 \
+    -e SPRING_BOOT_ADMIN_URL='http://webengineering.ins.hs-anhalt.de:43740' \
+    -e SPRING_BOOT_ADMIN_USERNAME='admin' \
+    -e SPRING_BOOT_ADMIN_PASSWORD='admin' \
+    -e SERVICE_HOST='https://webengineering.ins.hs-anhalt.de' \
+    -e SERVICE_PORT=41097 \
+    -e SERVICE_NAME_COMPONENT='EAT-Component' \
+    -e SERVICE_DESCRIPTION_COMPONENT='EAT-Component-Description' \
+    -e CLASSIFICATION_ENDPOINT='http://webengineering.ins.hs-anhalt.de:41066/answer_type_classifier/predict' \
+    -e SERVER_SSL_CERTIFICATE='/certificate/server.cert' \
+    -e SERVER_SSL_KEY='/certificate/server.key' \
+    -v /home/user/certificate/:/certificate/ \
+    eat-component:latest
+```
+
 The parameters description:
 
-* `SPRING_BOOT_ADMIN_URL` -- URL of the Qanary pipeline (see Step 1 and Step 2 of the [tutorial](https://github.com/WDAqua/Qanary/wiki/Qanary-tutorial:-How-to-build-a-trivial-Question-Answering-pipeline))
+* `SPRING_BOOT_ADMIN_URL` -- URL of the Qanary pipeline (see Step 1 and Step 2 of
+  the [tutorial](https://github.com/WDAqua/Qanary/wiki/Qanary-tutorial:-How-to-build-a-trivial-Question-Answering-pipeline))
 * `SPRING_BOOT_ADMIN_USERNAME` -- the admin username of the Qanary pipeline
 * `SPRING_BOOT_ADMIN_PASSWORD` -- the admin password of the Qanary pipeline
-* `SERVICE_HOST` -- the host of your Qanary component without protocol prefix (e.g., `http://`). It has to be visible to the Qanary pipeline (i.e., a callback from the Qanary pipeline can be executed).
+* `SERVICE_HOST` -- the host of your Qanary component without protocol prefix (e.g., `http://`). It has to be visible to
+  the Qanary pipeline (i.e., a callback from the Qanary pipeline can be executed).
 * `SERVICE_PORT` -- the port of your Qanary component (has to be visible to the Qanary pipeline)
 * `SERVICE_NAME_COMPONENT` -- the name of your Qanary component (for better identification)
 * `SERVICE_DESCRIPTION_COMPONENT` -- the description of your Qanary component

@@ -1,0 +1,1 @@
+component source: https://www.okbqa.org/architecture/disambiguation
