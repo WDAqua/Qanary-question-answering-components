@@ -1,5 +1,6 @@
 package eu.wdaqua.queryexecuter;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
@@ -86,7 +87,7 @@ public class QueryExecuter extends QanaryComponent {
 	@Operation(summary = "Create a SPARQL insert query", //
 			operationId = "getSparqlInsertQuery", //
 			description = "Create a query to store the computed information in the Qanary triplestore")
-	public String getSparqlInsertQuery(QanaryQuestion<String> myQanaryQuestion, String answerJson)
+	public String getSparqlInsertQuery(URI outGraph, URI question, String answerJson)
 			throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed {
 
 		answerJson = answerJson.replace("\"", "\\\"").replace("\n", "\\n");
@@ -99,7 +100,7 @@ public class QueryExecuter extends QanaryComponent {
 				+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n" //
 				+ "" //
 				+ "INSERT { \n" //
-				+ "GRAPH <" + myQanaryQuestion.getOutGraph() + ">  {\n" //
+				+ "GRAPH <" + outGraph.toASCIIString() + ">  {\n" //
 				+ "  ?annotationAnswer a	qa:AnnotationOfAnswerJson ; \n" //
 				+ "			oa:hasTarget	?question ; \n" //
 				+ "			oa:hasBody		?answer ; \n" //
@@ -119,7 +120,7 @@ public class QueryExecuter extends QanaryComponent {
 				+ "  BIND (IRI(str(RAND())) AS ?answer) . \n" //
 				// values
 				+ "  BIND (now() AS ?time) . \n" //
-				+ "  BIND (<" + myQanaryQuestion.getUri().toASCIIString() + "> AS ?question) . \n" //
+				+ "  BIND (<" + question.toASCIIString() + "> AS ?question) . \n" //
 				+ "  BIND (\"" + answerJson + "\"^^xsd:string AS ?answerJson) . \n" //
 				+ "  BIND (\"1.0\"^^xsd:float AS ?score) . \n" // rule based
 				+ "  BIND (<urn:qanary:" + this.applicationName + "> AS ?service) . \n" // 
@@ -211,7 +212,7 @@ public class QueryExecuter extends QanaryComponent {
 			String answers = this.getAnswersFromWikidata(queryString);
 			if (isAnswerValid(answers)) {
 				// create an insert query to store new information
-				String sparql = this.getSparqlInsertQuery(myQanaryQuestion, answers);
+				String sparql = this.getSparqlInsertQuery(myQanaryQuestion.getOutGraph(), myQanaryQuestion.getUri(), answers);
 
 				// STEP 3: Push the computed knowledge about the given question to the Qanary
 				// triplestore
