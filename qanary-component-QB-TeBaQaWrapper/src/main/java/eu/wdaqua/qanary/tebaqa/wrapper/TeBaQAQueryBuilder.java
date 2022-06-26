@@ -1,10 +1,11 @@
-package eu.wdaqua.qanary.tebaqa_wrapper;
+package eu.wdaqua.qanary.tebaqa.wrapper;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
+import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
@@ -22,8 +23,8 @@ import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-import eu.wdaqua.qanary.tebaqa_wrapper.messages.TeBaQARequest;
-import eu.wdaqua.qanary.tebaqa_wrapper.messages.TeBaQAResult;
+import eu.wdaqua.qanary.tebaqa.wrapper.messages.TeBaQARequest;
+import eu.wdaqua.qanary.tebaqa.wrapper.messages.TeBaQAResult;
 import net.minidev.json.JSONObject;
 
 @Component
@@ -33,28 +34,30 @@ import net.minidev.json.JSONObject;
  *
  * This component connected automatically to the Qanary pipeline. The Qanary
  * pipeline endpoint defined in application.properties (spring.boot.admin.url)
- * 
+ *
  * @see <a href=
  *      "https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F"
  *      target="_top">Github wiki howto</a>
  */
-public class TeBaQAQueryBuilderAndExecutor extends QanaryComponent {
-	private static final Logger logger = LoggerFactory.getLogger(TeBaQAQueryBuilderAndExecutor.class);
+public class TeBaQAQueryBuilder extends QanaryComponent {
+	private static final Logger logger = LoggerFactory.getLogger(TeBaQAQueryBuilder.class);
+	private final float threshold;
+	private final URI endpoint;
+	private final RestTemplate myRestTemplate;
+	private final String langDefault;
+	private final ArrayList<String> supportedLang;
+	private final String applicationName;
+	private final CacheOfRestTemplateResponse myCacheOfResponses;
 	private QanaryUtils myQanaryUtils;
-	private float threshold;
-	private URI endpoint;
-	private RestTemplate myRestTemplate;
-	private String langDefault;
-	private ArrayList<String> supportedLang;
-	protected final String applicationName;
 
-	public TeBaQAQueryBuilderAndExecutor(//
-			float threshold, //
-			@Qualifier("langDefault") String langDefault, //
-			@Qualifier("langDefault") ArrayList<String> supportedLang, //
-			@Qualifier("endpointUrl") URI endpoint, //
-			@Value("${spring.application.name}") final String applicationName, //
-			RestTemplate restTemplate //
+	public TeBaQAQueryBuilder(//
+							  float threshold, //
+							  @Qualifier("tebaqa.langDefault") String langDefault, //
+							  @Qualifier("tebaqa.endpoint.language.supported") ArrayList<String> supportedLang, //
+							  @Qualifier("tebaqa.endpointUrl") URI endpoint, //
+							  @Value("${spring.application.name}") final String applicationName, //
+							  RestTemplate restTemplate, //
+							  CacheOfRestTemplateResponse myCacheOfResponses //
 	) throws URISyntaxException {
 
 		assert threshold >= 0 : "threshold has to be >= 0: " + threshold;
@@ -79,6 +82,7 @@ public class TeBaQAQueryBuilderAndExecutor extends QanaryComponent {
 		this.supportedLang = supportedLang;
 		this.myRestTemplate = restTemplate;
 		this.applicationName = applicationName;
+		this.myCacheOfResponses = myCacheOfResponses;
 	}
 
 	public float getThreshold() {
@@ -129,6 +133,11 @@ public class TeBaQAQueryBuilderAndExecutor extends QanaryComponent {
 		// STEP 2: enriching of query and fetching data from the TeBaQA API
 		TeBaQAResult result = requestTeBaQAWebService(endpoint, questionString, lang);
 
+		if (result == null) {
+			logger.error("No result from TeBaQA API");
+			return myQanaryMessage;
+		}
+
 		// STEP 3: add information to Qanary triplestore
 		String sparql = getSparqlInsertQuery(myQanaryQuestion, result);
 		myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
@@ -149,12 +158,22 @@ public class TeBaQAQueryBuilderAndExecutor extends QanaryComponent {
 	protected TeBaQAResult requestTeBaQAWebService(URI uri, String questionString, String lang)
 			throws URISyntaxException {
 		TeBaQARequest tebaqaRequest = new TeBaQARequest(uri, questionString, lang);
+		long requestBefore = myCacheOfResponses.getNumberOfExecutedRequests();
 
-		HttpEntity<JSONObject> response = myRestTemplate.getForEntity(tebaqaRequest.getTeBaQAQuestionUrlAsString(),
-				JSONObject.class);
+		logger.debug("URL: {}", tebaqaRequest.getTeBaQAQuestionUrlAsString());
+		HttpEntity<JSONObject> response = myRestTemplate.postForEntity(tebaqaRequest.getTeBaQAQuestionUrlAsURI(), "{}", JSONObject.class);
 
-		return new TeBaQAResult(response.getBody(), tebaqaRequest.getQuestion(), tebaqaRequest.getTeBaQAEndpointUrl(),
-				tebaqaRequest.getLanguage());
+		if (myCacheOfResponses.getNumberOfExecutedRequests() - requestBefore == 0) {
+			logger.warn("request was cached: {}", tebaqaRequest);
+		} else {
+			logger.info("request was actually executed: {}", tebaqaRequest);
+		}
+
+		if (response.getBody().equals("{}")) {
+			return null;
+		} else {
+			return new TeBaQAResult(response.getBody(), tebaqaRequest.getQuestion(), tebaqaRequest.getTeBaQAEndpointUrl(), tebaqaRequest.getLanguage());
+		}
 	}
 
 	private String cleanStringForSparqlQuery(String myString) {

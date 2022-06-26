@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.tebaqa_wrapper.messages;
+package eu.wdaqua.qanary.tebaqa.wrapper.messages;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -19,7 +19,7 @@ import net.minidev.json.JSONObject;
 public class TeBaQAResult {
     private static final Logger logger = LoggerFactory.getLogger(TeBaQAResult.class);
 
-    private com.google.gson.JsonParser jsonParser;
+    private JsonParser jsonParser;
 
     private URI endpoint;
     private String language;
@@ -39,9 +39,6 @@ public class TeBaQAResult {
     public final URI STRINGTYPEURI;
 
     public TeBaQAResult(JSONObject json, String question, URI endpoint, String language) throws URISyntaxException {
-        jsonParser = new JsonParser();
-        JsonArray parsedJsonArray = jsonParser.parse(json.toJSONString()).getAsJsonObject().getAsJsonArray("queries").getAsJsonArray();
-
         this.question = question;
         this.language = language;
         this.endpoint = endpoint;
@@ -50,7 +47,7 @@ public class TeBaQAResult {
         this.BOOLEANTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#boolean");
         this.STRINGTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#string");
 
-        initData(parsedJsonArray);
+        initData(json);
     }
 
     /**
@@ -59,10 +56,10 @@ public class TeBaQAResult {
      * @param answers
      * @throws URISyntaxException
      */
-    private void initData(JsonArray answers) throws URISyntaxException {
+    private void initData(JSONObject answers) throws URISyntaxException {
         logger.debug("responseQuestion: {}", answers);
-        // TODO init data
 
+        this.sparql = answers.get("sparql").toString();
     }
 
     public JsonParser getJsonParser() {

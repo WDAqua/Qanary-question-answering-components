@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.tebaqa_wrapper.messages;
+package eu.wdaqua.qanary.tebaqa.wrapper.messages;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.slf4j.Logger;
@@ -12,10 +12,10 @@ import java.net.URI;
 
 public class TeBaQARequest {
     private static final Logger logger = LoggerFactory.getLogger(TeBaQARequest.class);
-    @Schema(description = "Endpoint URL of TeBaQA API (default is already available)", example = "", required = false)
+    @Schema(description = "Endpoint URL of TeBaQA API (default is already available)", example = "https://tebaqa.demos.dice-research.org/qa-simple", required = false)
     private URI tebaqaEndpointUrl;
     @NotBlank
-    @Schema(description = "Question for that the results will be fetched from the gGnswer API", example = "What is the capital of Germany?", required = true)
+    @Schema(description = "Question for that the results will be fetched from the TeBaQA API", example = "What is the capital of Germany?", required = true)
     private String question;
     @Schema(description = "2-character language identifier (e.g., en, de, fr, it, es, pt)", example = "en", required = false)
     private String language;
@@ -49,12 +49,24 @@ public class TeBaQARequest {
 
     public String getTeBaQAQuestionUrlAsString() {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
-        parameters.add("question", getQuestion());
+        parameters.add("query", getQuestion());
+        parameters.add("lang", getLanguage());
 
         UriComponentsBuilder url = UriComponentsBuilder.fromUri(getTeBaQAEndpointUrl()).queryParams(parameters);
         logger.info("request to {}", url.toUriString());
 
         return url.toUriString();
+    }
+
+    public URI getTeBaQAQuestionUrlAsURI() {
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+        parameters.add("query", getQuestion());
+        parameters.add("lang", getLanguage());
+
+        UriComponentsBuilder url = UriComponentsBuilder.fromUri(getTeBaQAEndpointUrl()).queryParams(parameters);
+        logger.info("request to {}", url.toUriString());
+
+        return url.build().toUri();
     }
 
     public String getQuestion() {
