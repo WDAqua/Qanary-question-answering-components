@@ -3,11 +3,11 @@ package eu.wdaqua.qanary.tebaqa.wrapper;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
+import java.util.List;
 
-import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.shiro.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,6 +21,7 @@ import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
+import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import eu.wdaqua.qanary.tebaqa.wrapper.messages.TeBaQARequest;
@@ -36,8 +37,8 @@ import net.minidev.json.JSONObject;
  * pipeline endpoint defined in application.properties (spring.boot.admin.url)
  *
  * @see <a href=
- *      "https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F"
- *      target="_top">Github wiki howto</a>
+ *      "https://github.com/WDAqua/Qanary-question-answering-components/blob/master/qanary-component-QB-TeBaQaWrapper/README.md"
+ *      target="_top">README.md</a>
  */
 public class TeBaQAQueryBuilder extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(TeBaQAQueryBuilder.class);
@@ -45,19 +46,19 @@ public class TeBaQAQueryBuilder extends QanaryComponent {
 	private final URI endpoint;
 	private final RestTemplate myRestTemplate;
 	private final String langDefault;
-	private final ArrayList<String> supportedLang;
+	private final List<String> supportedLang;
 	private final String applicationName;
 	private final CacheOfRestTemplateResponse myCacheOfResponses;
 	private QanaryUtils myQanaryUtils;
 
 	public TeBaQAQueryBuilder(//
-							  float threshold, //
-							  @Qualifier("tebaqa.langDefault") String langDefault, //
-							  @Qualifier("tebaqa.endpoint.language.supported") ArrayList<String> supportedLang, //
-							  @Qualifier("tebaqa.endpointUrl") URI endpoint, //
-							  @Value("${spring.application.name}") final String applicationName, //
-							  RestTemplate restTemplate, //
-							  CacheOfRestTemplateResponse myCacheOfResponses //
+			float threshold, //
+			@Qualifier("tebaqa.langDefault") String langDefault, //
+			@Qualifier("tebaqa.endpoint.language.supported") List<String> supportedLang, //
+			@Qualifier("tebaqa.endpointUrl") URI endpoint, //
+			@Value("${spring.application.name}") final String applicationName, //
+			RestTemplate restTemplate, //
+			CacheOfRestTemplateResponse myCacheOfResponses //
 	) throws URISyntaxException {
 
 		assert threshold >= 0 : "threshold has to be >= 0: " + threshold;
@@ -97,7 +98,7 @@ public class TeBaQAQueryBuilder extends QanaryComponent {
 		return langDefault;
 	}
 
-	public ArrayList<String> getSupportedLang() {
+	public List<String> getSupportedLang() {
 		return supportedLang;
 	}
 
@@ -120,7 +121,7 @@ public class TeBaQAQueryBuilder extends QanaryComponent {
 			lang = langDefault;
 		}
 
-		if (isLangSuppoerted(lang) == false) {
+		if (isLangSupported(lang) == false) {
 			logger.warn("lang ({}) is not supported", lang);
 			return myQanaryMessage;
 		}
@@ -145,7 +146,7 @@ public class TeBaQAQueryBuilder extends QanaryComponent {
 		return myQanaryMessage;
 	}
 
-	protected boolean isLangSuppoerted(String lang) {
+	protected boolean isLangSupported(String lang) {
 		for (int i = 0; i < supportedLang.size(); i++) {
 			if (supportedLang.get(i).equals(lang)) {
 				return true;
@@ -161,7 +162,11 @@ public class TeBaQAQueryBuilder extends QanaryComponent {
 		long requestBefore = myCacheOfResponses.getNumberOfExecutedRequests();
 
 		logger.debug("URL: {}", tebaqaRequest.getTeBaQAQuestionUrlAsString());
-		HttpEntity<JSONObject> response = myRestTemplate.postForEntity(tebaqaRequest.getTeBaQAQuestionUrlAsURI(), "{}", JSONObject.class);
+		HttpEntity<JSONObject> response = myRestTemplate.postForEntity(tebaqaRequest.getTeBaQAQuestionUrlAsURI(), "{}",
+				JSONObject.class);
+		
+		Assert.notNull(response);
+		Assert.notNull(response.getBody());
 
 		if (myCacheOfResponses.getNumberOfExecutedRequests() - requestBefore == 0) {
 			logger.warn("request was cached: {}", tebaqaRequest);
@@ -172,7 +177,8 @@ public class TeBaQAQueryBuilder extends QanaryComponent {
 		if (response.getBody().equals("{}")) {
 			return null;
 		} else {
-			return new TeBaQAResult(response.getBody(), tebaqaRequest.getQuestion(), tebaqaRequest.getTeBaQAEndpointUrl(), tebaqaRequest.getLanguage());
+			return new TeBaQAResult(response.getBody(), tebaqaRequest.getQuestion(),
+					tebaqaRequest.getTeBaQAEndpointUrl(), tebaqaRequest.getLanguage());
 		}
 	}
 
@@ -212,7 +218,7 @@ public class TeBaQAQueryBuilder extends QanaryComponent {
 
 		// get the template of the INSERT query
 		String sparql = QanaryTripleStoreConnector.insertAnnotationOfAnswerSPARQL(bindings);
-		logger.info("SPARQL insert for adding data to Qanary triplestore1: {}", sparql);
+		logger.info("SPARQL insert for adding data to Qanary triplestore: {}", sparql);
 
 		return sparql;
 	}

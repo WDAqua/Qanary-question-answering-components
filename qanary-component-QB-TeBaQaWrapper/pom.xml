@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary-component-QB-TeBaQAWrapper</artifactId>
-	<version>3.1.1</version>
+	<version>3.1.2</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -14,7 +14,7 @@
 	</parent>
 	<properties>
 		<java.version>11</java.version>
-		<qanary.version>[3.4.0,4.0.0)</qanary.version>
+		<qanary.version>[3.4.1,4.0.0)</qanary.version>
 		<spring-boot-admin.version>2.6.7</spring-boot-admin.version>
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<!-- Replace the name of the docker image to be generated -->

@@ -1,0 +1,4 @@
+SELECT (COUNT(?uri) AS ?count) 
+WHERE { 
+	<http://dbpedia.org/resource/Bertrand_Russell> <http://dbpedia.org/property/awards> ?uri
+}
