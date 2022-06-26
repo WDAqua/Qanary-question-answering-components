@@ -25,12 +25,15 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-
 @Component
 /**
  * This component connected automatically to the Qanary pipeline.
- * The Qanary pipeline endpoint defined in application.properties (spring.boot.admin.url)
- * @see <a href="https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F" target="_top">Github wiki howto</a>
+ * The Qanary pipeline endpoint defined in application.properties
+ * (spring.boot.admin.url)
+ * 
+ * @see <a href=
+ *      "https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F"
+ *      target="_top">Github wiki howto</a>
  */
 public class MeaningCloudNed extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(MeaningCloudNed.class);
@@ -44,7 +47,8 @@ public class MeaningCloudNed extends QanaryComponent {
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
 	 * component
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 	@Override
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
@@ -52,58 +56,14 @@ public class MeaningCloudNed extends QanaryComponent {
 		// TODO: implement processing of question
 
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
+		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage,
+				myQanaryUtils.getQanaryTripleStoreConnector());
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
-		//String myQuestion = "Is Selwyn Lloyd the prime minister of Winston Churchill ?";
+		// String myQuestion = "Is Selwyn Lloyd the prime minister of Winston Churchill
+		// ?";
 		ArrayList<Selection> selections = new ArrayList<Selection>();
 		logger.info("Question {}", myQuestion);
-		 try {
-				File f = new File("questions.txt");
-		    	FileReader fr = new FileReader(f);
-		    	BufferedReader br  = new BufferedReader(fr);
-				int flag = 0;
-				String line;
-//				Object obj = parser.parse(new FileReader("DandelionNER.json"));
-//				JSONObject jsonObject = (JSONObject) obj;
-//				Iterator<?> keys = jsonObject.keys();
-				
-				while((line = br.readLine()) != null && flag == 0) {
-				    String question = line.substring(0, line.indexOf("Answer:"));
-					logger.info("{}", line);
-					logger.info("{}", myQuestion);
-					
-				    if(question.trim().equals(myQuestion))
-				    {
-				    	String Answer = line.substring(line.indexOf("Answer:")+"Answer:".length());
-				    	logger.info("Here {}", Answer);
-				    	Answer = Answer.trim();
-				    	JSONArray jsonArr =new JSONArray(Answer);
-				    	if(jsonArr.length()!=0)
-		 	        	   {
-		 	        		   for (int i = 0; i < jsonArr.length(); i++) 
-		 	        		   {
-		 	        			   JSONObject explrObject = jsonArr.getJSONObject(i);
-		 	        			  
-		 	        			   logger.info("Question: {}", explrObject);
-		 	        			   
-		 	        			  Selection l = new Selection();
-			    	                l.begin = (int) explrObject.get("begin");
-			    	                l.end = (int) explrObject.get("end");
-			    	                l.link= explrObject.getString("link");
-			    	                selections.add(l);
-			            		}
-			            	}
-				    	flag=1;
-				    	
-				    	break;	
-				    }
-				   
-				    
-				}
-				br.close();
-				if(flag==0)
-				{
-		
+
 		String thePath = "";
 		thePath = URLEncoder.encode(myQuestion, "UTF-8");
 		logger.info("Path {}", thePath);
@@ -130,9 +90,9 @@ public class MeaningCloudNed extends QanaryComponent {
 						if (formObject.has("variant_list")) {
 							JSONArray jsonArray = (JSONArray) formObject.get("variant_list");
 							String link = null;
-							if(formObject.has("semld_list")) {
-							JSONArray jsonArray_semld_list = (JSONArray) formObject.get("semld_list");
-							link = jsonArray_semld_list.getString(0);
+							if (formObject.has("semld_list")) {
+								JSONArray jsonArray_semld_list = (JSONArray) formObject.get("semld_list");
+								link = jsonArray_semld_list.getString(0);
 							}
 							logger.info("jsonArray_variant_list : {}", jsonArray);
 							for (int i = 0; i < jsonArray.length(); i++) {
@@ -147,9 +107,9 @@ public class MeaningCloudNed extends QanaryComponent {
 								Selection s = new Selection();
 								s.begin = begin;
 								s.end = end;
-								String finalUrl ="";
-								if(link!=null && link.contains("wikipedia")) {
-									finalUrl = "http://dbpedia.org/resource"+link.substring(28);
+								String finalUrl = "";
+								if (link != null && link.contains("wikipedia")) {
+									finalUrl = "http://dbpedia.org/resource" + link.substring(28);
 								}
 								logger.info("finalUrl: {}", finalUrl);
 								s.link = finalUrl;
@@ -159,60 +119,40 @@ public class MeaningCloudNed extends QanaryComponent {
 					}
 				}
 			}
-			BufferedWriter buffWriter = new BufferedWriter(new FileWriter("questions.txt", true));
-	        Gson gson = new Gson();
-	        
-	        String json = gson.toJson(selections);
-	        logger.info("gsonwala: {}",json);
-	        
-	        String MainString = myQuestion + " Answer: "+json;
-	        buffWriter.append(MainString);
-	        buffWriter.newLine();
-	        buffWriter.close();
-		} catch(JSONException e) {
+		} catch (JSONException e) {
 			logger.error("Exception: {}", e);
-		}
-		catch (ClientProtocolException e) {
+		} catch (ClientProtocolException e) {
 			logger.info("Exception: {}", e);
 			// TODO Auto-generated catch block
-		} catch (IOException e1) {
-			logger.info("Except: {}", e1);
-			// TODO Auto-generated catch block
 		}
-				}
-		    }
-		    catch(FileNotFoundException e) 
-			{ 
-			    //handle this
-				logger.info("{}", e);
-			}
+
 		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
 		// TODO: insert data in QanaryMessage.outgraph
 
 		logger.info("apply vocabulary alignment on outgraph");
 		// TODO: implement this (custom for every component)
 		for (Selection s : selections) {
-            String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-                    + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-                    + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-                    + "INSERT { " + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
-                    + "  ?a a qa:AnnotationOfInstance . " //
-                    + "  ?a oa:hasTarget [ " //
-                    + "           a    oa:SpecificResource; " //
-                    + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
-                    + "           oa:hasSelector  [ " //
-                    + "                    a oa:TextPositionSelector ; " //
-                    + "                    oa:start \"" + s.begin + "\"^^xsd:nonNegativeInteger ; " //
-                    + "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " //
-                    + "           ] " //
-                    + "  ] . " //
-                    + "  ?a oa:hasBody <" + s.link + "> ;" //
-                    + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
-                    + "	    oa:annotatedAt ?time  " + "}} " //
-                    + "WHERE { " //
-                    + "  BIND (IRI(str(RAND())) AS ?a) ."//
-                    + "  BIND (now() as ?time) " //
-                    + "}";
+			String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
+					+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
+					+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
+					+ "INSERT { " + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
+					+ "  ?a a qa:AnnotationOfInstance . " //
+					+ "  ?a oa:hasTarget [ " //
+					+ "           a    oa:SpecificResource; " //
+					+ "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
+					+ "           oa:hasSelector  [ " //
+					+ "                    a oa:TextPositionSelector ; " //
+					+ "                    oa:start \"" + s.begin + "\"^^xsd:nonNegativeInteger ; " //
+					+ "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " //
+					+ "           ] " //
+					+ "  ] . " //
+					+ "  ?a oa:hasBody <" + s.link + "> ;" //
+					+ "     oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; " //
+					+ "	    oa:annotatedAt ?time  " + "}} " //
+					+ "WHERE { " //
+					+ "  BIND (IRI(str(RAND())) AS ?a) ."//
+					+ "  BIND (now() as ?time) " //
+					+ "}";
 			myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 		}
 		return myQanaryMessage;
