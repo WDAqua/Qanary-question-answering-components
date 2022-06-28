@@ -37,7 +37,7 @@ public class AnnotationofSpotProperty extends QanaryComponent {
 
 	private final String applicationName;
 
-	public AnnotationofSpotProperty(@Value("${spring.applcation.name}") final String applicationName) {
+	public AnnotationofSpotProperty(@Value("${spring.application.name}") final String applicationName) {
 		this.applicationName = applicationName;
 	}
 
@@ -45,44 +45,41 @@ public class AnnotationofSpotProperty extends QanaryComponent {
 	/**
      * runCurlPOSTWithParam is a function to fetch the response from a CURL command using POST.
      */
-    public static String runCurlPOSTWithParam(String weburl,String data,String contentType) throws Exception
+    public static String runCurlPOSTWithParam(String weburl, String data, String contentType) throws Exception
 	{
 		
     	
     	//The String xmlResp is to store the output of the Template generator web service accessed via CURL command
     	
         String xmlResp = "";
-        try {
-        	URL url = new URL(weburl);
-    		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    		
-    		connection.setRequestMethod("POST");
-    		connection.setDoOutput(true);
-    		
-    		connection.setRequestProperty("Content-Type", contentType);
-    				
-    		DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-    		wr.writeBytes(data);
-    		wr.flush();
-    		wr.close();
-    		
-    		
-    	
-    		BufferedReader in = new BufferedReader(
-    		        new InputStreamReader(connection.getInputStream()));
-    		String inputLine;
-    		StringBuffer response = new StringBuffer();
 
-    		while ((inputLine = in.readLine()) != null) {
-    			response.append(inputLine);
-    		}
-    		in.close();
-    		xmlResp = response.toString();
-    		
-    		System.out.println("Curl Response: \n"+xmlResp);
-            logger.info("Response {}", xmlResp);
-        } catch (Exception e) {
-        }
+    	URL url = new URL(weburl);
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		
+		connection.setRequestMethod("POST");
+		connection.setDoOutput(true);
+		
+		connection.setRequestProperty("Content-Type", contentType);
+				
+		DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+		wr.writeBytes(data);
+		wr.flush();
+		wr.close();
+	
+		BufferedReader in = new BufferedReader(
+		        new InputStreamReader(connection.getInputStream()));
+		String inputLine;
+		StringBuffer response = new StringBuffer();
+
+		while ((inputLine = in.readLine()) != null) {
+			response.append(inputLine);
+		}
+		in.close();
+		xmlResp = response.toString();
+		
+		logger.info("Curl Response: {}", xmlResp);
+        logger.info("Response {}", xmlResp);
+
         return (xmlResp);
 
 	}
@@ -98,11 +95,8 @@ public class AnnotationofSpotProperty extends QanaryComponent {
 		HashSet<String> dbLinkListSet = new HashSet<String>();
 		logger.info("process: {}", myQanaryMessage);
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
+		QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
-		ArrayList<Selection> selections = new ArrayList<Selection>();
-	    //String question = URLEncoder.encode(myQuestion, "UTF-8");
-		//String question = "Which comic characters are painted by Bill Finger?";
         String language1 = "en";
         logger.info("Langauge of the Question: {}",language1);
         
@@ -115,16 +109,13 @@ public class AnnotationofSpotProperty extends QanaryComponent {
 		url = "http://ws.okbqa.org:1515/templategeneration/rocknrole";
 		//url  = "http://121.254.173.90:1515/templategeneration/rocknrole";
 		data = "{  \"string\":\""+myQuestion+"\",\"language\":\""+language1+"\"}";
-		System.out.println("\ndata :" +data);
-		System.out.println("\nComponent : 21");
+		logger.debug("data: {}", data);
+		logger.debug("Component: 21");
 		String output1="";
-		// pass the input in CURL command and call the function.
 		
-		try
-		{
+		// pass the input in CURL command and call the function.
 		output1= AnnotationofSpotProperty.runCurlPOSTWithParam(url, data, contentType);
-		}catch(Exception e){}
-//		System.out.println("The output template is:" +output1);
+
 		logger.info("The output template is: {}",output1);
 
 		PropertyRetrival propertyRetrival =  new PropertyRetrival();
@@ -146,10 +137,10 @@ public class AnnotationofSpotProperty extends QanaryComponent {
 				logger.info("Apply vocabulary alignment on outgraph");
 	          
 				String dbpediaProperty = null;
-				try {
+
 				String myKey1 = wrd.trim();
 				if(myKey1!=null && !myKey1.equals("")) {
-				System.out.println("searchDbLinkInTTL: "+myKey1);
+					logger.debug("searchDbLinkInTTL: {}", myKey1);
 					for (Entry<String, String> e : DbpediaRecorodProperty.get().tailMap(myKey1).entrySet()) {
 						    if(e.getKey().contains(myKey1)) 
 						    {
@@ -157,39 +148,36 @@ public class AnnotationofSpotProperty extends QanaryComponent {
 						      	break;
 						    }
 							ArrayList<String> strArrayList = new ArrayList<String>(Arrays.asList(e.getKey().split("\\s+")));
-							//System.out.println(strArrayList.toString());
+
 							for (String s : strArrayList)
 							{
 							    if(myKey1.compareTo(s) == 0) {
 							    	dbpediaProperty = e.getValue();
-							 }
+							    }
 							}
 							 
-							 if(dbpediaProperty!=null)
-							 break;
-							    
-							 }
+							if(dbpediaProperty!=null) {
+								break;
+							}
+					}
 		         
 				}
-				} catch (Exception e) {
-					// logger.info("Except: {}", e);
-					// TODO Auto-generated catch block
-				}
-				if(dbpediaProperty!=null)
-				dbLinkListSet.add(dbpediaProperty);
-				System.out.println("searchDbLinkInTTL: "+ dbpediaProperty);
-			}
-		System.out.println("DbLinkListSet : " +dbLinkListSet.toString());
-		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-		// TODO: insert data in QanaryMessage.outgraph
 
+				if(dbpediaProperty!=null) {
+					dbLinkListSet.add(dbpediaProperty);
+				}
+				logger.debug("searchDbLinkInTTL: {}", dbpediaProperty);
+			}
+		logger.debug("DbLinkListSet: {}", dbLinkListSet.toString());
+		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
+
+		// insert data in QanaryMessage.outgraph		
 		logger.info("apply vocabulary alignment on outgraph");
-		// TODO: implement this (custom for every component)
 		for (String urls : dbLinkListSet) {
 			 String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> " //
-	                 + "prefix oa: <http://www.w3.org/ns/openannotation/core/> " //
-	                 + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " //
-	                 + "prefix dbp: <http://dbpedia.org/property/> " //
+	                 + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
+	                 + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
+	                 + "PREFIX dbp: <http://dbpedia.org/property/> " //
 	                 + "INSERT { " //
 	                 + "GRAPH <" +  myQanaryQuestion.getOutGraph()  + "> { " //
 	                 + "  ?a a qa:AnnotationOfClass . " //
@@ -205,7 +193,7 @@ public class AnnotationofSpotProperty extends QanaryComponent {
 	                 + "BIND (IRI(str(RAND())) AS ?a) ." //
 	                 + "BIND (now() as ?time) " //
 	                 + "}"; //
-	         logger.info("Sparql query {}", sparql);
+	         logger.info("SPARQL query: {}", sparql);
 	         myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString()); 
 	    }
 		return myQanaryMessage;

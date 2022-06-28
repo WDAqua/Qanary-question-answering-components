@@ -232,7 +232,7 @@ public class TagmeNED extends QanaryComponent {
 	private void writeToCache(String myQuestion, ArrayList<NamedEntity> links) throws IOException {
 		try {
 			BufferedWriter buffWriter = new BufferedWriter(
-					new FileWriter("qanary_component-NED-tagme/src/main/resources/questions.txt", true));
+					new FileWriter(cacheFile, true));
 			Gson gson = new Gson();
 
 			String json = gson.toJson(links);

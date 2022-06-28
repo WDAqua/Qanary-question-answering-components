@@ -11,6 +11,76 @@ Consequently, your request to the QAnswer API might be more precise.
 [QAnswer](https://www.qanswer.eu/) is an API capable of retrieving data from different knowledge graphs.
 An example is available at [https://qanswer-frontend.univ-st-etienne.fr/](https://qanswer-frontend.univ-st-etienne.fr/).
 
+## Input specification
+
+```ttl
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+
+<urn:qanary:input> a qa:AnnotationOfInstance ;
+  oa:hasTarget [
+    a oa:SpecificResource ;
+    oa:hasSource <urn:qanary:myQanaryQuestion> ;
+    oa:hasSelector  [
+        a oa:TextPositionSelector ;
+        oa:start "0"^^xsd:nonNegativeInteger ;
+        oa:end "5"^^xsd:nonNegativeInteger
+    ]
+  ] ;
+  oa:hasBody <wd:Resource> .
+```
+
+## Output specification
+
+Comment: the SPARQL query is stored as a complex structure; `annotationOfAnswerType` is never used
+
+```ttl
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+
+?annotationSPARQL a 	qa:AnnotationOfAnswerSPARQL ;
+	oa:hasTarget    <urn:qanary:myQanaryQuestion> ;
+	oa:hasBody      ?sparql  ;
+	oa:annotatedBy  <urn:qanary:applicationName> ;
+	oa:annotatedAt  "2001-10-26T21:32:52"^^xsd:dateTime ;
+	qa:score        "0.5"^^xsd:double .
+
+?sparql a               qa:SparqlQuery ;
+  	rdf:value       ?sparqlQueryString .
+
+?annotationImprovedQuestion  a 	qa:AnnotationOfImprovedQuestion ;
+	oa:hasTarget    <urn:qanary:myQanaryQuestion> ;
+	oa:hasBody      ?improvedQuestion ;
+	oa:annotatedBy  <urn:qanary:applicationName> ;
+	oa:annotatedAt  "2001-10-26T21:32:52"^^xsd:dateTime ;
+	qa:score        "0.5"^^xsd:double .
+  
+?improvedQuestion a    qa:ImprovedQuestion ;
+  	rdf:value "improved question text"^^xsd:string .
+
+?annotationAnswer a    qa:AnnotationAnswer ;
+  	oa:hasTarget    <urn:qanary:myQanaryQuestion> ;
+  	oa:hasBody      ?answer ;
+	oa:annotatedBy  <urn:qanary:applicationName> ;
+	oa:annotatedAt  "2001-10-26T21:32:52"^^xsd:dateTime ;
+	qa:score        "0.5"^^xsd:double .
+
+?answer a qa:Answer ;
+	rdf:value [ 
+	  	a rdf:Seq wd:Resource, wd:Resource1 
+	] .
+
+?annotationAnswerType a qa:AnnotationOfAnswerType ;
+ 	oa:hasTarget    <urn:qanary:myQanaryQuestion> ;
+  	oa:hasBody      ?annotationOfAnswerType ;
+	oa:annotatedBy  <urn:qanary:applicationName> ;
+	oa:annotatedAt  "2001-10-26T21:32:52"^^xsd:dateTime ;
+	qa:score        "0.5"^^xsd:double .
+
+?answerType a qa:AnswerType ;
+ 	rdf:value <xsd:dataType> ;
+```
+
 ## Examples
 
 ### Example 1: What is the capital of Germany?
@@ -55,10 +125,14 @@ SELECT * FROM <YOURGRAPHURI> WHERE {
     ?s ?p ?o ; 
         a ?type. 
     VALUES ?t { 
-        qa:AnnotationOfAnswerSPARQL qa:SparqlQuery
-        qa:AnnotationOfImprovedQuestion qa:ImprovedQuestion 
-        qa:AnnotationAnswer qa:Answer 
-        qa:AnnotationOfAnswerType qa:AnswerType 
+        qa:AnnotationOfAnswerSPARQL 
+	qa:SparqlQuery
+        qa:AnnotationOfImprovedQuestion 
+	qa:ImprovedQuestion 
+        qa:AnnotationAnswer 
+	qa:Answer 
+        qa:AnnotationOfAnswerType 
+	qa:AnswerType 
     }
 }
 ORDER BY ?type

@@ -1,16 +1,52 @@
-# A simple QueryBuilder component w.r.t. Superhero Names
+# QB SimpleRealNameOfSuperHero component
 
 This rule-based Qanary component is intended to create a SPARQL query that can be executed on DBpedia for the limited knowledge domain of superhero names.
+
+
+## Input specification
+
+```ttl
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+
+<urn:qanary:input> oa:hasBody <dbr:Resource> ;
+  qa:score "0.5"^^xsd:decimal ;
+  oa:hasTarget [
+    a    oa:SpecificResource;
+    oa:hasSource    <urn:qanary:myQanaryQuestion> ;
+    oa:hasSelector  [
+        a oa:TextPositionSelector ;
+        oa:start "0"^^xsd:nonNegativeInteger ;
+        oa:end  "5"^^xsd:nonNegativeInteger
+   ]
+] .
+```
+
+## Output specification
+
+```ttl
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+
+<urn:qanary:output> a qa:AnnotationOfAnswerSPARQL ;
+    oa:hasTarget <urn:qanary:myQanaryQuestion> ;
+    oa:hasBody "sparql query" ;
+    qa:score "0.5"^^xsd:float ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
+    oa:annotatedBy <urn:qanary:applicationName > .
+```
 
 ## Example 
 
 ### Question of the Qanary process
+
 ```
 What is the real name of Captain America?
 ```
 
 ### Expected SPARQL query to be stored in the Qanary triplestore
-```
+
+```sparql
 PREFIX dbr: <http://dbpedia.org/resource/>
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -38,6 +74,7 @@ ORDER BY ?resource
 
 The component stores the result (the aforementioned SPARQL query) into the `body oa:hasBody` of an annotation of type `qa:AnnotationOfAnswerSPARQL`. 
 The following SPARQL query to retrieve this information from the Qanary triplestore:
+
 ```sparql
 PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
 PREFIX qa: <http://www.wdaqua.eu/qa#> 
@@ -56,10 +93,13 @@ WHERE {
 ### Build with Maven
 
 Like all Qanary component created using the [Qanary Maven archetype](https://github.com/WDAqua/Qanary/tree/master/qanary-component-archetype) it can be built using the following commands:
+
 ```
 mvn package
 ```
+
 To exclude the building of a corresponding Docker container use:
+
 ```
 mvn package -DskipDockerBuild 
 ```
@@ -67,7 +107,9 @@ mvn package -DskipDockerBuild
 ### Run 
 
 To run the JAR file directly use (`X.Y.Z` refers to the current version of the component):
-```
+
+```shell
 java -jar target/qanary_component-QB-SimpleRealNameOfSuperHero-X.Y.Z.jar
 ```
+
 While using the Docker image, start the image `qanary_component-QB-SimpleRealNameOfSuperHero`.
