@@ -35,3 +35,8 @@ make sure that the API accepts requests with the parameter
 
 **tebaqa.endpoint.language.supported**: The list of supported languages of the API,
 e.g. `tebaqa.endpoint.language.supported=en,fr,ru`.
+
+# Further references
+
+- [How to start a standard java Qanary component](https://github.com/WDAqua/Qanary/wiki//How-to-start-a-standard-java-Qanary-component)
+- [TeBaqA GitHub repository](https://github.com/dice-group/TeBaQA)
