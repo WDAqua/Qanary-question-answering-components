@@ -1,0 +1,126 @@
+{
+  "services": [
+    {
+      "mode": "dockerfile",
+      "port": "40122:40122",
+      "image": "qanary/qanary-component-ld-shuyo",
+      "tag": "latest",
+      "files": {
+        ".env": "ld-shuyo"
+      }
+    },
+    {
+      "mode": "dockerfile",
+      "port": "40127:40127",
+      "image": "qanary/qanary-component-ned-dbpediaspotlight",
+      "tag": "latest",
+      "files": {
+        ".env": "ned-dbpediaspotlight"
+      }
+    },
+    {
+      "mode": "dockerfile",
+      "port": "40131:40131",
+      "image": "qanary/qanary-component-ned-opentapioca",
+      "tag": "latest",
+      "files": {
+        ".env": "ned-opentapioca"
+      }
+    },
+    {
+      "mode": "dockerfile",
+      "port": "40137:40137",
+      "image": "qanary/qanary-component-ner-comiccharacternamesimplenamedentityrecognizer",
+      "tag": "latest",
+      "files": {
+        ".env": "ner-comiccharacternamesimplenamedentityrecognizer"
+      }
+    },
+    {
+      "mode": "dockerfile",
+      "port": "40161:40161",
+      "image": "qanary/qanary-component-qc-answertypeclassifier",
+      "tag": "latest",
+      "files": {
+        ".env": "qc-answertypeclassifier"
+      }
+    },
+    {
+      "mode": "dockerfile",
+      "port": "40152:40152",
+      "image": "qanary/qanary-component-qb-birthdatawikidata",
+      "tag": "latest",
+      "files": {
+        ".env": "qb-birthdatawikidata"
+      }
+    },
+    {
+      "mode": "dockerfile",
+      "port": "40153:40153",
+      "image": "qanary/qanary-component-qb-comiccharacteralteregosimpledbpedia",
+      "tag": "latest",
+      "files": {
+        ".env": "qb-comiccharacteralteregosimpledbpedia"
+      }
+    },
+    {
+      "mode": "dockerfile",
+      "port": "40155:40155",
+      "image": "qanary/qanary-component-qb-qanswer",
+      "tag": "latest",
+      "files": {
+        ".env": "qb-qanswer"
+      }
+    },
+    {
+      "mode": "dockerfile",
+      "port": "40158:40158",
+      "image": "qanary/qanary-component-qbe-qanswer",
+      "tag": "latest",
+      "files": {
+        ".env": "qbe-qanswer"
+      }
+    },
+    {
+      "mode": "dockerfile",
+      "port": "40156:40156",
+      "image": "qanary/qanary-component-qb-simplerealnameofsuperhero",
+      "tag": "latest",
+      "files": {
+        ".env": "qb-simplerealnameofsuperhero"
+      }
+    },
+    {
+      "mode": "dockerfile",
+      "port": "40162:40162",
+      "image": "qanary/qanary-component-qe-sparqlexecuter",
+      "tag": "latest",
+      "files": {
+        ".env": "qe-sparqlexecuter"
+      }
+    },
+    {
+      "mode": "dockerfile",
+      "port": "40163:40163",
+      "image": "qanary/qanary-component-qe-wikidata",
+      "tag": "latest",
+      "files": {
+        ".env": "qe-wikidata"
+      }
+    }
+  ],
+  "ids": {
+    "0": "qanary-qanary-component-ld-shuyo",
+    "1": "qanary-qanary-component-ned-dbpediaspotlight",
+    "2": "qanary-qanary-component-ned-opentapioca",
+    "3": "qanary-qanary-component-ner-comiccharacternamesimplenamedentityrecognizer",
+    "4": "qanary-qanary-component-qc-answertypeclassifier",
+    "5": "qanary-qanary-component-qb-birthdatawikidata",
+    "6": "qanary-qanary-component-qb-comiccharacteralteregosimpledbpedia",
+    "7": "qanary-qanary-component-qb-qanswer",
+    "8": "qanary-qanary-component-qbe-qanswer",
+    "9": "qanary-qanary-component-qb-simplerealnameofsuperhero",
+    "10": "qanary-qanary-component-qe-sparqlexecuter",
+    "11": "qanary-qanary-component-qe-wikidata"
+  }
+}
