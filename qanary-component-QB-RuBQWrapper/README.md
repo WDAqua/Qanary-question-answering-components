@@ -2,20 +2,21 @@
 
 ## Description
 
-This Qanary component fetches the SPARQL query for the submitted question.
-The question text will be sent to the RuBQ API.
-The result from the API will be processed in to SPARQL and stored in the triple store.
+The main task of this component is to manage the communication between the Qanary pipeline and the RuBQ API and to
+prepare the data. To do this, the component fetches the submitted question and sends the text attribute to the
+RuBQ API. The result from the API is processed, stored in the triple store and is then available in the Qanary
+pipeline.
 
 ## Configuration
 
-The component use a cache to minimise the processing time.
-For the configuration you can change the following parameter as u need:
+The component uses a cache to minimise the processing time.
+For the configuration you can change the following parameter as you need:
 
 ```
 qanary.webservicecalls.cache.specs=maximumSize=10000,expireAfterAccess=3600s
 ```
 
-For the RuBQ API you can change the following parameter as u need:
+For the TeBaQA API you can change the following parameter as you need:
 
 ```
 rubq.endpoint.url=
@@ -30,8 +31,11 @@ make sure that the API accepts requests with the parameters
 
 **rubq.threshold**: The threshold for the answer.
 
-**rubq.endpoint.language.default**: The default language of the API for
-the query.
+**rubq.endpoint.language.default**: The default language of the API.
 
-**rubq.endpoint.language.supported**: The supported languages of the API for
-the query.
+**rubq.endpoint.language.supported**: The list of supported languages of the API,
+e.g. `rubq.endpoint.language.supported=en,ru`.
+
+# Further references
+
+- [How to start a standard java Qanary component](https://github.com/WDAqua/Qanary/wiki//How-to-start-a-standard-java-Qanary-component)

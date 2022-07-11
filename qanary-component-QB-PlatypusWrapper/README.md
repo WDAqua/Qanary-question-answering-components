@@ -1,32 +1,41 @@
-# QB Platypus wrapper component
+# Platypus wrapper component
 
 ## Description
-This Qanary component fetches the SPARQL query for the submitted question.
-The question text and a language attribute will be sent to the Platypus API.
-The result from the API will be processed in to SPARQL and stored in the triple store.
+
+The main task of this component is to manage the communication between the Qanary pipeline and the Platypus API and to
+prepare the data. To do this, the component fetches the submitted question and sends the text and lang attribute to the
+Platypus API. The result from the API is processed, stored in the triple store and is then available in the Qanary
+pipeline.
 
 ## Configuration
-The component use a cache to minimise the processing time. 
-For the configuration you can change the following parameter as u need:
+
+The component uses a cache to minimise the processing time.
+For the configuration you can change the following parameter as you need:
+
 ```
 qanary.webservicecalls.cache.specs=maximumSize=10000,expireAfterAccess=3600s
 ```
 
-For the platypus API you can change the following parameter as u need:
+For the TeBaQA API you can change the following parameter as you need:
+
 ```
 platypus.endpoint.url=
 platypus.threshold=0.5
 platypus.endpoint.language.default=en
 platypus.endpoint.language.supported=en,fr,es
 ```
-**platypus.endpoint.url**: The URL of the API endpoint, 
-make sure that the API accepts requests with the parameters 
-"question" for the question text and "lang" for the language attribute.
+
+**platypus.endpoint.url**: The URL of the API endpoint,
+make sure that the API accepts requests with the parameter
+"query" for the question text and "lang" for the language attribute.
 
 **platypus.threshold**: The threshold for the answer.
 
-**platypus.endpoint.language.default**: The default language of the API for 
-the query.
+**platypus.endpoint.language.default**: The default language of the API.
 
-**platypus.endpoint.language.supported**: The supported languages of the API for 
-the query.
+**platypus.endpoint.language.supported**: The list of supported languages of the API,
+e.g. `tebaqa.endpoint.language.supported=en,fr,ru`.
+
+# Further references
+
+- [How to start a standard java Qanary component](https://github.com/WDAqua/Qanary/wiki//How-to-start-a-standard-java-Qanary-component)
