@@ -76,8 +76,7 @@ public class PlatypusRequest {
 
     @Override
     public String toString() {
-        return "PlatypusRequest: endpoint=" + this.getPlatypusEndpointUrl() + ", question=" + this.getQuestion()
-                + ", lang=" + this.getLanguage();
+        return "PlatypusRequest: endpoint=" + this.getPlatypusEndpointUrl() + ", question=" + this.getQuestion() + ", lang=" + this.getLanguage();
     }
 
     public void replaceNullValuesWithDefaultValues(URI endpointDefault, String langDefault) {

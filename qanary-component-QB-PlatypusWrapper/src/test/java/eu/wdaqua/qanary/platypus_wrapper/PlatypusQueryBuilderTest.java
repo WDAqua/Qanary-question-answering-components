@@ -2,16 +2,18 @@ package eu.wdaqua.qanary.platypus_wrapper;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import eu.wdaqua.qanary.platypus_wrapper.messages.PlatypusResult;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.http.*;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.net.URI;
@@ -20,20 +22,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 public class PlatypusQueryBuilderTest {
-    private static final Logger logger = LoggerFactory.getLogger(PlatypusQueryBuilderTest.class);
-    private final String applicationName = "PlatypusQueryBuilder";
     // time span for caching, tests wait this time span during the test runs
     protected final static int MAX_TIME_SPAN_SECONDS = 5;
+    private static final Logger logger = LoggerFactory.getLogger(PlatypusQueryBuilderTest.class);
+    private final String applicationName = "PlatypusQueryBuilder";
     private URI endpoint;
-
-    private enum Cache {CACHED, NOT_CACHED}
-
     @Autowired
     private Environment env;
     @Autowired
@@ -41,11 +40,12 @@ public class PlatypusQueryBuilderTest {
     @Autowired
     private CacheOfRestTemplateResponse myCacheOfResponse;
 
-    @Before
+    @BeforeEach
     public void init() throws URISyntaxException {
         this.endpoint = new URI(env.getProperty("platypus.endpoint.url"));
-        assert (this.endpoint != null) : "platypus.endpoint.url cannot be empty";
+        logger.debug("endpoint: " + this.endpoint);
 
+        assert (this.endpoint != null) : "platypus.endpoint.url cannot be empty";
         assert this.restTemplate != null : "restTemplate cannot be null";
     }
 
@@ -55,12 +55,13 @@ public class PlatypusQueryBuilderTest {
      * @throws Exception
      */
     @Test
-    public void testIsLangSuppoerted() throws Exception {
+    void testIsLangSuppoerted() throws Exception {
         float threshold = 0.5f;
         String langDefault = "en";
         ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en", "fr", "es"));
 
-        PlatypusQueryBuilder platypusQueryBuilder = new PlatypusQueryBuilder(threshold, langDefault, supportedLang, this.endpoint, this.applicationName, this.restTemplate, this.myCacheOfResponse);
+        PlatypusQueryBuilder platypusQueryBuilder = new PlatypusQueryBuilder(threshold, langDefault, supportedLang,
+                this.endpoint, this.applicationName, this.restTemplate, this.myCacheOfResponse);
 
         assertTrue(platypusQueryBuilder.isLangSuppoerted("en"));
         assertTrue(platypusQueryBuilder.isLangSuppoerted("fr"));
@@ -71,8 +72,13 @@ public class PlatypusQueryBuilderTest {
         assertFalse(platypusQueryBuilder.isLangSuppoerted("se"));
     }
 
+    /**
+     * @throws InterruptedException
+     * @throws URISyntaxException
+     */
     @Test
-    public void givenRestTemplate_whenRequested_thenLogAndModifyResponse() throws InterruptedException, URISyntaxException {
+    void givenRestTemplate_whenRequested_thenLogAndModifyResponse()
+            throws InterruptedException, URISyntaxException {
 
         assertNotNull(restTemplate);
         assertNotNull(myCacheOfResponse);
@@ -80,7 +86,7 @@ public class PlatypusQueryBuilderTest {
         LoginForm loginForm0 = new LoginForm("userName", "password");
         LoginForm loginForm1 = new LoginForm("userName2", "password2");
 
-        assertEquals(0, myCacheOfResponse.getNumberOfExecutedRequests());
+        long initialNumberOfRequests = myCacheOfResponse.getNumberOfExecutedRequests();
 
         callRestTemplateWithCaching(loginForm0, Cache.NOT_CACHED); // cache miss
         callRestTemplateWithCaching(loginForm0, Cache.CACHED); // cache hit
@@ -92,10 +98,39 @@ public class PlatypusQueryBuilderTest {
         callRestTemplateWithCaching(loginForm0, Cache.CACHED); // cache hit
         callRestTemplateWithCaching(loginForm1, Cache.CACHED); // cache hit
 
-        assertEquals(3, myCacheOfResponse.getNumberOfExecutedRequests());
+        assertEquals(initialNumberOfRequests + 3, myCacheOfResponse.getNumberOfExecutedRequests());
 
     }
 
+    /**
+     * @throws URISyntaxException
+     */
+    @Test
+    @Disabled
+//  TODO add live URL
+    void liveTest() throws URISyntaxException {
+        float threshold = 0.5f;
+        String langDefault = "en";
+        ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en", "fr", "es"));
+
+        PlatypusQueryBuilder platypusQueryBuilder = new PlatypusQueryBuilder(threshold, langDefault, supportedLang,
+                this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
+
+//      TODO add question text
+        String question = "";
+        PlatypusResult result0 = testWebService(platypusQueryBuilder, question, langDefault);
+
+//      TODO add expected result
+        String expectedSparql = "";
+
+        assertEquals(result0.getSparql(), expectedSparql);
+    }
+
+    /**
+     * @param loginForm
+     * @param cacheStatus
+     * @throws URISyntaxException
+     */
     private void callRestTemplateWithCaching(LoginForm loginForm, Cache cacheStatus) throws URISyntaxException {
         URI TESTSERVICEURL = new URI("http://httpbin.org/post");
 
@@ -105,8 +140,7 @@ public class PlatypusQueryBuilderTest {
 
         long numberOfNewlyExecutedRequests = myCacheOfResponse.getNumberOfExecutedRequests();
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(TESTSERVICEURL, requestEntity, String.class);
-        numberOfNewlyExecutedRequests = myCacheOfResponse.getNumberOfExecutedRequests()
-                - numberOfNewlyExecutedRequests;
+        numberOfNewlyExecutedRequests = myCacheOfResponse.getNumberOfExecutedRequests() - numberOfNewlyExecutedRequests;
         logger.info("numberOfExecutedRequest since last request: new={}, count={}, teststatus={}", //
                 numberOfNewlyExecutedRequests, myCacheOfResponse.getNumberOfExecutedRequests(), cacheStatus);
 
@@ -123,6 +157,24 @@ public class PlatypusQueryBuilderTest {
                 fail("Test case misconfigured");
                 break;
         }
+    }
+
+    /**
+     * @param myApp
+     * @param question
+     * @param lang
+     * @return
+     * @throws URISyntaxException
+     */
+    private PlatypusResult testWebService(PlatypusQueryBuilder myApp, String question, String lang)
+            throws URISyntaxException {
+        PlatypusResult result = myApp.requestPlatypusWebService(this.endpoint, question, lang);
+        assertFalse(result.getSparql().isEmpty());
+        return result;
+    }
+
+    private enum Cache {
+        CACHED, NOT_CACHED
     }
 
     public class LoginForm {

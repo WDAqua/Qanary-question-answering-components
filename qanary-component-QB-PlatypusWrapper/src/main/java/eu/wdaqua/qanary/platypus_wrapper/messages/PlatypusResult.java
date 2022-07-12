@@ -1,17 +1,15 @@
 package eu.wdaqua.qanary.platypus_wrapper.messages;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import io.swagger.v3.oas.annotations.Hidden;
+import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import io.swagger.v3.oas.annotations.Hidden;
-import net.minidev.json.JSONObject;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
 
 public class PlatypusResult {
     private static final Logger logger = LoggerFactory.getLogger(PlatypusResult.class);
@@ -63,43 +61,8 @@ public class PlatypusResult {
         logger.debug("0. confidence: {}", answers.get("resultScore").getAsDouble());
 
         this.confidence = answers.get("resultScore").getAsDouble();
-        this.sparql = wikidataPrefixes() + answers.get("platypus:sparql").getAsString();
+        this.sparql = answers.get("platypus:sparql").getAsString();
     }
-
-    private String wikidataPrefixes() {
-        String prefixes = "PREFIX wd: <http://www.wikidata.org/entity/>\n" +
-                "PREFIX wds: <http://www.wikidata.org/entity/statement/>\n" +
-                "PREFIX wdv: <http://www.wikidata.org/value/>\n" +
-                "PREFIX wdt: <http://www.wikidata.org/prop/direct/>\n" +
-                "PREFIX wikibase: <http://wikiba.se/ontology#>\n" +
-                "PREFIX p: <http://www.wikidata.org/prop/>\n" +
-                "PREFIX ps: <http://www.wikidata.org/prop/statement/>\n" +
-                "PREFIX pq: <http://www.wikidata.org/prop/qualifier/>\n" +
-                "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-                "PREFIX bd: <http://www.bigdata.com/rdf#>\n" +
-                "PREFIX wdref: <http://www.wikidata.org/reference/>\n" +
-                "PREFIX psv: <http://www.wikidata.org/prop/statement/value/>\n" +
-                "PREFIX psn: <http://www.wikidata.org/prop/statement/value-normalized/>\n" +
-                "PREFIX pqv: <http://www.wikidata.org/prop/qualifier/value/>\n" +
-                "PREFIX pqn: <http://www.wikidata.org/prop/qualifier/value-normalized/>\n" +
-                "PREFIX pr: <http://www.wikidata.org/prop/reference/>\n" +
-                "PREFIX prv: <http://www.wikidata.org/prop/reference/value/>\n" +
-                "PREFIX prn: <http://www.wikidata.org/prop/reference/value-normalized/>\n" +
-                "PREFIX wdno: <http://www.wikidata.org/prop/novalue/>\n" +
-                "PREFIX wdata: <http://www.wikidata.org/wiki/Special:EntityData/>\n" +
-                "PREFIX schema: <http://schema.org/>\n" +
-                "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
-                "PREFIX skos: <http://www.w3.org/2004/02/skos/core#>\n" +
-                "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n" +
-                "PREFIX prov: <http://www.w3.org/ns/prov#>\n" +
-                "PREFIX bds: <http://www.bigdata.com/rdf/search#>\n" +
-                "PREFIX gas: <http://www.bigdata.com/rdf/gas#>\n" +
-                "PREFIX hint: <http://www.bigdata.com/queryHints#>\n";
-
-        return prefixes;
-    }
-
 
     public JsonParser getJsonParser() {
         return jsonParser;
