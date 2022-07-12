@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.platypus_wrapper.messages;
+package eu.wdaqua.qanary.platypus.wrapper.messages;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

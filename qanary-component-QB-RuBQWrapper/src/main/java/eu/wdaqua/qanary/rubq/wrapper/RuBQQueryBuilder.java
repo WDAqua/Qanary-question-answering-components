@@ -38,8 +38,7 @@ import java.util.List;
  * @see <a href=
  *      "https://github.com/WDAqua/Qanary-question-answering-components/blob/master/qanary-component-QB-TeBaQaWrapper/README.md"
  *      target="_top">README.md</a>
- */
-public class RuBQQueryBuilder extends QanaryComponent {
+ */ public class RuBQQueryBuilder extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(RuBQQueryBuilder.class);
     private final float threshold;
     private final URI endpoint;
@@ -68,14 +67,12 @@ public class RuBQQueryBuilder extends QanaryComponent {
         assert !(langDefault == null || langDefault.trim().isEmpty()) : //
                 "langDefault cannot be null or empty: " + langDefault;
         assert (langDefault.length() == 2) : //
-                "langDefault is invalid (requires exactly 2 characters, e.g., 'en'), was " + langDefault + " (length="
-                        + langDefault.length() + ")";
+                "langDefault is invalid (requires exactly 2 characters, e.g., 'en'), was " + langDefault + " (length=" + langDefault.length() + ")";
         assert !(supportedLang == null || supportedLang.isEmpty()) : //
                 "supportedLang cannot be null or empty: " + supportedLang;
         for (int i = 0; i < supportedLang.size(); i++) {
             assert (supportedLang.get(i).length() == 2) : //
-                    "supportedLang is invalid (requires exactly 2 characters, e.g., 'en'), was " + supportedLang.get(i)
-                            + " (length=" + supportedLang.get(i).length() + ")";
+                    "supportedLang is invalid (requires exactly 2 characters, e.g., 'en'), was " + supportedLang.get(i) + " (length=" + supportedLang.get(i).length() + ")";
         }
 
         this.threshold = threshold;
@@ -157,14 +154,12 @@ public class RuBQQueryBuilder extends QanaryComponent {
         return false;
     }
 
-    protected RuBQResult requestRuBQWebService(URI uri, String questionString, String lang)
-            throws URISyntaxException {
+    protected RuBQResult requestRuBQWebService(URI uri, String questionString, String lang) throws URISyntaxException {
         RuBQRequest ruBQRequest = new RuBQRequest(uri, questionString, lang);
         long requestBefore = myCacheOfResponses.getNumberOfExecutedRequests();
 
         logger.debug("URL: {}", ruBQRequest.getRuBQQuestionUrlAsString());
-        HttpEntity<JSONObject> response = myRestTemplate.getForEntity(ruBQRequest.getRuBQQuestionUrlAsString(),
-                JSONObject.class);
+        HttpEntity<JSONObject> response = myRestTemplate.getForEntity(ruBQRequest.getRuBQQuestionUrlAsString(), JSONObject.class);
 
         Assert.notNull(response);
         Assert.notNull(response.getBody());
@@ -178,8 +173,7 @@ public class RuBQQueryBuilder extends QanaryComponent {
         if (response.getBody().equals("{}")) {
             return null;
         } else {
-            return new RuBQResult(response.getBody(), ruBQRequest.getQuestion(),
-                    ruBQRequest.getRuBQEndpointUrl(), ruBQRequest.getLanguage());
+            return new RuBQResult(response.getBody(), ruBQRequest.getQuestion(), ruBQRequest.getRuBQEndpointUrl(), ruBQRequest.getLanguage());
         }
     }
 
@@ -203,8 +197,7 @@ public class RuBQQueryBuilder extends QanaryComponent {
      * @throws SparqlQueryFailed
      * @throws IOException
      */
-    protected String getSparqlInsertQuery(QanaryQuestion<String> myQanaryQuestion, RuBQResult result)
-            throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
+    protected String getSparqlInsertQuery(QanaryQuestion<String> myQanaryQuestion, RuBQResult result) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
 
         String answerSparql = cleanStringForSparqlQuery(result.getSparql());
 

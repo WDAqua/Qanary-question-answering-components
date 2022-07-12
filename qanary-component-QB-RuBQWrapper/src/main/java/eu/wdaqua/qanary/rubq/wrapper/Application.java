@@ -25,8 +25,7 @@ import java.util.ArrayList;
 /**
  * basic class for wrapping functionality to a Qanary component note: there is
  * no need to change something here
- */
-public class Application {
+ */ public class Application {
 
     private static ApplicationContext applicationContext;
 
@@ -63,8 +62,7 @@ public class Application {
     }
 
     @Bean(name = "rubq.endpoint.language.supported")
-    ArrayList<String> supportedLang(
-            @Value("${rubq.endpoint.language.supported:en}") ArrayList<String> supportedLang) {
+    ArrayList<String> supportedLang(@Value("${rubq.endpoint.language.supported:en}") ArrayList<String> supportedLang) {
         return supportedLang;
     }
 
@@ -77,8 +75,7 @@ public class Application {
                                             @Value("${spring.application.name}") final String applicationName, //
                                             RestTemplateWithCaching restTemplate //
     ) throws URISyntaxException {
-        return new RuBQQueryBuilder(threshold, langDefault, supportedLang, endpoint, applicationName, restTemplate,
-                myCacheOfResponses);
+        return new RuBQQueryBuilder(threshold, langDefault, supportedLang, endpoint, applicationName, restTemplate, myCacheOfResponses);
     }
 
     @Bean
@@ -86,9 +83,7 @@ public class Application {
         return new OpenAPI().info(new Info() //
                 .title("RuBQ wrapper component") //
                 .version(appVersion) //
-                .description("This is a sample Foobar server created using springdocs - "
-                        + "a library for OpenAPI 3 with spring boot.")
-                .termsOfService("http://swagger.io/terms/") //
+                .description("This is a sample Foobar server created using springdocs - " + "a library for OpenAPI 3 with spring boot.").termsOfService("http://swagger.io/terms/") //
                 .license(new License().name("Apache 2.0").url("http://springdoc.org")) //
         );
     }

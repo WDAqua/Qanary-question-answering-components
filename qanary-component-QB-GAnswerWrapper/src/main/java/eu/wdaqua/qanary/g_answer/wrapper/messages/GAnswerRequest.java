@@ -75,8 +75,7 @@ public class GAnswerRequest {
 
     @Override
     public String toString() {
-        return "gAnswerRequest: endpoint=" + this.getGAnswerEndpointUrl() + ", question=" + this.getQuestion()
-                + ", lang=" + this.getLanguage();
+        return "gAnswerRequest: endpoint=" + this.getGAnswerEndpointUrl() + ", question=" + this.getQuestion() + ", lang=" + this.getLanguage();
     }
 
     public void replaceNullValuesWithDefaultValues(URI endpointDefault, String langDefault) {

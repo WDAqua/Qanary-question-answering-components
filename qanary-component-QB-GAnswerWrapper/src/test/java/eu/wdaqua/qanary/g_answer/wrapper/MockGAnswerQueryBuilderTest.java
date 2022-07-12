@@ -52,13 +52,10 @@ public class MockGAnswerQueryBuilderTest {
 
         this.mockServer = MockRestServiceServer.createServer(this.restTemplate);
 
-        this.mockServer
-                .expect(requestTo(this.endpoint + "?question=Population%2520of%2520france?"))
-                .andExpect(method(org.springframework.http.HttpMethod.GET))
-                .andRespond(withSuccess("{\"queries\":[\"" //
-                                + GAnswerTestConfiguration.getTestQuery(testQueryFilename) //
-                                + "\"] }", //
-                        MediaType.APPLICATION_JSON));
+        this.mockServer.expect(requestTo(this.endpoint + "?question=Population%2520of%2520france?")).andExpect(method(org.springframework.http.HttpMethod.GET)).andRespond(withSuccess("{\"queries\":[\"" //
+                        + GAnswerTestConfiguration.getTestQuery(testQueryFilename) //
+                        + "\"] }", //
+                MediaType.APPLICATION_JSON));
     }
 
     /**
@@ -71,8 +68,7 @@ public class MockGAnswerQueryBuilderTest {
         String langDefault = "en";
         ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en"));
 
-        GAnswerQueryBuilder gAnswerQueryBuilder = new GAnswerQueryBuilder(threshold, langDefault, supportedLang,
-                this.endpoint, this.applicationName, this.restTemplate, this.myCacheOfResponse);
+        GAnswerQueryBuilder gAnswerQueryBuilder = new GAnswerQueryBuilder(threshold, langDefault, supportedLang, this.endpoint, this.applicationName, this.restTemplate, this.myCacheOfResponse);
 
         String question = "Population of france?";
         GAnswerResult result = testWebService(gAnswerQueryBuilder, question, langDefault);
@@ -88,8 +84,7 @@ public class MockGAnswerQueryBuilderTest {
      * @return
      * @throws URISyntaxException
      */
-    private GAnswerResult testWebService(GAnswerQueryBuilder myApp, String question, String lang)
-            throws URISyntaxException {
+    private GAnswerResult testWebService(GAnswerQueryBuilder myApp, String question, String lang) throws URISyntaxException {
         GAnswerResult result = myApp.requestGAnswerWebService(this.endpoint, question, lang);
         assertFalse(result.getSparql().isEmpty());
         return result;

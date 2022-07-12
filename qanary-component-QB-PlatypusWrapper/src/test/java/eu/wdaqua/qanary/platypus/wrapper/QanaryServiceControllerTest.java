@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.platypus_wrapper;
+package eu.wdaqua.qanary.platypus.wrapper;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;

@@ -59,8 +59,7 @@ public class TeBaQAQueryBuilderTest {
         String langDefault = "en";
         ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en"));
 
-        TeBaQAQueryBuilder teBaQAQueryBuilder = new TeBaQAQueryBuilder(threshold, langDefault, supportedLang,
-                this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
+        TeBaQAQueryBuilder teBaQAQueryBuilder = new TeBaQAQueryBuilder(threshold, langDefault, supportedLang, this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
 
         assertTrue(teBaQAQueryBuilder.isLangSupported("en"));
 
@@ -76,8 +75,7 @@ public class TeBaQAQueryBuilderTest {
      * @throws URISyntaxException
      */
     @Test
-    void givenRestTemplate_whenRequested_thenLogAndModifyResponse()
-            throws InterruptedException, URISyntaxException {
+    void givenRestTemplate_whenRequested_thenLogAndModifyResponse() throws InterruptedException, URISyntaxException {
 
         assertNotNull(restTemplate);
         assertNotNull(myCacheOfResponse);
@@ -110,8 +108,7 @@ public class TeBaQAQueryBuilderTest {
         String langDefault = "en";
         ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en"));
 
-        TeBaQAQueryBuilder teBaQAQueryBuilder = new TeBaQAQueryBuilder(threshold, langDefault, supportedLang,
-                this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
+        TeBaQAQueryBuilder teBaQAQueryBuilder = new TeBaQAQueryBuilder(threshold, langDefault, supportedLang, this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
 
         String question = "How many awards has Bertrand Russell?";
         TeBaQAResult result0 = testWebService(teBaQAQueryBuilder, question, langDefault);
@@ -161,8 +158,7 @@ public class TeBaQAQueryBuilderTest {
      * @return
      * @throws URISyntaxException
      */
-    private TeBaQAResult testWebService(TeBaQAQueryBuilder myApp, String question, String lang)
-            throws URISyntaxException {
+    private TeBaQAResult testWebService(TeBaQAQueryBuilder myApp, String question, String lang) throws URISyntaxException {
         TeBaQAResult result = myApp.requestTeBaQAWebService(this.endpoint, question, lang);
         assertFalse(result.getSparql().isEmpty());
         return result;

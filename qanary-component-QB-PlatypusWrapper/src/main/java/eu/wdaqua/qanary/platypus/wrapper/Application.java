@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.platypus_wrapper;
+package eu.wdaqua.qanary.platypus.wrapper;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;

@@ -121,7 +121,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>eu.wdaqua.qanary.platypus_wrapper.Application</mainClass>
+                    <mainClass>eu.wdaqua.qanary.platypus.wrapper.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>

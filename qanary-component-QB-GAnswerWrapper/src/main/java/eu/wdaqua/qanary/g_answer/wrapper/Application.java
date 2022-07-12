@@ -62,8 +62,7 @@ import java.util.ArrayList;
     }
 
     @Bean(name = "g_answer.endpoint.language.supported")
-    ArrayList<String> supportedLang(
-            @Value("${g_answer.endpoint.language.supported:en}") ArrayList<String> supportedLang) {
+    ArrayList<String> supportedLang(@Value("${g_answer.endpoint.language.supported:en}") ArrayList<String> supportedLang) {
         return supportedLang;
     }
 
@@ -76,8 +75,7 @@ import java.util.ArrayList;
                                             @Value("${spring.application.name}") final String applicationName, //
                                             RestTemplateWithCaching restTemplate //
     ) throws URISyntaxException {
-        return new GAnswerQueryBuilder(threshold, langDefault, supportedLang, endpoint, applicationName, restTemplate,
-                myCacheOfResponses);
+        return new GAnswerQueryBuilder(threshold, langDefault, supportedLang, endpoint, applicationName, restTemplate, myCacheOfResponses);
     }
 
     @Bean
@@ -85,9 +83,7 @@ import java.util.ArrayList;
         return new OpenAPI().info(new Info() //
                 .title("gAnswer wrapper component") //
                 .version(appVersion) //
-                .description("This is a sample Foobar server created using springdocs - "
-                        + "a library for OpenAPI 3 with spring boot.")
-                .termsOfService("http://swagger.io/terms/") //
+                .description("This is a sample Foobar server created using springdocs - " + "a library for OpenAPI 3 with spring boot.").termsOfService("http://swagger.io/terms/") //
                 .license(new License().name("Apache 2.0").url("http://springdoc.org")) //
         );
     }

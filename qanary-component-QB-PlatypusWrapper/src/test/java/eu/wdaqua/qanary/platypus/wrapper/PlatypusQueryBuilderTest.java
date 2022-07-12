@@ -1,8 +1,8 @@
-package eu.wdaqua.qanary.platypus_wrapper;
+package eu.wdaqua.qanary.platypus.wrapper;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.platypus_wrapper.messages.PlatypusResult;
+import eu.wdaqua.qanary.platypus.wrapper.messages.PlatypusResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -60,8 +60,7 @@ public class PlatypusQueryBuilderTest {
         String langDefault = "en";
         ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en", "fr", "es"));
 
-        PlatypusQueryBuilder platypusQueryBuilder = new PlatypusQueryBuilder(threshold, langDefault, supportedLang,
-                this.endpoint, this.applicationName, this.restTemplate, this.myCacheOfResponse);
+        PlatypusQueryBuilder platypusQueryBuilder = new PlatypusQueryBuilder(threshold, langDefault, supportedLang, this.endpoint, this.applicationName, this.restTemplate, this.myCacheOfResponse);
 
         assertTrue(platypusQueryBuilder.isLangSuppoerted("en"));
         assertTrue(platypusQueryBuilder.isLangSuppoerted("fr"));
@@ -77,8 +76,7 @@ public class PlatypusQueryBuilderTest {
      * @throws URISyntaxException
      */
     @Test
-    void givenRestTemplate_whenRequested_thenLogAndModifyResponse()
-            throws InterruptedException, URISyntaxException {
+    void givenRestTemplate_whenRequested_thenLogAndModifyResponse() throws InterruptedException, URISyntaxException {
 
         assertNotNull(restTemplate);
         assertNotNull(myCacheOfResponse);
@@ -113,8 +111,7 @@ public class PlatypusQueryBuilderTest {
         String langDefault = "en";
         ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en", "fr", "es"));
 
-        PlatypusQueryBuilder platypusQueryBuilder = new PlatypusQueryBuilder(threshold, langDefault, supportedLang,
-                this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
+        PlatypusQueryBuilder platypusQueryBuilder = new PlatypusQueryBuilder(threshold, langDefault, supportedLang, this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
 
 //      TODO add question text
         String question = "";
@@ -166,8 +163,7 @@ public class PlatypusQueryBuilderTest {
      * @return
      * @throws URISyntaxException
      */
-    private PlatypusResult testWebService(PlatypusQueryBuilder myApp, String question, String lang)
-            throws URISyntaxException {
+    private PlatypusResult testWebService(PlatypusQueryBuilder myApp, String question, String lang) throws URISyntaxException {
         PlatypusResult result = myApp.requestPlatypusWebService(this.endpoint, question, lang);
         assertFalse(result.getSparql().isEmpty());
         return result;

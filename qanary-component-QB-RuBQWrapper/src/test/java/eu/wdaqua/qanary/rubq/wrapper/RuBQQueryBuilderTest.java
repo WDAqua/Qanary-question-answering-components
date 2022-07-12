@@ -60,8 +60,7 @@ public class RuBQQueryBuilderTest {
         String langDefault = "en";
         ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en", "fr", "es"));
 
-        RuBQQueryBuilder ruBQQueryBuilder = new RuBQQueryBuilder(threshold, langDefault, supportedLang,
-                this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
+        RuBQQueryBuilder ruBQQueryBuilder = new RuBQQueryBuilder(threshold, langDefault, supportedLang, this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
 
         assertTrue(ruBQQueryBuilder.isLangSuppoerted("en"));
         assertTrue(ruBQQueryBuilder.isLangSuppoerted("fr"));
@@ -77,8 +76,7 @@ public class RuBQQueryBuilderTest {
      * @throws URISyntaxException
      */
     @Test
-    void givenRestTemplate_whenRequested_thenLogAndModifyResponse()
-            throws InterruptedException, URISyntaxException {
+    void givenRestTemplate_whenRequested_thenLogAndModifyResponse() throws InterruptedException, URISyntaxException {
 
         assertNotNull(restTemplate);
         assertNotNull(myCacheOfResponse);
@@ -113,8 +111,7 @@ public class RuBQQueryBuilderTest {
         String langDefault = "en";
         ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en", "fr", "es"));
 
-        RuBQQueryBuilder teBaQAQueryBuilder = new RuBQQueryBuilder(threshold, langDefault, supportedLang,
-                this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
+        RuBQQueryBuilder teBaQAQueryBuilder = new RuBQQueryBuilder(threshold, langDefault, supportedLang, this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
 
 //      TODO add question text
         String question = "";
@@ -166,8 +163,7 @@ public class RuBQQueryBuilderTest {
      * @return
      * @throws URISyntaxException
      */
-    private RuBQResult testWebService(RuBQQueryBuilder myApp, String question, String lang)
-            throws URISyntaxException {
+    private RuBQResult testWebService(RuBQQueryBuilder myApp, String question, String lang) throws URISyntaxException {
         RuBQResult result = myApp.requestRuBQWebService(this.endpoint, question, lang);
         assertFalse(result.getSparql().isEmpty());
         return result;

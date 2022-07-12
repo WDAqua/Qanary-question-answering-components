@@ -52,13 +52,10 @@ class MockRuBQQueryBuilderTest {
 
         this.mockServer = MockRestServiceServer.createServer(this.restTemplate);
 
-        this.mockServer
-                .expect(requestTo(this.endpoint + "?question=Population%2520of%2520france?"))
-                .andExpect(method(org.springframework.http.HttpMethod.GET))
-                .andRespond(withSuccess("{\"queries\":[\"" //
-                                + RuBQTestConfiguration.getTestQuery(testQueryFilename) //
-                                + "\"] }", //
-                        MediaType.APPLICATION_JSON));
+        this.mockServer.expect(requestTo(this.endpoint + "?question=Population%2520of%2520france?")).andExpect(method(org.springframework.http.HttpMethod.GET)).andRespond(withSuccess("{\"queries\":[\"" //
+                        + RuBQTestConfiguration.getTestQuery(testQueryFilename) //
+                        + "\"] }", //
+                MediaType.APPLICATION_JSON));
     }
 
     /**
@@ -71,8 +68,7 @@ class MockRuBQQueryBuilderTest {
         String langDefault = "en";
         ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en"));
 
-        RuBQQueryBuilder ruBQQueryBuilder = new RuBQQueryBuilder(threshold, langDefault, supportedLang,
-                this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
+        RuBQQueryBuilder ruBQQueryBuilder = new RuBQQueryBuilder(threshold, langDefault, supportedLang, this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
 
         String question = "Population of france?";
         RuBQResult result = testWebService(ruBQQueryBuilder, question, langDefault);
@@ -88,8 +84,7 @@ class MockRuBQQueryBuilderTest {
      * @return
      * @throws URISyntaxException
      */
-    private RuBQResult testWebService(RuBQQueryBuilder myApp, String question, String lang)
-            throws URISyntaxException {
+    private RuBQResult testWebService(RuBQQueryBuilder myApp, String question, String lang) throws URISyntaxException {
         RuBQResult result = myApp.requestRuBQWebService(this.endpoint, question, lang);
         assertFalse(result.getSparql().isEmpty());
         return result;

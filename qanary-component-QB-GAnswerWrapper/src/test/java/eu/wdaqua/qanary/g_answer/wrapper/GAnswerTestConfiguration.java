@@ -11,8 +11,7 @@ public class GAnswerTestConfiguration {
     static {
         System.setProperty("g_answer.endpoint.url", "http://some-ganswer-endpoint-url.com/endpoint");
         System.setProperty("g_answer.mock.endpoint.url", "http://some-ganswer-endpoint-url.com/endpoint");
-        System.setProperty("qanary.webservicecalls.cache.specs",
-                "maximumSize=1000,expireAfterAccess=" + GAnswerQueryBuilderTest.MAX_TIME_SPAN_SECONDS + "s");
+        System.setProperty("qanary.webservicecalls.cache.specs", "maximumSize=1000,expireAfterAccess=" + GAnswerQueryBuilderTest.MAX_TIME_SPAN_SECONDS + "s");
     }
 
     /**

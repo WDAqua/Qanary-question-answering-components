@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.platypus_wrapper;
+package eu.wdaqua.qanary.platypus.wrapper;
 
 import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -8,8 +8,8 @@ import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-import eu.wdaqua.qanary.platypus_wrapper.messages.PlatypusRequest;
-import eu.wdaqua.qanary.platypus_wrapper.messages.PlatypusResult;
+import eu.wdaqua.qanary.platypus.wrapper.messages.PlatypusRequest;
+import eu.wdaqua.qanary.platypus.wrapper.messages.PlatypusResult;
 import net.minidev.json.JSONObject;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.rdf.model.ResourceFactory;
