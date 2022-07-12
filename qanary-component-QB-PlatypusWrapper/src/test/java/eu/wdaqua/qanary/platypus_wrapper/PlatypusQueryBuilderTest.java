@@ -25,8 +25,8 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class TestPlatypusQueryBuilder {
-    private static final Logger logger = LoggerFactory.getLogger(TestPlatypusQueryBuilder.class);
+public class PlatypusQueryBuilderTest {
+    private static final Logger logger = LoggerFactory.getLogger(PlatypusQueryBuilderTest.class);
     private final String applicationName = "PlatypusQueryBuilder";
     // time span for caching, tests wait this time span during the test runs
     protected final static int MAX_TIME_SPAN_SECONDS = 5;

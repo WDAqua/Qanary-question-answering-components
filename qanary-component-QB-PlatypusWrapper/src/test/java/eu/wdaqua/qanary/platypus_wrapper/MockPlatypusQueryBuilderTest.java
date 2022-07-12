@@ -31,8 +31,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class TestMockPlatypusQueryBuilder {
-    private static final Logger logger = LoggerFactory.getLogger(TestMockPlatypusQueryBuilder.class);
+public class MockPlatypusQueryBuilderTest {
+    private static final Logger logger = LoggerFactory.getLogger(MockPlatypusQueryBuilderTest.class);
     private final String applicationName = "PlatypusQueryBuilder";
     MockRestServiceServer mockServer;
     private URI endpoint;
