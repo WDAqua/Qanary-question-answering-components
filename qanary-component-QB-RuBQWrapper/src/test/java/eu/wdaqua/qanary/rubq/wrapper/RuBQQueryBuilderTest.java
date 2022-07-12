@@ -1,17 +1,19 @@
-package eu.wdaqua.qanary.rubq_wrapper;
+package eu.wdaqua.qanary.rubq.wrapper;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import eu.wdaqua.qanary.rubq.wrapper.messages.RuBQResult;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.http.*;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.net.URI;
@@ -20,15 +22,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class TestRuBQQueryBuilder {
+public class RuBQQueryBuilderTest {
     // time span for caching, tests wait this time span during the test runs
-    protected final static int MAX_TIME_SPAN_SECONDS = 5;
-    private static final Logger logger = LoggerFactory.getLogger(TestRuBQQueryBuilder.class);
+    protected final static int MAX_TIME_SPAN_SECONDS = 1;
+    private static final Logger logger = LoggerFactory.getLogger(RuBQQueryBuilderTest.class);
     private final String applicationName = "RuBQQueryBuilder";
     private URI endpoint;
     @Autowired
@@ -38,11 +40,12 @@ public class TestRuBQQueryBuilder {
     @Autowired
     private CacheOfRestTemplateResponse myCacheOfResponse;
 
-    @Before
+    @BeforeEach
     public void init() throws URISyntaxException {
         this.endpoint = new URI(env.getProperty("rubq.endpoint.url"));
-        assert (this.endpoint != null) : "rubq.endpoint.url cannot be empty";
+        logger.debug("endpoint: " + this.endpoint);
 
+        assert (this.endpoint != null) : "rubq.endpoint.url cannot be empty";
         assert this.restTemplate != null : "restTemplate cannot be null";
     }
 
@@ -52,13 +55,13 @@ public class TestRuBQQueryBuilder {
      * @throws Exception
      */
     @Test
-    public void testIsLangSuppoerted() throws Exception {
+    void testIsLangSuppoerted() throws Exception {
         float threshold = 0.5f;
         String langDefault = "en";
         ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en", "fr", "es"));
 
-        RuBQQueryBuilder ruBQQueryBuilder = new RuBQQueryBuilder(threshold, langDefault, supportedLang, this.endpoint,
-                this.applicationName, this.restTemplate, myCacheOfResponse);
+        RuBQQueryBuilder ruBQQueryBuilder = new RuBQQueryBuilder(threshold, langDefault, supportedLang,
+                this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
 
         assertTrue(ruBQQueryBuilder.isLangSuppoerted("en"));
         assertTrue(ruBQQueryBuilder.isLangSuppoerted("fr"));
@@ -69,8 +72,13 @@ public class TestRuBQQueryBuilder {
         assertFalse(ruBQQueryBuilder.isLangSuppoerted("se"));
     }
 
+    /**
+     * @throws InterruptedException
+     * @throws URISyntaxException
+     */
     @Test
-    public void givenRestTemplate_whenRequested_thenLogAndModifyResponse() throws InterruptedException, URISyntaxException {
+    void givenRestTemplate_whenRequested_thenLogAndModifyResponse()
+            throws InterruptedException, URISyntaxException {
 
         assertNotNull(restTemplate);
         assertNotNull(myCacheOfResponse);
@@ -78,7 +86,7 @@ public class TestRuBQQueryBuilder {
         LoginForm loginForm0 = new LoginForm("userName", "password");
         LoginForm loginForm1 = new LoginForm("userName2", "password2");
 
-        assertEquals(0, myCacheOfResponse.getNumberOfExecutedRequests());
+        long initialNumberOfRequests = myCacheOfResponse.getNumberOfExecutedRequests();
 
         callRestTemplateWithCaching(loginForm0, Cache.NOT_CACHED); // cache miss
         callRestTemplateWithCaching(loginForm0, Cache.CACHED); // cache hit
@@ -90,10 +98,39 @@ public class TestRuBQQueryBuilder {
         callRestTemplateWithCaching(loginForm0, Cache.CACHED); // cache hit
         callRestTemplateWithCaching(loginForm1, Cache.CACHED); // cache hit
 
-        assertEquals(3, myCacheOfResponse.getNumberOfExecutedRequests());
+        assertEquals(initialNumberOfRequests + 3, myCacheOfResponse.getNumberOfExecutedRequests());
 
     }
 
+    /**
+     * @throws URISyntaxException
+     */
+    @Test
+    @Disabled
+//  TODO add live URL
+    void liveTest() throws URISyntaxException {
+        float threshold = 0.5f;
+        String langDefault = "en";
+        ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en", "fr", "es"));
+
+        RuBQQueryBuilder teBaQAQueryBuilder = new RuBQQueryBuilder(threshold, langDefault, supportedLang,
+                this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
+
+//      TODO add question text
+        String question = "";
+        RuBQResult result0 = testWebService(teBaQAQueryBuilder, question, langDefault);
+
+//      TODO add expected result
+        String expectedSparql = "";
+
+        assertEquals(result0.getSparql(), expectedSparql);
+    }
+
+    /**
+     * @param loginForm
+     * @param cacheStatus
+     * @throws URISyntaxException
+     */
     private void callRestTemplateWithCaching(LoginForm loginForm, Cache cacheStatus) throws URISyntaxException {
         URI TESTSERVICEURL = new URI("http://httpbin.org/post");
 
@@ -103,8 +140,7 @@ public class TestRuBQQueryBuilder {
 
         long numberOfNewlyExecutedRequests = myCacheOfResponse.getNumberOfExecutedRequests();
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(TESTSERVICEURL, requestEntity, String.class);
-        numberOfNewlyExecutedRequests = myCacheOfResponse.getNumberOfExecutedRequests()
-                - numberOfNewlyExecutedRequests;
+        numberOfNewlyExecutedRequests = myCacheOfResponse.getNumberOfExecutedRequests() - numberOfNewlyExecutedRequests;
         logger.info("numberOfExecutedRequest since last request: new={}, count={}, teststatus={}", //
                 numberOfNewlyExecutedRequests, myCacheOfResponse.getNumberOfExecutedRequests(), cacheStatus);
 
@@ -123,7 +159,23 @@ public class TestRuBQQueryBuilder {
         }
     }
 
-    private enum Cache {CACHED, NOT_CACHED}
+    /**
+     * @param myApp
+     * @param question
+     * @param lang
+     * @return
+     * @throws URISyntaxException
+     */
+    private RuBQResult testWebService(RuBQQueryBuilder myApp, String question, String lang)
+            throws URISyntaxException {
+        RuBQResult result = myApp.requestRuBQWebService(this.endpoint, question, lang);
+        assertFalse(result.getSparql().isEmpty());
+        return result;
+    }
+
+    private enum Cache {
+        CACHED, NOT_CACHED
+    }
 
     public class LoginForm {
         private String username;
