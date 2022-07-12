@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.g_answer_wrapper.messages;
+package eu.wdaqua.qanary.g_answer.wrapper.messages;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.slf4j.Logger;

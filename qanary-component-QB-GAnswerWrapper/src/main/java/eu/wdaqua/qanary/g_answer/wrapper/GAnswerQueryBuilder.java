@@ -1,55 +1,59 @@
-package eu.wdaqua.qanary.g_answer_wrapper;
+package eu.wdaqua.qanary.g_answer.wrapper;
 
 import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-import eu.wdaqua.qanary.g_answer_wrapper.messages.GAnswerRequest;
-import eu.wdaqua.qanary.g_answer_wrapper.messages.GAnswerResult;
+import eu.wdaqua.qanary.g_answer.wrapper.messages.GAnswerRequest;
+import eu.wdaqua.qanary.g_answer.wrapper.messages.GAnswerResult;
 import net.minidev.json.JSONObject;
+import org.apache.jena.query.QuerySolutionMap;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.shiro.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-
+import java.util.List;
 
 @Component
 /**
  * This Qanary component fetches the SPARQL query for
  * the enriched question from the GAnswer API
  *
- * This component connected automatically to the Qanary pipeline.
- * The Qanary pipeline endpoint defined in application.properties (spring.boot.admin.url)
- * @see <a href="https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F" target="_top">Github wiki howto</a>
+ * This component connected automatically to the Qanary pipeline. The Qanary
+ * pipeline endpoint defined in application.properties (spring.boot.admin.url)
+ *
+ * @see <a href=
+ *      "https://github.com/WDAqua/Qanary-question-answering-components/blob/master/qanary-component-QB-TeBaQaWrapper/README.md"
+ *      target="_top">README.md</a>
  */
 public class GAnswerQueryBuilder extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(GAnswerQueryBuilder.class);
-    private QanaryUtils myQanaryUtils;
     private final float threshold;
     private final URI endpoint;
     private final RestTemplate myRestTemplate;
     private final String langDefault;
-    private final ArrayList<String> supportedLang;
+    private final List<String> supportedLang;
     private final String applicationName;
-
-    @Autowired
-    private CacheOfRestTemplateResponse myCacheOfResponses;
+    private final CacheOfRestTemplateResponse myCacheOfResponses;
+    private QanaryUtils myQanaryUtils;
 
     public GAnswerQueryBuilder(//
                                float threshold, //
                                @Qualifier("g_answer.langDefault") String langDefault, //
-                               @Qualifier("g_answer.endpoint.language.supported") ArrayList<String> supportedLang, //
+                               @Qualifier("g_answer.endpoint.language.supported") List<String> supportedLang, //
                                @Qualifier("g_answer.endpointUrl") URI endpoint, //
                                @Value("${spring.application.name}") final String applicationName, //
                                RestTemplate restTemplate, //
@@ -70,7 +74,8 @@ public class GAnswerQueryBuilder extends QanaryComponent {
                 "supportedLang cannot be null or empty: " + supportedLang;
         for (int i = 0; i < supportedLang.size(); i++) {
             assert (supportedLang.get(i).length() == 2) : //
-                    "supportedLang is invalid (requires exactly 2 characters, e.g., 'en'), was " + supportedLang.get(i) + " (length=" + supportedLang.get(i).length() + ")";
+                    "supportedLang is invalid (requires exactly 2 characters, e.g., 'en'), was " + supportedLang.get(i)
+                            + " (length=" + supportedLang.get(i).length() + ")";
         }
 
         this.threshold = threshold;
@@ -94,7 +99,7 @@ public class GAnswerQueryBuilder extends QanaryComponent {
         return langDefault;
     }
 
-    public ArrayList<String> getSupportedLang() {
+    public List<String> getSupportedLang() {
         return supportedLang;
     }
 
@@ -124,11 +129,16 @@ public class GAnswerQueryBuilder extends QanaryComponent {
 
         // STEP 1: get the required data from the Qanary triplestore (the global process
         // memory)
-        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
+        QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
         String questionString = myQanaryQuestion.getTextualRepresentation();
 
         // STEP 2: enriching of query and fetching data from the gAnswer API
         GAnswerResult result = requestGAnswerWebService(endpoint, questionString, lang);
+
+        if (result == null) {
+            logger.error("No result from gAnswer API");
+            return myQanaryMessage;
+        }
 
         // STEP 3: add information to Qanary triplestore
         String sparql = getSparqlInsertQuery(myQanaryQuestion, result);
@@ -147,12 +157,17 @@ public class GAnswerQueryBuilder extends QanaryComponent {
         return false;
     }
 
-    protected GAnswerResult requestGAnswerWebService(URI uri, String questionString, String lang) throws URISyntaxException {
+    protected GAnswerResult requestGAnswerWebService(URI uri, String questionString, String lang)
+            throws URISyntaxException {
         GAnswerRequest gAnswerRequest = new GAnswerRequest(uri, questionString, lang);
-
         long requestBefore = myCacheOfResponses.getNumberOfExecutedRequests();
 
-        HttpEntity<JSONObject> response = myRestTemplate.getForEntity(gAnswerRequest.getGAnswerQuestionUrlAsString(), JSONObject.class);
+        logger.debug("URL: {}", gAnswerRequest.getGAnswerQuestionUrlAsString());
+        HttpEntity<JSONObject> response = myRestTemplate.getForEntity(gAnswerRequest.getGAnswerQuestionUrlAsString(),
+                JSONObject.class);
+
+        Assert.notNull(response);
+        Assert.notNull(response.getBody());
 
         if (myCacheOfResponses.getNumberOfExecutedRequests() - requestBefore == 0) {
             logger.warn("request was cached: {}", gAnswerRequest);
@@ -160,7 +175,12 @@ public class GAnswerQueryBuilder extends QanaryComponent {
             logger.info("request was actually executed: {}", gAnswerRequest);
         }
 
-        return new GAnswerResult(response.getBody(), gAnswerRequest.getQuestion(), gAnswerRequest.getGAnswerEndpointUrl(), gAnswerRequest.getLanguage());
+        if (response.getBody().equals("{}")) {
+            return null;
+        } else {
+            return new GAnswerResult(response.getBody(), gAnswerRequest.getQuestion(),
+                    gAnswerRequest.getGAnswerEndpointUrl(), gAnswerRequest.getLanguage());
+        }
     }
 
     private String cleanStringForSparqlQuery(String myString) {
@@ -170,22 +190,10 @@ public class GAnswerQueryBuilder extends QanaryComponent {
     /**
      * creates the SPARQL query for inserting the data into Qanary triplestore
      * <p>
-     * data can be retrieved via SPARQL 1.1 from the Qanary triplestore using:
-     *
-     * <pre>
-     *
-     * SELECT * FROM <YOURGRAPHURI> WHERE {
-     * ?s ?p ?o ;
-     * a ?type.
-     * VALUES ?t {
-     * qa:AnnotationOfAnswerSPARQL qa:SparqlQuery
-     * qa:AnnotationOfImprovedQuestion qa:ImprovedQuestion
-     * qa:AnnotationAnswer qa:Answer
-     * qa:AnnotationOfAnswerType qa:AnswerType
-     * }
-     * }
-     * ORDER BY ?type
-     * </pre>
+     * the data can be retrieved via SPARQL 1.1 from the Qanary triplestore using
+     * QanaryTripleStoreConnector.insertAnnotationOfAnswerSPARQL from qanary.commons
+     * which is providing a predefined query template, s.t., the created data is
+     * conform with the expectations of other Qanary components
      *
      * @param myQanaryQuestion
      * @param result
@@ -193,33 +201,48 @@ public class GAnswerQueryBuilder extends QanaryComponent {
      * @throws QanaryExceptionNoOrMultipleQuestions
      * @throws URISyntaxException
      * @throws SparqlQueryFailed
+     * @throws IOException
      */
-    private String getSparqlInsertQuery(QanaryQuestion<String> myQanaryQuestion, GAnswerResult result)
-            throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed {
+    protected String getSparqlInsertQuery(QanaryQuestion<String> myQanaryQuestion, GAnswerResult result)
+            throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
 
-        String sparql = "" //
-                + "PREFIX dbr: <http://dbpedia.org/resource/>" //
-                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/>" //
-                + "PREFIX qa: <http://www.wdaqua.eu/qa#>" //
-                + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" //
-                + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>" //
-                + "" //
-                + "INSERT { " //
-                + "GRAPH <" + myQanaryQuestion.getInGraph().toString() + ">  {" //
-                + "        ?newAnnotation rdf:type qa:AnnotationOfAnswerSPARQL ." //
-                + "        ?newAnnotation oa:hasTarget <" + myQanaryQuestion.getUri().toString() + "> ." //
-                + "        ?newAnnotation oa:hasBody \"" + cleanStringForSparqlQuery(result.getSparql()) + "\"^^xsd:string ." // the select query that should compute the answer
-                + "        ?newAnnotation qa:score \"" + (float) result.getConfidence() + "\"^^xsd:float ." // confidence
-                + "        ?newAnnotation oa:annotatedAt ?time ." //
-                + "        ?newAnnotation oa:annotatedBy <urn:qanary:" + this.applicationName + "> ." // identify which component made this annotation
-                + "    }" //
-                + "}" //
-                + "WHERE {" //
-                + "    BIND (IRI(str(RAND())) AS ?newAnnotation) ." //
-                + "    BIND (now() as ?time) . " //
-                + "}";
+        String answerSparql = cleanStringForSparqlQuery(result.getSparql());
 
+//        String sparql = "" //
+//                + "PREFIX dbr: <http://dbpedia.org/resource/>" //
+//                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/>" //
+//                + "PREFIX qa: <http://www.wdaqua.eu/qa#>" //
+//                + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" //
+//                + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>" //
+//                + "" //
+//                + "INSERT { " //
+//                + "GRAPH <" + myQanaryQuestion.getInGraph().toString() + ">  {" //
+//                + "        ?newAnnotation rdf:type qa:AnnotationOfAnswerSPARQL ." //
+//                + "        ?newAnnotation oa:hasTarget <" + myQanaryQuestion.getUri().toString() + "> ." //
+//                + "        ?newAnnotation oa:hasBody \"" + cleanStringForSparqlQuery(result.getSparql()) + "\"^^xsd:string ." // the select query that should compute the answer
+//                + "        ?newAnnotation qa:score \"" + (float) result.getConfidence() + "\"^^xsd:float ." // confidence
+//                + "        ?newAnnotation oa:annotatedAt ?time ." //
+//                + "        ?newAnnotation oa:annotatedBy <urn:qanary:" + this.applicationName + "> ." // identify which component made this annotation
+//                + "    }" //
+//                + "}" //
+//                + "WHERE {" //
+//                + "    BIND (IRI(str(RAND())) AS ?newAnnotation) ." //
+//                + "    BIND (now() as ?time) . " //
+//                + "}";
+
+        // define here the parameters for the SPARQL INSERT query
+        QuerySolutionMap bindings = new QuerySolutionMap();
+        // use here the variable names defined in method insertAnnotationOfAnswerSPARQL
+        bindings.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+        bindings.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+        bindings.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createStringLiteral(answerSparql));
+        bindings.add("confidence", ResourceFactory.createTypedLiteral(result.getConfidence()));
+        bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+        // get the template of the INSERT query
+        String sparql = QanaryTripleStoreConnector.insertAnnotationOfAnswerSPARQL(bindings);
         logger.info("SPARQL insert for adding data to Qanary triplestore: {}", sparql);
+
         return sparql;
     }
 }

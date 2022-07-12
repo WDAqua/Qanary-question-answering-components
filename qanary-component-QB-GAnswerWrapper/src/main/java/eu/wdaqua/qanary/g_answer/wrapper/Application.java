@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.g_answer_wrapper;
+package eu.wdaqua.qanary.g_answer.wrapper;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
@@ -46,10 +46,8 @@ import java.util.ArrayList;
         return langDefault;
     }
 
-    @Bean(name = "g_answer.endpoint.language.supported")
-    ArrayList<String> supportedLang(@Value("${g_answer.endpoint.language.supported:en}") ArrayList<String> supportedLang) {
-        return supportedLang;
-    }
+    @Autowired
+    public QanaryComponentConfiguration qanaryComponentConfiguration;
 
     @Bean(name = "g_answer.endpointUrl")
     URI endpointUrl(@Value("${g_answer.endpoint.url}") String endpointUrl) throws URISyntaxException {
@@ -58,6 +56,16 @@ import java.util.ArrayList;
 
     @Autowired
     CacheOfRestTemplateResponse myCacheOfResponses;
+
+    public static void main(String[] args) {
+        applicationContext = SpringApplication.run(Application.class, args);
+    }
+
+    @Bean(name = "g_answer.endpoint.language.supported")
+    ArrayList<String> supportedLang(
+            @Value("${g_answer.endpoint.language.supported:en}") ArrayList<String> supportedLang) {
+        return supportedLang;
+    }
 
     @Bean
     public QanaryComponent qanaryComponent( //
@@ -68,7 +76,8 @@ import java.util.ArrayList;
                                             @Value("${spring.application.name}") final String applicationName, //
                                             RestTemplateWithCaching restTemplate //
     ) throws URISyntaxException {
-        return new GAnswerQueryBuilder(threshold, langDefault, supportedLang, endpoint, applicationName, restTemplate, myCacheOfResponses);
+        return new GAnswerQueryBuilder(threshold, langDefault, supportedLang, endpoint, applicationName, restTemplate,
+                myCacheOfResponses);
     }
 
     @Bean
@@ -76,16 +85,11 @@ import java.util.ArrayList;
         return new OpenAPI().info(new Info() //
                 .title("gAnswer wrapper component") //
                 .version(appVersion) //
-                .description("This is a sample Foobar server created using springdocs - " + "a library for OpenAPI 3 with spring boot.").termsOfService("http://swagger.io/terms/") //
+                .description("This is a sample Foobar server created using springdocs - "
+                        + "a library for OpenAPI 3 with spring boot.")
+                .termsOfService("http://swagger.io/terms/") //
                 .license(new License().name("Apache 2.0").url("http://springdoc.org")) //
         );
-    }
-
-    @Autowired
-    public QanaryComponentConfiguration qanaryComponentConfiguration;
-
-    public static void main(String[] args) {
-        applicationContext = SpringApplication.run(Application.class, args);
     }
 
 }
