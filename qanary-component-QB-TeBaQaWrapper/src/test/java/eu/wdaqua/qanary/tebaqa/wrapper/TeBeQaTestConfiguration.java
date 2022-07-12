@@ -11,8 +11,7 @@ public class TeBeQaTestConfiguration {
     static {
         System.setProperty("tebaqa.endpoint.url", "https://tebaqa.demos.dice-research.org/qa-simple");
         System.setProperty("tebaqa.mock.endpoint.url", "http://some-tebaqa/endpoint");
-        System.setProperty("qanary.webservicecalls.cache.specs",
-                "maximumSize=1000,expireAfterAccess=" + TeBaQAQueryBuilderTest.MAX_TIME_SPAN_SECONDS + "s");
+        System.setProperty("qanary.webservicecalls.cache.specs", "maximumSize=1000,expireAfterAccess=" + TeBaQAQueryBuilderTest.MAX_TIME_SPAN_SECONDS + "s");
     }
 
     /**

@@ -38,8 +38,7 @@ import java.util.List;
  * @see <a href=
  *      "https://github.com/WDAqua/Qanary-question-answering-components/blob/master/qanary-component-QB-TeBaQaWrapper/README.md"
  *      target="_top">README.md</a>
- */
-public class GAnswerQueryBuilder extends QanaryComponent {
+ */ public class GAnswerQueryBuilder extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(GAnswerQueryBuilder.class);
     private final float threshold;
     private final URI endpoint;
@@ -68,14 +67,12 @@ public class GAnswerQueryBuilder extends QanaryComponent {
         assert !(langDefault == null || langDefault.trim().isEmpty()) : //
                 "langDefault cannot be null or empty: " + langDefault;
         assert (langDefault.length() == 2) : //
-                "langDefault is invalid (requires exactly 2 characters, e.g., 'en'), was " + langDefault + " (length="
-                        + langDefault.length() + ")";
+                "langDefault is invalid (requires exactly 2 characters, e.g., 'en'), was " + langDefault + " (length=" + langDefault.length() + ")";
         assert !(supportedLang == null || supportedLang.isEmpty()) : //
                 "supportedLang cannot be null or empty: " + supportedLang;
         for (int i = 0; i < supportedLang.size(); i++) {
             assert (supportedLang.get(i).length() == 2) : //
-                    "supportedLang is invalid (requires exactly 2 characters, e.g., 'en'), was " + supportedLang.get(i)
-                            + " (length=" + supportedLang.get(i).length() + ")";
+                    "supportedLang is invalid (requires exactly 2 characters, e.g., 'en'), was " + supportedLang.get(i) + " (length=" + supportedLang.get(i).length() + ")";
         }
 
         this.threshold = threshold;
@@ -157,14 +154,12 @@ public class GAnswerQueryBuilder extends QanaryComponent {
         return false;
     }
 
-    protected GAnswerResult requestGAnswerWebService(URI uri, String questionString, String lang)
-            throws URISyntaxException {
+    protected GAnswerResult requestGAnswerWebService(URI uri, String questionString, String lang) throws URISyntaxException {
         GAnswerRequest gAnswerRequest = new GAnswerRequest(uri, questionString, lang);
         long requestBefore = myCacheOfResponses.getNumberOfExecutedRequests();
 
         logger.debug("URL: {}", gAnswerRequest.getGAnswerQuestionUrlAsString());
-        HttpEntity<JSONObject> response = myRestTemplate.getForEntity(gAnswerRequest.getGAnswerQuestionUrlAsString(),
-                JSONObject.class);
+        HttpEntity<JSONObject> response = myRestTemplate.getForEntity(gAnswerRequest.getGAnswerQuestionUrlAsString(), JSONObject.class);
 
         Assert.notNull(response);
         Assert.notNull(response.getBody());
@@ -178,8 +173,7 @@ public class GAnswerQueryBuilder extends QanaryComponent {
         if (response.getBody().equals("{}")) {
             return null;
         } else {
-            return new GAnswerResult(response.getBody(), gAnswerRequest.getQuestion(),
-                    gAnswerRequest.getGAnswerEndpointUrl(), gAnswerRequest.getLanguage());
+            return new GAnswerResult(response.getBody(), gAnswerRequest.getQuestion(), gAnswerRequest.getGAnswerEndpointUrl(), gAnswerRequest.getLanguage());
         }
     }
 
@@ -203,32 +197,9 @@ public class GAnswerQueryBuilder extends QanaryComponent {
      * @throws SparqlQueryFailed
      * @throws IOException
      */
-    protected String getSparqlInsertQuery(QanaryQuestion<String> myQanaryQuestion, GAnswerResult result)
-            throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
+    protected String getSparqlInsertQuery(QanaryQuestion<String> myQanaryQuestion, GAnswerResult result) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
 
         String answerSparql = cleanStringForSparqlQuery(result.getSparql());
-
-//        String sparql = "" //
-//                + "PREFIX dbr: <http://dbpedia.org/resource/>" //
-//                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/>" //
-//                + "PREFIX qa: <http://www.wdaqua.eu/qa#>" //
-//                + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" //
-//                + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>" //
-//                + "" //
-//                + "INSERT { " //
-//                + "GRAPH <" + myQanaryQuestion.getInGraph().toString() + ">  {" //
-//                + "        ?newAnnotation rdf:type qa:AnnotationOfAnswerSPARQL ." //
-//                + "        ?newAnnotation oa:hasTarget <" + myQanaryQuestion.getUri().toString() + "> ." //
-//                + "        ?newAnnotation oa:hasBody \"" + cleanStringForSparqlQuery(result.getSparql()) + "\"^^xsd:string ." // the select query that should compute the answer
-//                + "        ?newAnnotation qa:score \"" + (float) result.getConfidence() + "\"^^xsd:float ." // confidence
-//                + "        ?newAnnotation oa:annotatedAt ?time ." //
-//                + "        ?newAnnotation oa:annotatedBy <urn:qanary:" + this.applicationName + "> ." // identify which component made this annotation
-//                + "    }" //
-//                + "}" //
-//                + "WHERE {" //
-//                + "    BIND (IRI(str(RAND())) AS ?newAnnotation) ." //
-//                + "    BIND (now() as ?time) . " //
-//                + "}";
 
         // define here the parameters for the SPARQL INSERT query
         QuerySolutionMap bindings = new QuerySolutionMap();

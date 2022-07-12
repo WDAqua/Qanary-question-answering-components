@@ -22,9 +22,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -54,13 +52,10 @@ class MockTeBaQAQueryBuilderTest {
 
         this.mockServer = MockRestServiceServer.createServer(this.restTemplate);
 
-        this.mockServer
-                .expect(requestTo(this.endpoint + "?query=How%20many%20awards%20has%20Bertrand%20Russell?&lang=en"))
-                .andExpect(method(org.springframework.http.HttpMethod.POST))
-                .andRespond(withSuccess("{\"answers\":[\"6\"],\"sparql\":\"" //
-                                + TeBeQaTestConfiguration.getTestQuery(testQueryFilename) //
-                                + "\" }", //
-                        MediaType.APPLICATION_JSON));
+        this.mockServer.expect(requestTo(this.endpoint + "?query=How%20many%20awards%20has%20Bertrand%20Russell?&lang=en")).andExpect(method(org.springframework.http.HttpMethod.POST)).andRespond(withSuccess("{\"answers\":[\"6\"],\"sparql\":\"" //
+                        + TeBeQaTestConfiguration.getTestQuery(testQueryFilename) //
+                        + "\" }", //
+                MediaType.APPLICATION_JSON));
     }
 
     /**
@@ -73,8 +68,7 @@ class MockTeBaQAQueryBuilderTest {
         String langDefault = "en";
         ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en"));
 
-        TeBaQAQueryBuilder teBaQAQueryBuilder = new TeBaQAQueryBuilder(threshold, langDefault, supportedLang,
-                this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
+        TeBaQAQueryBuilder teBaQAQueryBuilder = new TeBaQAQueryBuilder(threshold, langDefault, supportedLang, this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
 
         String question = "How many awards has Bertrand Russell?";
         TeBaQAResult result = testWebService(teBaQAQueryBuilder, question, langDefault);
@@ -90,8 +84,7 @@ class MockTeBaQAQueryBuilderTest {
      * @return
      * @throws URISyntaxException
      */
-    private TeBaQAResult testWebService(TeBaQAQueryBuilder myApp, String question, String lang)
-            throws URISyntaxException {
+    private TeBaQAResult testWebService(TeBaQAQueryBuilder myApp, String question, String lang) throws URISyntaxException {
         TeBaQAResult result = myApp.requestTeBaQAWebService(this.endpoint, question, lang);
         assertFalse(result.getSparql().isEmpty());
         return result;

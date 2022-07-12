@@ -11,8 +11,7 @@ public class PlatypusTestConfiguration {
     static {
         System.setProperty("platypus.endpoint.url", "http://some-platypus-endpoint-url.com/endpoint");
         System.setProperty("platypus.mock.endpoint.url", "http://some-platypus-endpoint-url.com/endpoint");
-        System.setProperty("qanary.webservicecalls.cache.specs",
-                "maximumSize=1000,expireAfterAccess=" + PlatypusQueryBuilderTest.MAX_TIME_SPAN_SECONDS + "s");
+        System.setProperty("qanary.webservicecalls.cache.specs", "maximumSize=1000,expireAfterAccess=" + PlatypusQueryBuilderTest.MAX_TIME_SPAN_SECONDS + "s");
     }
 
     /**

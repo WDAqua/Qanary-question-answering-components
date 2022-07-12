@@ -60,8 +60,7 @@ class GAnswerQueryBuilderTest {
         String langDefault = "en";
         ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en", "fr", "es"));
 
-        GAnswerQueryBuilder gAnswerQueryBuilder = new GAnswerQueryBuilder(threshold, langDefault, supportedLang,
-                this.endpoint, this.applicationName, this.restTemplate, this.myCacheOfResponse);
+        GAnswerQueryBuilder gAnswerQueryBuilder = new GAnswerQueryBuilder(threshold, langDefault, supportedLang, this.endpoint, this.applicationName, this.restTemplate, this.myCacheOfResponse);
 
         assertTrue(gAnswerQueryBuilder.isLangSuppoerted("en"));
         assertTrue(gAnswerQueryBuilder.isLangSuppoerted("fr"));
@@ -77,8 +76,7 @@ class GAnswerQueryBuilderTest {
      * @throws URISyntaxException
      */
     @Test
-    public void givenRestTemplate_whenRequested_thenLogAndModifyResponse()
-            throws InterruptedException, URISyntaxException {
+    public void givenRestTemplate_whenRequested_thenLogAndModifyResponse() throws InterruptedException, URISyntaxException {
 
         assertNotNull(restTemplate);
         assertNotNull(myCacheOfResponse);
@@ -113,8 +111,7 @@ class GAnswerQueryBuilderTest {
         String langDefault = "en";
         ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en", "fr", "es"));
 
-        GAnswerQueryBuilder teBaQAQueryBuilder = new GAnswerQueryBuilder(threshold, langDefault, supportedLang,
-                this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
+        GAnswerQueryBuilder teBaQAQueryBuilder = new GAnswerQueryBuilder(threshold, langDefault, supportedLang, this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
 
 //      TODO add question text
         String question = "";
@@ -166,8 +163,7 @@ class GAnswerQueryBuilderTest {
      * @return
      * @throws URISyntaxException
      */
-    private GAnswerResult testWebService(GAnswerQueryBuilder myApp, String question, String lang)
-            throws URISyntaxException {
+    private GAnswerResult testWebService(GAnswerQueryBuilder myApp, String question, String lang) throws URISyntaxException {
         GAnswerResult result = myApp.requestGAnswerWebService(this.endpoint, question, lang);
         assertFalse(result.getSparql().isEmpty());
         return result;

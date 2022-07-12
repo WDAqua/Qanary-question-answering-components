@@ -52,16 +52,10 @@ public class MockPlatypusQueryBuilderTest {
 
         this.mockServer = MockRestServiceServer.createServer(this.restTemplate);
 
-        this.mockServer
-                .expect(requestTo(this.endpoint + "?question=Population%2520of%2520france?&lang=en"))
-                .andExpect(method(org.springframework.http.HttpMethod.GET))
-                .andRespond(withSuccess("{\"member\": {\"platypus:sparql\":\"" //
-                                + PlatypusTestConfiguration.getTestQuery(testQueryFilename) //
-                                + "\", \"resultScore\":0.57 } }", //
-                        MediaType.APPLICATION_JSON));
-
-//        {"platypus:sparql":"SELECT DISTINCT ?result2 WHERE {\n\twd:Q142 wdt:P1082 ?result2 .\n} LIMIT 100","platypus:term":"{ ?result2 | <<http://www.wikidata.org/entity/Q142>, <http://www.wikidata.org/prop/direct/P1082>, ?result2> }","result":{"@type":"xsd:decimal","name":"67063703.","rdf:value":{"@type":"xsd:decimal","@value":"67063703."}},"resultScore":0.57}
-
+        this.mockServer.expect(requestTo(this.endpoint + "?question=Population%2520of%2520france?&lang=en")).andExpect(method(org.springframework.http.HttpMethod.GET)).andRespond(withSuccess("{\"member\": {\"platypus:sparql\":\"" //
+                        + PlatypusTestConfiguration.getTestQuery(testQueryFilename) //
+                        + "\", \"resultScore\":0.57 } }", //
+                MediaType.APPLICATION_JSON));
     }
 
     /**
@@ -74,8 +68,7 @@ public class MockPlatypusQueryBuilderTest {
         String langDefault = "en";
         ArrayList<String> supportedLang = new ArrayList<>(Arrays.asList("en", "fr", "es"));
 
-        PlatypusQueryBuilder platypusQueryBuilder = new PlatypusQueryBuilder(threshold, langDefault, supportedLang,
-                this.endpoint, this.applicationName, this.restTemplate, this.myCacheOfResponse);
+        PlatypusQueryBuilder platypusQueryBuilder = new PlatypusQueryBuilder(threshold, langDefault, supportedLang, this.endpoint, this.applicationName, this.restTemplate, this.myCacheOfResponse);
 
         String question = "Population of france?";
         PlatypusResult result = testWebService(platypusQueryBuilder, question, langDefault);
@@ -91,8 +84,7 @@ public class MockPlatypusQueryBuilderTest {
      * @return
      * @throws URISyntaxException
      */
-    private PlatypusResult testWebService(PlatypusQueryBuilder myApp, String question, String lang)
-            throws URISyntaxException {
+    private PlatypusResult testWebService(PlatypusQueryBuilder myApp, String question, String lang) throws URISyntaxException {
         PlatypusResult result = myApp.requestPlatypusWebService(this.endpoint, question, lang);
         assertFalse(result.getSparql().isEmpty());
         return result;

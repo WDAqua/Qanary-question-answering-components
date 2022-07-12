@@ -75,8 +75,7 @@ public class RuBQRequest {
 
     @Override
     public String toString() {
-        return "RuBQRequest: endpoint=" + this.getRuBQEndpointUrl() + ", question=" + this.getQuestion()
-                + ", lang=" + this.getLanguage();
+        return "RuBQRequest: endpoint=" + this.getRuBQEndpointUrl() + ", question=" + this.getQuestion() + ", lang=" + this.getLanguage();
     }
 
     public void replaceNullValuesWithDefaultValues(URI endpointDefault, String langDefault) {
