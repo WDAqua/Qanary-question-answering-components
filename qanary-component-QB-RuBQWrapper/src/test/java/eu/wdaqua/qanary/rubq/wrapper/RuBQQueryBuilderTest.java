@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @WebAppConfiguration
 public class RuBQQueryBuilderTest {
     // time span for caching, tests wait this time span during the test runs
-    protected final static int MAX_TIME_SPAN_SECONDS = 1;
+    protected final static int MAX_TIME_SPAN_SECONDS = 5;
     private static final Logger logger = LoggerFactory.getLogger(RuBQQueryBuilderTest.class);
     private final String applicationName = "RuBQQueryBuilder";
     private URI endpoint;

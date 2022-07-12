@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @WebAppConfiguration
 public class TeBaQAQueryBuilderTest {
     // time span for caching, tests wait this time span during the test runs
-    protected final static int MAX_TIME_SPAN_SECONDS = 1;
+    protected final static int MAX_TIME_SPAN_SECONDS = 5;
     private static final Logger logger = LoggerFactory.getLogger(TeBaQAQueryBuilderTest.class);
     private final String applicationName = "TeBaQAQueryBuilderTest";
     private URI endpoint;
