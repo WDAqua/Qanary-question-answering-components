@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-QE-Wikidata</artifactId>
-    <version>3.1.0</version>
+    <version>3.1.1</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -14,7 +14,7 @@
     </parent>
     <properties>
         <java.version>11</java.version>
-        <qanary.version>[3.1.2,4.0.0)</qanary.version>
+        <qanary.version>[3.2.0,4.0.0)</qanary.version>
         <spring-boot-admin.version>2.6.7</spring-boot-admin.version>
         <docker.image.prefix>qanary</docker.image.prefix>
         <docker.image.name>qanary-component-qe-wikidata</docker.image.name>
@@ -84,22 +84,6 @@
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path-assert</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>apache-jena-libs</artifactId>
-            <type>pom</type>
-            <version>3.0.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-data-rest -->
         <dependency>

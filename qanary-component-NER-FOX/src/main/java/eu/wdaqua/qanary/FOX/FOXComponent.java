@@ -4,16 +4,11 @@ import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
-
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -44,7 +39,6 @@ public class FOXComponent extends QanaryComponent {
      */
     public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
         long startTime = System.currentTimeMillis();
-        org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
         logger.info("Qanary Message: {}", myQanaryMessage);
 
         // STEP1: Retrieve the named graph and the endpoint

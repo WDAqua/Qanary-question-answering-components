@@ -32,12 +32,31 @@ Examples:
 }
 ```
 
+## Input specification
+
+Not applicable as the textual question is a default parameter
+
+## Output specification
+
+```ttl
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:qanary:output> a qa:AnnotationOfQuestionLanguage .
+<urn:qanary:output> oa:hasTarget <urn:myQanaryQuestion> ; 
+  oa:hasBody "lang-id"^^xsd:string ;
+  oa:annotatedBy <urn:qanary:LDShuyo> ;
+  oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
+```
+
 ### API documentation
 
 The OpenAPI (Swagger) documentation is available at `/swagger-ui.html` (Web page) and `/api-docs` (JSON format).
 You might redefine the documentation endpoints in your application.properties file.
 
-If you deploy this component locally using the default configuration, then the following documentation URLs are provided:
+If you deploy this component locally using the default configuration, then the following documentation URLs are
+provided:
 
 * http://0.0.0.0:5555/swagger-ui.html
 * http://0.0.0.0:5555/api-docs

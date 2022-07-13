@@ -6,9 +6,7 @@ Receives a textual question, forwards it to DBpedia Spotlight API and writes res
 
 ## Input specification
 
-```ttl
-# TODO: get textual representation of question
-```
+Not applicable as the textual question is a default parameter
 
 ## Output specification
 
@@ -26,8 +24,8 @@ Receives a textual question, forwards it to DBpedia Spotlight API and writes res
             oa:end  "5"^^xsd:nonNegativeInteger
         ]
     ] .
-<urn:qanary:output> oa:hasBody <dbr:Resource> ;
-    oa:annotatedBy <urn:qanary:myDBpediaSpotlightConfiguration:getEndpoint> ;
+<urn:qanary:output> oa:hasBody <urn:dbr:Resource> ;
+    oa:annotatedBy <https://api.dbpedia-spotlight.org/en/annotate> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
     qa:score "0.5"^^xsd:decimal .
 ```

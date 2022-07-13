@@ -56,7 +56,7 @@
                 <module>qanary-component-NERD-SMAPH</module>
                 <module>qanary-component-ASR-Kaldi</module>
                 <module>qanary-component-NED-AGDISTIS</module>
-                <module>qanary-component-NED-Babelfly</module>
+                <module>qanary-component-NED-Babelfy</module>
                 <module>qanary-component-NED-Dandelion</module>
                 <module>qanary-component-NED-Tagme</module>
                 <module>qanary-component-NED-Watson</module>
@@ -94,7 +94,4 @@
             </modules>
         </profile>
     </profiles>
-
-    <modules>
-    </modules>
 </project>

@@ -95,7 +95,7 @@ public class AnnotationofSpotProperty extends QanaryComponent {
 		HashSet<String> dbLinkListSet = new HashSet<String>();
 		logger.info("process: {}", myQanaryMessage);
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
+		QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 		String language1 = "en";
 		logger.info("Langauge of the Question: {}", language1);
@@ -165,11 +165,11 @@ public class AnnotationofSpotProperty extends QanaryComponent {
 				dbLinkListSet.add(dbpediaProperty);
 			}
 			logger.debug("searchDbLinkInTTL: {}", dbpediaProperty);
-		}
+			}
 		logger.debug("DbLinkListSet: {}", dbLinkListSet.toString());
 		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
 
-		// insert data in QanaryMessage.outgraph
+		// insert data in QanaryMessage.outgraph		
 		logger.info("apply vocabulary alignment on outgraph");
 		for (String urls : dbLinkListSet) {
 			String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> " //
@@ -212,6 +212,6 @@ public class AnnotationofSpotProperty extends QanaryComponent {
 	private class Selection {
 		public int begin;
 		public int end;
-	}
+    }
 
 }
