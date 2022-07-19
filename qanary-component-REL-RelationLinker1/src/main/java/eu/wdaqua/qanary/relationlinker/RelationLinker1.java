@@ -30,11 +30,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.google.inject.Inject;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.relationlinker.RelationLinkerServiceFetcher.Link;
 
 @Component
 /**
@@ -46,14 +48,51 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  *      "https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F"
  *      target="_top">Github wiki howto</a>
  */
+@Deprecated
 public class RelationLinker1 extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(RelationLinker1.class);
 
     private final String applicationName;
 
-    public RelationLinker1(@Value("${spring.application.name}") final String applicationName) {
-        this.applicationName = applicationName;
-    }
+	@Inject
+	private RelationLinkerConfiguration relationLinkerConfiguration;
+
+	@Inject
+	private RelationLinkerServiceFetcher relationLinkerServiceFetcher;
+
+	public RelationLinker1(@Value("${spring.application.name}") final String applicationName) 
+			throws Exception
+		{
+		this.applicationName = applicationName;
+
+		logger.warn("This component is DEPRECATED!\nFunctionality is not guaranteed.");
+
+		// check functionality with live API
+		for (int i=0; i<10; i++) {
+			try {
+				this.testFunctionality();
+				logger.info("Functionality works as expectted");
+				break;
+			} catch (Exception e) {
+				logger.warn("Functionality does not work as expected on attempt no. {}:{}", i, e.toString());
+			}
+			if (i > 8) {
+				logger.error("Functionality does not work after maximum tries. Exiting...");
+				throw new Exception("Could not start component " + applicationName);
+			}
+		}
+	}
+
+	// test the internal functionality of this component, using live APIs
+	private void testFunctionality() throws Exception {
+		// THIS COMPONENT IS DEPRECATED
+		// because the intended functionality cannot be reconstructed
+		// only the availability of the API endpoint can be tested
+		ArrayList<Link> links = relationLinkerServiceFetcher.getLinksForQuestion(
+				relationLinkerConfiguration.getTestQuestion(),
+				relationLinkerConfiguration.getEndpoint()
+				);
+	}
 
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
@@ -69,85 +108,14 @@ public class RelationLinker1 extends QanaryComponent {
 		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage,
 				myQanaryUtils.getQanaryTripleStoreConnector());
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
-		ArrayList<Link> links = new ArrayList<Link>();
-
-		logger.info("Question: {}", myQuestion);
 
 		// STEP2
-		HttpClient httpclient = HttpClients.createDefault();
-		HttpPost httppost = new HttpPost("http://localhost:8097");
-		httppost.addHeader("Accept", "application/json");
+		// refactored call to external API 
+		logger.info("Question: {}", myQuestion);
+		ArrayList<Link> links = relationLinkerServiceFetcher.getLinksForQuestion(
+				myQuestion, relationLinkerConfiguration.getEndpoint());
 
-		httppost.setEntity(new StringEntity(myQuestion));
-		try {
-			HttpResponse response = httpclient.execute(httppost);
-			HttpEntity entity = response.getEntity();
-			if (entity != null) {
-				InputStream instream = entity.getContent();
-				// String result = getStringFromInputStream(instream);
-				String text2 = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
-
-				String text = text2.substring(text2.indexOf('{'));
-				logger.info("Question: {}", text);
-				JSONObject jsonObject = new JSONObject(text);
-				ArrayList<String> list = new ArrayList<String>(jsonObject.keySet());
-				JSONObject jsonObj = (JSONObject) jsonObject.get(list.get(0));
-				logger.info("test {}", list);
-				logger.info("test {}", jsonObj);
-				JSONArray jsonArray = (JSONArray) jsonObj.get("0");
-				logger.info("test {}", jsonArray);
-				String test = (String) jsonArray.get(0);
-				Link l = new Link();
-				l.begin = myQuestion.indexOf(list.get(0));
-				l.end = l.begin + list.get(0).length();
-				l.link = test;
-				links.add(l);
-				// for (int i = 0; i < jsonArray.length(); i++) {
-				// JSONObject explrObject = jsonArray.getJSONObject(i);
-				// int begin = (int) explrObject.get("startOffset");
-				// int end = (int) explrObject.get("endOffset");
-				// if(explrObject.has("features"))
-				// {
-				// JSONObject features =(JSONObject) explrObject.get("features");
-				// if(features.has("exactMatch"))
-				// {
-				// JSONArray uri = features.getJSONArray("exactMatch");
-				// String uriLink = uri.getString(0);
-				// logger.info("Question: {}", explrObject);
-				// logger.info("Question: {}", begin);
-				// logger.info("Question: {}", end);
-				// Link l = new Link();
-				// l.begin = begin;
-				// l.end = end;
-				// l.link = uriLink;
-				// links.add(l);
-				// }
-				// }
-				//
-				//
-				// }
-				// JSONObject jsnobject = new JSONObject(text);
-				// JSONArray jsonArray = jsnobject.getJSONArray("endOffset");
-				// for (int i = 0; i < jsonArray.length(); i++) {
-				// JSONObject explrObject = jsonArray.getJSONObject(i);
-				// logger.info("JSONObject: {}", explrObject);
-				// logger.info("JSONArray: {}", jsonArray.getJSONObject(i));
-				// //logger.info("Question: {}", text);
-				//
-				// }
-				logger.info("Question: {}", text);
-				// logger.info("Question: {}", jsonArray);
-				try {
-					// do something useful
-				} finally {
-					instream.close();
-				}
-			}
-		} catch (ClientProtocolException e) {
-			logger.info("Exception: {}", myQuestion);
-			// TODO Auto-generated catch block
-		}
-
+		// STEP3
 		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
 		// TODO: insert data in QanaryMessage.outgraph
 
@@ -180,12 +148,6 @@ public class RelationLinker1 extends QanaryComponent {
 		}
 
 		return myQanaryMessage;
-	}
-
-	class Link {
-		public int begin;
-		public int end;
-		public String link;
 	}
 
 }

@@ -23,10 +23,23 @@ public class Application {
 	* to the QanaryServiceController in the qanary_component-template
 	* 
 	* @return
+	 * @throws Exception
 	*/
 	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
+	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) throws Exception {
 		return new RelationLinker1(applicationName);
+	}
+
+	@Bean
+	public RelationLinkerConfiguration relationLinkerConfiguration(
+			@Value("${service.endpoint}") final String endpoint,
+			@Value("${service.test-question}") final String testQuetsion) 
+	{
+		return new RelationLinkerConfiguration(endpoint, testQuetsion);
+	}
+
+	@Bean RelationLinkerServiceFetcher relationLinkerServiceFetcher() {
+		return new RelationLinkerServiceFetcher();
 	}
 	
 	
