@@ -41,11 +41,73 @@ public class MeaningCloudNed extends QanaryComponent {
     private final String applicationName;
     private final String cacheFilePath;
 
-    public MeaningCloudNed(@Value("${spring.application.name}") final String applicationName,
-                           @Value("${ned-meaningcloud.cache.file}") final String cacheFilePath) {
-        this.applicationName = applicationName;
-        this.cacheFilePath = cacheFilePath;
-    }
+	public MeaningCloudNed(@Value("${spring.application.name}") final String applicationName) throws Exception {
+		this.applicationName = applicationName;
+
+		for (int i = 0; i < 10; i++) {
+			try {
+				this.testFunctionality();
+				logger.info("Functionality works as expected");
+				break;
+			} catch (Exception ex) {
+				logger.warn("Functionality did not work as expected on attempt no. {}: {}", i, ex.toString());
+				if (i > 8) {
+					logger.error("Functionality does not work as expected. Exiting..");
+					throw new Exception("Could not start component, " + applicationName);
+				}
+			}
+		}
+	}
+
+	private void testFunctionality() throws Exception {
+		String myQuestion = "Is Selwyn Lloyd the prime minister of Winston Churchill?";
+		ArrayList<Selection> selections = new ArrayList<Selection>();
+
+		String thePath = "";
+		thePath = URLEncoder.encode(myQuestion, "UTF-8");
+
+		HttpClient httpclient = HttpClients.createDefault();
+		HttpGet httpget = new HttpGet(
+				"https://api.meaningcloud.com/topics-2.0?key=57748bf27b54ff6a49d2a0947e15754c&of=json&lang=en&ilang=en&txt="
+						+ thePath + "&tt=e&uw=y");
+		// httpget.addHeader("User-Agent", USER_AGENT);
+		HttpResponse response = httpclient.execute(httpget);
+
+		HttpEntity entity = response.getEntity();
+		if (entity != null) {
+			InputStream instream = entity.getContent();
+			String text = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
+			JSONObject response2 = new JSONObject(text);
+			if (response2.has("entity_list")) {
+				JSONArray ents = (JSONArray) response2.get("entity_list");
+				for (int j = 0; j < ents.length(); j++) {
+					JSONObject formObject = (JSONObject) ents.getJSONObject(j);
+					if (formObject.has("variant_list")) {
+						JSONArray jsonArray = (JSONArray) formObject.get("variant_list");
+						String link = null;
+						if (formObject.has("semld_list")) {
+							JSONArray jsonArray_semld_list = (JSONArray) formObject.get("semld_list");
+							link = jsonArray_semld_list.getString(0);
+						}
+						for (int i = 0; i < jsonArray.length(); i++) {
+							JSONObject explrObject = jsonArray.getJSONObject(i);
+							int begin = explrObject.getInt("inip");
+							int end = explrObject.getInt("endp");
+							Selection s = new Selection();
+							s.begin = begin;
+							s.end = end;
+							String finalUrl = "";
+							if (link != null && link.contains("wikipedia")) {
+								finalUrl = "http://dbpedia.org/resource" + link.substring(28);
+							}
+							s.link = finalUrl;
+							selections.add(s);
+						}
+					}
+				}
+			}
+		}
+	}
 
 	/**
 	 * implement this method encapsulating the functionality of your Qanary

@@ -50,9 +50,63 @@ public class DandelionNED extends QanaryComponent {
 
     private final String applicationName;
 
-    public DandelionNED(@Value("${spring.application.name}") final String applicationName) {
-        this.applicationName = applicationName;
-    }
+	public DandelionNED(@Value("${spring.application.name}") final String applicationName) throws Exception {
+		this.applicationName = applicationName;
+
+		for (int i = 0; i < 10; i++) {
+			try {
+				this.testFunctionality();
+				logger.info("Functionality works as expected");
+				break;
+			} catch (Exception ex) {
+				logger.warn("Functionality did not work as expected on attempt no. {}: {}", i, ex.toString());
+				if (i > 8) {
+					logger.error("Functionality does not work as expected. Exiting..");
+					throw new Exception("Could not start component, " + applicationName);
+				}
+			}
+		}
+	}
+
+	private void testFunctionality() throws Exception {
+		String myQuestion = "What is a test?";
+
+		ArrayList<Link> links = new ArrayList<Link>();
+
+		String thePath = "";
+		thePath = URLEncoder.encode(myQuestion, "UTF-8");
+
+		HttpClient httpclient = HttpClients.createDefault();
+		HttpGet httpget = new HttpGet("https://api.dandelion.eu/datatxt/nex/v1/?text=" + thePath
+				+ "&include=types%2Cabstract%2Ccategories&token=0990bd650d9545709da047537ff05a49");
+		// httpget.addHeader("User-Agent", USER_AGENT);
+		HttpResponse response = httpclient.execute(httpget);
+		HttpEntity entity = response.getEntity();
+		if (entity != null) {
+			InputStream instream = entity.getContent();
+			// String result = getStringFromInputStream(instream);
+			String text = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
+			JSONObject response2 = new JSONObject(text);
+			if (response2.has("annotations")) {
+				JSONArray jsonArray = (JSONArray) response2.get("annotations");
+				if (jsonArray.length() != 0) {
+					for (int i = 0; i < jsonArray.length(); i++) {
+						JSONObject explrObject = jsonArray.getJSONObject(i);
+						int begin = (int) explrObject.get("start");
+						int end = (int) explrObject.get("end");
+						String uri = (String) explrObject.get("uri");
+						String finalUri = "http://dbpedia.org/resource" + uri.substring(28);
+
+						Link l = new Link();
+						l.begin = begin;
+						l.end = end + 1;
+						l.link = finalUri;
+						links.add(l);
+					}
+				}
+			}
+		}
+	}
 
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
