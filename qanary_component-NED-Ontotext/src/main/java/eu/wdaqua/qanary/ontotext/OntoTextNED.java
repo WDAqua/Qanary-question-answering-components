@@ -8,6 +8,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
@@ -48,8 +51,58 @@ public class OntoTextNED extends QanaryComponent {
 
 	private final String applicationName;
 
-	public OntoTextNED(@Value("${spring.application.name}") final String applicationName) {
+	public OntoTextNED(@Value("${spring.application.name}") final String applicationName) throws Exception {
 		this.applicationName = applicationName;
+
+		for (int i = 0; i < 10; i++) {
+			try {
+				this.testFunctionality();
+				logger.info("Functionality works as expected");
+				break;
+			} catch (Exception ex) {
+				logger.warn("Functionality did not work as expected on attempt no. {}: {}", i, ex.toString());
+				if (i > 8) {
+					logger.error("Functionality does not work as expected. Exiting..");
+					throw new Exception("Could not start component, " + applicationName);
+				}
+			}
+		}
+	}
+
+	private void testFunctionality() throws Exception {
+		ArrayList<Link> links = new ArrayList<Link>();
+		HttpClient httpclient = HttpClients.createDefault();
+		HttpPost httppost = new HttpPost("https://tag.ontotext.com/extractor-en/extract");
+		httppost.addHeader("X-JwtToken", "<JWT Token goes here>");
+		httppost.addHeader("Accept", "application/vnd.ontotext.ces+json");
+		httppost.addHeader("Content-Type", "text/plain");
+		httppost.setEntity(new StringEntity("What is a test?"));
+		HttpResponse response = httpclient.execute(httppost);
+		HttpEntity entity = response.getEntity();
+		if (entity != null) {
+			InputStream instream = entity.getContent();
+			String text = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
+			JSONObject jsonObject = new JSONObject(text);
+			JSONArray jsonArray = jsonObject.getJSONArray("mentions");
+			for (int i = 0; i < jsonArray.length(); i++) {
+				JSONObject explrObject = jsonArray.getJSONObject(i);
+				int begin = (int) explrObject.get("startOffset");
+				int end = (int) explrObject.get("endOffset");
+				if (explrObject.has("features")) {
+					JSONObject features = (JSONObject) explrObject.get("features");
+					if (features.has("exactMatch")) {
+						JSONArray uri = features.getJSONArray("exactMatch");
+						String uriLink = uri.getString(0);
+						Link l = new Link();
+						l.begin = begin;
+						l.end = end;
+						l.link = uriLink;
+						links.add(l);
+					}
+				}
+			}
+			instream.close();
+		}
 	}
 
 	/**

@@ -26,7 +26,7 @@ public class Application {
 	* @return
 	*/
 	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
+	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) throws Exception {
 		return new MeaningCloudNed(applicationName);
 	}
 	
