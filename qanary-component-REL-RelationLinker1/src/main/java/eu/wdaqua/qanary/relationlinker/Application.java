@@ -23,7 +23,7 @@ public class Application {
 	* to the QanaryServiceController in the qanary_component-template
 	* 
 	* @return
-	 * @throws Exception
+	* @throws Exception
 	*/
 	@Bean
 	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) throws Exception {

@@ -1,39 +1,19 @@
 package eu.wdaqua.qanary.relationlinker2;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.relationlinker2.RelationLinkerServiceFetcher.Link;
 
 @Component
 /**
@@ -45,14 +25,51 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  *      "https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F"
  *      target="_top">Github wiki howto</a>
  */
+@Deprecated
 public class RelationLinker2 extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(RelationLinker2.class);
 
     private final String applicationName;
 
-    public RelationLinker2(@Value("${spring.application.name}") final String applicationName) {
-        this.applicationName = applicationName;
-    }
+	@Inject
+	private RelationLinkerConfiguration relationLinkerConfiguration;
+
+	@Inject
+	private RelationLinkerServiceFetcher relationLinkerServiceFetcher;
+
+	public RelationLinker2(@Value("${spring.application.name}") final String applicationName) 
+		throws Exception 
+	{
+		this.applicationName = applicationName;
+
+		logger.warn("This component is DEPRECATED!\nFunctionality is not guaranteed.");
+
+		// check functionality with live API
+		for (int i = 0; i < 10; i++) {
+			try {
+				this.testFunctionality();
+				logger.info("Functionality works as expected");
+				break;
+			} catch (Exception e) {
+				logger.warn("Functionality does not work as expected on attempt no. {}:{}", i, e.toString());
+			}
+			if (i > 8) {
+				logger.error("Functionality does not work after maximum tries. Exiting ...");
+				throw new Exception("Could not start component " + applicationName);
+			}
+		}
+	}
+
+	// test the internal functionality of this component, using live APIs
+	private void testFunctionality() throws Exception {
+		// THIS COMPONENT IS DEPRECATED
+		// because the intended functionality cannot be reconstructed
+		// only the availability of the API endpoint can be tested
+		ArrayList<Link> links = relationLinkerServiceFetcher.getLinksForQuestion(
+				relationLinkerConfiguration.getTestQuestion(),
+				relationLinkerConfiguration.getEndpoint()
+				);
+	}
 
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
@@ -68,88 +85,15 @@ public class RelationLinker2 extends QanaryComponent {
 		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage,
 				myQanaryUtils.getQanaryTripleStoreConnector());
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
-		ArrayList<Link> links = new ArrayList<Link>();
-
-		logger.info("Question: {}", myQuestion);
 
 		// STEP2
-		HttpClient httpclient = HttpClients.createDefault();
-		HttpPost httppost = new HttpPost("http://localhost:8097");
-		httppost.addHeader("Accept", "application/json");
+		// refactored call to external API
+		logger.info("Question: {}", myQuestion);
+		ArrayList<Link> links = relationLinkerServiceFetcher.getLinksForQuestion(
+				myQuestion, relationLinkerConfiguration.getEndpoint()
+				);
 
-		httppost.setEntity(new StringEntity(myQuestion));
-		try {
-			HttpResponse response = httpclient.execute(httppost);
-			HttpEntity entity = response.getEntity();
-			if (entity != null) {
-				InputStream instream = entity.getContent();
-				// String result = getStringFromInputStream(instream);
-				String text2 = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
-
-				String text = text2.substring(text2.indexOf('{'));
-				logger.info("Question: {}", text);
-				JSONObject jsonObject = new JSONObject(text);
-				ArrayList<String> list = new ArrayList<String>(jsonObject.keySet());
-				JSONObject jsonObj = (JSONObject) jsonObject.get(list.get(0));
-				logger.info("test {}", list);
-				logger.info("test {}", jsonObj);
-				JSONArray jsonArray = (JSONArray) jsonObj.get("0");
-				logger.info("test {}", jsonArray);
-				String test = (String) jsonArray.get(1);
-				Link l = new Link();
-				l.begin = myQuestion.indexOf(list.get(1));
-				l.end = l.begin + list.get(1).length();
-				l.link = test;
-				links.add(l);
-				// for (int i = 0; i < jsonArray.length(); i++) {
-				// JSONObject explrObject = jsonArray.getJSONObject(i);
-				// int begin = (int) explrObject.get("startOffset");
-				// int end = (int) explrObject.get("endOffset");
-				// if(explrObject.has("features"))
-				// {
-				// JSONObject features =(JSONObject) explrObject.get("features");
-				// if(features.has("exactMatch"))
-				// {
-				// JSONArray uri = features.getJSONArray("exactMatch");
-				// String uriLink = uri.getString(0);
-				// logger.info("Question: {}", explrObject);
-				// logger.info("Question: {}", begin);
-				// logger.info("Question: {}", end);
-				// Link l = new Link();
-				// l.begin = begin;
-				// l.end = end;
-				// l.link = uriLink;
-				// links.add(l);
-				// }
-				// }
-				//
-				//
-				// }
-				// JSONObject jsnobject = new JSONObject(text);
-				// JSONArray jsonArray = jsnobject.getJSONArray("endOffset");
-				// for (int i = 0; i < jsonArray.length(); i++) {
-				// JSONObject explrObject = jsonArray.getJSONObject(i);
-				// logger.info("JSONObject: {}", explrObject);
-				// logger.info("JSONArray: {}", jsonArray.getJSONObject(i));
-				// //logger.info("Question: {}", text);
-				//
-				// }
-				logger.info("Question: {}", text);
-				// logger.info("Question: {}", jsonArray);
-				try {
-					// do something useful
-				} finally {
-					instream.close();
-				}
-			}
-		} catch (ClientProtocolException e) {
-			logger.info("Exception: {}", myQuestion);
-			// TODO Auto-generated catch block
-		} catch (IOException e1) {
-			logger.info("Except: {}", e1);
-			// TODO Auto-generated catch block
-		}
-
+		// STEP3
 		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
 		// TODO: insert data in QanaryMessage.outgraph
 
@@ -182,12 +126,6 @@ public class RelationLinker2 extends QanaryComponent {
 		}
 
 		return myQanaryMessage;
-	}
-
-	class Link {
-		public int begin;
-		public int end;
-		public String link;
 	}
 
 }

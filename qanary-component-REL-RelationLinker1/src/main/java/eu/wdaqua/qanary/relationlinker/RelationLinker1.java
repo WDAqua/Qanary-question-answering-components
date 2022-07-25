@@ -1,35 +1,12 @@
 package eu.wdaqua.qanary.relationlinker;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -68,7 +45,7 @@ public class RelationLinker1 extends QanaryComponent {
 		logger.warn("This component is DEPRECATED!\nFunctionality is not guaranteed.");
 
 		// check functionality with live API
-		for (int i=0; i<10; i++) {
+		for (int i = 0; i < 10; i++) {
 			try {
 				this.testFunctionality();
 				logger.info("Functionality works as expectted");
