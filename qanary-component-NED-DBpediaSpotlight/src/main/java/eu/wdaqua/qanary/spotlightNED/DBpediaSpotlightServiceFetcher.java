@@ -22,46 +22,46 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 public class DBpediaSpotlightServiceFetcher {
-	private static final Logger logger = LoggerFactory.getLogger(DBpediaSpotlightServiceFetcher.class);
+    private static final Logger logger = LoggerFactory.getLogger(DBpediaSpotlightServiceFetcher.class);
 
-	/**
-	 * fetch data from the configured DBpedia Spotlight endpoint
-	 * 
-	 * @param myQanaryQuestion
-	 * @param myQanaryUtils
-	 * @param myQuestion
-	 * @param endpoint
-	 * @param minimumConfidence
-	 * @return
-	 * @throws ClientProtocolException
-	 * @throws IOException
-	 */
-    @Cacheable(value = "json", key="#myQuestion")
-	public JsonArray getJsonFromService(
-			String myQuestion, String endpoint, float minimumConfidence) throws ClientProtocolException, IOException {
+    /**
+     * fetch data from the configured DBpedia Spotlight endpoint
+     *
+     * @param myQanaryQuestion
+     * @param myQanaryUtils
+     * @param myQuestion
+     * @param endpoint
+     * @param minimumConfidence
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     */
+    @Cacheable(value = "json", key = "#myQuestion")
+    public JsonArray getJsonFromService(
+            String myQuestion, String endpoint, float minimumConfidence) throws ClientProtocolException, IOException {
 
-		String uriGetParameter = "?text=" + URLEncoder.encode(myQuestion, StandardCharsets.UTF_8.toString())
-				+ "&confidence=" + minimumConfidence;
+        String uriGetParameter = "?text=" + URLEncoder.encode(myQuestion, StandardCharsets.UTF_8.toString())
+                + "&confidence=" + minimumConfidence;
 
-		HttpClient client = HttpClients.custom().build();
-		HttpUriRequest request = RequestBuilder.get() //
-				.setUri(endpoint + uriGetParameter) //
-				.setHeader(HttpHeaders.ACCEPT, "application/json") //
-				.build();
-		logger.info("non-cached HTTP request: {}", request.getRequestLine());
-		HttpResponse response = client.execute(request);
-		HttpEntity responseEntity = response.getEntity();
-		String json = EntityUtils.toString(responseEntity);
+        HttpClient client = HttpClients.custom().build();
+        HttpUriRequest request = RequestBuilder.get() //
+                .setUri(endpoint + uriGetParameter) //
+                .setHeader(HttpHeaders.ACCEPT, "application/json") //
+                .build();
+        logger.info("non-cached HTTP request: {}", request.getRequestLine());
+        HttpResponse response = client.execute(request);
+        HttpEntity responseEntity = response.getEntity();
+        String json = EntityUtils.toString(responseEntity);
 
-		// parse the response data as JSON and get the found DBpedia resources
-		JsonElement root = JsonParser.parseString(json);
-		JsonArray resources = root.getAsJsonObject().get("Resources").getAsJsonArray();
+        // parse the response data as JSON and get the found DBpedia resources
+        JsonElement root = JsonParser.parseString(json);
+        JsonArray resources = root.getAsJsonObject().get("Resources").getAsJsonArray();
 
-		// check if anything was found
-		if (resources.size() == 0) {
-			logger.warn("nothing recognized for \"{}\": {}", myQuestion, json);
-		}
+        // check if anything was found
+        if (resources.size() == 0) {
+            logger.warn("nothing recognized for \"{}\": {}", myQuestion, json);
+        }
 
-		return resources;
-	}
+        return resources;
+    }
 }

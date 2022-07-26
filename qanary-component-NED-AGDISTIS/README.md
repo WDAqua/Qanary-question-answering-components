@@ -2,7 +2,8 @@
 
 ## Description
 
-Receives a textual question and the spots from an NER component, disambiguates the spots and stores the corresponding named entities.
+Receives a textual question and the spots from an NER component, disambiguates the spots and stores the corresponding
+named entities.
 
 ## Input specification
 

@@ -16,20 +16,20 @@ import java.io.ByteArrayOutputStream;
 
 @Component
 public class Monolitic extends QanaryComponent {
-	private static final Logger logger = LoggerFactory.getLogger(Monolitic.class);
+    private static final Logger logger = LoggerFactory.getLogger(Monolitic.class);
 
-	private final String applicationName;
+    private final String applicationName;
 
-	public Monolitic(@Value("${spring.application.name}") final String applicationName) {
-		this.applicationName = applicationName;
-	}
+    public Monolitic(@Value("${spring.application.name}") final String applicationName) {
+        this.applicationName = applicationName;
+    }
 
-	/**
-	 * implement this method encapsulating the functionality of your Qanary
-	 * component
-	 */
-	@Override
-	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
+    /**
+     * implement this method encapsulating the functionality of your Qanary
+     * component
+     */
+    @Override
+    public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 
         // the class QanaryUtils provides some helpers for standard tasks
         QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
@@ -39,31 +39,31 @@ public class Monolitic extends QanaryComponent {
 
         // STEP 2: answer the question and give back the sparql query and the answers in RDF json http://www.w3.org/TR/sparql11-results-json/
         String sparqlAnswer = "SELECT DISTINCT ?x WHERE { "
-        		+ "<http://dbpedia.org/resource/DBpedia> <http://dbpedia.org/ontology/developer> ?x . "
-        		+ "?x     <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Agent> . "
-        		+ "}";
-       
-	sparqlAnswer = "ASK WHERE { "
-                        + "<http://dbpedia.org/resource/DBpedia> <http://dbpedia.org/ontology/developer> ?x . "
-                        + "?x     <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Agent> . "
-                        + "}";
-	 
-	Query query = QueryFactory.create(sparqlAnswer);
-	String json;
-	if (query.isAskType()){
-		Boolean result = myQanaryUtils.askTripleStore(sparqlAnswer, "http://dbpedia.org/sparql");
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		ResultSetFormatter.outputAsJSON(outputStream, result);
-		json = new String(outputStream.toByteArray());
-	} else {
-		ResultSet result = myQanaryUtils.selectFromTripleStore(sparqlAnswer, "http://dbpedia.org/sparql"); 
-        	ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        	ResultSetFormatter.outputAsJSON(outputStream, result);
-     		json = new String(outputStream.toByteArray());
-	}
+                + "<http://dbpedia.org/resource/DBpedia> <http://dbpedia.org/ontology/developer> ?x . "
+                + "?x     <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Agent> . "
+                + "}";
+
+        sparqlAnswer = "ASK WHERE { "
+                + "<http://dbpedia.org/resource/DBpedia> <http://dbpedia.org/ontology/developer> ?x . "
+                + "?x     <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Agent> . "
+                + "}";
+
+        Query query = QueryFactory.create(sparqlAnswer);
+        String json;
+        if (query.isAskType()) {
+            Boolean result = myQanaryUtils.askTripleStore(sparqlAnswer, "http://dbpedia.org/sparql");
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ResultSetFormatter.outputAsJSON(outputStream, result);
+            json = new String(outputStream.toByteArray());
+        } else {
+            ResultSet result = myQanaryUtils.selectFromTripleStore(sparqlAnswer, "http://dbpedia.org/sparql");
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ResultSetFormatter.outputAsJSON(outputStream, result);
+            json = new String(outputStream.toByteArray());
+        }
         logger.info("Generated SPARQL query: {} ", sparqlAnswer);
         logger.info("Generated answers in RDF json: {}", json);
-        
+
         // STEP 3: pPush the sparql query and the json object to the named graph reserved for the question
         String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
                 + "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
@@ -73,22 +73,22 @@ public class Monolitic extends QanaryComponent {
                 + "  ?a a qa:AnnotationOfAnswerSPARQL . "
                 + "  ?a oa:hasTarget <URIAnswer> . "
                 + "  ?a oa:hasBody \"" + sparqlAnswer.replace("\n", " ") + "\" ;"
-                + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; "
+                + "     oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; "
                 + "	    oa:annotatedAt ?time . "
                 + "  ?b a qa:AnnotationOfAnswerJSON . "
                 + "  ?b oa:hasTarget <URIAnswer> . "
                 + "  ?b oa:hasBody \"" + json.replace("\n", " ").replace("\"", "\\\"") + "\" ;"
-                + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; "
+                + "     oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; "
                 + "	    oa:annotatedAt ?time  "
                 + "}} "
                 + "WHERE { "
                 + "BIND (IRI(str(RAND())) AS ?a) ."
                 + "BIND (IRI(str(RAND())) AS ?b) ."
                 + "BIND (now() as ?time) "
-                + "}";	
+                + "}";
         myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
 
-		return myQanaryMessage;
-	}
+        return myQanaryMessage;
+    }
 
 }

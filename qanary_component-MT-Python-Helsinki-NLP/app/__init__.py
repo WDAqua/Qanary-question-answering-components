@@ -1,5 +1,5 @@
-from flask import Flask, render_template
 from app.mt_helsinki_nlp import mt_helsinki_nlp
+from flask import Flask
 
 # default config file (use -c parameter on command line specify a custom config file)
 configfile = "app.conf"

@@ -19,6 +19,10 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  */
 public class Application {
 
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(Application.class, args);
+    }
+
     /**
      * this method is needed to make the QanaryComponent in this project known
      * to the QanaryServiceController in the qanary_component-template
@@ -28,10 +32,5 @@ public class Application {
     @Bean
     public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
         return new MeaningCloud(applicationName);
-    }
-
-
-    public static void main(String[] args) throws Exception {
-        SpringApplication.run(Application.class, args);
     }
 }

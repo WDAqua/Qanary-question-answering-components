@@ -44,380 +44,379 @@ import net.minidev.json.JSONObject;
  * This Qanary component retrieves the Named Entities from the Qanary
  * triplestore, replaces entities by the entity URIs, and fetches results for
  * the enriched question from the QAnswer API
- * 
+ *
  * This component connected automatically to the Qanary pipeline. The Qanary
  * pipeline endpoint defined in application.properties (spring.boot.admin.url)
  */
 public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
-	private static final Logger logger = LoggerFactory.getLogger(QAnswerQueryBuilderAndExecutor.class);
-	private QanaryUtils myQanaryUtils;
-	private float threshold;
-	private URI qanswerEndpoint;
-	private RestTemplate myRestTemplate;
-	private String langDefault;
-	private String knowledgeBaseDefault;
-	private final String applicationName;
+    private static final Logger logger = LoggerFactory.getLogger(QAnswerQueryBuilderAndExecutor.class);
+    public final Map<String, URL> knowledgeGraphEndpoints;
+    private final String applicationName;
+    private QanaryUtils myQanaryUtils;
+    private float threshold;
+    private URI qanswerEndpoint;
+    private RestTemplate myRestTemplate;
+    private String langDefault;
+    private String knowledgeBaseDefault;
 
-	public final Map<String, URL> knowledgeGraphEndpoints;
+    public QAnswerQueryBuilderAndExecutor( //
+                                           float threshold, //
+                                           @Qualifier("langDefault") String langDefault, //
+                                           @Qualifier("knowledgeBaseDefault") String knowledgeBaseDefault, //
+                                           @Qualifier("endpointUrl") URI qanswerEndpoint, //
+                                           @Value("${spring.application.name}") final String applicationName, //
+                                           RestTemplateWithCaching restTemplate //
+    ) throws URISyntaxException, MalformedURLException {
 
-	public QAnswerQueryBuilderAndExecutor( //
-			float threshold, //
-			@Qualifier("langDefault") String langDefault, //
-			@Qualifier("knowledgeBaseDefault") String knowledgeBaseDefault, //
-			@Qualifier("endpointUrl") URI qanswerEndpoint, //
-			@Value("${spring.application.name}") final String applicationName, //
-			RestTemplateWithCaching restTemplate //
-	) throws URISyntaxException, MalformedURLException {
+        assert threshold >= 0 : "threshold has to be >= 0: " + threshold;
+        assert !(qanswerEndpoint == null) : //
+                "qanswerEndpoint cannot be null: " + qanswerEndpoint;
+        assert !(langDefault == null || langDefault.trim().isEmpty()) : //
+                "langDefault cannot be null or empty: " + langDefault;
+        assert (langDefault.length() == 2) : //
+                "langDefault is invalid (requires exactly 2 characters, e.g., 'en'), was " + langDefault + " (length="
+                        + langDefault.length() + ")";
+        assert !(knowledgeBaseDefault == null || knowledgeBaseDefault.trim().isEmpty()) : //
+                "knowledgeBaseDefault cannot be null or empty: " + knowledgeBaseDefault;
 
-		assert threshold >= 0 : "threshold has to be >= 0: " + threshold;
-		assert !(qanswerEndpoint == null) : //
-				"qanswerEndpoint cannot be null: " + qanswerEndpoint;
-		assert !(langDefault == null || langDefault.trim().isEmpty()) : //
-				"langDefault cannot be null or empty: " + langDefault;
-		assert (langDefault.length() == 2) : //
-				"langDefault is invalid (requires exactly 2 characters, e.g., 'en'), was " + langDefault + " (length="
-						+ langDefault.length() + ")";
-		assert !(knowledgeBaseDefault == null || knowledgeBaseDefault.trim().isEmpty()) : //
-				"knowledgeBaseDefault cannot be null or empty: " + knowledgeBaseDefault;
+        this.threshold = threshold;
+        this.qanswerEndpoint = qanswerEndpoint;
+        this.langDefault = langDefault;
+        this.knowledgeBaseDefault = knowledgeBaseDefault;
+        this.myRestTemplate = restTemplate;
+        this.applicationName = applicationName;
 
-		this.threshold = threshold;
-		this.qanswerEndpoint= qanswerEndpoint;
-		this.langDefault = langDefault;
-		this.knowledgeBaseDefault = knowledgeBaseDefault;
-		this.myRestTemplate = restTemplate;
-		this.applicationName = applicationName;
+        // define the names of supported triplestore endpoints
+        knowledgeGraphEndpoints = Stream.of( //
+                        new AbstractMap.SimpleEntry<>("wikidata", new URL("https://query.wikidata.org/bigdata/namespace/wdq/sparql")), //
+                        new AbstractMap.SimpleEntry<>("dbpedia", new URL("https://dbpedia.org/sparql"))) //
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));    //
 
-		// define the names of supported triplestore endpoints
-		knowledgeGraphEndpoints = Stream.of( //
-				  new AbstractMap.SimpleEntry<>("wikidata", new URL("https://query.wikidata.org/bigdata/namespace/wdq/sparql")), //
-				  new AbstractMap.SimpleEntry<>("dbpedia",  new URL("https://dbpedia.org/sparql"))) //
-				  .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));	//
+        logger.debug("RestTemplate: {}", restTemplate);
+    }
 
-		logger.debug("RestTemplate: {}", restTemplate);
-	}
+    public float getThreshold() {
+        return threshold;
+    }
 
-	public float getThreshold() {
-		return threshold;
-	}
+    public URI getQanswerEndpoint() {
+        return qanswerEndpoint;
+    }
 
-	public URI getQanswerEndpoint() {
-		return qanswerEndpoint;
-	}
+    /**
+     * starts the annotation process
+     *
+     * @throws SparqlQueryFailed
+     */
+    @Override
+    public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
+        logger.info("process: {}", myQanaryMessage);
 
-	/**
-	 * starts the annotation process
-	 * 
-	 * @throws SparqlQueryFailed
-	 */
-	@Override
-	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
-		logger.info("process: {}", myQanaryMessage);
+        myQanaryUtils = this.getUtils(myQanaryMessage);
 
-		myQanaryUtils = this.getUtils(myQanaryMessage);
+        String lang = null;
+        String knowledgeBaseId = null;
 
-		String lang = null;
-		String knowledgeBaseId = null;
+        if (lang == null) {
+            lang = langDefault;
+        }
 
-		if (lang == null) {
-			lang = langDefault;
-		}
+        if (knowledgeBaseId == null) {
+            knowledgeBaseId = knowledgeBaseDefault;
+        }
 
-		if (knowledgeBaseId == null) {
-			knowledgeBaseId = knowledgeBaseDefault;
-		}
-		
-		URI endpoint = myQanaryMessage.getEndpoint();
+        URI endpoint = myQanaryMessage.getEndpoint();
 
-		// STEP 1: get the required data from the Qanary triplestore (the global process
-		// memory)
-		QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
-		String questionString = myQanaryQuestion.getTextualRepresentation();
-		List<NamedEntity> retrievedNamedEntities = getNamedEntitiesOfQuestion(myQanaryQuestion,
-				myQanaryQuestion.getInGraph());
+        // STEP 1: get the required data from the Qanary triplestore (the global process
+        // memory)
+        QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
+        String questionString = myQanaryQuestion.getTextualRepresentation();
+        List<NamedEntity> retrievedNamedEntities = getNamedEntitiesOfQuestion(myQanaryQuestion,
+                myQanaryQuestion.getInGraph());
 
-		// STEP 2: enriching of query and fetching data from the QAnswer API
-		String questionStringWithResources = computeQuestionStringWithReplacedResources(questionString,
-				retrievedNamedEntities, threshold);
-		QAnswerResult result = requestQAnswerWebService(this.getQanswerEndpoint(), questionStringWithResources, lang, knowledgeBaseId);
+        // STEP 2: enriching of query and fetching data from the QAnswer API
+        String questionStringWithResources = computeQuestionStringWithReplacedResources(questionString,
+                retrievedNamedEntities, threshold);
+        QAnswerResult result = requestQAnswerWebService(this.getQanswerEndpoint(), questionStringWithResources, lang, knowledgeBaseId);
 
-		// STEP 3: add information to Qanary triplestore
-		String sparql = getSparqlInsertQuery(myQanaryQuestion, result, knowledgeBaseId);
-		myQanaryUtils.updateTripleStore(sparql, endpoint);
+        // STEP 3: add information to Qanary triplestore
+        String sparql = getSparqlInsertQuery(myQanaryQuestion, result, knowledgeBaseId);
+        myQanaryUtils.updateTripleStore(sparql, endpoint);
 
-		return myQanaryMessage;
-	}
+        return myQanaryMessage;
+    }
 
-	public QAnswerResult requestQAnswerWebService(@RequestBody QAnswerRequest request)
-			throws URISyntaxException, NoLiteralFieldFoundException {
-		return requestQAnswerWebService(request.getQanswerEndpointUrl(), request.getQuestion(), request.getLanguage(),
-				request.getKnowledgeBaseId());
-	}
+    public QAnswerResult requestQAnswerWebService(@RequestBody QAnswerRequest request)
+            throws URISyntaxException, NoLiteralFieldFoundException {
+        return requestQAnswerWebService(request.getQanswerEndpointUrl(), request.getQuestion(), request.getLanguage(),
+                request.getKnowledgeBaseId());
+    }
 
-	protected QAnswerResult requestQAnswerWebService(URI uri, String questionString, String lang,
-			String knowledgeBaseId) throws URISyntaxException, NoLiteralFieldFoundException {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		headers.set("User-Agent", "Qanary/" + this.getClass().getName() );
-		
-		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
-		parameters.add("query", questionString);
-		parameters.add("lang", lang);
-		parameters.add("kb", knowledgeBaseId);
+    protected QAnswerResult requestQAnswerWebService(URI uri, String questionString, String lang,
+                                                     String knowledgeBaseId) throws URISyntaxException, NoLiteralFieldFoundException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.set("User-Agent", "Qanary/" + this.getClass().getName());
 
-		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(parameters, headers);
-		logger.warn("request to {} with data {}", uri, request.getBody());
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+        parameters.add("query", questionString);
+        parameters.add("lang", lang);
+        parameters.add("kb", knowledgeBaseId);
 
-		HttpEntity<JSONObject> response = myRestTemplate.postForEntity(uri, request, JSONObject.class);
-		logger.info("QAnswer JSON result for question '{}': {}", questionString,
-				response.getBody().getAsString("questions"));
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(parameters, headers);
+        logger.warn("request to {} with data {}", uri, request.getBody());
 
-		return new QAnswerResult(response.getBody(), questionString, uri, lang, knowledgeBaseId);
-	}
+        HttpEntity<JSONObject> response = myRestTemplate.postForEntity(uri, request, JSONObject.class);
+        logger.info("QAnswer JSON result for question '{}': {}", questionString,
+                response.getBody().getAsString("questions"));
 
-	/**
-	 * computed list of named entities that are already recognized
-	 * 
-	 * @param myQanaryQuestion
-	 * @param inGraph
-	 * @return
-	 * @throws Exception
-	 */
-	protected List<NamedEntity> getNamedEntitiesOfQuestion(QanaryQuestion<String> myQanaryQuestion, URI inGraph)
-			throws Exception {
-		LinkedList<NamedEntity> namedEntities = new LinkedList<>();
+        return new QAnswerResult(response.getBody(), questionString, uri, lang, knowledgeBaseId);
+    }
 
-		String sparqlGetAnnotation = "" //
-				+ "PREFIX dbr: <http://dbpedia.org/resource/> \n" //
-				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> \n" //
-				+ "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
-				+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
-				+ "SELECT ?entityResource ?annotationScore ?start ?end " //
-				+ "FROM <" + inGraph.toString() + "> \n" //
-				+ "WHERE { \n" //
-				+ "    ?annotation    	oa:hasBody   	?entityResource .\n" //
-				+ "    ?annotation 		oa:hasTarget 	?target .\n" //
-				+ "    ?target 			oa:hasSource    <" + myQanaryQuestion.getUri().toString() + "> .\n" //
-				+ "    ?target     		oa:hasSelector  ?textSelector .\n" //
-				+ "    ?textSelector 	rdf:type    	oa:TextPositionSelector .\n" //
-				+ "    ?textSelector  	oa:start    	?start .\n" //
-				+ "    ?textSelector  	oa:end      	?end .\n" //
-				+ "    OPTIONAL { \n" //
-				+ "			?annotation qa:score	?annotationScore . \n" // we cannot be sure that a score is provided
-				+ "	   }\n" //
-				+ "}\n";
+    /**
+     * computed list of named entities that are already recognized
+     *
+     * @param myQanaryQuestion
+     * @param inGraph
+     * @return
+     * @throws Exception
+     */
+    protected List<NamedEntity> getNamedEntitiesOfQuestion(QanaryQuestion<String> myQanaryQuestion, URI inGraph)
+            throws Exception {
+        LinkedList<NamedEntity> namedEntities = new LinkedList<>();
 
-		boolean ignored = false;
-		Float score;
-		int start;
-		int end;
-		QuerySolution tupel;
+        String sparqlGetAnnotation = "" //
+                + "PREFIX dbr: <http://dbpedia.org/resource/> \n" //
+                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> \n" //
+                + "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
+                + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
+                + "SELECT ?entityResource ?annotationScore ?start ?end " //
+                + "FROM <" + inGraph.toString() + "> \n" //
+                + "WHERE { \n" //
+                + "    ?annotation    	oa:hasBody   	?entityResource .\n" //
+                + "    ?annotation 		oa:hasTarget 	?target .\n" //
+                + "    ?target 			oa:hasSource    <" + myQanaryQuestion.getUri().toString() + "> .\n" //
+                + "    ?target     		oa:hasSelector  ?textSelector .\n" //
+                + "    ?textSelector 	rdf:type    	oa:TextPositionSelector .\n" //
+                + "    ?textSelector  	oa:start    	?start .\n" //
+                + "    ?textSelector  	oa:end      	?end .\n" //
+                + "    OPTIONAL { \n" //
+                + "			?annotation qa:score	?annotationScore . \n" // we cannot be sure that a score is provided
+                + "	   }\n" //
+                + "}\n";
 
-		ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlGetAnnotation, myQanaryQuestion.getEndpoint().toASCIIString());
-		while (resultset.hasNext()) {
-			tupel = resultset.next();
-			start = tupel.get("start").asLiteral().getInt();
-			end = tupel.get("end").asLiteral().getInt();
-			score = null;
+        boolean ignored = false;
+        Float score;
+        int start;
+        int end;
+        QuerySolution tupel;
 
-			if (tupel.contains("annotationScore")) {
-				score = tupel.get("annotationScore").asLiteral().getFloat();
-			}
-			URI entityResource = new URI(tupel.get("entityResource").asResource().getURI());
+        ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlGetAnnotation, myQanaryQuestion.getEndpoint().toASCIIString());
+        while (resultset.hasNext()) {
+            tupel = resultset.next();
+            start = tupel.get("start").asLiteral().getInt();
+            end = tupel.get("end").asLiteral().getInt();
+            score = null;
 
-			if (score == null || score >= threshold) {
-				namedEntities.add(new NamedEntity(entityResource, start, end, score));
-				ignored = false;
-			} else {
-				ignored = true;
-			}
-			logger.info("found entity in Qanary triplestore: position=({},{}) (score={}>={}) ignored={}", start, end,
-					score, threshold, ignored);
-		}
+            if (tupel.contains("annotationScore")) {
+                score = tupel.get("annotationScore").asLiteral().getFloat();
+            }
+            URI entityResource = new URI(tupel.get("entityResource").asResource().getURI());
 
-		logger.info("Result list ({} items) of getNamedEntitiesOfQuestion for question \"{}\".", namedEntities.size(),
-				myQanaryQuestion.getTextualRepresentation());
-		if (namedEntities.size() == 0) {
-			logger.warn("no named entities exist for '{}'", myQanaryQuestion.getTextualRepresentation());
-		} else {
-			for (NamedEntity namedEntity : namedEntities) {
-				logger.info("found namedEntity: {}", namedEntity.toString());
-			}
-		}
-		return namedEntities;
-	}
+            if (score == null || score >= threshold) {
+                namedEntities.add(new NamedEntity(entityResource, start, end, score));
+                ignored = false;
+            } else {
+                ignored = true;
+            }
+            logger.info("found entity in Qanary triplestore: position=({},{}) (score={}>={}) ignored={}", start, end,
+                    score, threshold, ignored);
+        }
 
-	/**
-	 * create a QAnswer-compatible format of the question
-	 * 
-	 * @param questionString
-	 * @param retrievedNamedEntities
-	 * @param threshold
-	 * @return
-	 */
-	protected String computeQuestionStringWithReplacedResources(String questionString,
-			List<NamedEntity> retrievedNamedEntities, float threshold) {
-		Collections.reverse(retrievedNamedEntities); // list should contain last found entities first
-		String questionStringOriginal = questionString;
-		int run = 0;
-		String first;
-		String second, secondSafe;
-		String entity;
+        logger.info("Result list ({} items) of getNamedEntitiesOfQuestion for question \"{}\".", namedEntities.size(),
+                myQanaryQuestion.getTextualRepresentation());
+        if (namedEntities.size() == 0) {
+            logger.warn("no named entities exist for '{}'", myQanaryQuestion.getTextualRepresentation());
+        } else {
+            for (NamedEntity namedEntity : namedEntities) {
+                logger.info("found namedEntity: {}", namedEntity.toString());
+            }
+        }
+        return namedEntities;
+    }
 
-		for (NamedEntity myNamedEntity : retrievedNamedEntities) {
-			// replace String by URL
-			if (myNamedEntity.getScore() >= threshold) {
-				first = questionString.substring(0, myNamedEntity.getStartPosition());
-				second = questionString.substring(myNamedEntity.getEndPosition());
-				entity = questionString.substring(myNamedEntity.getStartPosition(), myNamedEntity.getEndPosition());
+    /**
+     * create a QAnswer-compatible format of the question
+     *
+     * @param questionString
+     * @param retrievedNamedEntities
+     * @param threshold
+     * @return
+     */
+    protected String computeQuestionStringWithReplacedResources(String questionString,
+                                                                List<NamedEntity> retrievedNamedEntities, float threshold) {
+        Collections.reverse(retrievedNamedEntities); // list should contain last found entities first
+        String questionStringOriginal = questionString;
+        int run = 0;
+        String first;
+        String second, secondSafe;
+        String entity;
 
-				// ensure that the next character in the second part is a whitespace to prevent
-				// problems with the inserted URIs
-				if (!second.startsWith(" ") && !second.isEmpty()) {
-					secondSafe = " " + second;
-				} else {
-					secondSafe = second;
-				}
-				questionString = first + myNamedEntity.getNamedEntityResource().toASCIIString() + secondSafe;
+        for (NamedEntity myNamedEntity : retrievedNamedEntities) {
+            // replace String by URL
+            if (myNamedEntity.getScore() >= threshold) {
+                first = questionString.substring(0, myNamedEntity.getStartPosition());
+                second = questionString.substring(myNamedEntity.getEndPosition());
+                entity = questionString.substring(myNamedEntity.getStartPosition(), myNamedEntity.getEndPosition());
 
-				logger.debug("{}. replace of '{}' at ({},{}) results in: {}, first:|{}|, second:|{}|", run, entity,
-						myNamedEntity.getStartPosition(), myNamedEntity.getEndPosition(), questionString, first,
-						second);
-				run++;
-			}
-		}
-		logger.info("Question original: {}", questionStringOriginal);
-		logger.info("Question changed : {}", questionString);
+                // ensure that the next character in the second part is a whitespace to prevent
+                // problems with the inserted URIs
+                if (!second.startsWith(" ") && !second.isEmpty()) {
+                    secondSafe = " " + second;
+                } else {
+                    secondSafe = second;
+                }
+                questionString = first + myNamedEntity.getNamedEntityResource().toASCIIString() + secondSafe;
 
-		return questionString;
-	}
+                logger.debug("{}. replace of '{}' at ({},{}) results in: {}, first:|{}|, second:|{}|", run, entity,
+                        myNamedEntity.getStartPosition(), myNamedEntity.getEndPosition(), questionString, first,
+                        second);
+                run++;
+            }
+        }
+        logger.info("Question original: {}", questionStringOriginal);
+        logger.info("Question changed : {}", questionString);
 
-	private String cleanStringForSparqlQuery(String myString) {
-		return myString.replaceAll("\"", "\\\"").replaceAll("\n", "");
-	}
+        return questionString;
+    }
 
-	/**
-	 * creates the SPARQL query for inserting the data into Qanary triplestore
-	 * 
-	 * data can be retrieved via SPARQL 1.1 from the Qanary triplestore using:
-	 * 
-	 * <pre>
-	 *  
-	 	SELECT * FROM <YOURGRAPHURI> WHERE {
-	 		?s ?p ?o ; 
-	 		    a ?type. 
-	 		VALUES ?t { 
-	 			qa:AnnotationOfAnswerSPARQL qa:SparqlQuery
-	 			qa:AnnotationOfImprovedQuestion qa:ImprovedQuestion 
-	 			qa:AnnotationAnswer qa:Answer 
-	 			qa:AnnotationOfAnswerType qa:AnswerType 
-	 		}
-	 	}
-	 	ORDER BY ?type
-	 * </pre>
-	 * 
-	 * @param myQanaryQuestion
-	 * @param result
-	 * @return
-	 * @throws QanaryExceptionNoOrMultipleQuestions
-	 * @throws URISyntaxException
-	 * @throws SparqlQueryFailed
-	 */
-	private String getSparqlInsertQuery(QanaryQuestion<String> myQanaryQuestion, QAnswerResult result, String usedKnowledgeGraph)
-			throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed {
+    private String cleanStringForSparqlQuery(String myString) {
+        return myString.replaceAll("\"", "\\\"").replaceAll("\n", "");
+    }
 
-		// the computed answer's SPARQL query needs to be cleaned
-		String createdAnswerSparqlQuery = cleanStringForSparqlQuery(result.getSparql());
-		String improvedQuestion = cleanStringForSparqlQuery(result.getQuestion());
+    /**
+     * creates the SPARQL query for inserting the data into Qanary triplestore
+     * <p>
+     * data can be retrieved via SPARQL 1.1 from the Qanary triplestore using:
+     *
+     * <pre>
+     *
+     * SELECT * FROM <YOURGRAPHURI> WHERE {
+     * ?s ?p ?o ;
+     * a ?type.
+     * VALUES ?t {
+     * qa:AnnotationOfAnswerSPARQL qa:SparqlQuery
+     * qa:AnnotationOfImprovedQuestion qa:ImprovedQuestion
+     * qa:AnnotationAnswer qa:Answer
+     * qa:AnnotationOfAnswerType qa:AnswerType
+     * }
+     * }
+     * ORDER BY ?type
+     * </pre>
+     *
+     * @param myQanaryQuestion
+     * @param result
+     * @return
+     * @throws QanaryExceptionNoOrMultipleQuestions
+     * @throws URISyntaxException
+     * @throws SparqlQueryFailed
+     */
+    private String getSparqlInsertQuery(QanaryQuestion<String> myQanaryQuestion, QAnswerResult result, String usedKnowledgeGraph)
+            throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed {
 
-		String answerValuesAsListFormat = "";
-		int counter = 1; // starts at 1
-		for (String answer : result.getValues()) {
-			// only one consistent type for all answers is expected
-			if (result.isAnswerOfResourceType()) {
-				answerValuesAsListFormat += String.format("; rdf:_%d <%s> ", counter, answer);
-			} else {
-				answerValuesAsListFormat += String.format("; rdf:_%d \"%s\"^^<%s> ", counter, answer,
-						result.getDatatype());
-			}
-			counter++;
-		}
+        // the computed answer's SPARQL query needs to be cleaned
+        String createdAnswerSparqlQuery = cleanStringForSparqlQuery(result.getSparql());
+        String improvedQuestion = cleanStringForSparqlQuery(result.getQuestion());
 
-		String sparql = "" //
-				+ "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
-				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> \n" //
-				+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n" //
-				+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
-				+ "INSERT { \n" //
-				+ "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { \n" //
-				// used SPARQL query
-				+ "  ?annotationSPARQL a 	qa:AnnotationOfAnswerSPARQL ; \n" //
-				+ " 		oa:hasTarget    ?question ; \n" //
-				+ " 		oa:hasBody      ?sparql ; \n" //
-				+ " 		oa:annotatedBy  ?service ; \n" //
-				+ " 		oa:annotatedAt  ?time ; \n" //
-				+ " 		qa:score        ?score ; \n" //
-				+ "         qa:overKnowledgeGraph ?knowledgeGraph . \n" //
-				//
-				+ "  ?sparql a              qa:SparqlQuery ; \n" //
-				+ "         rdf:value       ?sparqlQueryString . \n" //
-				// improved question
-				+ "  ?annotationImprovedQuestion  a 	qa:AnnotationOfImprovedQuestion ; \n" //
-				+ " 		oa:hasTarget    ?question ; \n" //
-				+ " 		oa:hasBody      ?improvedQuestion ; \n" //
-				+ " 		oa:annotatedBy  ?service ; \n" //
-				+ " 		oa:annotatedAt  ?time ; \n" //
-				+ " 		qa:score        ?score . \n" //
-				//
-				+ "  ?improvedQuestion a    qa:ImprovedQuestion ; \n " //
-				+ "         rdf:value 		?improvedQuestionText . \n " //
-				// answer
-				+ "  ?annotationAnswer a    qa:AnnotationAnswer ; \n" //
-				+ " 		oa:hasTarget    ?question ; \n" //
-				+ " 		oa:hasBody      ?answer ; \n" //
-				+ " 		oa:annotatedBy  ?service ; \n" //
-				+ " 		oa:annotatedAt  ?time ; \n" //
-				+ " 		qa:score        ?score . \n" //
-				//
-				+ "  ?answer a              qa:Answer ; \n" //
-				+ "         rdf:value       [ a rdf:Seq " + answerValuesAsListFormat + " ]  . \n" //
-				// answer type
-				+ "  ?annotationAnswerType a qa:AnnotationOfAnswerType ; \n" //
-				+ " 		oa:hasTarget    ?question ; \n" //
-				+ " 		oa:hasBody      ?annotationOfAnswerType ; \n" //
-				+ " 		oa:annotatedBy  ?service ; \n" //
-				+ " 		oa:annotatedAt  ?time ; \n" //
-				+ " 		qa:score        ?score . \n" //
-				//
-				+ "  ?answerType a          qa:AnswerType ; \n" //
-				+ " 		rdf:value       ?answerDataType ; \n" //
-				+ "	}\n" // end: graph
-				+ "}\n" // end: insert
-				+ "WHERE { \n" //
-				+ "  BIND (IRI(str(RAND())) AS ?annotationSPARQL) . \n" //
-				+ "  BIND (IRI(str(RAND())) AS ?sparql) . \n" //
-				//
-				+ "  BIND (IRI(str(RAND())) AS ?annotationAnswerType) . \n" //
-				+ "  BIND (IRI(str(RAND())) AS ?answerType) . \n" //
-				//
-				+ "  BIND (IRI(str(RAND())) AS ?annotationAnswer) . \n" //
-				+ "  BIND (IRI(str(RAND())) AS ?answer) . \n" //
-				//
-				+ "  BIND (IRI(str(RAND())) AS ?annotationImprovedQuestion) . \n" //
-				+ "  BIND (IRI(str(RAND())) AS ?improvedQuestion) . \n" //
-				//
-				+ "  BIND (now() AS ?time) . \n" //
-				+ "  BIND (<" + myQanaryQuestion.getUri().toASCIIString() + "> AS ?question) . \n" //
-				+ "  BIND (\"" + result.getConfidence() + "\"^^xsd:double AS ?score) . \n" //
-				+ "  BIND (<urn:qanary:" + this.applicationName + "> AS ?service ) . \n" //
-				+ "  BIND (\"" + createdAnswerSparqlQuery + "\"^^xsd:string AS ?sparqlQueryString ) . \n" //
-				+ "  BIND (\"" + improvedQuestion + "\"^^xsd:string  AS ?improvedQuestionText ) . \n" //
-				+ "  BIND ( <" + result.getDatatype() + "> AS ?answerDataType) . \n" //
-				+ "  BIND ( <" + knowledgeGraphEndpoints.get(usedKnowledgeGraph) + "> AS ?knowledgeGraph) . \n" //
-				+ "}\n";
+        String answerValuesAsListFormat = "";
+        int counter = 1; // starts at 1
+        for (String answer : result.getValues()) {
+            // only one consistent type for all answers is expected
+            if (result.isAnswerOfResourceType()) {
+                answerValuesAsListFormat += String.format("; rdf:_%d <%s> ", counter, answer);
+            } else {
+                answerValuesAsListFormat += String.format("; rdf:_%d \"%s\"^^<%s> ", counter, answer,
+                        result.getDatatype());
+            }
+            counter++;
+        }
+
+        String sparql = "" //
+                + "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
+                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> \n" //
+                + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n" //
+                + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
+                + "INSERT { \n" //
+                + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { \n" //
+                // used SPARQL query
+                + "  ?annotationSPARQL a 	qa:AnnotationOfAnswerSPARQL ; \n" //
+                + " 		oa:hasTarget    ?question ; \n" //
+                + " 		oa:hasBody      ?sparql ; \n" //
+                + " 		oa:annotatedBy  ?service ; \n" //
+                + " 		oa:annotatedAt  ?time ; \n" //
+                + " 		qa:score        ?score ; \n" //
+                + "         qa:overKnowledgeGraph ?knowledgeGraph . \n" //
+                //
+                + "  ?sparql a              qa:SparqlQuery ; \n" //
+                + "         rdf:value       ?sparqlQueryString . \n" //
+                // improved question
+                + "  ?annotationImprovedQuestion  a 	qa:AnnotationOfImprovedQuestion ; \n" //
+                + " 		oa:hasTarget    ?question ; \n" //
+                + " 		oa:hasBody      ?improvedQuestion ; \n" //
+                + " 		oa:annotatedBy  ?service ; \n" //
+                + " 		oa:annotatedAt  ?time ; \n" //
+                + " 		qa:score        ?score . \n" //
+                //
+                + "  ?improvedQuestion a    qa:ImprovedQuestion ; \n " //
+                + "         rdf:value 		?improvedQuestionText . \n " //
+                // answer
+                + "  ?annotationAnswer a    qa:AnnotationAnswer ; \n" //
+                + " 		oa:hasTarget    ?question ; \n" //
+                + " 		oa:hasBody      ?answer ; \n" //
+                + " 		oa:annotatedBy  ?service ; \n" //
+                + " 		oa:annotatedAt  ?time ; \n" //
+                + " 		qa:score        ?score . \n" //
+                //
+                + "  ?answer a              qa:Answer ; \n" //
+                + "         rdf:value       [ a rdf:Seq " + answerValuesAsListFormat + " ]  . \n" //
+                // answer type
+                + "  ?annotationAnswerType a qa:AnnotationOfAnswerType ; \n" //
+                + " 		oa:hasTarget    ?question ; \n" //
+                + " 		oa:hasBody      ?annotationOfAnswerType ; \n" //
+                + " 		oa:annotatedBy  ?service ; \n" //
+                + " 		oa:annotatedAt  ?time ; \n" //
+                + " 		qa:score        ?score . \n" //
+                //
+                + "  ?answerType a          qa:AnswerType ; \n" //
+                + " 		rdf:value       ?answerDataType ; \n" //
+                + "	}\n" // end: graph
+                + "}\n" // end: insert
+                + "WHERE { \n" //
+                + "  BIND (IRI(str(RAND())) AS ?annotationSPARQL) . \n" //
+                + "  BIND (IRI(str(RAND())) AS ?sparql) . \n" //
+                //
+                + "  BIND (IRI(str(RAND())) AS ?annotationAnswerType) . \n" //
+                + "  BIND (IRI(str(RAND())) AS ?answerType) . \n" //
+                //
+                + "  BIND (IRI(str(RAND())) AS ?annotationAnswer) . \n" //
+                + "  BIND (IRI(str(RAND())) AS ?answer) . \n" //
+                //
+                + "  BIND (IRI(str(RAND())) AS ?annotationImprovedQuestion) . \n" //
+                + "  BIND (IRI(str(RAND())) AS ?improvedQuestion) . \n" //
+                //
+                + "  BIND (now() AS ?time) . \n" //
+                + "  BIND (<" + myQanaryQuestion.getUri().toASCIIString() + "> AS ?question) . \n" //
+                + "  BIND (\"" + result.getConfidence() + "\"^^xsd:double AS ?score) . \n" //
+                + "  BIND (<urn:qanary:" + this.applicationName + "> AS ?service ) . \n" //
+                + "  BIND (\"" + createdAnswerSparqlQuery + "\"^^xsd:string AS ?sparqlQueryString ) . \n" //
+                + "  BIND (\"" + improvedQuestion + "\"^^xsd:string  AS ?improvedQuestionText ) . \n" //
+                + "  BIND ( <" + result.getDatatype() + "> AS ?answerDataType) . \n" //
+                + "  BIND ( <" + knowledgeGraphEndpoints.get(usedKnowledgeGraph) + "> AS ?knowledgeGraph) . \n" //
+                + "}\n";
 
 
-		logger.info("SPARQL INSERT for adding data to the Qanary triplestore: ", sparql);
-		return sparql;
-	}
+        logger.info("SPARQL INSERT for adding data to the Qanary triplestore: ", sparql);
+        return sparql;
+    }
 
 }

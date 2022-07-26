@@ -2,7 +2,8 @@
 
 ## Description
 
-The component fetches the textual question and annotates a recognized and disambiguated class and save it to the triplestore.
+The component fetches the textual question and annotates a recognized and disambiguated class and save it to the
+triplestore.
 
 ## Input specification
 

@@ -2,7 +2,8 @@
 
 ## Description
 
-A dummy component for monolithic systems that produce SPARQL queries. The queries are executed and stored as well as their result.
+A dummy component for monolithic systems that produce SPARQL queries. The queries are executed and stored as well as
+their result.
 
 ## Input specification
 

@@ -15,288 +15,284 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class QAnswerResult {
-	private static final Logger logger = LoggerFactory.getLogger(QAnswerResult.class);
+    private static final Logger logger = LoggerFactory.getLogger(QAnswerResult.class);
+    @Hidden
+    public final URI RESOURCETYPEURI;
+    @Hidden
+    public final URI BOOLEANTYPEURI;
+    @Hidden
+    public final URI STRINGTYPEURI;
+    private com.google.gson.JsonParser jsonParser;
+    private URI endpoint;
+    private String knowledgebaseId;
+    private String language;
+    private String question;
+    private String sparql;
+    private List<String> values;
+    private String type;
+    private URI datatype;
+    private double confidence;
 
-	private com.google.gson.JsonParser jsonParser;
+    public QAnswerResult(JSONObject json, String question, URI endpoint, String language, String knowledgebaseId) throws URISyntaxException, NoLiteralFieldFoundException {
+        jsonParser = new JsonParser();
+        JsonArray parsedJsonArray = jsonParser.parse(json.toJSONString()).getAsJsonObject().getAsJsonArray("questions")
+                .getAsJsonArray();
 
-	private URI endpoint;
-	private String knowledgebaseId;
-	private String language;
-	private String question;
+        this.question = question;
+        this.language = language;
+        this.knowledgebaseId = knowledgebaseId;
+        this.endpoint = endpoint;
 
-	private String sparql;
-	private List<String> values;
-	private String type;
-	private URI datatype;
-	private double confidence;
-	
-	@Hidden
-	public final URI RESOURCETYPEURI;  
-	@Hidden
-	public final URI BOOLEANTYPEURI;  
-	@Hidden
-	public final URI STRINGTYPEURI;  
+        this.RESOURCETYPEURI = new URI("http://www.w3.org/2001/XMLSchema#anyURI");
+        this.BOOLEANTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#boolean");
+        this.STRINGTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#string");
 
-	public QAnswerResult(JSONObject json, String question, URI endpoint, String language, String knowledgebaseId) throws URISyntaxException, NoLiteralFieldFoundException {
-		jsonParser = new JsonParser();
-		JsonArray parsedJsonArray = jsonParser.parse(json.toJSONString()).getAsJsonObject().getAsJsonArray("questions")
-				.getAsJsonArray();
+        initData(parsedJsonArray);
+    }
 
-		this.question = question;
-		this.language = language;
-		this.knowledgebaseId = knowledgebaseId;
-		this.endpoint = endpoint;
+    @Hidden
+    public boolean isAnswerOfResourceType() {
+        if (this.getDatatype().equals(RESOURCETYPEURI)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-		this.RESOURCETYPEURI = new URI("http://www.w3.org/2001/XMLSchema#anyURI");
-		this.BOOLEANTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#boolean");
-		this.STRINGTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#string");
-				
-		initData(parsedJsonArray);
-	}
+    @Hidden
+    public boolean isAnswerOfBooleanType() {
+        if (this.getDatatype().equals(BOOLEANTYPEURI)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	@Hidden
-	public boolean isAnswerOfResourceType() {
-		if( this.getDatatype().equals(RESOURCETYPEURI)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	@Hidden
-	public boolean isAnswerOfBooleanType() {
-		if( this.getDatatype().equals(BOOLEANTYPEURI)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+    @Hidden
+    public boolean isAnswerOfLiteralType() {
+        return !isAnswerOfResourceType();
+    }
 
-	@Hidden
-	public boolean isAnswerOfLiteralType() {
-		return !isAnswerOfResourceType();
-	}
-	
-	/**
-	 * init the fields while parsing the JSON data
-	 * 
-	 * @param answers
-	 * @throws URISyntaxException
-	 * @throws NoLiteralFieldFoundException 
-	 */
-	private void initData(JsonArray answers) throws URISyntaxException, NoLiteralFieldFoundException {
-		if (isAnswerLiteral(answers)) {
-			initDataLiteral(answers);
-		} else if (isAnswerResources(answers)) { // ASK QUERY
-			initDataResources(answers);
-		} else if (isAnswerBoolean(answers)) {
-			initDataBoolean(answers);
-		} else {
-			throw new RuntimeException("case not implemented");
-		}
-		
-		JsonObject questionData = answers.get(0).getAsJsonObject().get("question").getAsJsonObject();
-		logger.debug("responseQuestion: {}", questionData);
+    /**
+     * init the fields while parsing the JSON data
+     *
+     * @param answers
+     * @throws URISyntaxException
+     * @throws NoLiteralFieldFoundException
+     */
+    private void initData(JsonArray answers) throws URISyntaxException, NoLiteralFieldFoundException {
+        if (isAnswerLiteral(answers)) {
+            initDataLiteral(answers);
+        } else if (isAnswerResources(answers)) { // ASK QUERY
+            initDataResources(answers);
+        } else if (isAnswerBoolean(answers)) {
+            initDataBoolean(answers);
+        } else {
+            throw new RuntimeException("case not implemented");
+        }
 
-		JsonArray languages = questionData.get("language").getAsJsonArray();
-		logger.debug("responseQuestion->language: {}", languages.toString());
-		
-		JsonObject language = languages.get(0).getAsJsonObject(); 
-		logger.debug("0. language: {}", language.toString());
-		logger.debug("0. sparql: {}", language.get("SPARQL").getAsString());
-		logger.debug("0. confidence: {}", language.get("confidence").getAsDouble());
+        JsonObject questionData = answers.get(0).getAsJsonObject().get("question").getAsJsonObject();
+        logger.debug("responseQuestion: {}", questionData);
 
-		this.confidence = language.get("confidence").getAsDouble();
-		this.sparql = language.get("SPARQL").getAsString();
-		
-	}
+        JsonArray languages = questionData.get("language").getAsJsonArray();
+        logger.debug("responseQuestion->language: {}", languages.toString());
 
-	private void initDataLiteral(JsonArray answers) throws URISyntaxException, NoLiteralFieldFoundException {
-		ProcessedResult result = getDataLiteral(answers);
-		initData(result);
-	}
+        JsonObject language = languages.get(0).getAsJsonObject();
+        logger.debug("0. language: {}", language.toString());
+        logger.debug("0. sparql: {}", language.get("SPARQL").getAsString());
+        logger.debug("0. confidence: {}", language.get("confidence").getAsDouble());
 
-	private ProcessedResult getDataLiteral(JsonArray answers) throws URISyntaxException, NoLiteralFieldFoundException {
-		JsonObject questionData = answers.get(0).getAsJsonObject().get("question").getAsJsonObject();
-		logger.debug("responseQuestion: {}", questionData);
+        this.confidence = language.get("confidence").getAsDouble();
+        this.sparql = language.get("SPARQL").getAsString();
 
-		JsonObject concreteAnswers = jsonParser.parse(questionData.get("answers").getAsString()).getAsJsonObject();
-		logger.debug("responseQuestion->answers: {}", concreteAnswers.toString());
+    }
 
-		JsonObject results = concreteAnswers.get("results").getAsJsonObject();
-		logger.debug("results: {}", results);
+    private void initDataLiteral(JsonArray answers) throws URISyntaxException, NoLiteralFieldFoundException {
+        ProcessedResult result = getDataLiteral(answers);
+        initData(result);
+    }
 
-		JsonArray vars = concreteAnswers.get("head").getAsJsonObject().get("vars").getAsJsonArray();
-		String resultKey = vars.get(0).getAsString();
-		logger.debug("vars: {}, key: {}", vars, resultKey);
+    private ProcessedResult getDataLiteral(JsonArray answers) throws URISyntaxException, NoLiteralFieldFoundException {
+        JsonObject questionData = answers.get(0).getAsJsonObject().get("question").getAsJsonObject();
+        logger.debug("responseQuestion: {}", questionData);
 
-		JsonArray bindings = results.get("bindings").getAsJsonArray();
-		logger.debug("bindings: {}", bindings);
+        JsonObject concreteAnswers = jsonParser.parse(questionData.get("answers").getAsString()).getAsJsonObject();
+        logger.debug("responseQuestion->answers: {}", concreteAnswers.toString());
 
-		String type = null;
-		URI datatype = null;
+        JsonObject results = concreteAnswers.get("results").getAsJsonObject();
+        logger.debug("results: {}", results);
 
-		List<String> values = new LinkedList<>();
-		int count = 0;
-		for (JsonElement resource : bindings) {
-			JsonObject resourceResult = resource.getAsJsonObject().get(resultKey).getAsJsonObject();
-			logger.info("found {}: {} -> {}", count++, resourceResult.get("type").getAsString(),
-					resourceResult.get("value").getAsString());
-			type = resourceResult.get("type").getAsString();
-			if ( !type.equals("literal")) {
-				throw new NoLiteralFieldFoundException(type);
-			}
-			try {
-				datatype = new URI(resourceResult.get("datatype").getAsString());
-			} catch (Exception e) {
-				datatype = STRINGTYPEURI;
-			}
-			values.add(resourceResult.get("value").getAsString());
-		}
-		logger.info("found {} literals", values.size());
-		return new ProcessedResult(values, type, datatype);
-	}
+        JsonArray vars = concreteAnswers.get("head").getAsJsonObject().get("vars").getAsJsonArray();
+        String resultKey = vars.get(0).getAsString();
+        logger.debug("vars: {}, key: {}", vars, resultKey);
 
-	private boolean isAnswerLiteral(JsonArray answers) {
-		try {
-			ProcessedResult result = getDataLiteral(answers);
-			logger.info("result: IS of type 'literal' ({}).", result.getDatatype());
-			return true;
-		} catch (Exception e) {
-			logger.info("result: Is NOT of type 'literal'.");
-			return false;
-		}
-	}
+        JsonArray bindings = results.get("bindings").getAsJsonArray();
+        logger.debug("bindings: {}", bindings);
 
-	private void initData(ProcessedResult result) {
-		this.values = result.getValues();
-		this.type = result.getType();
-		this.datatype = result.getDatatype();
-		// TODO: SPARQL query
-	}
+        String type = null;
+        URI datatype = null;
 
-	private void initDataResources(JsonArray answers) throws URISyntaxException {
-		ProcessedResult result = getDataResources(answers);
-		initData(result);
-	}
+        List<String> values = new LinkedList<>();
+        int count = 0;
+        for (JsonElement resource : bindings) {
+            JsonObject resourceResult = resource.getAsJsonObject().get(resultKey).getAsJsonObject();
+            logger.info("found {}: {} -> {}", count++, resourceResult.get("type").getAsString(),
+                    resourceResult.get("value").getAsString());
+            type = resourceResult.get("type").getAsString();
+            if (!type.equals("literal")) {
+                throw new NoLiteralFieldFoundException(type);
+            }
+            try {
+                datatype = new URI(resourceResult.get("datatype").getAsString());
+            } catch (Exception e) {
+                datatype = STRINGTYPEURI;
+            }
+            values.add(resourceResult.get("value").getAsString());
+        }
+        logger.info("found {} literals", values.size());
+        return new ProcessedResult(values, type, datatype);
+    }
 
-	private ProcessedResult getDataResources(JsonArray answers) throws URISyntaxException {
-		JsonObject questionData = answers.get(0).getAsJsonObject().get("question").getAsJsonObject();
-		logger.debug("responseQuestion: {}", questionData);
+    private boolean isAnswerLiteral(JsonArray answers) {
+        try {
+            ProcessedResult result = getDataLiteral(answers);
+            logger.info("result: IS of type 'literal' ({}).", result.getDatatype());
+            return true;
+        } catch (Exception e) {
+            logger.info("result: Is NOT of type 'literal'.");
+            return false;
+        }
+    }
 
-		JsonObject concreteAnswers = jsonParser.parse(questionData.get("answers").getAsString()).getAsJsonObject();
-		logger.debug("responseQuestion->answers: {}", concreteAnswers.toString());
+    private void initData(ProcessedResult result) {
+        this.values = result.getValues();
+        this.type = result.getType();
+        this.datatype = result.getDatatype();
+        // TODO: SPARQL query
+    }
 
-		JsonObject results = concreteAnswers.get("results").getAsJsonObject();
-		logger.debug("results: {}", results);
+    private void initDataResources(JsonArray answers) throws URISyntaxException {
+        ProcessedResult result = getDataResources(answers);
+        initData(result);
+    }
 
-		JsonArray vars = concreteAnswers.get("head").getAsJsonObject().get("vars").getAsJsonArray();
-		String resultKey = vars.get(0).getAsString();
-		logger.debug("vars: {}, key: {}", vars, resultKey);
+    private ProcessedResult getDataResources(JsonArray answers) throws URISyntaxException {
+        JsonObject questionData = answers.get(0).getAsJsonObject().get("question").getAsJsonObject();
+        logger.debug("responseQuestion: {}", questionData);
 
-		JsonArray bindings = results.get("bindings").getAsJsonArray();
-		logger.debug("bindings: {}", bindings);
+        JsonObject concreteAnswers = jsonParser.parse(questionData.get("answers").getAsString()).getAsJsonObject();
+        logger.debug("responseQuestion->answers: {}", concreteAnswers.toString());
 
-		String type = null;
-		List<String> values = new LinkedList<>();
-		int count = 0;
-		for (JsonElement resource : bindings) {
-			JsonObject resourceResult = resource.getAsJsonObject().get(resultKey).getAsJsonObject();
-			logger.info("found {}: {} -> {}", count++, resourceResult.get("type").getAsString(),
-					resourceResult.get("value").getAsString());
-			type = resourceResult.get("type").getAsString();
-			values.add(resourceResult.get("value").getAsString());
-		}
+        JsonObject results = concreteAnswers.get("results").getAsJsonObject();
+        logger.debug("results: {}", results);
 
-		logger.info("found {} resources", values.size());
-		return new ProcessedResult(values, type, this.RESOURCETYPEURI);
-	}
+        JsonArray vars = concreteAnswers.get("head").getAsJsonObject().get("vars").getAsJsonArray();
+        String resultKey = vars.get(0).getAsString();
+        logger.debug("vars: {}, key: {}", vars, resultKey);
 
-	private boolean isAnswerResources(JsonArray answers) {
-		try {
-			getDataResources(answers);
-			logger.info("result: IS of type 'resources'.");
-			return true;
-		} catch (Exception e) {
-			logger.info("result: Is NOT of type 'resources'.");
-			return false;
-		}
-	}
+        JsonArray bindings = results.get("bindings").getAsJsonArray();
+        logger.debug("bindings: {}", bindings);
 
-	/**
-	 * process boolean data
-	 * 
-	 * @param answers
-	 * @throws URISyntaxException
-	 */
-	private void initDataBoolean(JsonArray answers) throws URISyntaxException {
-		ProcessedResult result = getDataBoolean(answers);
-		initData(result);
-	}
+        String type = null;
+        List<String> values = new LinkedList<>();
+        int count = 0;
+        for (JsonElement resource : bindings) {
+            JsonObject resourceResult = resource.getAsJsonObject().get(resultKey).getAsJsonObject();
+            logger.info("found {}: {} -> {}", count++, resourceResult.get("type").getAsString(),
+                    resourceResult.get("value").getAsString());
+            type = resourceResult.get("type").getAsString();
+            values.add(resourceResult.get("value").getAsString());
+        }
 
-	private ProcessedResult getDataBoolean(JsonArray answers) throws URISyntaxException {
-		JsonObject questionData = answers.get(0).getAsJsonObject().get("question").getAsJsonObject();
-		logger.debug("questionData: {}", questionData);
+        logger.info("found {} resources", values.size());
+        return new ProcessedResult(values, type, this.RESOURCETYPEURI);
+    }
 
-		com.google.gson.JsonParser jsonParser = new JsonParser();
-		JsonObject parsedAnswer = jsonParser.parse(questionData.toString()).getAsJsonObject();
-		logger.debug("parsedAnswer: {}", parsedAnswer);
+    private boolean isAnswerResources(JsonArray answers) {
+        try {
+            getDataResources(answers);
+            logger.info("result: IS of type 'resources'.");
+            return true;
+        } catch (Exception e) {
+            logger.info("result: Is NOT of type 'resources'.");
+            return false;
+        }
+    }
 
-		JsonObject concreteAnswer = jsonParser.parse(parsedAnswer.get("answers").getAsString()).getAsJsonObject();
-		logger.debug("concreteAnswer: {}", concreteAnswer);
+    /**
+     * process boolean data
+     *
+     * @param answers
+     * @throws URISyntaxException
+     */
+    private void initDataBoolean(JsonArray answers) throws URISyntaxException {
+        ProcessedResult result = getDataBoolean(answers);
+        initData(result);
+    }
 
-		boolean result = concreteAnswer.get("boolean").getAsBoolean();
-		logger.debug("boolean result: {}", result);
+    private ProcessedResult getDataBoolean(JsonArray answers) throws URISyntaxException {
+        JsonObject questionData = answers.get(0).getAsJsonObject().get("question").getAsJsonObject();
+        logger.debug("questionData: {}", questionData);
 
-		List<String> values = new LinkedList<>();
-		values.add("" + result);
+        com.google.gson.JsonParser jsonParser = new JsonParser();
+        JsonObject parsedAnswer = jsonParser.parse(questionData.toString()).getAsJsonObject();
+        logger.debug("parsedAnswer: {}", parsedAnswer);
 
-		return new ProcessedResult(values, "boolean", this.BOOLEANTYPEURI);
-	}
+        JsonObject concreteAnswer = jsonParser.parse(parsedAnswer.get("answers").getAsString()).getAsJsonObject();
+        logger.debug("concreteAnswer: {}", concreteAnswer);
 
-	private boolean isAnswerBoolean(JsonArray answers) {
-		try {
-			getDataBoolean(answers);
-			logger.info("result: IS of type 'resources'.");
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
+        boolean result = concreteAnswer.get("boolean").getAsBoolean();
+        logger.debug("boolean result: {}", result);
 
-	public List<String> getValues() {
-		return values;
-	}
+        List<String> values = new LinkedList<>();
+        values.add("" + result);
 
-	public String getType() {
-		return type;
-	}
+        return new ProcessedResult(values, "boolean", this.BOOLEANTYPEURI);
+    }
 
-	public double getConfidence() {
-		return confidence;
-	}
+    private boolean isAnswerBoolean(JsonArray answers) {
+        try {
+            getDataBoolean(answers);
+            logger.info("result: IS of type 'resources'.");
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
-	public URI getDatatype() {
-		return datatype;
-	}
+    public List<String> getValues() {
+        return values;
+    }
 
-	public String getKnowledgebaseId() {
-		return knowledgebaseId;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public String getLanguage() {
-		return language;
-	}
+    public double getConfidence() {
+        return confidence;
+    }
 
-	public URI getEndpoint() {
-		return endpoint;
-	}
+    public URI getDatatype() {
+        return datatype;
+    }
 
-	public String getQuestion() {
-		return question;
-	}
+    public String getKnowledgebaseId() {
+        return knowledgebaseId;
+    }
 
-	public String getSparql() {
-		return sparql;
-	}
+    public String getLanguage() {
+        return language;
+    }
+
+    public URI getEndpoint() {
+        return endpoint;
+    }
+
+    public String getQuestion() {
+        return question;
+    }
+
+    public String getSparql() {
+        return sparql;
+    }
 }

@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 public class ProcessedResult {
-	
+
 	private final String type;
 	private final List<String> values;
 	private final URI datatype;
@@ -14,7 +14,7 @@ public class ProcessedResult {
 		this.values = values;
 		this.datatype = datatype;
 	}
-	
+
 	public String getType() {
 		return type;
 	}
@@ -25,5 +25,5 @@ public class ProcessedResult {
 
 	public List<String> getValues() {
 		return values;
-	}	
+	}
 }

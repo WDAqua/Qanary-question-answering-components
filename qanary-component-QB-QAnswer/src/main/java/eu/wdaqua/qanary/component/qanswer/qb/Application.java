@@ -22,31 +22,31 @@ import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
  */
 public class Application {
 
-	@Autowired
-	public QanaryComponentConfiguration qanaryComponentConfiguration;
+    @Autowired
+    public QanaryComponentConfiguration qanaryComponentConfiguration;
 
-	@Bean
-	float threshold(@Value("${qanswer.qbe.namedentities.threshold:0.5}") float threshold) {
-		return threshold;
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 
-	@Bean(name = "langDefault")
-	String langDefault(@Value("${qanswer.endpoint.language.default:en}") String langDefault) {
-		return langDefault;
-	}
+    @Bean
+    float threshold(@Value("${qanswer.qbe.namedentities.threshold:0.5}") float threshold) {
+        return threshold;
+    }
 
-	@Bean(name = "knowledgeBaseDefault")
-	String knowledgeBaseDefault(
-			@Value("${qanswer.endpoint.knowledgebase.default:wikidata}") String knowledgeBaseDefault) {
-		return knowledgeBaseDefault;
-	}
+    @Bean(name = "langDefault")
+    String langDefault(@Value("${qanswer.endpoint.language.default:en}") String langDefault) {
+        return langDefault;
+    }
 
-	@Bean(name = "endpointUrl")
-	URI endpointUrl(@Value("${qanswer.endpoint.url}") String endpointUrl) throws URISyntaxException {
-		return new URI(endpointUrl);
-	}
+    @Bean(name = "knowledgeBaseDefault")
+    String knowledgeBaseDefault(
+            @Value("${qanswer.endpoint.knowledgebase.default:wikidata}") String knowledgeBaseDefault) {
+        return knowledgeBaseDefault;
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+    @Bean(name = "endpointUrl")
+    URI endpointUrl(@Value("${qanswer.endpoint.url}") String endpointUrl) throws URISyntaxException {
+        return new URI(endpointUrl);
+    }
 }

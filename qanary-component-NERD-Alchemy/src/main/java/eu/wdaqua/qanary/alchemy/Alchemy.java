@@ -32,9 +32,16 @@ import java.util.List;
 @SpringBootApplication
 @ComponentScan("eu.wdaqua.qanary.component")
 public class Alchemy extends QanaryComponent {
+    private static final Logger logger = LoggerFactory.getLogger(Alchemy.class);
     private final String alchemyKey = "7fdef5a245edb49cfc711e80217667be512869b9";
     private final String alchemyService = "http://access.alchemyapi.com/calls/text/TextGetRankedNamedEntities";
-    private static final Logger logger = LoggerFactory.getLogger(Alchemy.class);
+
+    /**
+     * main method starting the spring application
+     */
+    public static void main(String[] args) {
+        SpringApplication.run(Alchemy.class, args);
+    }
 
     /**
      * processor of a QanaryMessage, (1.) executes a service call to the Alchemy service, (2.) parse
@@ -123,13 +130,6 @@ public class Alchemy extends QanaryComponent {
     @Bean
     public QanaryComponent qanaryComponent() {
         return new Alchemy();
-    }
-
-    /**
-     * main method starting the spring application
-     */
-    public static void main(String[] args) {
-        SpringApplication.run(Alchemy.class, args);
     }
 
 }

@@ -20,25 +20,25 @@ import java.util.List;
 
 @Component
 public class SmaphErd extends QanaryComponent {
-	private static final Logger logger = LoggerFactory.getLogger(SmaphErd.class);
-	private String service = "http://localhost:9090/smaph/rest/default";
+    private static final Logger logger = LoggerFactory.getLogger(SmaphErd.class);
+    private String service = "http://localhost:9090/smaph/rest/default";
 
-	@Override
-	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
-            QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
-            String myQuestion = myQanaryQuestion.getTextualRepresentation();
+    @Override
+    public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
+        QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
+        String myQuestion = myQanaryQuestion.getTextualRepresentation();
 
-            // STEP 1: execute a service call to the smaph-erd service
-            // STEP 2: parse the smaph-erd service response and create corresponding
-            // object related to the qa vocabulary
-            Collection<TextPositionSelector> discoveredNamedEntities = this.getSmapherdOutput(myQuestion);
+        // STEP 1: execute a service call to the smaph-erd service
+        // STEP 2: parse the smaph-erd service response and create corresponding
+        // object related to the qa vocabulary
+        Collection<TextPositionSelector> discoveredNamedEntities = this.getSmapherdOutput(myQuestion);
 
-            // STEP 3: save the text selectors with their disambiguations as
-            // annotations of the current question to the triplestore
-            myQanaryQuestion.addAnnotations(discoveredNamedEntities);
+        // STEP 3: save the text selectors with their disambiguations as
+        // annotations of the current question to the triplestore
+        myQanaryQuestion.addAnnotations(discoveredNamedEntities);
 
-            return myQanaryMessage;
-        }
+        return myQanaryMessage;
+    }
 
     /**
      * Call smaph-erd web service and return a list of named entities

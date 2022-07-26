@@ -22,23 +22,23 @@ import org.springframework.context.annotation.ComponentScan;
  */
 public class Application {
 
+	@Autowired
+	public QanaryComponentConfiguration qanaryComponentConfiguration;
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+
 	/**
-	* this method is needed to make the QanaryComponent in this project known
-	* to the QanaryServiceController in the qanary_component-template
-	* 
-	* @return
-	*/
+	 * this method is needed to make the QanaryComponent in this project known
+	 * to the QanaryServiceController in the qanary_component-template
+	 *
+	 * @return
+	 */
 	@Bean
 	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
 		return new BirthDataQueryBuilder(applicationName);
 	}
-
-	@Autowired
-	public QanaryComponentConfiguration qanaryComponentConfiguration;
-	
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
 
 	@Bean
 	public OpenAPI customOpenAPI(@Value("${springdoc.version}") String appVersion) {
@@ -46,7 +46,7 @@ public class Application {
 				.title("Qanary Wikidata Birth Data Query Builder Component") //
 				.version(appVersion) //
 				.description("This is a Qanary component for creating Wikidata queries " //
-					+ "to find the birth place and date of named entities in text questions.")
+						+ "to find the birth place and date of named entities in text questions.")
 				.termsOfService("http://swagger.io/terms/") //
 				.license(new License().name("Apache 2.0").url("http://springdoc.org")) //
 		);

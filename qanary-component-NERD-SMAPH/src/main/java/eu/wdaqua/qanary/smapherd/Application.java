@@ -12,19 +12,18 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan("eu.wdaqua.qanary.component")
 public class Application {
 
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+
 	/**
-	* this method is needed to make the QanaryComponent in this project known
-	* to the QanaryServiceController in the qanary_component-template
-	* 
-	* @return
-	*/
+	 * this method is needed to make the QanaryComponent in this project known
+	 * to the QanaryServiceController in the qanary_component-template
+	 *
+	 * @return
+	 */
 	@Bean
 	public QanaryComponent qanaryComponent() {
 		return new SmaphErd();
 	}
-	
-	
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
 }

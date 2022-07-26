@@ -21,43 +21,43 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class OpenTapiocaNEDSparqlTest {
 
-	@Mock
-	QanaryQuestion myQanaryQuestion;
+    @Mock
+    QanaryQuestion myQanaryQuestion;
 
-	@Mock
-	OpenTapiocaConfiguration openTapiocaConfiguration;
+    @Mock
+    OpenTapiocaConfiguration openTapiocaConfiguration;
 
-	@Mock
-	OpenTapiocaServiceFetcher openTapiocaServiceFetcher;
+    @Mock
+    OpenTapiocaServiceFetcher openTapiocaServiceFetcher;
 
-	@InjectMocks
-	OpenTapiocaNED openTapiocaNED;
+    @InjectMocks
+    OpenTapiocaNED openTapiocaNED;
 
-	@Test
-	public void testCreateSparqlInsertQuery() throws Exception {
-		// mock QanaryQuestion
-		URI outGraph = new URI("urn:qanary#outGraph");
-		URI questionURI = new URI("qanary-test-question-uri");
-		when(myQanaryQuestion.getOutGraph()).thenReturn(outGraph);
-		when(myQanaryQuestion.getUri()).thenReturn(questionURI);
+    @Test
+    public void testCreateSparqlInsertQuery() throws Exception {
+        // mock QanaryQuestion
+        URI outGraph = new URI("urn:qanary#outGraph");
+        URI questionURI = new URI("qanary-test-question-uri");
+        when(myQanaryQuestion.getOutGraph()).thenReturn(outGraph);
+        when(myQanaryQuestion.getUri()).thenReturn(questionURI);
 
-		// given one identified entity
-		int begin = 0;
-		int end = 11;
-		double score = 1.0;
-		URI resource = new URI("https://www.wikidata.org/entity/Q7259");
+        // given one identified entity
+        int begin = 0;
+        int end = 11;
+        double score = 1.0;
+        URI resource = new URI("https://www.wikidata.org/entity/Q7259");
 
-		FoundWikidataResource foundResource = new FoundWikidataResource(begin, end, score, resource);
-		List<FoundWikidataResource> resources = new LinkedList<FoundWikidataResource>();
-		resources.add(foundResource);
+        FoundWikidataResource foundResource = new FoundWikidataResource(begin, end, score, resource);
+        List<FoundWikidataResource> resources = new LinkedList<FoundWikidataResource>();
+        resources.add(foundResource);
 
-		// when the sparql insert query is created
-		String sparqlInsert = openTapiocaNED.createSparqlInsertQuery(resources, myQanaryQuestion);
+        // when the sparql insert query is created
+        String sparqlInsert = openTapiocaNED.createSparqlInsertQuery(resources, myQanaryQuestion);
 
-		// then it contains the resource uri as body parameter, 
-		assertTrue(sparqlInsert.contains("?a0 oa:hasBody <" +resource.toString() + "> ;"));
-		// and start and end index
-		assertTrue(sparqlInsert.contains("oa:start \"" + begin + "\"^^xsd:nonNegativeInteger ;" ));
-		assertTrue(sparqlInsert.contains("oa:end \"" + end + "\"^^xsd:nonNegativeInteger ;" ));
-	}
+        // then it contains the resource uri as body parameter,
+        assertTrue(sparqlInsert.contains("?a0 oa:hasBody <" + resource.toString() + "> ;"));
+        // and start and end index
+        assertTrue(sparqlInsert.contains("oa:start \"" + begin + "\"^^xsd:nonNegativeInteger ;"));
+        assertTrue(sparqlInsert.contains("oa:end \"" + end + "\"^^xsd:nonNegativeInteger ;"));
+    }
 }

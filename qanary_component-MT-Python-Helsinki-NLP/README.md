@@ -30,13 +30,13 @@ Not applicable as the textual question is a default parameter
 
 ## Usage
 
-1. Clone the Git repository of the collected Qanary components: 
+1. Clone the Git repository of the collected Qanary components:
 
 ```bash
 git clone https://github.com/WDAqua/Qanary-question-answering-components.git
 ```
 
-2. Switch to the component's directory: 
+2. Switch to the component's directory:
 
 ```bash
 cd Qanary-question-answering-components/qanary_component-Python-MT-Helsinki-NLP

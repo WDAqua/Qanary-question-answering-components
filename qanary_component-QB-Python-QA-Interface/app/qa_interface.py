@@ -1,7 +1,7 @@
-import os
-import requests
 import json
 import logging
+import os
+import requests
 from flask import Blueprint, jsonify, request
 from qanary_helpers.qanary_queries import get_text_question_in_graph, insert_into_triplestore, select_from_triplestore
 
@@ -83,7 +83,7 @@ def qanary_service():
         qa_system_name=QA_SYSTEM_NAME,
         qa_system_url=QA_SYSTEM_URL.format(**QA_SYSTEM_PARAMS),
         sparql_result=results,
-        qanary_question_uri=triplestore_endpoint, # TODO: get question URI from triplestore
+        qanary_question_uri=triplestore_endpoint,  # TODO: get question URI from triplestore
         app_name="{0}:Python".format(SERVICE_NAME_COMPONENT)
     )
     

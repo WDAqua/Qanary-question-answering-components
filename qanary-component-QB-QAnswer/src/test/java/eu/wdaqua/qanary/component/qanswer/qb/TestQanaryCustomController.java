@@ -32,97 +32,93 @@ import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerRequest;
 import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerResult;
 
 /**
- * test the custom endpoint of this component 
- * 
- * @author anbo
+ * test the custom endpoint of this component
  *
+ * @author anbo
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 public class TestQanaryCustomController {
 
-	private static final Logger logger = LoggerFactory.getLogger(TestQanaryCustomController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestQanaryCustomController.class);
+    @Inject
+    QAnswerQueryBuilderAndSparqlResultFetcherController customController;
+    @Autowired
+    private Environment env;
+    private MockMvc mockMvcCustom;
 
-	@Autowired
-	private Environment env;
+    private URI realEndpoint;
 
-	@Inject
-	QAnswerQueryBuilderAndSparqlResultFetcherController customController;
+    /**
+     * initialize local controller enabled for tests
+     *
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setPrefix("/WEB-INF/jsp/view/");
+        viewResolver.setSuffix(".jsp");
 
-	private MockMvc mockMvcCustom;
+        mockMvcCustom = MockMvcBuilders.standaloneSetup(customController).setViewResolvers(viewResolver).build();
 
-	private URI realEndpoint;
+        realEndpoint = new URI(env.getProperty("qanswer.endpoint.url"));
+        assert (realEndpoint != null) : "qanswer.endpoint.url cannot be empty";
+    }
 
-	/**
-	 * initialize local controller enabled for tests
-	 *
-	 * @throws Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-		viewResolver.setPrefix("/WEB-INF/jsp/view/");
-		viewResolver.setSuffix(".jsp");
+    @Test
+    public void testDemoEndpoint() throws MalformedURLException, URISyntaxException {
+        String question = "What is the capital of Spain";
+        String lang = "en";
+        String kb = "wikidata";
 
-		mockMvcCustom = MockMvcBuilders.standaloneSetup(customController).setViewResolvers(viewResolver).build();
+        QAnswerResult result0 = customController.requestQAnswerWebService(this.realEndpoint, question, lang, kb);
+        assertTrue("the number of fetched results should be > 0, but  was " + result0.getValues().size(), result0.getValues().size() > 0);
+        assertTrue("the number of fetched results should be <= 60, but  was " + result0.getValues().size(), result0.getValues().size() <= 60);
 
-		realEndpoint = new URI(env.getProperty("qanswer.endpoint.url"));
-		assert (realEndpoint != null) : "qanswer.endpoint.url cannot be empty";
-	}
+        QAnswerRequest requestMessage = new QAnswerRequest(question, lang, kb);
 
-	@Test 
-	public void testDemoEndpoint() throws MalformedURLException, URISyntaxException {
-		String question = "What is the capital of Spain";
-		String lang = "en";
-		String kb = "wikidata";
-		
-		QAnswerResult result0 = customController.requestQAnswerWebService(this.realEndpoint, question, lang, kb );
-		assertTrue("the number of fetched results should be > 0, but  was " + result0.getValues().size(), result0.getValues().size() > 0);
-		assertTrue("the number of fetched results should be <= 60, but  was " + result0.getValues().size(), result0.getValues().size() <= 60);
-		
-		QAnswerRequest requestMessage = new QAnswerRequest(question, lang, kb);		
-		
-		MvcResult res;
-		try {
-			res = mockMvcCustom.perform( //
-					post(QAnswerQueryBuilderAndSparqlResultFetcherController.DEMO) //
-							.content(requestMessage.asJsonString()) //
-							.contentType(MediaType.APPLICATION_JSON))
-					.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)) //
-					.andExpect(MockMvcResultMatchers.jsonPath("$.result").exists()) //
-					.andExpect(MockMvcResultMatchers.jsonPath("$.result.endpoint").exists()) //
-					.andExpect(MockMvcResultMatchers.jsonPath("$.result.knowledgebaseId").exists()) //
-					.andExpect(MockMvcResultMatchers.jsonPath("$.result.language").exists()) //
-					.andExpect(MockMvcResultMatchers.jsonPath("$.result.question").exists()) //
-					.andExpect(MockMvcResultMatchers.jsonPath("$.result.values").exists()) //
-					.andReturn();
-			
-		} catch (Exception e) {
-			fail(e.getMessage());
-			return;
-		}
+        MvcResult res;
+        try {
+            res = mockMvcCustom.perform( //
+                            post(QAnswerQueryBuilderAndSparqlResultFetcherController.DEMO) //
+                                    .content(requestMessage.asJsonString()) //
+                                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)) //
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.result").exists()) //
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.result.endpoint").exists()) //
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.result.knowledgebaseId").exists()) //
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.result.language").exists()) //
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.result.question").exists()) //
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.result.values").exists()) //
+                    .andReturn();
 
-		
-		// TODO: check the content of the response fields being equal to the previous result
-		try {
-			res = mockMvcCustom.perform( //
-					post(QAnswerQueryBuilderAndSparqlResultFetcherController.API) //
-							.content(requestMessage.asJsonString()) //
-							.contentType(MediaType.APPLICATION_JSON))
-					.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)) //
-					.andExpect(MockMvcResultMatchers.jsonPath("$.endpoint").exists()) //
-					.andExpect(MockMvcResultMatchers.jsonPath("$.knowledgebaseId").exists()) //
-					.andExpect(MockMvcResultMatchers.jsonPath("$.language").exists()) //
-					.andExpect(MockMvcResultMatchers.jsonPath("$.question").exists()) //
-					.andExpect(MockMvcResultMatchers.jsonPath("$.values").exists()) //
-					.andReturn();
-		} catch (Exception e) {
-			fail(e.getMessage());
-			return;
-		}
+        } catch (Exception e) {
+            fail(e.getMessage());
+            return;
+        }
 
-		
-	}
+
+        // TODO: check the content of the response fields being equal to the previous result
+        try {
+            res = mockMvcCustom.perform( //
+                            post(QAnswerQueryBuilderAndSparqlResultFetcherController.API) //
+                                    .content(requestMessage.asJsonString()) //
+                                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON)) //
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.endpoint").exists()) //
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.knowledgebaseId").exists()) //
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.language").exists()) //
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.question").exists()) //
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.values").exists()) //
+                    .andReturn();
+        } catch (Exception e) {
+            fail(e.getMessage());
+            return;
+        }
+
+
+    }
 
 }

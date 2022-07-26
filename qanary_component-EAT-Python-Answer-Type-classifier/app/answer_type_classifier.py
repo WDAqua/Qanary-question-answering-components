@@ -1,7 +1,7 @@
-import os
-import requests
 import json
 import logging
+import os
+import requests
 from flask import Blueprint, jsonify, request
 from qanary_helpers.qanary_queries import get_text_question_in_graph, insert_into_triplestore
 
@@ -51,11 +51,11 @@ def qanary_service():
                         BIND (now() as ?time) 
                     }}
                 """.format(
-                    uuid=triplestore_ingraph,
-                    qanary_question_uri=triplestore_endpoint,
-                    answer_type=predicted_answer_type,
-                    app_name="{0}:Python".format(SERVICE_NAME_COMPONENT)
-                )
+        uuid=triplestore_ingraph,
+        qanary_question_uri=triplestore_endpoint,
+        answer_type=predicted_answer_type,
+        app_name="{0}:Python".format(SERVICE_NAME_COMPONENT)
+    )
     
     logging.info(f'SPARQL: {SPARQLquery}')
     # inserting new data to the triplestore

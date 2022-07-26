@@ -2,7 +2,8 @@
 
 ## Description
 
-The component get the voice signal and transforms it to the textual representation which is saved in a standartized way to the triplestore.
+The component get the voice signal and transforms it to the textual representation which is saved in a standartized way
+to the triplestore.
 
 ## Input specification
 

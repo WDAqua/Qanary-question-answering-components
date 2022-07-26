@@ -1,6 +1,6 @@
 # Wrapper component for IBM Watson Natural Language Understanding API
 
-## Description 
+## Description
 
 * API documentation: http://cloud.ibm.com/apidocs/natural-language-understanding
 * request own API key: http://cloud.ibm.com/catalog/services/natural-language-understanding

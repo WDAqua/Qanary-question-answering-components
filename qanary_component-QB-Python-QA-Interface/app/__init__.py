@@ -1,5 +1,5 @@
-from flask import Flask, render_template
 from app.qa_interface import qa_interface
+from flask import Flask
 
 # default config file (use -c parameter on command line specify a custom config file)
 configfile = "app.conf"

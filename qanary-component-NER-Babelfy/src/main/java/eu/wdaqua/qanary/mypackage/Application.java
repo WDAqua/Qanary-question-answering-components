@@ -17,19 +17,18 @@ import org.springframework.context.annotation.ComponentScan;
  */
 public class Application {
 
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+
 	/**
-	* this method is needed to make the QanaryComponent in this project known
-	* to the QanaryServiceController in the qanary_component-template
-	* 
-	* @return
-	*/
+	 * this method is needed to make the QanaryComponent in this project known
+	 * to the QanaryServiceController in the qanary_component-template
+	 *
+	 * @return
+	 */
 	@Bean
 	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
 		return new Babelfy(applicationName);
 	}
-	
-	
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
 }

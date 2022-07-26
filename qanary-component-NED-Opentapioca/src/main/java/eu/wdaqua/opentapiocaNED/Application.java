@@ -16,11 +16,15 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan("eu.wdaqua.qanary.component")
 public class Application {
 
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+
 	@Bean
 	public OpenTapiocaConfiguration openTapiocaConfiguration( //
-			@Value("${opentapioca.endpoint:https://opentaiopca.org/api}") String endpoint
+															  @Value("${opentapioca.endpoint:https://opentaiopca.org/api}") String endpoint
 	) {
-			return new OpenTapiocaConfiguration(endpoint);
+		return new OpenTapiocaConfiguration(endpoint);
 	}
 
 	@Bean
@@ -29,21 +33,15 @@ public class Application {
 	}
 
 	@Bean
-	public QanaryComponent qanaryComponent (
+	public QanaryComponent qanaryComponent(
 			@Value("${spring.application.name}") final String applicationName,
-			OpenTapiocaConfiguration openTapiocaConfiguration, 
-			OpenTapiocaServiceFetcher openTapiocaServiceFetcher)
-
-	{
+			OpenTapiocaConfiguration openTapiocaConfiguration,
+			OpenTapiocaServiceFetcher openTapiocaServiceFetcher) {
 		return new OpenTapiocaNED(
 				applicationName,
 				openTapiocaConfiguration,
 				openTapiocaServiceFetcher);
 	}
-	
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
 
 	@Bean
 	public OpenAPI customOpenAPI(@Value("${springdoc.version}") String appVersion) {
@@ -51,8 +49,8 @@ public class Application {
 				.title("Qanary OpenTapioca Component") //
 				.version(appVersion) //
 				.description("This is a Qanary component for identifying Wikidata resources " //
-					+ "in text questions using the OpenTapioca endpoint available at " //
-					+ "http://opentapioca.org") //
+						+ "in text questions using the OpenTapioca endpoint available at " //
+						+ "http://opentapioca.org") //
 				.termsOfService("http://swagger.io/terms/") //
 				.license(new License().name("Apache 2.0").url("http://springdoc.org")) //
 		);

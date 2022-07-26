@@ -39,29 +39,30 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  * @see <a href="https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F" target="_top">Github wiki howto</a>
  */
 public class EntityClassifier2 extends QanaryComponent {
-	private static final Logger logger = LoggerFactory.getLogger(EntityClassifier2.class);
+    private static final Logger logger = LoggerFactory.getLogger(EntityClassifier2.class);
 
-	private final String applicationName;
+    private final String applicationName;
 
-	public EntityClassifier2(@Value("${spring.application.name}") final String applicationName) {
-	    this.applicationName = applicationName;
+    public EntityClassifier2(@Value("${spring.application.name}") final String applicationName) {
+        this.applicationName = applicationName;
     }
 
-	/**
-	 * implement this method encapsulating the functionality of your Qanary
-	 * component
-	 * @throws Exception 
-	 */
-	@Override
-	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
-		logger.info("process: {}", myQanaryMessage);
-		// TODO: implement processing of question
-		 // STEP1: Retrieve the named graph and the endpoint
-		
-      QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-      QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
-      String myQuestion = myQanaryQuestion.getTextualRepresentation();
-      ArrayList<Selection> selections = new ArrayList<Selection>();
+    /**
+     * implement this method encapsulating the functionality of your Qanary
+     * component
+     *
+     * @throws Exception
+     */
+    @Override
+    public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
+        logger.info("process: {}", myQanaryMessage);
+        // TODO: implement processing of question
+        // STEP1: Retrieve the named graph and the endpoint
+
+        QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
+        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
+        String myQuestion = myQanaryQuestion.getTextualRepresentation();
+        ArrayList<Selection> selections = new ArrayList<Selection>();
 
         logger.info("Question: {}", myQuestion);
         //STEP2
@@ -69,25 +70,25 @@ public class EntityClassifier2 extends QanaryComponent {
         HttpPost httppost = new HttpPost("https://ner.vse.cz/thd/api/v2/extraction?apikey=66adcc8aa934448582447714443ca5f2&format=json&priority_entity_linking=true&entity_type=all");
         httppost.setEntity(new StringEntity(myQuestion));
         try {
-        HttpResponse response = httpclient.execute(httppost);
-        HttpEntity entity = response.getEntity();
-        if (entity != null) {
-        	             InputStream instream = entity.getContent();
-           // String result = getStringFromInputStream(instream);
-            String text = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
-            JSONArray jsonArray = new JSONArray(text); 
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject explrObject = jsonArray.getJSONObject(i);
-                int begin = (int) explrObject.get("startOffset");
-                int end = (int) explrObject.get("endOffset");
-                logger.info("Question: {}", explrObject);
-                logger.info("Question: {}", begin);
-                logger.info("Question: {}", end);
-                Selection s = new Selection();
-                s.begin = begin;
-                s.end = end;
-                selections.add(s);
-            }
+            HttpResponse response = httpclient.execute(httppost);
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                InputStream instream = entity.getContent();
+                // String result = getStringFromInputStream(instream);
+                String text = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
+                JSONArray jsonArray = new JSONArray(text);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject explrObject = jsonArray.getJSONObject(i);
+                    int begin = (int) explrObject.get("startOffset");
+                    int end = (int) explrObject.get("endOffset");
+                    logger.info("Question: {}", explrObject);
+                    logger.info("Question: {}", begin);
+                    logger.info("Question: {}", end);
+                    Selection s = new Selection();
+                    s.begin = begin;
+                    s.end = end;
+                    selections.add(s);
+                }
 //            JSONObject jsnobject = new JSONObject(text);
 //            JSONArray jsonArray = jsnobject.getJSONArray("endOffset");
 //            for (int i = 0; i < jsonArray.length(); i++) {
@@ -97,28 +98,27 @@ public class EntityClassifier2 extends QanaryComponent {
 //                //logger.info("Question: {}", text);
 //                
 //        }
-            logger.info("Question: {}", text);
-            logger.info("Question: {}", jsonArray);
-            try {
-                // do something useful
-            } finally {
-                instream.close();
+                logger.info("Question: {}", text);
+                logger.info("Question: {}", jsonArray);
+                try {
+                    // do something useful
+                } finally {
+                    instream.close();
+                }
             }
+        } catch (ClientProtocolException e) {
+            logger.info("Exception: {}", myQuestion);
+            // TODO Auto-generated catch block
+        } catch (IOException e1) {
+            logger.info("Except: {}", e1);
+            // TODO Auto-generated catch block
         }
-        }
-	 catch (ClientProtocolException e) {
-		 logger.info("Exception: {}", myQuestion);
-        // TODO Auto-generated catch block
-    } catch (IOException e1) {
-    	logger.info("Except: {}", e1);
-        // TODO Auto-generated catch block
-    }
-		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-		// TODO: insert data in QanaryMessage.outgraph
+        logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
+        // TODO: insert data in QanaryMessage.outgraph
 
-		logger.info("apply vocabulary alignment on outgraph");
-		// TODO: implement this (custom for every component)
-		for (Selection s : selections) {
+        logger.info("apply vocabulary alignment on outgraph");
+        // TODO: implement this (custom for every component)
+        for (Selection s : selections) {
             String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> " //
                     + "prefix oa: <http://www.w3.org/ns/openannotation/core/> " //
                     + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " //
@@ -135,7 +135,7 @@ public class EntityClassifier2 extends QanaryComponent {
                     + "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " //
                     + "           ] " //
                     + "  ] ; " //
-                    + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
+                    + "     oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; " //
                     + "	    oa:annotatedAt ?time  " //
                     + "}} " //
                     + "WHERE { " //
@@ -144,9 +144,10 @@ public class EntityClassifier2 extends QanaryComponent {
                     + "}";
             myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
         }
-		return myQanaryMessage;
-	}
-	class Selection {
+        return myQanaryMessage;
+    }
+
+    class Selection {
         public int begin;
         public int end;
     }

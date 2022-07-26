@@ -4,7 +4,8 @@
 
 Receives a textual question recognizes and disambiguates named entities and stores them.
 
-Comment: Ambirverse API is no longer maintained. A new local endpoint should be established https://github.com/ambiverse-nlu/ambiverse-nlu
+Comment: Ambirverse API is no longer maintained. A new local endpoint should be
+established https://github.com/ambiverse-nlu/ambiverse-nlu
 
 ## Input specification
 

@@ -6,7 +6,8 @@ Receives a textual question recognizes and disambiguates named entities and stor
 
 ## Input specification
 
-Not applicable as the textual question is a default parameter. The other input data is fectched from DBpedia external endpoint.
+Not applicable as the textual question is a default parameter. The other input data is fectched from DBpedia external
+endpoint.
 
 ## Output specification
 

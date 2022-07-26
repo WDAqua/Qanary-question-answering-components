@@ -18,27 +18,34 @@ import eu.wdaqua.qanary.exceptions.DBpediaSpotlightServiceNotAvailable;
 @EnableCaching
 @ComponentScan("eu.wdaqua.qanary.component")
 public class Application {
-	
-	@Bean
-	public DBpediaSpotlightConfiguration myDBpediaSpotlightConfiguration( //
-            @Value("${dbpediaspotlight.test-question}") String testQuestion, //
-			@Value("${dbpediaspotlight.confidence.minimum}") float confidenceMinimum, //
-			@Value("${dbpediaspotlight.endpoint:https://api.dbpedia-spotlight.org/en/annotate}") String endpoint //
-	) throws DBpediaSpotlightServiceNotAvailable {
+
+    /**
+     * default main
+     */
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+
+    @Bean
+    public DBpediaSpotlightConfiguration myDBpediaSpotlightConfiguration( //
+                                                                          @Value("${dbpediaspotlight.test-question}") String testQuestion, //
+                                                                          @Value("${dbpediaspotlight.confidence.minimum}") float confidenceMinimum, //
+                                                                          @Value("${dbpediaspotlight.endpoint:https://api.dbpedia-spotlight.org/en/annotate}") String endpoint //
+    ) throws DBpediaSpotlightServiceNotAvailable {
         this.checkSpotlightServiceAvailability(
                 testQuestion, endpoint, confidenceMinimum, myDBpediaSpotlightServiceFetcher());
-		return new DBpediaSpotlightConfiguration(confidenceMinimum, endpoint);
-	}
+        return new DBpediaSpotlightConfiguration(confidenceMinimum, endpoint);
+    }
 
-	@Bean
-	public QanaryComponent qanaryComponent() {
-		return new DBpediaSpotlightNED();
-	}
-	
-	@Bean
-	public DBpediaSpotlightServiceFetcher myDBpediaSpotlightServiceFetcher() {
-		return new DBpediaSpotlightServiceFetcher();
-	}
+    @Bean
+    public QanaryComponent qanaryComponent() {
+        return new DBpediaSpotlightNED();
+    }
+
+    @Bean
+    public DBpediaSpotlightServiceFetcher myDBpediaSpotlightServiceFetcher() {
+        return new DBpediaSpotlightServiceFetcher();
+    }
 
     private void checkSpotlightServiceAvailability(
             String testQuestion, String endpoint, float confidenceMinimum,
@@ -51,13 +58,6 @@ public class Application {
         } catch (Exception e) {
             err = e.getLocalizedMessage();
         }
-        throw new DBpediaSpotlightServiceNotAvailable("No response from endpoint "+endpoint+"!\n"+err);
+        throw new DBpediaSpotlightServiceNotAvailable("No response from endpoint " + endpoint + "!\n" + err);
     }
-
-	/**
-	 * default main
-	 */
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
 }

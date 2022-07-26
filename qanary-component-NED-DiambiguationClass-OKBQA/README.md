@@ -1,6 +1,7 @@
 <<<<<<< HEAD:qanary-component-NED-DiambiguationClass-OKBQA/README.md
 Component source: https://www.okbqa.org/architecture/template-generation
 =======
+
 # NER Diambiguation Class OKBQA
 
 ## Description
@@ -34,4 +35,5 @@ TBD
     oa:annotatedBy <urn:qanary:DiambiguationClassOKBQA> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime  .
 ```
->>>>>>> master:qa.qanary_component-DiambiguationClass-OKBQA/README.md
+
+> > > > > > > master:qa.qanary_component-DiambiguationClass-OKBQA/README.md

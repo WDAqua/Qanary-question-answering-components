@@ -1,33 +1,26 @@
 package eu.wdaqua.queryexecuter;
 
+import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
+import io.swagger.v3.oas.annotations.Operation;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+import org.apache.jena.query.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
-import java.io.ByteArrayOutputStream;
-
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
-import org.apache.jena.query.ResultSetFormatter;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryExecution;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Value;
-
-import net.sf.json.JSONObject;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONSerializer;
-
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryUtils;
-import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
-import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-
-import io.swagger.v3.oas.annotations.Operation;
 
 /**
  * represents a query executer for Wikidata
@@ -79,10 +72,10 @@ public class QueryExecuter extends QanaryComponent {
 	 *
 	 * @param myQanaryQuestion the QanaryQuestion currently being processed
 	 * @param answerJson       the JSON returned by Wikidata
+	 * @return sparql
 	 * @throws QanaryExceptionNoOrMultipleQuestions
 	 * @throws URISyntaxException
 	 * @throws SparqlQueryFailed
-	 * @return sparql
 	 */
 	@Operation(summary = "Create a SPARQL insert query", //
 			operationId = "getSparqlInsertQuery", //

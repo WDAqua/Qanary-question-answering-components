@@ -8,6 +8,8 @@ import org.springframework.context.annotation.ComponentScan;
 
 import java.net.URI;
 
+import eu.wdaqua.qanary.component.QanaryComponent;
+
 @SpringBootApplication
 @ComponentScan("eu.wdaqua.qanary.component")
 /**
@@ -35,5 +37,9 @@ public class Application {
 			@Value("${ned-watson.service.key}") final String watsonServiceKey
 	) {
 		return new WatsonNED(applicationName, cacheEnabled, cacheFile, watsonServiceURL, watsonServiceKey);
+	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
 	}
 }

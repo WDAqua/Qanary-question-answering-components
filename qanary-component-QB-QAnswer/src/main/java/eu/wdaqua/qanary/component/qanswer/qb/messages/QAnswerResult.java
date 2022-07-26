@@ -17,82 +17,78 @@ import io.swagger.v3.oas.annotations.Hidden;
 import net.minidev.json.JSONObject;
 
 public class QAnswerResult {
-	private static final Logger logger = LoggerFactory.getLogger(QAnswerResult.class);
+    private static final Logger logger = LoggerFactory.getLogger(QAnswerResult.class);
+    @Hidden
+    public final URI RESOURCETYPEURI;
+    @Hidden
+    public final URI BOOLEANTYPEURI;
+    @Hidden
+    public final URI STRINGTYPEURI;
+    @Hidden
+    private com.google.gson.JsonParser jsonParser;
+    private URI endpoint;
+    private String knowledgebaseId;
+    private String language;
+    private String question;
+    private List<JsonObject> values;
 
-	@Hidden
-	private com.google.gson.JsonParser jsonParser;
+    public QAnswerResult(JSONObject json, String question, URI endpoint, String language, String knowledgebaseId)
+            throws URISyntaxException {
+        jsonParser = new JsonParser();
 
-	private URI endpoint;
-	private String knowledgebaseId;
-	private String language;
-	private String question;
+        logger.debug("result: {}", json.toJSONString());
 
-	private List<JsonObject> values;
+        JsonArray parsedJsonArray = jsonParser.parse(json.toJSONString()).getAsJsonObject().getAsJsonArray("queries")
+                .getAsJsonArray();
 
-	@Hidden
-	public final URI RESOURCETYPEURI;
-	@Hidden
-	public final URI BOOLEANTYPEURI;
-	@Hidden
-	public final URI STRINGTYPEURI;
+        this.question = question;
+        this.language = language;
+        this.knowledgebaseId = knowledgebaseId;
+        this.endpoint = endpoint;
 
-	public QAnswerResult(JSONObject json, String question, URI endpoint, String language, String knowledgebaseId)
-			throws URISyntaxException  {
-		jsonParser = new JsonParser();
+        this.RESOURCETYPEURI = new URI("http://www.w3.org/2001/XMLSchema#anyURI");
+        this.BOOLEANTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#boolean");
+        this.STRINGTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#string");
 
-		logger.debug("result: {}", json.toJSONString());
+        initData(parsedJsonArray);
+    }
 
-		JsonArray parsedJsonArray = jsonParser.parse(json.toJSONString()).getAsJsonObject().getAsJsonArray("queries")
-				.getAsJsonArray();
+    /**
+     * init the fields while parsing the JSON data
+     *
+     * @param answers
+     * @throws URISyntaxException
+     * @throws NoLiteralFieldFoundException
+     */
+    private void initData(JsonArray answers) throws URISyntaxException {
 
-		this.question = question;
-		this.language = language;
-		this.knowledgebaseId = knowledgebaseId;
-		this.endpoint = endpoint;
+        this.values = new LinkedList<JsonObject>();
 
-		this.RESOURCETYPEURI = new URI("http://www.w3.org/2001/XMLSchema#anyURI");
-		this.BOOLEANTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#boolean");
-		this.STRINGTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#string");
+        for (JsonElement json : answers) {
+            values.add(json.getAsJsonObject());
+        }
 
-		initData(parsedJsonArray);
-	}
+        logger.debug("fetched results: {}", this.values.size());
+    }
 
-	/**
-	 * init the fields while parsing the JSON data
-	 * 
-	 * @param answers
-	 * @throws URISyntaxException
-	 * @throws NoLiteralFieldFoundException
-	 */
-	private void initData(JsonArray answers) throws URISyntaxException {
+    public List<JsonObject> getValues() {
+        return values;
+    }
 
-		this.values = new LinkedList<JsonObject>();
+    public String getKnowledgebaseId() {
+        return knowledgebaseId;
+    }
 
-		for (JsonElement json : answers) {
-			values.add(json.getAsJsonObject());
-		}
+    public String getLanguage() {
+        return language;
+    }
 
-		logger.debug("fetched results: {}", this.values.size());
-	}
+    public URI getEndpoint() {
+        return endpoint;
+    }
 
-	public List<JsonObject> getValues() {
-		return values;
-	}
-
-	public String getKnowledgebaseId() {
-		return knowledgebaseId;
-	}
-
-	public String getLanguage() {
-		return language;
-	}
-
-	public URI getEndpoint() {
-		return endpoint;
-	}
-
-	public String getQuestion() {
-		return question;
-	}
+    public String getQuestion() {
+        return question;
+    }
 
 }
