@@ -38,43 +38,44 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  * @see <a href="https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F" target="_top">Github wiki howto</a>
  */
 public class ReMatch extends QanaryComponent {
-	private static final Logger logger = LoggerFactory.getLogger(ReMatch.class);
+    private static final Logger logger = LoggerFactory.getLogger(ReMatch.class);
 
-	/**
-	 * implement this method encapsulating the functionality of your Qanary
-	 * component
-	 * @throws Exception 
-	 */
-	@Override
-	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
-		logger.info("process: {}", myQanaryMessage);
-		// TODO: implement processing of question
-		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
-	    String myQuestion = myQanaryQuestion.getTextualRepresentation();
-	    ArrayList<Link> links = new ArrayList<Link>();
-	    logger.info("Question: {}", myQuestion);
-	    //STEP2
-	    HttpClient httpclient = HttpClients.createDefault();
-	    myQuestion = java.net.URLEncoder.encode(myQuestion, "UTF-8").replaceAll("\\+", "%20");
-	    HttpGet httpget = new HttpGet("<URI of the Component>"+myQuestion);
-	    try {
-	    	HttpResponse response = httpclient.execute(httpget);
-	        HttpEntity entity = response.getEntity();
-	        if (entity != null) {
-	        	InputStream instream = entity.getContent();
-	        	// String result = getStringFromInputStream(instream);
-	            String text = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
-	            logger.info("Question: {}", text);
-	            JSONObject jsonObject = new JSONObject(text);
-	            //ArrayList<String> list = new ArrayList<String>(jsonObject.keySet());
-	            int flag=0;
-	            Iterator<?> keys = jsonObject.keys();
-	            while( keys.hasNext() ) {
-	            	String key = (String)keys.next();
-	            	logger.info(key);
-	            }
-	            
+    /**
+     * implement this method encapsulating the functionality of your Qanary
+     * component
+     *
+     * @throws Exception
+     */
+    @Override
+    public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
+        logger.info("process: {}", myQanaryMessage);
+        // TODO: implement processing of question
+        QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
+        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
+        String myQuestion = myQanaryQuestion.getTextualRepresentation();
+        ArrayList<Link> links = new ArrayList<Link>();
+        logger.info("Question: {}", myQuestion);
+        //STEP2
+        HttpClient httpclient = HttpClients.createDefault();
+        myQuestion = java.net.URLEncoder.encode(myQuestion, "UTF-8").replaceAll("\\+", "%20");
+        HttpGet httpget = new HttpGet("<URI of the Component>" + myQuestion);
+        try {
+            HttpResponse response = httpclient.execute(httpget);
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                InputStream instream = entity.getContent();
+                // String result = getStringFromInputStream(instream);
+                String text = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
+                logger.info("Question: {}", text);
+                JSONObject jsonObject = new JSONObject(text);
+                //ArrayList<String> list = new ArrayList<String>(jsonObject.keySet());
+                int flag = 0;
+                Iterator<?> keys = jsonObject.keys();
+                while (keys.hasNext()) {
+                    String key = (String) keys.next();
+                    logger.info(key);
+                }
+
 //	            for(int i = 1;flag!=1;i++)
 //	            {
 //	            	if(jsonObject.has("relation "+i))
@@ -91,21 +92,20 @@ public class ReMatch extends QanaryComponent {
 //	            	else
 //	            		flag=1;
 //	            }
-	        }
-	        }
-		 catch (ClientProtocolException e) {
-			 logger.info("Exception: {}", myQuestion);
-	        // TODO Auto-generated catch block
-	    } catch (IOException e1) {
-	    	logger.info("Except: {}", e1);
-	        // TODO Auto-generated catch block
-	    }
+            }
+        } catch (ClientProtocolException e) {
+            logger.info("Exception: {}", myQuestion);
+            // TODO Auto-generated catch block
+        } catch (IOException e1) {
+            logger.info("Except: {}", e1);
+            // TODO Auto-generated catch block
+        }
 
-		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-		// TODO: insert data in QanaryMessage.outgraph
+        logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
+        // TODO: insert data in QanaryMessage.outgraph
 
-		logger.info("apply vocabulary alignment on outgraph");
-		// TODO: implement this (custom for every component)
+        logger.info("apply vocabulary alignment on outgraph");
+        // TODO: implement this (custom for every component)
 //		for (Link l : links) {
 //			 String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
 //	                 + "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
@@ -131,10 +131,11 @@ public class ReMatch extends QanaryComponent {
 //	         logger.info("Sparql query {}", sparql);
 //	         myQanaryUtils.updateTripleStore(sparql);
 //			}
-	 
-		return myQanaryMessage;
-	}
-	class Link {
+
+        return myQanaryMessage;
+    }
+
+    class Link {
         public int begin;
         public int end;
         public String link;

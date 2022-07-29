@@ -26,54 +26,50 @@ import eu.wdaqua.qanary.component.QanaryComponentDescriptionController;
 
 /**
  * test the standard description endpoint of Qanary components
- * 
- * @author anbo
  *
+ * @author anbo
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 public class TestQanaryDescriptionController {
 
-	private static final Logger logger = LoggerFactory.getLogger(TestQanaryDescriptionController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestQanaryDescriptionController.class);
+    @Inject
+    QanaryComponentDescriptionController descriptionController;
+    @Autowired
+    private Environment env;
+    private MockMvc mockMvcDescription;
 
-	@Autowired
-	private Environment env;
-	
-	@Inject
-	QanaryComponentDescriptionController descriptionController;
-	
-	private MockMvc mockMvcDescription;
-
-	private URI realEndpoint;
+    private URI realEndpoint;
 
 
-	/**
-	 * initialize local controller enabled for tests
-	 *
-	 * @throws Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-		viewResolver.setPrefix("/WEB-INF/jsp/view/");
-		viewResolver.setSuffix(".jsp");
+    /**
+     * initialize local controller enabled for tests
+     *
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setPrefix("/WEB-INF/jsp/view/");
+        viewResolver.setSuffix(".jsp");
 
-		mockMvcDescription = MockMvcBuilders.standaloneSetup(descriptionController).setViewResolvers(viewResolver).build();
+        mockMvcDescription = MockMvcBuilders.standaloneSetup(descriptionController).setViewResolvers(viewResolver).build();
 
-		realEndpoint = new URI(env.getProperty("qanswer.endpoint.url")); 	
-		assert (realEndpoint != null) : "qanswer.endpoint.url cannot be empty";
-	}
+        realEndpoint = new URI(env.getProperty("qanswer.endpoint.url"));
+        assert (realEndpoint != null) : "qanswer.endpoint.url cannot be empty";
+    }
 
-	/**
-	 * test description interface
-	 *
-	 * @throws Exception
-	 */
-	@Test
-	public void testDescriptionAvailable() throws Exception {
-		mockMvcDescription.perform(get(QanaryConfiguration.description)) // fetch
-				.andExpect(status().isOk()) // HTTP 200
-				.andReturn(); //
-	}
+    /**
+     * test description interface
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testDescriptionAvailable() throws Exception {
+        mockMvcDescription.perform(get(QanaryConfiguration.description)) // fetch
+                .andExpect(status().isOk()) // HTTP 200
+                .andReturn(); //
+    }
 }

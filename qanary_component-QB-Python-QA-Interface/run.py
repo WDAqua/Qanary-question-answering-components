@@ -1,9 +1,10 @@
-import os
 import logging
+import os
 from datetime import datetime
-from app import app, healthendpoint, aboutendpoint
 from qanary_helpers.registration import Registration
 from qanary_helpers.registrator import Registrator
+
+from app import app, healthendpoint, aboutendpoint
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
@@ -12,7 +13,8 @@ SPRING_BOOT_ADMIN_USERNAME = os.environ['SPRING_BOOT_ADMIN_USERNAME']
 SPRING_BOOT_ADMIN_PASSWORD = os.environ['SPRING_BOOT_ADMIN_PASSWORD']
 SERVICE_HOST = os.environ['SERVICE_HOST']
 SERVICE_PORT = os.environ['SERVICE_PORT']
-SERVICE_NAME_COMPONENT = '{0}-{1}-{2}'.format(os.environ['SERVICE_NAME_COMPONENT'], os.environ['QA_SYSTEM_NAME'], SERVICE_PORT)
+SERVICE_NAME_COMPONENT = '{0}-{1}-{2}'.format(os.environ['SERVICE_NAME_COMPONENT'], os.environ['QA_SYSTEM_NAME'],
+                                              SERVICE_PORT)
 SERVICE_DESCRIPTION_COMPONENT = os.environ['SERVICE_DESCRIPTION_COMPONENT']
 URL_COMPONENT = f"http://{SERVICE_HOST}:{SERVICE_PORT}"
 

@@ -26,83 +26,83 @@ import java.util.concurrent.Executors;
  */
 public class Application {
 
-	/**
-	* this method is needed to make the QanaryComponent in this project known
-	* to the QanaryServiceController in the qanary_component-template
-	* 
-	* @return
-	*/
-	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
-		return new AnnotationofSpotProperty(applicationName);
-	}
-	
-	
     public static void main(String[] args) throws Exception {
-       SpringApplication.run(Application.class, args);
+        SpringApplication.run(Application.class, args);
         DbpediaRecorodProperty.createDbpediaRecorodProperty();
-       // QanaryMessage q = new QanaryMessage();
+        // QanaryMessage q = new QanaryMessage();
         //AnnotationofSpotProperty p = new AnnotationofSpotProperty();
         //p.process(q);
-        
+
+    }
+
+    /**
+     * this method is needed to make the QanaryComponent in this project known
+     * to the QanaryServiceController in the qanary_component-template
+     *
+     * @return
+     */
+    @Bean
+    public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
+        return new AnnotationofSpotProperty(applicationName);
     }
 }
 
-class DbpediaRecorodProperty{
-	private static TreeMap<String,String> map = new TreeMap<String,String>() ;
-	//private static final Logger logger = LoggerFactory.getLogger(DbpediaRecorodProperty.class);
+class DbpediaRecorodProperty {
+    private static TreeMap<String, String> map = new TreeMap<String, String>();
+    //private static final Logger logger = LoggerFactory.getLogger(DbpediaRecorodProperty.class);
 
-	public static void put(String property, String dbpediaLink) {
+    public static void put(String property, String dbpediaLink) {
 
-		map.put(property.trim(), dbpediaLink.trim());
-	}
+        map.put(property.trim(), dbpediaLink.trim());
+    }
 
-	public static TreeMap<String,String> get(){
-		return map;
-	}
-    
-	public static void print() {
-		int count = 1;
-		for(String s : map.keySet()) {
-		System.out.println(count++ +" "+ map.get(s) + " : " + s.toString());
-		}
-		
-	}
-	public static void createDbpediaRecorodProperty() {
-		
-		System.out.println("Starting createDbpediaRecorodProperty()");
-		try {
-			
-			File filename = new File("qa.qanary_component-AnnotationofSpotProperty-tgm/src/main/resources/dbpedia_3Eng_property.ttl");
-			System.out.println("GetAbsolutePath(): "+filename.getAbsolutePath());
+    public static TreeMap<String, String> get() {
+        return map;
+    }
 
-			PipedRDFIterator<org.apache.jena.graph.Triple> iter = new PipedRDFIterator<>();
-			final PipedRDFStream<org.apache.jena.graph.Triple> inputStream = new PipedTriplesStream(iter);
-			ExecutorService executor = Executors.newSingleThreadExecutor();
-			Runnable parser;
-			parser = new Runnable() {
-				@Override
-				public void run() {
-					RDFDataMgr.parse(inputStream, filename.getAbsolutePath());
+    public static void print() {
+        int count = 1;
+        for (String s : map.keySet()) {
+            System.out.println(count++ + " " + map.get(s) + " : " + s.toString());
+        }
 
-				}
-			};
+    }
 
-			executor.submit(parser);
+    public static void createDbpediaRecorodProperty() {
+
+        System.out.println("Starting createDbpediaRecorodProperty()");
+        try {
+
+            File filename = new File("qa.qanary_component-AnnotationofSpotProperty-tgm/src/main/resources/dbpedia_3Eng_property.ttl");
+            System.out.println("GetAbsolutePath(): " + filename.getAbsolutePath());
+
+            PipedRDFIterator<org.apache.jena.graph.Triple> iter = new PipedRDFIterator<>();
+            final PipedRDFStream<org.apache.jena.graph.Triple> inputStream = new PipedTriplesStream(iter);
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Runnable parser;
+            parser = new Runnable() {
+                @Override
+                public void run() {
+                    RDFDataMgr.parse(inputStream, filename.getAbsolutePath());
+
+                }
+            };
+
+            executor.submit(parser);
             executor.shutdown();
-			while (iter.hasNext()) {
-				org.apache.jena.graph.Triple next = iter.next();
-				DbpediaRecorodProperty.put(next.getObject().toString().replaceAll("\"", "").toLowerCase(),
-						next.getSubject().toString());
-			//	System.out.println(iter.next().toString());
-			}
-			DbpediaRecorodProperty.print();
-		//	executor.shutdown();
-		}catch (Exception e) {
-			System.out.println("Except: {}"+e);
-			// TODO Auto-generated catch block
-		}
-		
-	}
-	
+            while (iter.hasNext()) {
+                org.apache.jena.graph.Triple next = iter.next();
+                DbpediaRecorodProperty.put(next.getObject().toString().replaceAll("\"", "").toLowerCase(),
+                        next.getSubject().toString());
+                //	System.out.println(iter.next().toString());
+            }
+            DbpediaRecorodProperty.print();
+            //	executor.shutdown();
+        } catch (Exception e) {
+            System.out.println("Except: {}" + e);
+            // TODO Auto-generated catch block
+        }
+
+    }
+
 }

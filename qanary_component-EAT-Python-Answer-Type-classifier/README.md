@@ -2,7 +2,7 @@
 
 ## Description
 
-The component classifies the DBpedia answer type of a textual question. 
+The component classifies the DBpedia answer type of a textual question.
 
 ## Input specification
 
@@ -24,12 +24,16 @@ Not applicable as the textual question is a default parameter
 
 For example:
 
-* question: "Where was Angela Merkel born?"; 
+* question: "Where was Angela Merkel born?";
 * answer type: "Place"
 
-The answer type taxonomy is using the top-level classes of the [DBpedia Ontology](http://mappings.dbpedia.org/server/ontology/classes/). Hence, the result is always a DBpedia concept.
+The answer type taxonomy is using the top-level classes of
+the [DBpedia Ontology](http://mappings.dbpedia.org/server/ontology/classes/). Hence, the result is always a DBpedia
+concept.
 
-The component is integrating a classification model that was pretrained using Tensorflow. The model is served as external component by [Tensorflow Serving](https://www.tensorflow.org/tfx/guide/serving). Hence, this EAT classification is following the structure of a Qanary Wrapper component.
+The component is integrating a classification model that was pretrained using Tensorflow. The model is served as
+external component by [Tensorflow Serving](https://www.tensorflow.org/tfx/guide/serving). Hence, this EAT classification
+is following the structure of a Qanary Wrapper component.
 
 ## Usage
 
@@ -66,12 +70,13 @@ docker run -d -p 41097:41097 \
 ```
 
 The component can be run with HTTPS. For this you need to start the container with a volume
-pointing to a certificate (.cert) and keyfile (.key). 
+pointing to a certificate (.cert) and keyfile (.key).
 The file paths to certificate and keyfile are passed with parameters `SERVER_SSL_CERTIFICATE` and
-`SERVER_SSL_KEY`. 
+`SERVER_SSL_KEY`.
 The `SERVICE_HOST` parameter has to be set to `https://...`.
 
 The run command could look something like this:
+
 ```bash
 docker run -d -p 41097:41097 \
     -e SPRING_BOOT_ADMIN_URL='http://webengineering.ins.hs-anhalt.de:43740' \
@@ -90,10 +95,12 @@ docker run -d -p 41097:41097 \
 
 The parameters description:
 
-* `SPRING_BOOT_ADMIN_URL` -- URL of the Qanary pipeline (see Step 1 and Step 2 of the [tutorial](https://github.com/WDAqua/Qanary/wiki/Qanary-tutorial:-How-to-build-a-trivial-Question-Answering-pipeline))
+* `SPRING_BOOT_ADMIN_URL` -- URL of the Qanary pipeline (see Step 1 and Step 2 of
+  the [tutorial](https://github.com/WDAqua/Qanary/wiki/Qanary-tutorial:-How-to-build-a-trivial-Question-Answering-pipeline))
 * `SPRING_BOOT_ADMIN_USERNAME` -- the admin username of the Qanary pipeline
 * `SPRING_BOOT_ADMIN_PASSWORD` -- the admin password of the Qanary pipeline
-* `SERVICE_HOST` -- the host of your Qanary component without protocol prefix (e.g., `http://`). It has to be visible to the Qanary pipeline (i.e., a callback from the Qanary pipeline can be executed).
+* `SERVICE_HOST` -- the host of your Qanary component without protocol prefix (e.g., `http://`). It has to be visible to
+  the Qanary pipeline (i.e., a callback from the Qanary pipeline can be executed).
 * `SERVICE_PORT` -- the port of your Qanary component (has to be visible to the Qanary pipeline)
 * `SERVICE_NAME_COMPONENT` -- the name of your Qanary component (for better identification)
 * `SERVICE_DESCRIPTION_COMPONENT` -- the description of your Qanary component

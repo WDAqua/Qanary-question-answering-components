@@ -1,12 +1,9 @@
-import os
-import requests
-import json
-import logging
-from flask import Blueprint, jsonify, request
 import langid
-from transformers import MarianTokenizer, MarianMTModel
-
+import logging
+import os
+from flask import Blueprint, jsonify, request
 from qanary_helpers.qanary_queries import get_text_question_in_graph, insert_into_triplestore
+from transformers import MarianTokenizer, MarianMTModel
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 mt_helsinki_nlp = Blueprint('mt_helsinki_nlp', __name__, template_folder='templates')
@@ -70,7 +67,7 @@ def qanary_service():
         }}
     """.format(
         uuid=triplestore_ingraph,
-        qanary_question_uri=triplestore_endpoint_url, # TODO: change to actual URI when issue #8 is fixed
+        qanary_question_uri=triplestore_endpoint_url,  # TODO: change to actual URI when issue #8 is fixed
         translation_result=result,
         src_lang=lang,
         app_name="{0}:Python".format(SERVICE_NAME_COMPONENT)

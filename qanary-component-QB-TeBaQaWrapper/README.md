@@ -1,0 +1,42 @@
+# TeBaQA wrapper component
+
+## Description
+
+The main task of this component is to manage the communication between the Qanary pipeline and the TeBaQA API and to
+prepare the data. To do this, the component fetches the submitted question and sends the text and lang attribute to the
+TeBaQA API. The result from the API is processed, stored in the triple store and is then available in the Qanary
+pipeline.
+
+## Configuration
+
+The component uses a cache to minimise the processing time.
+For the configuration you can change the following parameter as you need:
+
+```
+qanary.webservicecalls.cache.specs=maximumSize=10000,expireAfterAccess=3600s
+```
+
+For the TeBaQA API you can change the following parameter as you need:
+
+```
+tebaqa.endpoint.url=https://tebaqa.demos.dice-research.org/qa-simple
+tebaqa.threshold=0.5
+tebaqa.endpoint.language.default=en
+tebaqa.endpoint.language.supported=en
+```
+
+**tebaqa.endpoint.url**: The URL of the API endpoint,
+make sure that the API accepts requests with the parameter
+"query" for the question text and "lang" for the language attribute.
+
+**tebaqa.threshold**: The threshold for the answer.
+
+**tebaqa.endpoint.language.default**: The default language of the API.
+
+**tebaqa.endpoint.language.supported**: The list of supported languages of the API,
+e.g. `tebaqa.endpoint.language.supported=en,fr,ru`.
+
+# Further references
+
+- [How to start a standard java Qanary component](https://github.com/WDAqua/Qanary/wiki//How-to-start-a-standard-java-Qanary-component)
+- [TeBaqA GitHub repository](https://github.com/dice-group/TeBaQA)

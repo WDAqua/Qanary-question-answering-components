@@ -42,146 +42,140 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  * @see <a href="https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F" target="_top">Github wiki howto</a>
  */
 public class AylienNED extends QanaryComponent {
-	private static final Logger logger = LoggerFactory.getLogger(AylienNED.class);
+    private static final Logger logger = LoggerFactory.getLogger(AylienNED.class);
 
-	/**
-	 * implement this method encapsulating the functionality of your Qanary
-	 * component
-	 * @throws Exception 
-	 */
-	@Override
-	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
-		logger.info("process: {}", myQanaryMessage);
-		// TODO: implement processing of question
-		
-		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-	    QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
-	    String myQuestion = myQanaryQuestion.getTextualRepresentation();
-	    ArrayList<Link> links = new ArrayList<Link>();
-	    
-	    try {
-			File f = new File("qanary_component-NED-Aylien/src/main/resources/questions.txt");
-	    	FileReader fr = new FileReader(f);
-	    	BufferedReader br  = new BufferedReader(fr);
-			int flag = 0;
-			String line;
+    /**
+     * implement this method encapsulating the functionality of your Qanary
+     * component
+     *
+     * @throws Exception
+     */
+    @Override
+    public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
+        logger.info("process: {}", myQanaryMessage);
+        // TODO: implement processing of question
+
+        QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
+        QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
+        String myQuestion = myQanaryQuestion.getTextualRepresentation();
+        ArrayList<Link> links = new ArrayList<Link>();
+
+        try {
+            File f = new File("qanary_component-NED-Aylien/src/main/resources/questions.txt");
+            FileReader fr = new FileReader(f);
+            BufferedReader br = new BufferedReader(fr);
+            int flag = 0;
+            String line;
 //			Object obj = parser.parse(new FileReader("DandelionNER.json"));
 //			JSONObject jsonObject = (JSONObject) obj;
 //			Iterator<?> keys = jsonObject.keys();
-			
-			while((line = br.readLine()) != null && flag == 0) {
-			    String question = line.substring(0, line.indexOf("Answer:"));
-				logger.info("{}", line);
-				logger.info("{}", myQuestion);
-				
-			    if(question.trim().equals(myQuestion))
-			    {
-			    	String Answer = line.substring(line.indexOf("Answer:")+"Answer:".length());
-			    	logger.info("Here {}", Answer);
-			    	Answer = Answer.trim();
-			    	JSONArray jsonArr =new JSONArray(Answer);
-			    	if(jsonArr.length()!=0)
-	 	        	   {
-	 	        		   for (int i = 0; i < jsonArr.length(); i++) 
-	 	        		   {
-	 	        			   JSONObject explrObject = jsonArr.getJSONObject(i);
-	 	        			  
-	 	        			   logger.info("Question: {}", explrObject);
-	 	        			   
-	 	        			  Link l = new Link();
-		    	                l.begin = (int) explrObject.get("begin");
-		    	                l.end = (int) explrObject.get("end")+1;
-		    	                l.link= explrObject.getString("link");
-		    	                links.add(l);
-		            		}
-		            	}
-			    	flag=1;
-			    	
-			    	break;	
-			    }
-			   
-			    
-			}
-			br.close();
-			if(flag==0)
-			{
-	    
-	    
-	    logger.info("Question {}", myQuestion);
-	    String thePath = URLEncoder.encode(myQuestion, "UTF-8"); 
-	    logger.info("Path {}", thePath);
-	      
-	    HttpClient httpclient = HttpClients.createDefault();
-	    HttpGet httpget = new HttpGet("https://api.aylien.com/api/v1/concepts?text="+thePath);
-	    //httpget.addHeader("User-Agent", USER_AGENT);
-	    httpget.addHeader("X-AYLIEN-TextAPI-Application-Key", "c7f250facfa39df49bb614af1c7b04f7");
-	    httpget.addHeader("X-AYLIEN-TextAPI-Application-ID", "6b3e5a8d");
-	    HttpResponse response = httpclient.execute(httpget);
-	    try {    	 
-	    	HttpEntity entity = response.getEntity();
-	        if (entity != null) {
-	        	InputStream instream = entity.getContent();
-	        	// String result = getStringFromInputStream(instream);
-	        	String text = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
-	        	JSONObject response2 = new JSONObject(text); 
-	        	//logger.info("JA: {}", response2);
-	        	JSONObject concepts = (JSONObject) response2.get("concepts");
-	        	logger.info("JA: {}", concepts);
-	        	ArrayList<String> list = new ArrayList<String>(concepts.keySet());
-	        	logger.info("JA: {}", list);
-	        	for(int i=0;i<list.size();i++){
-	        		JSONObject explrObj = (JSONObject) concepts.get(list.get(i));
-	        		if(explrObj.has("surfaceForms")){
-	        			JSONArray jsonArray =(JSONArray) explrObj.get("surfaceForms");
-	        			JSONObject explrObj2 = (JSONObject) jsonArray.get(0);
-	        			int begin = (int) explrObj2.get("offset");
-	        			String endString = (String) explrObj2.get("string");
-	        			int end = begin +endString.length();
-	        			//logger.info("Question: {}", explrObj2);
-	        			logger.info("Start: {}", begin);
-	        			logger.info("End: {}", end);
-	        			String finalUri = list.get(i);
-	        		
-	        			Link l = new Link();
-	        			l.begin = begin;
-	        			l.end = end;
-	        			l.link= finalUri;
-	        			links.add(l);
-	        		}
-	        	}
-	        }
-	        BufferedWriter buffWriter = new BufferedWriter(new FileWriter("qanary_component-NED-Aylien/src/main/resources/questions.txt", true));
-	        Gson gson = new Gson();
-	        
-	        String json = gson.toJson(links);
-	        logger.info("gsonwala: {}",json);
-	        
-	        String MainString = myQuestion + " Answer: "+json;
-	        buffWriter.append(MainString);
-	        buffWriter.newLine();
-	        buffWriter.close();
-	      }
-	      catch (ClientProtocolException e) {
-		 		 logger.info("Exception: {}", e);
-		         // TODO Auto-generated catch block
-		     } catch (IOException e1) {
-		     	logger.info("Except: {}", e1);
-		         // TODO Auto-generated catch block
-		     }
-			}
-			
-	    }
-	    catch(FileNotFoundException e) 
-		{ 
-		    //handle this
-			logger.info("{}", e);
-		}
-		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-		// TODO: insert data in QanaryMessage.outgraph
 
-		logger.info("apply vocabulary alignment on outgraph");
-		// TODO: implement this (custom for every component)
-		for (Link l : links) {
+            while ((line = br.readLine()) != null && flag == 0) {
+                String question = line.substring(0, line.indexOf("Answer:"));
+                logger.info("{}", line);
+                logger.info("{}", myQuestion);
+
+                if (question.trim().equals(myQuestion)) {
+                    String Answer = line.substring(line.indexOf("Answer:") + "Answer:".length());
+                    logger.info("Here {}", Answer);
+                    Answer = Answer.trim();
+                    JSONArray jsonArr = new JSONArray(Answer);
+                    if (jsonArr.length() != 0) {
+                        for (int i = 0; i < jsonArr.length(); i++) {
+                            JSONObject explrObject = jsonArr.getJSONObject(i);
+
+                            logger.info("Question: {}", explrObject);
+
+                            Link l = new Link();
+                            l.begin = (int) explrObject.get("begin");
+                            l.end = (int) explrObject.get("end") + 1;
+                            l.link = explrObject.getString("link");
+                            links.add(l);
+                        }
+                    }
+                    flag = 1;
+
+                    break;
+                }
+
+
+            }
+            br.close();
+            if (flag == 0) {
+
+
+                logger.info("Question {}", myQuestion);
+                String thePath = URLEncoder.encode(myQuestion, "UTF-8");
+                logger.info("Path {}", thePath);
+
+                HttpClient httpclient = HttpClients.createDefault();
+                HttpGet httpget = new HttpGet("https://api.aylien.com/api/v1/concepts?text=" + thePath);
+                //httpget.addHeader("User-Agent", USER_AGENT);
+                httpget.addHeader("X-AYLIEN-TextAPI-Application-Key", "c7f250facfa39df49bb614af1c7b04f7");
+                httpget.addHeader("X-AYLIEN-TextAPI-Application-ID", "6b3e5a8d");
+                HttpResponse response = httpclient.execute(httpget);
+                try {
+                    HttpEntity entity = response.getEntity();
+                    if (entity != null) {
+                        InputStream instream = entity.getContent();
+                        // String result = getStringFromInputStream(instream);
+                        String text = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
+                        JSONObject response2 = new JSONObject(text);
+                        //logger.info("JA: {}", response2);
+                        JSONObject concepts = (JSONObject) response2.get("concepts");
+                        logger.info("JA: {}", concepts);
+                        ArrayList<String> list = new ArrayList<String>(concepts.keySet());
+                        logger.info("JA: {}", list);
+                        for (int i = 0; i < list.size(); i++) {
+                            JSONObject explrObj = (JSONObject) concepts.get(list.get(i));
+                            if (explrObj.has("surfaceForms")) {
+                                JSONArray jsonArray = (JSONArray) explrObj.get("surfaceForms");
+                                JSONObject explrObj2 = (JSONObject) jsonArray.get(0);
+                                int begin = (int) explrObj2.get("offset");
+                                String endString = (String) explrObj2.get("string");
+                                int end = begin + endString.length();
+                                //logger.info("Question: {}", explrObj2);
+                                logger.info("Start: {}", begin);
+                                logger.info("End: {}", end);
+                                String finalUri = list.get(i);
+
+                                Link l = new Link();
+                                l.begin = begin;
+                                l.end = end;
+                                l.link = finalUri;
+                                links.add(l);
+                            }
+                        }
+                    }
+                    BufferedWriter buffWriter = new BufferedWriter(new FileWriter("qanary_component-NED-Aylien/src/main/resources/questions.txt", true));
+                    Gson gson = new Gson();
+
+                    String json = gson.toJson(links);
+                    logger.info("gsonwala: {}", json);
+
+                    String MainString = myQuestion + " Answer: " + json;
+                    buffWriter.append(MainString);
+                    buffWriter.newLine();
+                    buffWriter.close();
+                } catch (ClientProtocolException e) {
+                    logger.info("Exception: {}", e);
+                    // TODO Auto-generated catch block
+                } catch (IOException e1) {
+                    logger.info("Except: {}", e1);
+                    // TODO Auto-generated catch block
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            //handle this
+            logger.info("{}", e);
+        }
+        logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
+        // TODO: insert data in QanaryMessage.outgraph
+
+        logger.info("apply vocabulary alignment on outgraph");
+        // TODO: implement this (custom for every component)
+        for (Link l : links) {
             String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
                     + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
                     + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
@@ -206,9 +200,10 @@ public class AylienNED extends QanaryComponent {
             logger.debug("Sparql query: {}", sparql);
             myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
         }
-		return myQanaryMessage;
-	}
-	class Link {
+        return myQanaryMessage;
+    }
+
+    class Link {
         public int begin;
         public int end;
         public String link;

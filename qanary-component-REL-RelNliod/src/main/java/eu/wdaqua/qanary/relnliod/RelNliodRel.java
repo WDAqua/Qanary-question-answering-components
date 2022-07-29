@@ -54,16 +54,16 @@ public class RelNliodRel extends QanaryComponent {
     private final String textRazorServiceKey;
     private final Boolean cacheEnabled;
     private final String cacheFile;
-	private final DbpediaRecordProperty dbpediaRecordProperty;
-	private final RemovalList removalList;
+    private final DbpediaRecordProperty dbpediaRecordProperty;
+    private final RemovalList removalList;
 
-	public RelNliodRel(@Value("${spring.application.name}") final String applicationName,
+    public RelNliodRel(@Value("${spring.application.name}") final String applicationName,
                        @Value("${rel-nliod.cache.enabled}") final Boolean cacheEnabled,
                        @Value("${rel-nliod.cache.file}") final String cacheFile,
                        @Value("${rel-nliod.service.url}") final String textRazorServiceURL,
                        @Value("${rel-nliod.service.key}") final String textRazorServiceKey,
-					   final DbpediaRecordProperty dbpediaRecordProperty,
-					   final RemovalList removalList) {
+                       final DbpediaRecordProperty dbpediaRecordProperty,
+                       final RemovalList removalList) {
         this.applicationName = applicationName;
         this.textRazorServiceURL = textRazorServiceURL;
         this.cacheEnabled = cacheEnabled;

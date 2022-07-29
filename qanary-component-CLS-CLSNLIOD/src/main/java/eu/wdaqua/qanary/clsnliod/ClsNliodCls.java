@@ -42,6 +42,39 @@ public class ClsNliodCls extends QanaryComponent {
         this.cacheFile = cacheFile;
     }
 
+    public static String runCurlPOSTWithParam(String weburl, String data, String contentType) throws Exception {
+        String xmlResp = "";
+        try {
+            URL url = new URL(weburl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+
+            connection.setRequestProperty("Content-Type", contentType);
+
+            DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+            wr.writeBytes(data);
+            wr.flush();
+            wr.close();
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            xmlResp = response.toString();
+
+            System.out.println("Curl Response: \n" + xmlResp);
+            logger.info("Response {}", xmlResp);
+        } catch (Exception e) {
+        }
+        return (xmlResp);
+    }
+
     /**
      * implement this method encapsulating the functionality of your Qanary
      * component
@@ -224,39 +257,6 @@ public class ClsNliodCls extends QanaryComponent {
             //handle this
             logger.info("{}", e);
         }
-    }
-
-    public static String runCurlPOSTWithParam(String weburl, String data, String contentType) throws Exception {
-        String xmlResp = "";
-        try {
-            URL url = new URL(weburl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-
-            connection.setRequestProperty("Content-Type", contentType);
-
-            DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-            wr.writeBytes(data);
-            wr.flush();
-            wr.close();
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-            in.close();
-            xmlResp = response.toString();
-
-            System.out.println("Curl Response: \n" + xmlResp);
-            logger.info("Response {}", xmlResp);
-        } catch (Exception e) {
-        }
-        return (xmlResp);
     }
 
     class Selection {

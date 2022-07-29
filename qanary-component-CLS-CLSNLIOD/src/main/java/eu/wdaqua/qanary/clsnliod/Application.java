@@ -31,29 +31,28 @@ import eu.wdaqua.qanary.clsnliod.DbpediaRecorodClass;
  */
 public class Application {
 
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+		DbpediaRecorodClass.createDbpediaRecorodClass();
+	}
+
 	/**
-	* this method is needed to make the QanaryComponent in this project known
-	* to the QanaryServiceController in the qanary_component-template
-	* 
-	* @return
-	*/
+	 * this method is needed to make the QanaryComponent in this project known
+	 * to the QanaryServiceController in the qanary_component-template
+	 *
+	 * @return
+	 */
 	@Bean
 	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName,
 										   @Value("${cls-clsnliod.cache.enabled}") final Boolean cacheEnabled,
 										   @Value("${cls-clsnliod.cache.file}") final String cacheFile) {
 		return new ClsNliodCls(applicationName, cacheEnabled, cacheFile);
 	}
-	
-	
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-        DbpediaRecorodClass.createDbpediaRecorodClass();
-    }
 }
 
-class DbpediaRecorodClass{
+class DbpediaRecorodClass {
 
-	private static TreeMap<String,String> map = new TreeMap<String,String>() ;
+	private static TreeMap<String, String> map = new TreeMap<String, String>();
 	//private static final Logger logger = LoggerFactory.getLogger(DbpediaRecorodProperty.class);
 
 	public static void put(String property, String dbpediaLink) {
@@ -61,19 +60,20 @@ class DbpediaRecorodClass{
 		map.put(property.trim(), dbpediaLink.trim());
 	}
 
-	public static TreeMap<String,String> get(){
+	public static TreeMap<String, String> get() {
 		return map;
 	}
-    
+
 	public static void print() {
 		int count = 1;
-		for(String s : map.keySet()) {
-		System.out.println(count++ +" "+ map.get(s) + " : " + s.toString());
+		for (String s : map.keySet()) {
+			System.out.println(count++ + " " + map.get(s) + " : " + s.toString());
 		}
-		
+
 	}
+
 	public static void createDbpediaRecorodClass() {
-		
+
 		System.out.println("Starting createDbpediaRecorodProperty()");
 		try {
 			File filename = new File("qanary_component-CLS-CLSNLIOD/src/main/resources/dbpedia_3Eng_class.ttl");
@@ -93,108 +93,98 @@ class DbpediaRecorodClass{
 			};
 
 			executor.submit(parser);
-            executor.shutdown();
+			executor.shutdown();
 			while (iter.hasNext()) {
 				org.apache.jena.graph.Triple next = iter.next();
 				DbpediaRecorodClass.put(next.getObject().toString().replaceAll("\"", "").toLowerCase(),
 						next.getSubject().toString());
-			//	System.out.println(iter.next().toString());
+				//	System.out.println(iter.next().toString());
 			}
 			DbpediaRecorodClass.print();
-		//	executor.shutdown();
-		}catch (Exception e) {
-			System.out.println("Except: {}"+e);
+			//	executor.shutdown();
+		} catch (Exception e) {
+			System.out.println("Except: {}" + e);
 			// TODO Auto-generated catch block
 		}
-		
+
 	}
-	
+
 }
 
 class PropertyRetrival {
-	
-	public Property retrival(String s){
+
+	public Property retrival(String s) {
 		Property p = new Property();
 		//String input="";
-		
+
 		//String keyWords[] = {"Property","Resource","Literal","Class",""};
 		/*List<String> property = new ArrayList<String>();
 		List<String> resource = new ArrayList<String>();
 		List<String> resourceL = new ArrayList<String>();
 		List<String> classRdf = new ArrayList<String>();*/
 		List<String> tempList = new ArrayList<String>();
-		
-		try{
-			
+
+		try {
+
 			JSONArray json = new JSONArray(s);
-			
+
 			//JSONArray characters = (JSONArray) json.get("slots");
 			Iterator i = json.iterator();
 			while (i.hasNext()) {
 				JSONObject mainObject = (JSONObject) i.next();
 				JSONArray slots = (JSONArray) mainObject.get("slots");
-				
+
 				Iterator q_itr = slots.iterator();
-				
+
 				String prevSub = "";
 				while (q_itr.hasNext()) {
-					
-					
+
+
 					JSONObject qstn = (JSONObject) q_itr.next();
-								
+
 					String sub = (String) qstn.get("s");
 					String obj = (String) qstn.get("o");
-					
-					
-					if(obj.contains("rdf:"))
-					{	tempList.clear();
-						String kWords[]=null;
-						if(obj.contains("|"))
-						{
+
+
+					if (obj.contains("rdf:")) {
+						tempList.clear();
+						String kWords[] = null;
+						if (obj.contains("|")) {
 							String t[] = obj.split("\\|");
 							int cn = 0;
 							kWords = new String[t.length];
-							for(String tw:t)
-							{
-								kWords[cn++]= tw.substring(tw.indexOf(":")+1);
+							for (String tw : t) {
+								kWords[cn++] = tw.substring(tw.indexOf(":") + 1);
 							}
-						}
-						else
-						{
+						} else {
 							kWords = new String[1];
-							kWords [0] = obj.substring(obj.indexOf(":")+1);
+							kWords[0] = obj.substring(obj.indexOf(":") + 1);
 						}
-						for(String word:kWords)
-						{
+						for (String word : kWords) {
 							tempList.add(word);
 						}
 						prevSub = sub;
-					}
-					else
-					{
-						if(prevSub.equalsIgnoreCase(sub))
-						{
+					} else {
+						if (prevSub.equalsIgnoreCase(sub)) {
 							//System.out.println("Inside==============================");
-						//	System.out.println("TempList: "+tempList.toString());
-							for(String temp: tempList)
-							{
-								switch(temp)
-								{
+							//	System.out.println("TempList: "+tempList.toString());
+							for (String temp : tempList) {
+								switch (temp) {
 									case "Property":
-										if(!p.property.contains(obj))
-										p.property.add(obj);
+										if (!p.property.contains(obj))
+											p.property.add(obj);
 										break;
 									case "Resource":
-										if(!p.resource.contains(obj))
-										p.resource.add(obj);
+										if (!p.resource.contains(obj))
+											p.resource.add(obj);
 										break;
 									case "Literal":
-										if(!p.resourceL.contains(obj))
-										p.resourceL.add(obj);
+										if (!p.resourceL.contains(obj))
+											p.resourceL.add(obj);
 										break;
 									case "Class":
-										if(!p.classRdf.contains(obj))
-										p.classRdf.add(obj);
+										if (!p.classRdf.contains(obj))
+											p.classRdf.add(obj);
 										break;
 								}
 							}
@@ -202,14 +192,13 @@ class PropertyRetrival {
 						prevSub = "";
 						tempList.clear();
 					}
-					
+
 				}
-				
+
 			}
-			
+
 			//System.out.println("List of Subjects: "+ids.toString());
-		}catch(Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return p;
@@ -220,7 +209,7 @@ class PropertyRetrival {
 	}
 }
 
-class Property{
+class Property {
 	public List<String> property = new ArrayList<String>();
 	public List<String> resource = new ArrayList<String>();
 	public List<String> resourceL = new ArrayList<String>();
@@ -228,9 +217,9 @@ class Property{
 }
 
 class MySelection {
-	public String word= "";
-	public String type="";
-	public String rsc="";
-    public int begin;
-    public int end;
+	public String word = "";
+	public String type = "";
+	public String rsc = "";
+	public int begin;
+	public int end;
 }

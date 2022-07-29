@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
@@ -15,27 +15,27 @@
 		<java.version>11</java.version>
 		<qanary.version>[3.1.2,4.0.0)</qanary.version>
 		<docker.image.prefix>qanary</docker.image.prefix>
-        <!-- Replace the name of the docker image to be generated -->
+		<!-- Replace the name of the docker image to be generated -->
 		<docker.image.name>qanary-component-nerd-smaph</docker.image.name>
-        <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-    </properties>
+		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
+	</properties>
 
-    <dependencies>
+	<dependencies>
 		<dependency>
 			<groupId>eu.wdaqua.qanary</groupId>
 			<artifactId>qa.component</artifactId>
 			<version>${qanary.version}</version>
-        <exclusions>
+			<exclusions>
 				<exclusion>
 					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>log4j-to-slf4j</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
-        <dependency>
+		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
-		    <artifactId>log4j-to-slf4j</artifactId>
-		    <version>[2.15.0,3.)</version>
+			<artifactId>log4j-to-slf4j</artifactId>
+			<version>[2.15.0,3.)</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.logging.log4j</groupId>
@@ -99,14 +99,14 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-    </dependencies>
+	</dependencies>
     <build>
-        <plugins>
+		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-                    <mainClass>eu.wdaqua.qanary.smapherd.Application</mainClass>
+					<mainClass>eu.wdaqua.qanary.smapherd.Application</mainClass>
 				</configuration>
 				<executions>
 					<execution>
@@ -116,10 +116,10 @@
 					</execution>
 				</executions>
 			</plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
 			<plugin>
 				<groupId>com.spotify</groupId>
 				<artifactId>dockerfile-maven-plugin</artifactId>
@@ -151,6 +151,6 @@
 					</buildArgs>
 				</configuration>
 			</plugin>
-        </plugins>
+		</plugins>
     </build>
 </project>

@@ -1,9 +1,10 @@
-import os
 import logging
+import os
 from datetime import datetime
-from app import app, configfile, aboutendpoint, healthendpoint
 from qanary_helpers.registration import Registration
 from qanary_helpers.registrator import Registrator
+
+from app import app, aboutendpoint, healthendpoint
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 

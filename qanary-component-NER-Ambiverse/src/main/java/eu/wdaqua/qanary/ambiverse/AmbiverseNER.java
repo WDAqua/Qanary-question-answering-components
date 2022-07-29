@@ -33,7 +33,7 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  */
 public class AmbiverseNER extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(AmbiverseNER.class);
-	private final String CLIENT_ID  = "5e15e933";
+	private final String CLIENT_ID = "5e15e933";
 	private final String CLIENT_SECRET = "a09256c925adc9e2279435038df9d55e";
 
 	private final String applicationName;
@@ -45,7 +45,8 @@ public class AmbiverseNER extends QanaryComponent {
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
 	 * component
-	 * @throws Exception 
+	 *
+	 * @throws Exception
 	 */
 	@Override
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
@@ -63,11 +64,11 @@ public class AmbiverseNER extends QanaryComponent {
 
 		String urlAccessToken = "https://api.ambiverse.com/oauth/token";
 		String urlEntityLinkService = "https://api.ambiverse.com/v2/entitylinking/analyze";
-		String[] accessTokenCmd = {"curl", "-X", "POST", "-H", 
+		String[] accessTokenCmd = {"curl", "-X", "POST", "-H",
 				"Content-Type: application/x-www-form-urlencoded",
 				"-d", "grant_type=client_credentials",
-				"-d", "client_id="+CLIENT_ID,
-				"-d", "client_secret="+CLIENT_SECRET, urlAccessToken};
+				"-d", "client_id=" + CLIENT_ID,
+				"-d", "client_secret=" + CLIENT_SECRET, urlAccessToken};
 
 		try {
 			ProcessBuilder process = new ProcessBuilder(accessTokenCmd);
@@ -80,26 +81,26 @@ public class AmbiverseNER extends QanaryComponent {
 			String access_token = accessTokenInfo.getString("access_token");
 			logger.info("AccessToken:  {}", access_token);
 
-			if(access_token != null){
+			if (access_token != null) {
 
-				String[] entityLinkCmd = {"curl", "--compressed", "-X", "POST", "-H", "Content-Type: application/json", 
-						"-H", "Accept: application/json", "-H", 
-						"Authorization:"+access_token,  "-d", jsonThePath, urlEntityLinkService };
+				String[] entityLinkCmd = {"curl", "--compressed", "-X", "POST", "-H", "Content-Type: application/json",
+						"-H", "Accept: application/json", "-H",
+						"Authorization:" + access_token, "-d", jsonThePath, urlEntityLinkService};
 
 
-				logger.info("EntityLinkCmd: {}",Arrays.toString(entityLinkCmd));
+				logger.info("EntityLinkCmd: {}", Arrays.toString(entityLinkCmd));
 				ProcessBuilder processEL = new ProcessBuilder(entityLinkCmd);
 				logger.info("ProcessEL: {}", processEL.command());
 				Process pEL = processEL.start();
 
-				logger.error("Process PEL: {}",IOUtils.toString(pEL.getErrorStream()));
+				logger.error("Process PEL: {}", IOUtils.toString(pEL.getErrorStream()));
 				InputStream instreamEL = pEL.getInputStream();
 				String textEL = IOUtils.toString(instreamEL, StandardCharsets.UTF_8.name());
 				;
 				JSONObject response = new JSONObject(textEL);
-				logger.info("response: {}",response.toString());
+				logger.info("response: {}", response.toString());
 				JSONArray jsonArrayEL = response.getJSONArray("matches");
-				logger.info("EntityLinkInfoArray: {}",jsonArrayEL.toString());
+				logger.info("EntityLinkInfoArray: {}", jsonArrayEL.toString());
 
 				for (int j = 0; j < jsonArrayEL.length(); j++) {
 					JSONObject explrObjectEL = jsonArrayEL.getJSONObject(j);
@@ -113,8 +114,7 @@ public class AmbiverseNER extends QanaryComponent {
 					s.end = end;
 					selections.add(s);
 				}
-			}
-			else {
+			} else {
 
 				logger.error("Access_Token: {}", "Access token can not be accessed");
 
@@ -123,11 +123,10 @@ public class AmbiverseNER extends QanaryComponent {
 		} catch (JSONException e) {
 			logger.error("Except: {}", e);
 
-		}catch (IOException e) {
+		} catch (IOException e) {
 			logger.error("Except: {}", e);
 			// TODO Auto-generated catch block
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error("Except: {}", e);
 			// TODO Auto-generated catch block
 		}
@@ -152,7 +151,7 @@ public class AmbiverseNER extends QanaryComponent {
 					+ "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " //
 					+ "           ] " //
 					+ "  ] ; " //
-					+ "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ; " //
+					+ "     oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; " //
 					+ "	    oa:annotatedAt ?time  " //
 					+ "}} " //
 					+ "WHERE { " //
@@ -164,6 +163,7 @@ public class AmbiverseNER extends QanaryComponent {
 		return myQanaryMessage;
 
 	}
+
 	class Selection {
 		public int begin;
 		public int end;

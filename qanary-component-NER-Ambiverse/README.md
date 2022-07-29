@@ -4,7 +4,8 @@
 
 Receives a textual question recognizes named entities and stores them.
 
-Comment: This component does the same thing as the corresponding NED, but just saves not all the information. Ambirverse API is no longer maintained. A new local endpoint should be established https://github.com/ambiverse-nlu/ambiverse-nlu
+Comment: This component does the same thing as the corresponding NED, but just saves not all the information. Ambirverse
+API is no longer maintained. A new local endpoint should be established https://github.com/ambiverse-nlu/ambiverse-nlu
 
 ## Input specification
 

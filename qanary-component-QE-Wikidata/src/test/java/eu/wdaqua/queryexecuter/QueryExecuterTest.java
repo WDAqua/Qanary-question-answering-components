@@ -1,11 +1,9 @@
 package eu.wdaqua.queryexecuter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnectorInMemory;
+import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.junit.jupiter.api.Test;
@@ -18,17 +16,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
-import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
-import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnectorInMemory;
-import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * test the correct functionality of the SPARQL INSERT query used in
  * QueryExecuter Qanary component
- * 
- * @author AnBo
  *
+ * @author AnBo
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -55,7 +53,7 @@ class QueryExecuterTest {
 
 		String sparqlQueryString = QanaryTripleStoreConnector.getCountAllTriplesInGraph(outGraph);
 		ResultSet results = myQanaryTripleStoreConnector.select(sparqlQueryString);
-		for (; results.hasNext();) {
+		for (; results.hasNext(); ) {
 			// there should be just one result and the number of triples should be 9
 			assertEquals(9, results.nextSolution().getLiteral("count").getInt());
 		}
@@ -78,7 +76,7 @@ class QueryExecuterTest {
 		String sparqlQueryString = QanaryTripleStoreConnector.getAllAnnotationOfAnswerInGraph(outGraph);
 		ResultSet results = myQanaryTripleStoreConnector.select(sparqlQueryString);
 		int count = 0;
-		for (; results.hasNext();) {
+		for (; results.hasNext(); ) {
 			QuerySolution solution = results.nextSolution();
 			count = results.getRowNumber();
 			logger.debug("{}. solution: {}", results.getRowNumber(), solution.toString());
