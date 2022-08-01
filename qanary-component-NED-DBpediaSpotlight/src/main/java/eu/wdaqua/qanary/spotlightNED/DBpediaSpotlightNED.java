@@ -129,7 +129,7 @@ public class DBpediaSpotlightNED extends QanaryComponent {
                 + sparqlbind //
                 + "  BIND (now() as ?time) " //
                 + "}";
-        myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+        myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 
         return myQanaryMessage;
     }
