@@ -43,32 +43,6 @@ public class RelationLinker2 extends QanaryComponent {
 		this.applicationName = applicationName;
 
 		logger.warn("This component is DEPRECATED!\nFunctionality is not guaranteed.");
-
-		// check functionality with live API
-		for (int i = 0; i < 10; i++) {
-			try {
-				this.testFunctionality();
-				logger.info("Functionality works as expected");
-				break;
-			} catch (Exception e) {
-				logger.warn("Functionality does not work as expected on attempt no. {}:{}", i, e.toString());
-			}
-			if (i > 8) {
-				logger.error("Functionality does not work after maximum tries. Exiting ...");
-				throw new Exception("Could not start component " + applicationName);
-			}
-		}
-	}
-
-	// test the internal functionality of this component, using live APIs
-	private void testFunctionality() throws Exception {
-		// THIS COMPONENT IS DEPRECATED
-		// because the intended functionality cannot be reconstructed
-		// only the availability of the API endpoint can be tested
-		ArrayList<Link> links = relationLinkerServiceFetcher.getLinksForQuestion(
-				relationLinkerConfiguration.getTestQuestion(),
-				relationLinkerConfiguration.getEndpoint()
-				);
 	}
 
 	/**
