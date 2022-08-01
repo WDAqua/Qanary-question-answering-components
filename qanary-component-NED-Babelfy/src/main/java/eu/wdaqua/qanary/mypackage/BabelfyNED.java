@@ -1,39 +1,19 @@
 package eu.wdaqua.qanary.mypackage;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClients;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.mypackage.BabelfyServiceFetcher.Link;
 
 @Component
 /**
@@ -49,6 +29,12 @@ public class BabelfyNED extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(BabelfyNED.class);
 
 	private final String applicationName;
+
+	@Inject
+	private BabelfyServiceFetcher babelfyServiceFetcher;
+
+	@Inject
+	private BabelfyConfiguration babelfyConfiguration;
 
 	public BabelfyNED(@Value("${spring.application.name}") final String applicationName) {
 		this.applicationName = applicationName;
@@ -69,46 +55,11 @@ public class BabelfyNED extends QanaryComponent {
 		QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 
-		ArrayList<Link> links = new ArrayList<Link>();
 		logger.info("Question {}", myQuestion);
-		String thePath = "";
-		thePath = URLEncoder.encode(myQuestion, "UTF-8");
-		logger.info("Path {}", thePath);
+		ArrayList<Link> links = babelfyServiceFetcher.getLinksForQuestion(
+				babelfyConfiguration.getEndpoint(), myQuestion, babelfyConfiguration.getParameters()
+				);
 
-		HttpClient httpclient = HttpClients.createDefault();
-		HttpGet httpget = new HttpGet("https://babelfy.io/v1/disambiguate?text=" + thePath
-				+ "&lang=AGNOSTIC&key=54c2f995-0b2a-4f46-beb0-002202765241");
-		HttpResponse response = httpclient.execute(httpget);
-		try {
-			HttpEntity entity = response.getEntity();
-			if (entity != null) {
-				InputStream instream = entity.getContent();
-				// String result = getStringFromInputStream(instream);
-				String text = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
-				JSONArray jsonArray = new JSONArray(text);
-				for (int i = 0; i < jsonArray.length(); i++) {
-					JSONObject explrObject = jsonArray.getJSONObject(i);
-					logger.info("JSON {}", explrObject);
-					double score = (double) explrObject.get("score");
-					if (score >= 0.5) {
-						JSONObject char_array = explrObject.getJSONObject("charFragment");
-						int begin = (int) char_array.get("start");
-						int end = (int) char_array.get("end");
-						logger.info("Begin: {}", begin);
-						logger.info("End: {}", end);
-
-						Link l = new Link();
-						l.begin = begin;
-						l.end = end + 1;
-						l.link = (String) explrObject.get("DBpediaURL");
-						links.add(l);
-					}
-				}
-			}
-		} catch (ClientProtocolException e) {
-			logger.info("Exception: {}", e);
-			// TODO Auto-generated catch block
-		}
 
 		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
 		// TODO: insert data in QanaryMessage.outgraph
@@ -142,11 +93,5 @@ public class BabelfyNED extends QanaryComponent {
 			myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 		}
 		return myQanaryMessage;
-	}
-
-	class Link {
-		public int begin;
-		public int end;
-		public String link;
 	}
 }
