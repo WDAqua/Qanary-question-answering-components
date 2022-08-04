@@ -1,9 +1,5 @@
-package ue.wdaqua.opentapiocaNED;
+package eu.wdaqua.opentapiocaNED;
 
-import eu.wdaqua.opentapiocaNED.FoundWikidataResource;
-import eu.wdaqua.opentapiocaNED.OpenTapiocaConfiguration;
-import eu.wdaqua.opentapiocaNED.OpenTapiocaNED;
-import eu.wdaqua.opentapiocaNED.OpenTapiocaServiceFetcher;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import org.junit.Test;
 import org.junit.runner.RunWith;
