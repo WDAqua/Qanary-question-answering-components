@@ -8,8 +8,6 @@ import org.springframework.context.annotation.ComponentScan;
 
 import java.net.URI;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
-
 @SpringBootApplication
 @ComponentScan("eu.wdaqua.qanary.component")
 /**
@@ -17,10 +15,6 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  * note: there is no need to change something here
  */
 public class Application {
-
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
 
 	/**
 	 * this method is needed to make the QanaryComponent in this project known

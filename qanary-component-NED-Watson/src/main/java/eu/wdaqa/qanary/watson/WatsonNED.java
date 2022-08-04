@@ -9,20 +9,13 @@ import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.google.gson.Gson;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Value;
 
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryUtils;
-import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
@@ -95,8 +88,8 @@ public class WatsonNED extends QanaryComponent {
 
         for (NamedEntity namedEntity : namedEntityList) {
             // the SPARQL query to push all entities into the triplestore
-            String sparqlUpdateQuery = //
-                    "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
+            String sparqlUpdateQuery = "" //
+                    		+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
                             + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/>  " //
                             + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>" //
                             + "INSERT { " //
@@ -121,7 +114,7 @@ public class WatsonNED extends QanaryComponent {
                             + "BIND (now() as ?time) " //
                             + "} ";
 
-            myQanaryUtils.updateTripleStore(sparqlUpdateQuery, myQanaryMessage.getEndpoint().toString());
+            myQanaryUtils.getQanaryTripleStoreConnector().update(sparqlUpdateQuery);
         }
         return myQanaryMessage;
     }
