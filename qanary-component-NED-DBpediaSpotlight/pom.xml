@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
-	<artifactId>qanary-component-ned-dbpediaspotlight</artifactId>
-	<version>3.2.0</version>
+	<artifactId>qanary-component-NED-DBpediaSpotlight</artifactId>
+	<version>3.2.1</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -13,7 +13,8 @@
 	</parent>
 	<properties>
 		<java.version>11</java.version>
-		<qanary.version>[3.1.2,4.0.0)</qanary.version>
+		<qanary.version>[3.4.1,4.0.0)</qanary.version>
+		<spring-boot-admin.version>2.6.7</spring-boot-admin.version>
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<docker.image.name>qanary-component-ned-dbpediaspotlight</docker.image.name>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
@@ -43,6 +44,11 @@
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -104,6 +110,12 @@
 					<artifactId>log4j-api</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.9</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	<build>

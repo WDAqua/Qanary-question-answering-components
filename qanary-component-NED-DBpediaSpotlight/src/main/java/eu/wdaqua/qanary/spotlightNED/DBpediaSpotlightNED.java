@@ -1,24 +1,21 @@
 package eu.wdaqua.qanary.spotlightNED;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
-
 import com.google.gson.JsonArray;
-
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+import javax.inject.Inject;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * represents a wrapper of the DBpedia Spotlight service used as NED annotator
@@ -38,6 +35,11 @@ import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
 public class DBpediaSpotlightNED extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(DBpediaSpotlightNED.class);
 
+    @Autowired
+    CacheOfRestTemplateResponse myCacheOfResponses;
+    @Autowired
+    RestTemplate restTemplate;
+
     @Inject
     private QanaryComponentConfiguration myQanaryComponentConfiguration;
 
@@ -47,24 +49,10 @@ public class DBpediaSpotlightNED extends QanaryComponent {
     @Inject
     private DBpediaSpotlightServiceFetcher myDBpediaSpotlightServiceFetcher;
 
-    @Bean
-    public CacheManagerCustomizer<ConcurrentMapCacheManager> getCacheManagerCustomizer() {
-        logger.warn("getCacheManagerCustomizer");
-        return new CacheManagerCustomizer<ConcurrentMapCacheManager>() {
-            @Override
-            public void customize(ConcurrentMapCacheManager cacheManager) {
-                cacheManager.setAllowNullValues(false);
-            }
-        };
-    }
-
     /**
      * standard method for processing a message from the central Qanary component
      */
     public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
-
-        // CacheManagerCustomizer<ConcurrentMapCacheManager> myCacheManagerCustomizer =
-        // this.getCacheManagerCustomizer();
 
         // STEP 1: Retrieve the information needed for the computations
         // i.e., retrieve the current question
@@ -72,16 +60,16 @@ public class DBpediaSpotlightNED extends QanaryComponent {
         QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
         String myQuestion = myQanaryQuestion.getTextualRepresentation();
         logger.info("process question \"{}\" with DBpedia Spotlight at {} and minimum confidence: {}", //
-                myQuestion, myDBpediaSpotlightConfiguration.getEndpoint(),
-                myDBpediaSpotlightConfiguration.getConfidenceMinimum());
+                myQuestion, myDBpediaSpotlightConfiguration.getEndpoint(), myDBpediaSpotlightConfiguration.getConfidenceMinimum());
         String sparql, sparqlbind;
 
         // STEP2: Call the DBpedia NED service
         JsonArray resources;
-        resources = myDBpediaSpotlightServiceFetcher.getJsonFromService(
-                myQuestion, //
+        resources = myDBpediaSpotlightServiceFetcher.getJsonFromService(myQuestion, //
                 myDBpediaSpotlightConfiguration.getEndpoint(), //
-                myDBpediaSpotlightConfiguration.getConfidenceMinimum() //
+                myDBpediaSpotlightConfiguration.getConfidenceMinimum(), //
+                restTemplate, //
+                myCacheOfResponses //
         );
 
         // get all found DBpedia resources
@@ -103,6 +91,8 @@ public class DBpediaSpotlightNED extends QanaryComponent {
 
         // create one larger SPARQL INSERT query that adds all discovered named entities
         // at once
+
+        //TODO SPQRQL USE TEMPLATE
         sparql = "" //
                 + "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
                 + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
@@ -139,7 +129,7 @@ public class DBpediaSpotlightNED extends QanaryComponent {
                 + sparqlbind //
                 + "  BIND (now() as ?time) " //
                 + "}";
-        myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+        myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 
         return myQanaryMessage;
     }

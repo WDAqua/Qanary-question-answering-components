@@ -1,25 +1,22 @@
 package eu.wdaqua.qanary.spotlightNED;
 
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpHeaders;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
+import net.minidev.json.JSONObject;
+import org.apache.shiro.util.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.web.client.RestTemplate;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 public class DBpediaSpotlightServiceFetcher {
     private static final Logger logger = LoggerFactory.getLogger(DBpediaSpotlightServiceFetcher.class);
@@ -36,30 +33,32 @@ public class DBpediaSpotlightServiceFetcher {
      * @throws ClientProtocolException
      * @throws IOException
      */
-    @Cacheable(value = "json", key = "#myQuestion")
-    public JsonArray getJsonFromService(
-            String myQuestion, String endpoint, float minimumConfidence) throws ClientProtocolException, IOException {
+    public JsonArray getJsonFromService(String myQuestion, String endpoint, float minimumConfidence, RestTemplate restTemplate, CacheOfRestTemplateResponse myCacheOfResponses) throws UnsupportedEncodingException, URISyntaxException {
 
-        String uriGetParameter = "?text=" + URLEncoder.encode(myQuestion, StandardCharsets.UTF_8.toString())
-                + "&confidence=" + minimumConfidence;
+        String uriGetParameter = "?text=" + URLEncoder.encode(myQuestion, StandardCharsets.UTF_8.toString()) + "&confidence=" + minimumConfidence;
 
-        HttpClient client = HttpClients.custom().build();
-        HttpUriRequest request = RequestBuilder.get() //
-                .setUri(endpoint + uriGetParameter) //
-                .setHeader(HttpHeaders.ACCEPT, "application/json") //
-                .build();
-        logger.info("non-cached HTTP request: {}", request.getRequestLine());
-        HttpResponse response = client.execute(request);
-        HttpEntity responseEntity = response.getEntity();
-        String json = EntityUtils.toString(responseEntity);
+        URI uri = new URI(endpoint + uriGetParameter);
 
-        // parse the response data as JSON and get the found DBpedia resources
-        JsonElement root = JsonParser.parseString(json);
+        long requestBefore = myCacheOfResponses.getNumberOfExecutedRequests();
+
+        logger.debug("URL: {}", uri.toString());
+        HttpEntity<JSONObject> response = restTemplate.getForEntity(uri, JSONObject.class);
+
+        Assert.notNull(response);
+        Assert.notNull(response.getBody());
+
+        if (myCacheOfResponses.getNumberOfExecutedRequests() - requestBefore == 0) {
+            logger.warn("request was cached");
+        } else {
+            logger.info("request was actually executed");
+        }
+
+        JsonElement root = JsonParser.parseString(response.getBody().toString());
         JsonArray resources = root.getAsJsonObject().get("Resources").getAsJsonArray();
 
         // check if anything was found
         if (resources.size() == 0) {
-            logger.warn("nothing recognized for \"{}\": {}", myQuestion, json);
+            logger.warn("nothing recognized for \"{}\": {}", myQuestion, response);
         }
 
         return resources;
