@@ -12,7 +12,11 @@ mvn clean install -Ddockerfile.skip=true -DskipTests
 rm -rf Qanary/
 
 # build Docker Images and store name and tag
-mvn clean package -DskipTests
+if ! mvn clean package -DskipTests;
+then
+  exit 1
+fi
+
 docker image ls | grep -oP "^qanary/qanary-component.*\.[0-9] " > images.temp
 
 # read image list
