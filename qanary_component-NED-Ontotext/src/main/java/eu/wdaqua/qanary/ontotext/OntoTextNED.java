@@ -8,6 +8,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
@@ -33,158 +36,159 @@ import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
 
-
 @Component
 /**
  * This component connected automatically to the Qanary pipeline.
- * The Qanary pipeline endpoint defined in application.properties (spring.boot.admin.url)
- * @see <a href="https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F" target="_top">Github wiki howto</a>
+ * The Qanary pipeline endpoint defined in application.properties
+ * (spring.boot.admin.url)
+ * 
+ * @see <a href=
+ *      "https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F"
+ *      target="_top">Github wiki howto</a>
  */
 public class OntoTextNED extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(OntoTextNED.class);
 
 	private final String applicationName;
 
-	public OntoTextNED(@Value("${spring.application.name}") final String applicationName) {
+	public OntoTextNED(@Value("${spring.application.name}") final String applicationName) throws Exception {
 		this.applicationName = applicationName;
+
+		for (int i = 0; i < 10; i++) {
+			try {
+				this.testFunctionality();
+				logger.info("Functionality works as expected");
+				break;
+			} catch (Exception ex) {
+				logger.warn("Functionality did not work as expected on attempt no. {}: {}", i, ex.toString());
+				if (i > 8) {
+					logger.error("Functionality does not work as expected. Exiting..");
+					throw new Exception("Could not start component, " + applicationName);
+				}
+			}
+		}
+	}
+
+	private void testFunctionality() throws Exception {
+		ArrayList<Link> links = new ArrayList<Link>();
+		HttpClient httpclient = HttpClients.createDefault();
+		HttpPost httppost = new HttpPost("https://tag.ontotext.com/extractor-en/extract");
+		httppost.addHeader("X-JwtToken", "<JWT Token goes here>");
+		httppost.addHeader("Accept", "application/vnd.ontotext.ces+json");
+		httppost.addHeader("Content-Type", "text/plain");
+		httppost.setEntity(new StringEntity("What is a test?"));
+		HttpResponse response = httpclient.execute(httppost);
+		HttpEntity entity = response.getEntity();
+		if (entity != null) {
+			InputStream instream = entity.getContent();
+			String text = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
+			JSONObject jsonObject = new JSONObject(text);
+			JSONArray jsonArray = jsonObject.getJSONArray("mentions");
+			for (int i = 0; i < jsonArray.length(); i++) {
+				JSONObject explrObject = jsonArray.getJSONObject(i);
+				int begin = (int) explrObject.get("startOffset");
+				int end = (int) explrObject.get("endOffset");
+				if (explrObject.has("features")) {
+					JSONObject features = (JSONObject) explrObject.get("features");
+					if (features.has("exactMatch")) {
+						JSONArray uri = features.getJSONArray("exactMatch");
+						String uriLink = uri.getString(0);
+						Link l = new Link();
+						l.begin = begin;
+						l.end = end;
+						l.link = uriLink;
+						links.add(l);
+					}
+				}
+			}
+			instream.close();
+		}
 	}
 
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
 	 * component
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 	@Override
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("process: {}", myQanaryMessage);
 		// TODO: implement processing of question
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
+		QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage,
+				myQanaryUtils.getQanaryTripleStoreConnector());
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 		ArrayList<Link> links = new ArrayList<Link>();
+
+		logger.info("Question: {}", myQuestion);
+		// STEP2
+		HttpClient httpclient = HttpClients.createDefault();
+		HttpPost httppost = new HttpPost("https://tag.ontotext.com/extractor-en/extract");
+		httppost.addHeader("X-JwtToken", "<JWT Token goes here>");
+		httppost.addHeader("Accept", "application/vnd.ontotext.ces+json");
+		httppost.addHeader("Content-Type", "text/plain");
+		httppost.setEntity(new StringEntity(myQuestion));
 		try {
-			File f = new File("qanary_component-NED-Ontotext/src/main/resources/questions.txt");
-			FileReader fr = new FileReader(f);
-			BufferedReader br = new BufferedReader(fr);
-			int flag = 0;
-			String line;
-//			Object obj = parser.parse(new FileReader("DandelionNER.json"));
-//			JSONObject jsonObject = (JSONObject) obj;
-//			Iterator<?> keys = jsonObject.keys();
-				
-			while((line = br.readLine()) != null && flag == 0) {
-				String question = line.substring(0, line.indexOf("Answer:"));
-				logger.info("{}", line);
-				logger.info("{}", myQuestion);
-				if(question.trim().equals(myQuestion)){
-				    String Answer = line.substring(line.indexOf("Answer:")+"Answer:".length());
-				    logger.info("Here {}", Answer);
-				    Answer = Answer.trim();
-				    JSONArray jsonArr =new JSONArray(Answer);
-				    if(jsonArr.length()!=0){
-				    	for (int i = 0; i < jsonArr.length(); i++) {
-				    		JSONObject explrObject = jsonArr.getJSONObject(i);  
-				    		logger.info("Question: {}", explrObject);
-				    		Link l = new Link();
-			    	        l.begin = (int) explrObject.get("begin");
-			    	        l.end = (int) explrObject.get("end")+1;
-			    	        l.link= explrObject.getString("link");
-			                links.add(l);
-			            }
+			HttpResponse response = httpclient.execute(httppost);
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				InputStream instream = entity.getContent();
+				String text = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
+				logger.info("response: {}", text);
+				JSONObject jsonObject = new JSONObject(text);
+				JSONArray jsonArray = jsonObject.getJSONArray("mentions");
+				for (int i = 0; i < jsonArray.length(); i++) {
+					JSONObject explrObject = jsonArray.getJSONObject(i);
+					int begin = (int) explrObject.get("startOffset");
+					int end = (int) explrObject.get("endOffset");
+					if (explrObject.has("features")) {
+						JSONObject features = (JSONObject) explrObject.get("features");
+						if (features.has("exactMatch")) {
+							JSONArray uri = features.getJSONArray("exactMatch");
+							String uriLink = uri.getString(0);
+							logger.info("Question: {}", explrObject);
+							logger.info("Question: {}", begin);
+							logger.info("Question: {}", end);
+							Link l = new Link();
+							l.begin = begin;
+							l.end = end;
+							l.link = uriLink;
+							links.add(l);
+						}
 					}
-				    flag=1;
-				    break;	
 				}
-			}
-			br.close();
-			if(flag==0)	{
-				logger.info("Question: {}", myQuestion);
-				//STEP2
-				HttpClient httpclient = HttpClients.createDefault();
-				HttpPost httppost = new HttpPost("https://tag.ontotext.com/ces-en/extract");
-				httppost.addHeader("X-JwtToken", "<JWT Token goes here>");
-				httppost.addHeader("Accept", "application/vnd.ontotext.ces+json");
-				httppost.addHeader("Content-Type","text/plain");
-				httppost.setEntity(new StringEntity(myQuestion));
+				// JSONObject jsnobject = new JSONObject(text);
+				// JSONArray jsonArray = jsnobject.getJSONArray("endOffset");
+				// for (int i = 0; i < jsonArray.length(); i++) {
+				// JSONObject explrObject = jsonArray.getJSONObject(i);
+				// logger.info("JSONObject: {}", explrObject);
+				// logger.info("JSONArray: {}", jsonArray.getJSONObject(i));
+				// //logger.info("Question: {}", text);
+				//
+				// }
+				logger.info("Question: {}", text);
+				logger.info("Question: {}", jsonArray);
 				try {
-					HttpResponse response = httpclient.execute(httppost);
-					HttpEntity entity = response.getEntity();
-					if (entity != null) {
-						InputStream instream = entity.getContent();
-						String text = IOUtils.toString(instream, StandardCharsets.UTF_8.name());
-						JSONObject jsonObject = new JSONObject(text);
-						JSONArray jsonArray = jsonObject.getJSONArray("mentions"); 
-						for (int i = 0; i < jsonArray.length(); i++) {
-							JSONObject explrObject = jsonArray.getJSONObject(i);
-							int begin = (int) explrObject.get("startOffset");
-							int end = (int) explrObject.get("endOffset");
-							if(explrObject.has("features")) {
-								JSONObject features =(JSONObject) explrObject.get("features");
-								if(features.has("exactMatch")) {
-									JSONArray uri = features.getJSONArray("exactMatch"); 
-									String uriLink =  uri.getString(0);
-									logger.info("Question: {}", explrObject);
-									logger.info("Question: {}", begin);
-									logger.info("Question: {}", end);
-									Link l = new Link();
-									l.begin = begin;
-									l.end = end;
-									l.link = uriLink;
-									links.add(l);
-								}
-							}
-						}
-//	            JSONObject jsnobject = new JSONObject(text);
-//	            JSONArray jsonArray = jsnobject.getJSONArray("endOffset");
-//	            for (int i = 0; i < jsonArray.length(); i++) {
-//	                JSONObject explrObject = jsonArray.getJSONObject(i);
-//	                logger.info("JSONObject: {}", explrObject);
-//	                logger.info("JSONArray: {}", jsonArray.getJSONObject(i));
-//	                //logger.info("Question: {}", text);
-//	                
-//	        }
-						logger.info("Question: {}", text);
-						logger.info("Question: {}", jsonArray);
-						try {
-							// do something useful
-						} finally {
-							instream.close();
-						}
-					}
-	        BufferedWriter buffWriter = new BufferedWriter(new FileWriter("qanary_component-NED-Ontotext/src/main/resources/questions.txt", true));
-	        Gson gson = new Gson();
-	        
-	        String json = gson.toJson(links);
-	        logger.info("gsonwala: {}",json);
-	        
-	        String MainString = myQuestion + " Answer: "+json;
-	        buffWriter.append(MainString);
-	        buffWriter.newLine();
-	        buffWriter.close();
-	        }
-				catch (ClientProtocolException e) {
-					logger.info("Exception: {}", myQuestion);
-					// TODO Auto-generated catch block
-		 		} 
-				catch (IOException e1) {
-					logger.info("Except: {}", e1);
-					// TODO Auto-generated catch block
+					// do something useful
+				} finally {
+					instream.close();
 				}
 			}
+		} catch (ClientProtocolException e) {
+			logger.info("Exception: {}", myQuestion);
+			// TODO Auto-generated catch block
 		}
-	
-	    catch(FileNotFoundException e) 
-		{ 
-		    //handle this
-			logger.info("{}", e);
-		}
+
 		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
 		// TODO: insert data in QanaryMessage.outgraph
 
 		logger.info("apply vocabulary alignment on outgraph");
 		// TODO: implement this (custom for every component)
-		for (Link l : links) {
-            String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
+		for (
+
+		Link l : links) {
+			String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
 					+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
 					+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
 					+ "INSERT { " //
@@ -207,13 +211,14 @@ public class OntoTextNED extends QanaryComponent {
 					+ "  BIND (now() as ?time) " //
 					+ "}";
 			logger.debug("SPARQL query: {}", sparql);
-			myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+			myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 		}
 		return myQanaryMessage;
 	}
+
 	class Link {
-        public int begin;
-        public int end;
-        public String link;
-    }
+		public int begin;
+		public int end;
+		public String link;
+	}
 }
