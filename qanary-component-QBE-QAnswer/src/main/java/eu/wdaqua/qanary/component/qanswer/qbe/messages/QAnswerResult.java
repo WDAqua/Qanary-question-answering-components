@@ -88,7 +88,7 @@ public class QAnswerResult {
         } else if (isAnswerBoolean(answers)) {
             initDataBoolean(answers);
         } else {
-            throw new RuntimeException("case not implemented");
+            throw new RuntimeException("Case not implemented for JsonArray: " + answers.toString());
         }
 
         JsonObject questionData = answers.get(0).getAsJsonObject().get("question").getAsJsonObject();
