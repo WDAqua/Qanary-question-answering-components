@@ -39,6 +39,11 @@ class TestQanaryServiceController {
     @Autowired
     private WebApplicationContext applicationContext;
 
+    static {
+        // deactivate the live test of the real-world endpoint
+        System.setProperty("dbpediaspotlight.perform-live-check-on-component-start", "false");
+    }
+
     /**
      * initialize local controller enabled for tests
      *

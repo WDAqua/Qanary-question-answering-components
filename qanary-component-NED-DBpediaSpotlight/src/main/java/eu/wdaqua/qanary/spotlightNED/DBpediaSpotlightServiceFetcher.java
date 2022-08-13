@@ -54,7 +54,19 @@ public class DBpediaSpotlightServiceFetcher {
         }
 
         JsonElement root = JsonParser.parseString(response.getBody().toString());
-        JsonArray resources = root.getAsJsonObject().get("Resources").getAsJsonArray();
+        
+        JsonArray resources;
+        try {
+            resources = root.getAsJsonObject().get("Resources").getAsJsonArray();
+		} catch (Exception e) {
+			// the web service returns no array if the result is empty, this is a workaround to cover such situations
+			if( root.getAsJsonObject().get("@confidence").getAsDouble() >= 0) {
+				resources = new JsonArray(); 		
+				logger.info("The web service response for '{}' was empty. However, the JSON response was valid.", myQuestion);
+			} else {
+				throw e;
+			}
+		}
 
         // check if anything was found
         if (resources.size() == 0) {
