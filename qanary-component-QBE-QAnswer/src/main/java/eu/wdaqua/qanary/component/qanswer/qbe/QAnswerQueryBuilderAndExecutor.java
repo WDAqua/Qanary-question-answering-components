@@ -125,8 +125,6 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
             knowledgeBaseId = knowledgeBaseDefault;
         }
 
-        URI endpoint = myQanaryMessage.getEndpoint();
-
         // STEP 1: get the required data from the Qanary triplestore (the global process
         // memory)
         QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
@@ -141,7 +139,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
 
         // STEP 3: add information to Qanary triplestore
         String sparql = getSparqlInsertQuery(myQanaryQuestion, result, knowledgeBaseId);
-        myQanaryUtils.updateTripleStore(sparql, endpoint);
+        myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 
         return myQanaryMessage;
     }
@@ -185,6 +183,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
             throws Exception {
         LinkedList<NamedEntity> namedEntities = new LinkedList<>();
 
+        // TODO: Move to qanary.commons and use template queries
         String sparqlGetAnnotation = "" //
                 + "PREFIX dbr: <http://dbpedia.org/resource/> \n" //
                 + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> \n" //
@@ -211,7 +210,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
         int end;
         QuerySolution tupel;
 
-        ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlGetAnnotation, myQanaryQuestion.getEndpoint().toASCIIString());
+        ResultSet resultset = myQanaryUtils.getQanaryTripleStoreConnector().select(sparqlGetAnnotation);
         while (resultset.hasNext()) {
             tupel = resultset.next();
             start = tupel.get("start").asLiteral().getInt();
@@ -341,6 +340,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
             counter++;
         }
 
+        // TODO: Move to qanary.commons and use template queries
         String sparql = "" //
                 + "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
                 + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> \n" //
@@ -355,7 +355,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
                 + " 		oa:annotatedBy  ?service ; \n" //
                 + " 		oa:annotatedAt  ?time ; \n" //
                 + " 		qa:score        ?score ; \n" //
-                + "         qa:overKnowledgeGraph ?knowledgeGraph . \n" //
+                + " 		qa:overKnowledgeGraph ?knowledgeGraph . \n" //
                 //
                 + "  ?sparql a              qa:SparqlQuery ; \n" //
                 + "         rdf:value       ?sparqlQueryString . \n" //
@@ -368,7 +368,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
                 + " 		qa:score        ?score . \n" //
                 //
                 + "  ?improvedQuestion a    qa:ImprovedQuestion ; \n " //
-                + "         rdf:value 		?improvedQuestionText . \n " //
+                + " 		rdf:value 		?improvedQuestionText . \n " //
                 // answer
                 + "  ?annotationAnswer a    qa:AnnotationAnswer ; \n" //
                 + " 		oa:hasTarget    ?question ; \n" //
@@ -378,7 +378,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
                 + " 		qa:score        ?score . \n" //
                 //
                 + "  ?answer a              qa:Answer ; \n" //
-                + "         rdf:value       [ a rdf:Seq " + answerValuesAsListFormat + " ]  . \n" //
+                + " 		rdf:value       [ a rdf:Seq " + answerValuesAsListFormat + " ]  . \n" //
                 // answer type
                 + "  ?annotationAnswerType a qa:AnnotationOfAnswerType ; \n" //
                 + " 		oa:hasTarget    ?question ; \n" //

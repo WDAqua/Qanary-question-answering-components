@@ -32,6 +32,11 @@ public class DBpediaSpotlightServiceFetcherTest {
     @Autowired
     private CacheOfRestTemplateResponse myCacheOfResponse;
 
+    static {
+    	// deactivate the live test of the real-world webservice
+        System.setProperty("dbpediaspotlight.perform-live-check-on-component-start", "false");
+    }
+    
     @BeforeEach
     public void init() throws URISyntaxException {
         assert this.restTemplate != null : "restTemplate cannot be null";

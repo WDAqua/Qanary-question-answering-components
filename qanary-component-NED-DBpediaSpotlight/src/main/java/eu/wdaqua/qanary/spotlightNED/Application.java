@@ -7,6 +7,9 @@ import eu.wdaqua.qanary.exceptions.DBpediaSpotlightServiceNotAvailable;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -25,6 +28,8 @@ public class Application {
     @Autowired
     RestTemplate restTemplate;
 
+    private static final Logger logger = LoggerFactory.getLogger(Application.class);
+
     /**
      * default main
      */
@@ -33,12 +38,13 @@ public class Application {
     }
 
     @Bean
-    public DBpediaSpotlightConfiguration myDBpediaSpotlightConfiguration(//
-                                                                         @Value("${dbpediaspotlight.test-question}") String testQuestion, //
-                                                                         @Value("${dbpediaspotlight.confidence.minimum}") float confidenceMinimum, //
-                                                                         @Value("${dbpediaspotlight.endpoint:https://api.dbpedia-spotlight.org/en/annotate}") String endpoint //
+    public DBpediaSpotlightConfiguration myDBpediaSpotlightConfiguration( //
+			@Value("${dbpediaspotlight.test-question}") String testQuestion, //
+			@Value("${dbpediaspotlight.confidence.minimum}") float confidenceMinimum, //
+			@Value("${dbpediaspotlight.endpoint:https://api.dbpedia-spotlight.org/en/annotate}") String endpoint, //
+			@Value("${dbpediaspotlight.perform-live-check-on-component-start:true}") boolean performLiveCheckOnComponentStart //
     ) throws DBpediaSpotlightServiceNotAvailable {
-        this.checkSpotlightServiceAvailability(testQuestion, endpoint, confidenceMinimum, myDBpediaSpotlightServiceFetcher());
+        this.checkSpotlightServiceAvailability(testQuestion, endpoint, confidenceMinimum, myDBpediaSpotlightServiceFetcher(), performLiveCheckOnComponentStart);
         return new DBpediaSpotlightConfiguration(confidenceMinimum, endpoint);
     }
 
@@ -52,15 +58,23 @@ public class Application {
         return new DBpediaSpotlightServiceFetcher();
     }
 
-    private void checkSpotlightServiceAvailability(String testQuestion, String endpoint, float confidenceMinimum, DBpediaSpotlightServiceFetcher dBpediaSpotlightServiceFetcher) throws DBpediaSpotlightServiceNotAvailable {
-        String err;
-        try {
-            JsonArray response = dBpediaSpotlightServiceFetcher.getJsonFromService(testQuestion, endpoint, confidenceMinimum, restTemplate, myCacheOfResponses);
-            return;
-        } catch (Exception e) {
-            err = e.getLocalizedMessage();
-        }
-        throw new DBpediaSpotlightServiceNotAvailable("No response from endpoint " + endpoint + "!\n" + err);
+    private void checkSpotlightServiceAvailability(String testQuestion, String endpoint, float confidenceMinimum, DBpediaSpotlightServiceFetcher dBpediaSpotlightServiceFetcher, boolean performLiveCheckOnComponentStart) throws DBpediaSpotlightServiceNotAvailable {
+    	
+    	if(!performLiveCheckOnComponentStart) {
+    		logger.warn("live check of endpoint {} will NOT be executed (i.e., you cannot be sure that it is available).", endpoint);
+    		return;
+    	} else {
+    		logger.warn("live check of endpoint {} will be executed with question '{}'", endpoint, testQuestion);
+	        String err;
+	        try {
+	            JsonArray response = dBpediaSpotlightServiceFetcher.getJsonFromService(testQuestion, endpoint, confidenceMinimum, restTemplate, myCacheOfResponses);
+	            return;
+	        } catch (Exception e) {
+	            err = e.toString() + " " + e.getLocalizedMessage();
+		        logger.error("No response from endpoint {}!\n{}", endpoint , err);
+	        }
+	        throw new DBpediaSpotlightServiceNotAvailable("No response from endpoint " + endpoint + "!\n" + err);
+    	}
     }
 
     @Bean
