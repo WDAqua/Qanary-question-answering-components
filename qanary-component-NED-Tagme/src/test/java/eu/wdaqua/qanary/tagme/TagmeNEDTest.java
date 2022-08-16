@@ -1,29 +1,29 @@
 package eu.wdaqua.qanary.tagme;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import org.apache.http.client.ClientProtocolException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.http.client.ClientProtocolException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class TagmeNEDTest {
+class TagmeNEDTest {
 	private static final Logger logger = LoggerFactory.getLogger(TagmeNEDTest.class);
 
 	@Autowired
@@ -31,18 +31,18 @@ public class TagmeNEDTest {
 
 	public String tagMeServiceURL;
 	private float tagMeThreshold = 0.1f; // keep it low to ensure some data is useable
-	private TagmeNED myTagmeNED; 
+	private TagmeNED myTagmeNED;
 
-	@Before
-	public void init() {
+	@BeforeEach
+	void init() {
 		tagMeServiceURL = env.getProperty("ned-tagme.service.url");
 		logger.info("tagMeServiceURL: {}", tagMeServiceURL);
-		assertNotEquals("tagMeServiceURL is not allowed to be null.", null, tagMeServiceURL);
+		assertNotNull(tagMeServiceURL, "tagMeServiceURL is not allowed to be null.");
 		myTagmeNED = new TagmeNED("test", false, "none", tagMeServiceURL, tagMeThreshold);
 	}
 
 	@Test
-	public void testWhereAreLondonAndGermany()
+	void testWhereAreLondonAndGermany()
 			throws UnsupportedEncodingException, ClientProtocolException, IOException {
 		List<TestData> myTestData = new LinkedList<>();
 
@@ -56,14 +56,14 @@ public class TagmeNEDTest {
 
 			// check if expected named entites are contained in result
 			for (NamedEntity expectedNamedEntity : myData.getNamedEntities()) {
-				assertTrue(expectedNamedEntity + " was not found in Web service result:\n" + getAllResults(result),
-						isExpectedNamedEntityContained(result, expectedNamedEntity));
+				assertTrue(isExpectedNamedEntityContained(result, expectedNamedEntity),
+						expectedNamedEntity + " was not found in Web service result:\n" + getAllResults(result));
 			}
 		}
 	}
 
 	@Test
-	public void testWhenWasAlbertEinsteinBorn()
+	void testWhenWasAlbertEinsteinBorn()
 			throws UnsupportedEncodingException, ClientProtocolException, IOException {
 		List<TestData> myTestData = new LinkedList<>();
 
@@ -76,8 +76,8 @@ public class TagmeNEDTest {
 
 			// check if expected named entites are contained in result
 			for (NamedEntity expectedNamedEntity : myData.getNamedEntities()) {
-				assertTrue(expectedNamedEntity + " was not found in Web service result:\n" + getAllResults(result),
-						isExpectedNamedEntityContained(result, expectedNamedEntity));
+				assertTrue(isExpectedNamedEntityContained(result, expectedNamedEntity),
+						expectedNamedEntity + " was not found in Web service result:\n" + getAllResults(result));
 			}
 		}
 	}
