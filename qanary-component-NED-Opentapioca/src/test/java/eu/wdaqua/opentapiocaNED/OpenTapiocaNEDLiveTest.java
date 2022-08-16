@@ -3,15 +3,15 @@ package eu.wdaqua.opentapiocaNED;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.http.client.ClientProtocolException;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class OpenTapiocaNEDLiveTest {
+class OpenTapiocaNEDLiveTest {
 
     private String opentapiocaEndpoint;
     private OpenTapiocaServiceFetcher serviceFetcher;
@@ -30,14 +30,14 @@ public class OpenTapiocaNEDLiveTest {
         return false;
     }
 
-    @Before
-    public void init() {
+    @BeforeEach
+    void init() {
         opentapiocaEndpoint = "https://opentapioca.org/api/annotate";
         serviceFetcher = new OpenTapiocaServiceFetcher();
     }
 
     @Test
-    public void testGetJsonFromServiceForPerson() throws ClientProtocolException, IOException {
+    void testGetJsonFromServiceForPerson() throws ClientProtocolException, IOException {
         String question = "Where and when was Ada Lovelace born?";
         JsonArray resources = serviceFetcher.getJsonFromService(
                 question, opentapiocaEndpoint
@@ -47,10 +47,10 @@ public class OpenTapiocaNEDLiveTest {
         assertTrue(resourcesContainID(resources, "Q7259"));
     }
 
-    @Ignore
+    @Disabled
     @Test
-    // ignored because the currently used opentapioca implementation does not recognize super heroes
-    public void testGetJsonFromServiceForSuperHero() throws ClientProtocolException, IOException {
+        // ignored because the currently used opentapioca implementation does not recognize super heroes
+    void testGetJsonFromServiceForSuperHero() throws ClientProtocolException, IOException {
         String question = "Aquaman";
         JsonArray resources = serviceFetcher.getJsonFromService(
                 question, opentapiocaEndpoint
@@ -61,7 +61,7 @@ public class OpenTapiocaNEDLiveTest {
     }
 
     @Test
-    public void testGetJsonFromServiceWithEmptyQuestion() throws ClientProtocolException, IOException {
+    void testGetJsonFromServiceWithEmptyQuestion() throws ClientProtocolException, IOException {
         String question = "";
         JsonArray resources = serviceFetcher.getJsonFromService(
                 question, opentapiocaEndpoint
@@ -71,7 +71,7 @@ public class OpenTapiocaNEDLiveTest {
     }
 
     @Test
-    public void testInvalidQuestionException() throws ClientProtocolException, IOException {
+    void testInvalidQuestionException() throws ClientProtocolException, IOException {
         String question = null;
         try {
             JsonArray resources = serviceFetcher.getJsonFromService(

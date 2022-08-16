@@ -1,20 +1,20 @@
 package eu.wdaqua.opentapiocaNED;
 
 import eu.wdaqua.qanary.commons.QanaryQuestion;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class OpenTapiocaNEDSparqlTest {
 
     @Mock
@@ -30,7 +30,7 @@ public class OpenTapiocaNEDSparqlTest {
     OpenTapiocaNED openTapiocaNED;
 
     @Test
-    public void testCreateSparqlInsertQuery() throws Exception {
+    void testCreateSparqlInsertQuery() throws Exception {
         // mock QanaryQuestion
         URI outGraph = new URI("urn:qanary#outGraph");
         URI questionURI = new URI("qanary-test-question-uri");
