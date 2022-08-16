@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary-component-NED-DBpediaSpotlight</artifactId>
-	<version>3.2.2</version>
+	<version>3.2.1</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -44,6 +44,11 @@
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

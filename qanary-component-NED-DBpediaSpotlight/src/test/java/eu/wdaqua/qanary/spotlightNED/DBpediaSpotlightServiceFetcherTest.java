@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class DBpediaSpotlightServiceFetcherTest {
+class DBpediaSpotlightServiceFetcherTest {
     // time span for caching, tests wait this time span during the test runs
     protected final static int MAX_TIME_SPAN_SECONDS = 5;
     private static final Logger logger = LoggerFactory.getLogger(DBpediaSpotlightServiceFetcherTest.class);
