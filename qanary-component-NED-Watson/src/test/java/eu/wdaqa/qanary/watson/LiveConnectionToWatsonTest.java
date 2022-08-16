@@ -1,12 +1,12 @@
 package eu.wdaqa.qanary.watson;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -14,18 +14,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
-public class TestLiveConnectionToWatson {
-    private static final Logger logger = LoggerFactory.getLogger(TestLiveConnectionToWatson.class);
+class LiveConnectionToWatsonTest {
+    private static final Logger logger = LoggerFactory.getLogger(LiveConnectionToWatsonTest.class);
     private final float minThreshold = 0.4f;
     @Autowired
     private WatsonNED myWatsonNED;
 
     @Test
-    public void testLiveConnectionToWatson() throws IOException {
+    void testLiveConnectionToWatson() throws IOException {
 
         Map<String, List<NamedEntity>> expectedResults = new HashMap<>();
 
@@ -65,7 +65,8 @@ public class TestLiveConnectionToWatson {
         }
 
         float errorRatio = ((float) errors / (float) expectedResults.size());
-        assertTrue("errorRatio for results of Watson was " + errorRatio + " (expected minimum: " + minThreshold + ")\n" + messages, minThreshold <= errorRatio);
+        assertTrue(minThreshold <= errorRatio,
+                "errorRatio for results of Watson was " + errorRatio + " (expected minimum: " + minThreshold + ")\n" + messages);
     }
 
 }
