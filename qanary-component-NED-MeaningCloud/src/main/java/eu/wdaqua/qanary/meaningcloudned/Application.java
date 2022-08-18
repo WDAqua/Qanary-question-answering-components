@@ -1,17 +1,13 @@
 package eu.wdaqua.qanary.meaningcloudned;
 
+import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.component.QanaryComponent;
-
 @SpringBootApplication
-@EnableAutoConfiguration
 @ComponentScan("eu.wdaqua.qanary.component")
 /**
  * basic class for wrapping functionality to a Qanary component
@@ -19,19 +15,19 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  */
 public class Application {
 
-	/**
-	* this method is needed to make the QanaryComponent in this project known
-	* to the QanaryServiceController in the qanary_component-template
-	* 
-	* @return
-	*/
-	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) throws Exception {
-		return new MeaningCloudNed(applicationName);
-	}
-	
-	
     public static void main(String[] args) throws Exception {
-       SpringApplication.run(Application.class, args);
-       }
+        SpringApplication.run(Application.class, args);
+    }
+
+    /**
+     * this method is needed to make the QanaryComponent in this project known
+     * to the QanaryServiceController in the qanary_component-template
+     *
+     * @return
+     */
+    @Bean
+    public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName,
+                                           @Value("${ned-meaningcloud.cache.file}") final String cacheFilePath) throws Exception {
+        return new MeaningCloudNed(applicationName, cacheFilePath);
+    }
 }

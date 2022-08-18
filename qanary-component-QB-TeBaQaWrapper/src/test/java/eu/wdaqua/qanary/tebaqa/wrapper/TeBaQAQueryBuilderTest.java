@@ -4,6 +4,7 @@ import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
 import eu.wdaqua.qanary.tebaqa.wrapper.messages.TeBaQAResult;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -103,6 +104,7 @@ public class TeBaQAQueryBuilderTest {
      * @throws URISyntaxException
      */
     @Test
+    @Disabled
     void liveTest() throws URISyntaxException {
         float threshold = 0.5f;
         String langDefault = "en";
