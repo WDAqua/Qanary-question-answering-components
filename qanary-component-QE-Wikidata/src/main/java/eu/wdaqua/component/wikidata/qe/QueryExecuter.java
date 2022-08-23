@@ -1,4 +1,4 @@
-package eu.wdaqua.queryexecuter;
+package eu.wdaqua.component.wikidata.qe;
 
 import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;
