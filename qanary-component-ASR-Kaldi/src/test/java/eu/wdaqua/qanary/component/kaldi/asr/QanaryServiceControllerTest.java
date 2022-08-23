@@ -1,8 +1,7 @@
-package eu.wdaqua.qanary.speech.test;
+package eu.wdaqua.qanary.component.kaldi.asr;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
-import eu.wdaqua.qanary.speech.Application;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
