@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.mypackage;
+package eu.wdaqua.qanary.component.textrazor.ner;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
