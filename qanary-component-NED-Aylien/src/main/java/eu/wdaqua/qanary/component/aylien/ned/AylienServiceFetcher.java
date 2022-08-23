@@ -1,10 +1,4 @@
-package eu.wdaqua.qanary.aylien;
-
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+package eu.wdaqua.qanary.component.aylien.ned;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -17,6 +11,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 
 public class AylienServiceFetcher {

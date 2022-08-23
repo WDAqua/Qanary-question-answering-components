@@ -1,8 +1,5 @@
-package eu.wdaqua.qanary.aylien;
+package eu.wdaqua.qanary.component.aylien.ned;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class AylienConfiguration {
 
 	private String endpoint;

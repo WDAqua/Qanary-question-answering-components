@@ -1,5 +1,9 @@
-package eu.wdaqua.qanary.aylien;
+package eu.wdaqua.qanary.component.aylien.ned;
 
+import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.component.aylien.ned.AylienServiceFetcher.Link;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -7,13 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-import eu.wdaqua.qanary.aylien.AylienServiceFetcher.Link;
-import eu.wdaqua.qanary.component.QanaryComponent;
-
 import java.util.ArrayList;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @SpringBootApplication
 @EnableAutoConfiguration

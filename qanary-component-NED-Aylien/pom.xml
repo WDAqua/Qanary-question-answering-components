@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-NED-Aylien</artifactId>
-    <version>4.1.2</version>
+    <version>4.1.3</version>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -94,7 +94,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>eu.wdaqua.qanary.aylien.Application</mainClass>
+                    <mainClass>eu.wdaqua.qanary.component.aylien.ned.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>

@@ -1,19 +1,16 @@
-package eu.wdaqua.qanary.aylien;
+package eu.wdaqua.qanary.component.aylien.ned;
 
-import java.util.ArrayList;
-
-import javax.inject.Inject;
-
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.component.QanaryComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import eu.wdaqua.qanary.aylien.AylienServiceFetcher.Link;
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryUtils;
-import eu.wdaqua.qanary.component.QanaryComponent;
+import javax.inject.Inject;
+import java.util.ArrayList;
 
 @Component
 /**
@@ -58,16 +55,16 @@ public class AylienNED extends QanaryComponent {
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 
 		// call to external API
-		ArrayList<Link> links = aylienServiceFetcher.getLinksForQuestion(
+		ArrayList<AylienServiceFetcher.Link> links = aylienServiceFetcher.getLinksForQuestion(
 				aylienConfiguration.getEndpoint(), myQuestion
-				);
+		);
 
 		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
 		// TODO: insert data in QanaryMessage.outgraph
 
 		logger.info("apply vocabulary alignment on outgraph");
 		// TODO: implement this (custom for every component)
-		for (Link l : links) {
+		for (AylienServiceFetcher.Link l : links) {
 			String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
 					+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
 					+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
