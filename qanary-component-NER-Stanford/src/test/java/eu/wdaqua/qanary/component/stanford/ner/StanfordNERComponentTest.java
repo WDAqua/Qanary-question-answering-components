@@ -1,8 +1,8 @@
-package eu.wdaqua.qanary.stanfordner;
+package eu.wdaqua.qanary.component.stanford.ner;
 
-import eu.wdaqua.qanary.stanfordner.StanfordNERComponent.Selection;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import eu.wdaqua.qanary.component.stanford.ner.StanfordNERComponent.Selection;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,15 +11,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class StanfordNERComponentTest {
+
+class StanfordNERComponentTest {
 
     private static final Logger logger = LoggerFactory.getLogger(StanfordNERComponentTest.class);
     private static StanfordNERComponent myStanfordNERComponent;
     private final double expectedMinimumRatioOfCorrectAnnotations = 90.0d;
 
-    @BeforeClass
+    @BeforeAll
     public static void initStanfordNERComponent() {
         myStanfordNERComponent = new StanfordNERComponent("stanfordNER");
     }
@@ -34,7 +35,7 @@ public class StanfordNERComponentTest {
     }
 
     @Test
-    public void testAnnotationQuality() {
+    void testAnnotationQuality() {
 
         HashMap<String, ArrayList<String>> questionsAndAnnotations = new HashMap<String, ArrayList<String>>();
 
@@ -81,8 +82,9 @@ public class StanfordNERComponentTest {
         }
 
         double ratio = countCorrectAnnotations / (double) questionsAndAnnotations.size() * 100;
-        assertTrue(String.format("Ratio of %f  not good enough. Expected at least %f .", //
-                ratio, expectedMinimumRatioOfCorrectAnnotations), ratio >= expectedMinimumRatioOfCorrectAnnotations);
+        assertTrue(ratio >= expectedMinimumRatioOfCorrectAnnotations,
+                String.format("Ratio of %f  not good enough. Expected at least %f .", //
+                        ratio, expectedMinimumRatioOfCorrectAnnotations));
 
     }
 

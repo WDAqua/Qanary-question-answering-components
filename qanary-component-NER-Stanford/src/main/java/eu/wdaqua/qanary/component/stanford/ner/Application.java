@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.stanfordner;
+package eu.wdaqua.qanary.component.stanford.ner;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;

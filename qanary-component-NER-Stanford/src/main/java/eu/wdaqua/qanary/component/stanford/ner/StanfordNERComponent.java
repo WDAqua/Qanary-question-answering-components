@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.stanfordner;
+package eu.wdaqua.qanary.component.stanford.ner;
 
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
