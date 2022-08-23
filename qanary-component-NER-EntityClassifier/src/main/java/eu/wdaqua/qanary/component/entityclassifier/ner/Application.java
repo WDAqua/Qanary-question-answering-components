@@ -1,12 +1,11 @@
-package eu.wdaqua.qanary.EntityClassifier;
+package eu.wdaqua.qanary.component.entityclassifier.ner;
 
+import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-
-import eu.wdaqua.qanary.component.QanaryComponent;
 
 @SpringBootApplication
 @EnableAutoConfiguration

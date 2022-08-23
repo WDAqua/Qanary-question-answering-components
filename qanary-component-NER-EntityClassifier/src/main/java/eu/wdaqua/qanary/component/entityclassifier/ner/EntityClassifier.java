@@ -1,14 +1,10 @@
-package eu.wdaqua.qanary.EntityClassifier;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+package eu.wdaqua.qanary.component.entityclassifier.ner;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.component.QanaryComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 
 @Component
