@@ -1,18 +1,12 @@
 package eu.wdaqua.qanary.component.qanswer.qbe;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
+import eu.wdaqua.qanary.component.qanswer.qbe.messages.NoLiteralFieldFoundException;
+import eu.wdaqua.qanary.component.qanswer.qbe.messages.QAnswerResult;
+import net.minidev.json.parser.ParseException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +14,23 @@ import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebCl
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
-import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.qanswer.qbe.messages.NoLiteralFieldFoundException;
-import eu.wdaqua.qanary.component.qanswer.qbe.messages.QAnswerResult;
-import net.minidev.json.parser.ParseException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.LinkedList;
+import java.util.List;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ComponentScan("eu.wdaqua.qanary")
 @AutoConfigureWebClient
-public class QAnswerQueryBuilderAndExecutorTest {
+class QAnswerQueryBuilderAndExecutorTest {
     private static final Logger logger = LoggerFactory.getLogger(QAnswerQueryBuilderAndExecutorTest.class);
     private final String applicationName = "QAnswerQueryBuilderAndExecutorTest";
 
@@ -51,7 +49,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
     private URI bool;
     private URI decimal;
 
-    @Before
+    @BeforeEach
     public void init() throws URISyntaxException {
         realEndpoint = new URI(env.getProperty("qanswer.endpoint.url"));
 
@@ -67,7 +65,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
     }
 
     @Test
-    public void testTransformationOfNamedEntites() throws URISyntaxException, MalformedURLException {
+    void testTransformationOfNamedEntites() throws URISyntaxException, MalformedURLException {
         float threshold = 0.5f;
         QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, "en", "dbpedia",
                 new URI("urn:no:endpoint"), applicationName, restTemplate);
@@ -90,7 +88,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
     }
 
     @Test
-    public void testThresholdBehavior() throws URISyntaxException, MalformedURLException {
+    void testThresholdBehavior() throws URISyntaxException, MalformedURLException {
         float threshold = 0.4f;
         QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, "en", "wikidata",
                 new URI("urn:no:endpoint"), applicationName, restTemplate);
@@ -144,7 +142,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
      * @throws MalformedURLException
      */
     @Test
-    public void testWebServiceWhatIsTheCapitalOfGermanyResultOneResource() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
+    void testWebServiceWhatIsTheCapitalOfGermanyResultOneResource() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
         float threshold = 0.4f;
         String lang = "en";
         String kb = "wikidata";
@@ -162,17 +160,17 @@ public class QAnswerQueryBuilderAndExecutorTest {
         String computedQuestion = myApp.computeQuestionStringWithReplacedResources(question, entities0, threshold);
 
         // check correct transformation of the given question
-        assertEquals("From '" + question + "' it was expected '" + expectedQuestion //
-                        + "' but computed '" + computedQuestion + "'", //
-                expectedQuestion, computedQuestion);
+        assertEquals(expectedQuestion, computedQuestion, //
+                "From '" + question + "' it was expected '" + expectedQuestion //
+                        + "' but computed '" + computedQuestion + "'");
 
         //
         QAnswerResult result1 = testWebService(myApp, computedQuestion, lang, kb);
 
         logger.warn("results: {} of {}  vs.  {} of {}", result0.getValues().size(), result0.getType(),
                 result1.getValues().size(), result1.getType());
-        assertEquals("size of results has to be equal", result0.getValues().size(), result1.getValues().size());
-        assertEquals("type of results has to be equal", result0.getType(), result1.getType());
+        assertEquals(result0.getValues().size(), result1.getValues().size(), "size of results has to be equal");
+        assertEquals(result0.getType(), result1.getType(), "type of results has to be equal");
 
         assertEquals("uri", result1.getType());
         assertEquals(result0.getType(), result1.getType());
@@ -191,7 +189,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
      * @throws MalformedURLException
      */
     @Test
-    public void testWebServicePersonBornInFranceResultManyResources() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
+    void testWebServicePersonBornInFranceResultManyResources() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
         float threshold = 0.4f;
         String lang = "en";
         String kb = "wikidata";
@@ -202,8 +200,8 @@ public class QAnswerQueryBuilderAndExecutorTest {
                 this.realEndpoint, applicationName, restTemplate);
         String question = "Person born in France.";
         QAnswerResult result0 = testWebService(myApp, question, lang, kb);
-        assertTrue("problem: not " + result0.getValues().size() + " >= " + min, result0.getValues().size() >= min);
-        assertTrue("problem: not " + result0.getValues().size() + " <= " + max, result0.getValues().size() <= max);
+        assertTrue(result0.getValues().size() >= min, "problem: not " + result0.getValues().size() + " >= " + min);
+        assertTrue(result0.getValues().size() <= max, "problem: not " + result0.getValues().size() + " <= " + max);
         assertEquals("uri", result0.getType());
 
         URI franceUri = getWikidataURI("Q142");
@@ -214,15 +212,15 @@ public class QAnswerQueryBuilderAndExecutorTest {
         String computedQuestion = myApp.computeQuestionStringWithReplacedResources(question, entities0, threshold);
 
         // check correct transformation of the given question
-        assertEquals("From '" + question + "' it was expected '" + expectedQuestion //
-                        + "' but computed '" + computedQuestion + "'", //
-                expectedQuestion, computedQuestion);
+        assertEquals(expectedQuestion, computedQuestion, //
+                "From '" + question + "' it was expected '" + expectedQuestion //
+                        + "' but computed '" + computedQuestion + "'");
 
         // Note: we do not know the exact number of cities in France provided by QAnswer
         QAnswerResult result1 = testWebService(myApp, computedQuestion, lang, kb);
 
-        assertTrue("problem: not " + result1.getValues().size() + " >= " + min, result1.getValues().size() >= min);
-        assertTrue("problem: not " + result1.getValues().size() + " <= " + max, result1.getValues().size() <= max);
+        assertTrue(result1.getValues().size() >= min, "problem: not " + result1.getValues().size() + " >= " + min);
+        assertTrue(result1.getValues().size() <= max, "problem: not " + result1.getValues().size() + " <= " + max);
 
         assertEquals("uri", result1.getType());
         assertEquals(result0.getType(), result1.getType());
@@ -249,7 +247,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
      * @throws MalformedURLException
      */
     @Test
-    public void testWebServiceIsBerlinTheCapitalOfGermanyResultBoolean() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
+    void testWebServiceIsBerlinTheCapitalOfGermanyResultBoolean() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
         float threshold = 0.4f;
         String lang = "en";
         String kb = "wikidata";
@@ -269,16 +267,16 @@ public class QAnswerQueryBuilderAndExecutorTest {
         // http://dbpedia.org/ontology/capital http://dbpedia.org/resource/London";
 
         // check correct transformation of the given question
-        assertEquals("From '" + question + "' it was expected '" + expectedQuestion //
-                        + "' but computed '" + computedQuestion + "'", //
-                expectedQuestion, computedQuestion);
+        assertEquals(expectedQuestion, computedQuestion, //
+                "From '" + question + "' it was expected '" + expectedQuestion //
+                        + "' but computed '" + computedQuestion + "'");
 
         // receive a boolean answer
         QAnswerResult result1 = testWebService(myApp, computedQuestion, lang, kb);
 
         String errorMessage = "'" + question + "' -> " + result0.getType() + "  =!=  '" + computedQuestion + "' -> "
                 + result1.getType();
-        assertEquals(errorMessage, result0.getType(), result1.getType());
+        assertEquals(result0.getType(), result1.getType(), errorMessage);
         assertEquals(result0.getType(), result1.getType());
 
         assertEquals(result0.getValues().get(0), result1.getValues().get(0));
@@ -298,7 +296,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
      * @throws MalformedURLException
      */
     @Test
-    public void testWebServicePopulationOfFranceResultNumber() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
+    void testWebServicePopulationOfFranceResultNumber() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
         float threshold = 0.4f;
         String lang = "en";
         String kb = "wikidata";
@@ -316,20 +314,19 @@ public class QAnswerQueryBuilderAndExecutorTest {
         String computedQuestion = myApp.computeQuestionStringWithReplacedResources(question, entities0, threshold);
 
         // check correct transformation of the given question
-        assertEquals("From '" + question + "' it was expected '" + expectedQuestion //
-                        + "' but computed '" + computedQuestion + "'", //
-                expectedQuestion, computedQuestion);
+        assertEquals(expectedQuestion, computedQuestion, //
+                "From '" + question + "' it was expected '" + expectedQuestion //
+                        + "' but computed '" + computedQuestion + "'");
 
         // receive a boolean answer
         QAnswerResult result1 = testWebService(myApp, computedQuestion, lang, kb);
 
         String errorMessage = "'" + question + "' -> " + result0.getType() + "  =!=  '" + computedQuestion + "' -> "
                 + result1.getType();
-        assertEquals(errorMessage, result0.getType(), result1.getType());
-        assertEquals("Results are not equal", result0.getValues().get(0), result1.getValues().get(0));
+        assertEquals(result0.getType(), result1.getType(), errorMessage);
+        assertEquals(result0.getValues().get(0), result1.getValues().get(0), "Results are not equal");
 
-        assertEquals("Datatype should be a '" + decimal + "', but was " + result0.getDatatype(), decimal,
-                result0.getDatatype());
+        assertEquals(decimal, result0.getDatatype(), "Datatype should be a '" + decimal + "', but was " + result0.getDatatype());
         assertEquals(result0.getDatatype(), result1.getDatatype());
         assertEquals(result0.getValues().get(0), result1.getValues().get(0));
     }
@@ -343,7 +340,7 @@ public class QAnswerQueryBuilderAndExecutorTest {
      * @throws MalformedURLException
      */
     @Test
-    public void testWebServiceWhatIsTheNicknameOfRomeResultString() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
+    void testWebServiceWhatIsTheNicknameOfRomeResultString() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
 
         float threshold = 0.4f;
         String lang = "en";
