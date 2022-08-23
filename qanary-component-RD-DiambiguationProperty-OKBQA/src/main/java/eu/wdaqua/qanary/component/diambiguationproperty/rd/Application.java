@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.diambiguationproperty;
+package eu.wdaqua.qanary.component.diambiguationproperty.rd;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;

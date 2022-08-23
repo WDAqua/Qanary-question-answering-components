@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.diambiguationproperty;
+package eu.wdaqua.qanary.component.diambiguationproperty.rd;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryUtils;
