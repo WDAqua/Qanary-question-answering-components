@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.alchemy;
+package eu.wdaqua.qanary.component.alchemy.nerd;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
