@@ -1,19 +1,16 @@
-package eu.wdaqua.qanary.mypackage;
-
-import java.util.ArrayList;
-
-import javax.inject.Inject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+package eu.wdaqua.qanary.component.babelfy.ned;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.mypackage.BabelfyServiceFetcher.Link;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
 
 @Component
 /**
@@ -56,9 +53,9 @@ public class BabelfyNED extends QanaryComponent {
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 
 		logger.info("Question {}", myQuestion);
-		ArrayList<Link> links = babelfyServiceFetcher.getLinksForQuestion(
+		ArrayList<BabelfyServiceFetcher.Link> links = babelfyServiceFetcher.getLinksForQuestion(
 				babelfyConfiguration.getEndpoint(), myQuestion, babelfyConfiguration.getParameters()
-				);
+		);
 
 
 		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
@@ -67,7 +64,7 @@ public class BabelfyNED extends QanaryComponent {
 		logger.info("apply vocabulary alignment on outgraph");
 		// TODO: implement this (custom for every component)
 
-		for (Link l : links) {
+		for (BabelfyServiceFetcher.Link l : links) {
 			String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
 					+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
 					+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //

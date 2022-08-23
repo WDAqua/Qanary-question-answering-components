@@ -1,5 +1,8 @@
-package eu.wdaqua.qanary.mypackage;
+package eu.wdaqua.qanary.component.babelfy.ned;
 
+import eu.wdaqua.qanary.component.QanaryComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -7,13 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
-
-import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.mypackage.BabelfyServiceFetcher.Link;
 
 @SpringBootApplication
 @EnableAutoConfiguration
@@ -69,9 +66,9 @@ public class Application {
 		// THIS COMPONENT IS DEPRECATED
 		// because the intended functionality cannot be reconstructed
 		// only the availability of the API endpoint can be tested
-		ArrayList<Link> links = babelfyServiceFetcher().getLinksForQuestion(
+		ArrayList<BabelfyServiceFetcher.Link> links = babelfyServiceFetcher().getLinksForQuestion(
 				endpoint, testQuetsion, parameters
-				);
+		);
 	}
 	
     public static void main(String[] args) {

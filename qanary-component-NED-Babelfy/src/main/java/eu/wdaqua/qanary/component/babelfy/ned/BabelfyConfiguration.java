@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.mypackage;
+package eu.wdaqua.qanary.component.babelfy.ned;
 
 public class BabelfyConfiguration {
 	private String endpoint;
