@@ -1,26 +1,17 @@
 package eu.wdaqua.qanary.component.qanswer.qb;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.inject.Inject;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerRequest;
+import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerResult;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -28,20 +19,26 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerRequest;
-import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerResult;
+import javax.inject.Inject;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 /**
  * test the custom endpoint of this component
  *
  * @author anbo
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class TestQanaryCustomController {
+class QanaryCustomControllerTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestQanaryCustomController.class);
+    private static final Logger logger = LoggerFactory.getLogger(QanaryCustomControllerTest.class);
     @Inject
     QAnswerQueryBuilderAndSparqlResultFetcherController customController;
     @Autowired
@@ -55,7 +52,7 @@ public class TestQanaryCustomController {
      *
      * @throws Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setPrefix("/WEB-INF/jsp/view/");
@@ -68,14 +65,14 @@ public class TestQanaryCustomController {
     }
 
     @Test
-    public void testDemoEndpoint() throws MalformedURLException, URISyntaxException {
+    void testDemoEndpoint() throws MalformedURLException, URISyntaxException {
         String question = "What is the capital of Spain";
         String lang = "en";
         String kb = "wikidata";
 
         QAnswerResult result0 = customController.requestQAnswerWebService(this.realEndpoint, question, lang, kb);
-        assertTrue("the number of fetched results should be > 0, but  was " + result0.getValues().size(), result0.getValues().size() > 0);
-        assertTrue("the number of fetched results should be <= 60, but  was " + result0.getValues().size(), result0.getValues().size() <= 60);
+        assertTrue(result0.getValues().size() > 0, "the number of fetched results should be > 0, but  was " + result0.getValues().size());
+        assertTrue(result0.getValues().size() <= 60, "the number of fetched results should be <= 60, but  was " + result0.getValues().size());
 
         QAnswerRequest requestMessage = new QAnswerRequest(question, lang, kb);
 

@@ -1,40 +1,38 @@
 package eu.wdaqua.qanary.component.qanswer.qb;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.net.URI;
-
-import javax.inject.Inject;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
+import eu.wdaqua.qanary.component.QanaryComponentDescriptionController;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
-import eu.wdaqua.qanary.component.QanaryComponentDescriptionController;
+import javax.inject.Inject;
+import java.net.URI;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * test the standard description endpoint of Qanary components
  *
  * @author anbo
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class TestQanaryDescriptionController {
+class QanaryDescriptionControllerTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestQanaryDescriptionController.class);
+    private static final Logger logger = LoggerFactory.getLogger(QanaryDescriptionControllerTest.class);
     @Inject
     QanaryComponentDescriptionController descriptionController;
     @Autowired
@@ -49,7 +47,7 @@ public class TestQanaryDescriptionController {
      *
      * @throws Exception
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setPrefix("/WEB-INF/jsp/view/");
@@ -67,7 +65,7 @@ public class TestQanaryDescriptionController {
      * @throws Exception
      */
     @Test
-    public void testDescriptionAvailable() throws Exception {
+    void testDescriptionAvailable() throws Exception {
         mockMvcDescription.perform(get(QanaryConfiguration.description)) // fetch
                 .andExpect(status().isOk()) // HTTP 200
                 .andReturn(); //
