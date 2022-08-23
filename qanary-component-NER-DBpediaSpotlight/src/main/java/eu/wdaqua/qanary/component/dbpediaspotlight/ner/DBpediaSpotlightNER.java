@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.dbpediaSpotlight;
+package eu.wdaqua.qanary.component.dbpediaspotlight.ner;
 
 import com.google.gson.JsonArray;
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -7,7 +7,6 @@ import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.List;
  * represents a wrapper of the DBpedia Spotlight tool used here as a spotter
  */
 
-@Component
+
 public class DBpediaSpotlightNER extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(DBpediaSpotlightNER.class);
 

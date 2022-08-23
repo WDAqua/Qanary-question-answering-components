@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.dbpediaSpotlight;
+package eu.wdaqua.qanary.component.dbpediaspotlight.ner;
 
 /**
  * takes the DBpedia Spotlight properties from the current environment

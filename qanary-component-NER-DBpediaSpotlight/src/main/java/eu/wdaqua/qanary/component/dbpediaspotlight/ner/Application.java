@@ -1,8 +1,8 @@
-package eu.wdaqua.qanary.dbpediaSpotlight;
+package eu.wdaqua.qanary.component.dbpediaspotlight.ner;
 
 import com.google.gson.JsonArray;
 import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.exceptions.DBpediaSpotlightServiceNotAvailable;
+import eu.wdaqua.qanary.component.dbpediaspotlight.ner.exceptions.DBpediaSpotlightServiceNotAvailable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
