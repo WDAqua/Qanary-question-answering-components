@@ -1,5 +1,6 @@
-package eu.wdaqua.qanary.component;
+package eu.wdaqua.qanary.component.monoliticwrapper.qb;
 
+import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
