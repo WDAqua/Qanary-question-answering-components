@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.platypus.wrapper.messages;
+package eu.wdaqua.qanary.component.platypuswrapper.qb.messages;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.platypus.wrapper;
+package eu.wdaqua.qanary.component.platypuswrapper.qb;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
@@ -21,7 +21,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"eu.wdaqua.qanary"})
+@ComponentScan(basePackages = {"eu.wdaqua.qanary.component"})
 /**
  * basic class for wrapping functionality to a Qanary component note: there is
  * no need to change something here

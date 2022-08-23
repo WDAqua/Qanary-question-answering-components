@@ -1,8 +1,8 @@
-package eu.wdaqua.qanary.platypus.wrapper;
+package eu.wdaqua.qanary.component.platypuswrapper.qb;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.platypus.wrapper.messages.PlatypusResult;
+import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.PlatypusResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +22,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class MockPlatypusQueryBuilderTest {
+class MockPlatypusQueryBuilderTest {
     private static final Logger logger = LoggerFactory.getLogger(MockPlatypusQueryBuilderTest.class);
     private final String applicationName = "PlatypusQueryBuilder";
     // name of query file

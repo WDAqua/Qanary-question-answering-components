@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.platypus.wrapper;
+package eu.wdaqua.qanary.component.platypuswrapper.qb;
 
 import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import org.springframework.boot.test.context.TestConfiguration;
