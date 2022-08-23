@@ -17,7 +17,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @SpringBootApplication
 @EnableAutoConfiguration
-@ComponentScan("eu.wdaqua.qanary.component")
+@ComponentScan("eu.wdaqua.qanary")
 public class Application {
 	private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
