@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.querybuilder;
+package eu.wdaqua.qanary.component.simplequerybuilderandexecutor.qbe;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;

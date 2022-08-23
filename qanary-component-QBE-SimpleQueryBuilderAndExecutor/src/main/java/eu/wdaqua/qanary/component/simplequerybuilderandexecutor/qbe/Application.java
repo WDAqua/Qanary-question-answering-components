@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.querybuilder;
+package eu.wdaqua.qanary.component.simplequerybuilderandexecutor.qbe;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
