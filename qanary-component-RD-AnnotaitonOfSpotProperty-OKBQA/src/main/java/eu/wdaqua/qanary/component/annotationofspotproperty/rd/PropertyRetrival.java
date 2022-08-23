@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.annotationofspotproperty;
+package eu.wdaqua.qanary.component.annotationofspotproperty.rd;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

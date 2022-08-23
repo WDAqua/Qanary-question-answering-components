@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.annotationofspotproperty;
+package eu.wdaqua.qanary.component.annotationofspotproperty.rd;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
