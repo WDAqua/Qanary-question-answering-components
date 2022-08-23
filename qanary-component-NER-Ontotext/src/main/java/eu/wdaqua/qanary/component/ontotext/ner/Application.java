@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.ontotext;
+package eu.wdaqua.qanary.component.ontotext.ner;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;

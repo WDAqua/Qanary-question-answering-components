@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.ontotext;
+package eu.wdaqua.qanary.component.ontotext.ner;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
