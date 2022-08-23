@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.relationlinker2;
+package eu.wdaqua.qanary.component.relationlinker2.rel;
 
 public class RelationLinkerConfiguration {
 	private String endpoint;

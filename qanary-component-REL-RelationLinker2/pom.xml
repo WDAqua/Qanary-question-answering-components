@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-REL-RelationLinker2</artifactId>
-    <version>3.1.1</version>
+    <version>3.1.2</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -59,6 +59,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
@@ -97,7 +102,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>eu.wdaqua.qanary.relationlinker2.Application</mainClass>
+                    <mainClass>eu.wdaqua.qanary.component.relationlinker2.rel.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>

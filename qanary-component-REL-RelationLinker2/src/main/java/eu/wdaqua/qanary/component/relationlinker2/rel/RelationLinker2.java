@@ -1,19 +1,16 @@
-package eu.wdaqua.qanary.relationlinker2;
-
-import java.util.ArrayList;
+package eu.wdaqua.qanary.component.relationlinker2.rel;
 
 import com.google.inject.Inject;
-
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.component.QanaryComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryUtils;
-import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.relationlinker2.RelationLinkerServiceFetcher.Link;
+import java.util.ArrayList;
 
 @Component
 /**
@@ -63,9 +60,9 @@ public class RelationLinker2 extends QanaryComponent {
 		// STEP2
 		// refactored call to external API
 		logger.info("Question: {}", myQuestion);
-		ArrayList<Link> links = relationLinkerServiceFetcher.getLinksForQuestion(
+		ArrayList<RelationLinkerServiceFetcher.Link> links = relationLinkerServiceFetcher.getLinksForQuestion(
 				myQuestion, relationLinkerConfiguration.getEndpoint()
-				);
+		);
 
 		// STEP3
 		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
@@ -73,7 +70,7 @@ public class RelationLinker2 extends QanaryComponent {
 
 		logger.info("apply vocabulary alignment on outgraph");
 		// TODO: implement this (custom for every component)
-		for (Link l : links) {
+		for (RelationLinkerServiceFetcher.Link l : links) {
 			String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
 					+ "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
 					+ "prefix xsd: <http://www.w3.org/2001/XMLSchema#> "
