@@ -1,4 +1,4 @@
-package eu.wdaqa.qanary.watson;
+package eu.wdaqa.qanary.component.watson.ned;
 
 import com.google.gson.Gson;
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -9,13 +9,11 @@ import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-
 import org.springframework.web.client.RestTemplate;
 
 import java.io.*;

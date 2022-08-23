@@ -1,4 +1,4 @@
-package eu.wdaqa.qanary.watson;
+package eu.wdaqa.qanary.component.watson.ned;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

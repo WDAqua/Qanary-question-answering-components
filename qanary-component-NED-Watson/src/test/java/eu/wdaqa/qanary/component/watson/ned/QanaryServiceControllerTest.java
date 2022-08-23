@@ -1,4 +1,4 @@
-package eu.wdaqa.qanary.watson;
+package eu.wdaqa.qanary.component.watson.ned;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
