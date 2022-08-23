@@ -1,8 +1,8 @@
-package eu.wdaqua.qanary.tebaqa.wrapper;
+package eu.wdaqua.qanary.component.tebaqawrapper.qb;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.tebaqa.wrapper.messages.TeBaQAResult;
+import eu.wdaqua.qanary.component.tebaqawrapper.qb.messages.TeBaQAResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class TeBaQAQueryBuilderTest {
+class TeBaQAQueryBuilderTest {
     // time span for caching, tests wait this time span during the test runs
     protected final static int MAX_TIME_SPAN_SECONDS = 5;
     private static final Logger logger = LoggerFactory.getLogger(TeBaQAQueryBuilderTest.class);

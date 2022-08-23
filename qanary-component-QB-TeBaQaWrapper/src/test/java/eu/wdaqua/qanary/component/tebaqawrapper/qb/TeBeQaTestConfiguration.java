@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.tebaqa.wrapper;
+package eu.wdaqua.qanary.component.tebaqawrapper.qb;
 
 import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import org.springframework.boot.test.context.TestConfiguration;

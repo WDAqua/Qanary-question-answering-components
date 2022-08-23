@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.tebaqa.wrapper.messages;
+package eu.wdaqua.qanary.component.tebaqawrapper.qb.messages;
 
 import com.google.gson.JsonParser;
 import io.swagger.v3.oas.annotations.Hidden;

@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.tebaqa.wrapper;
+package eu.wdaqua.qanary.component.tebaqawrapper.qb;
 
 import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -7,9 +7,9 @@ import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.component.tebaqawrapper.qb.messages.TeBaQARequest;
+import eu.wdaqua.qanary.component.tebaqawrapper.qb.messages.TeBaQAResult;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-import eu.wdaqua.qanary.tebaqa.wrapper.messages.TeBaQARequest;
-import eu.wdaqua.qanary.tebaqa.wrapper.messages.TeBaQAResult;
 import net.minidev.json.JSONObject;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.rdf.model.ResourceFactory;
