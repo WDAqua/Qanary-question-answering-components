@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.tagme;
+package eu.wdaqua.qanary.component.tagme.ner;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;

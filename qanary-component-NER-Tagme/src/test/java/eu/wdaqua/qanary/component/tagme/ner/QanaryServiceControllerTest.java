@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.clsnliod;
+package eu.wdaqua.qanary.component.tagme.ner;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
