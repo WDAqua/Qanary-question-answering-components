@@ -1,7 +1,9 @@
-package eu.wdaqua.qanary.relationlinker;
+package eu.wdaqua.qanary.component.relationlinker.rel;
 
-import java.util.ArrayList;
-
+import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.component.relationlinker.rel.RelationLinkerServiceFetcher.Link;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -9,11 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.relationlinker.RelationLinkerServiceFetcher.Link;
+import java.util.ArrayList;
 
 @SpringBootApplication
 @EnableAutoConfiguration

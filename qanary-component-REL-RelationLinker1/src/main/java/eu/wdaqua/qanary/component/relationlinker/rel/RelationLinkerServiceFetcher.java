@@ -1,8 +1,4 @@
-package eu.wdaqua.qanary.relationlinker;
-
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+package eu.wdaqua.qanary.component.relationlinker.rel;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -16,15 +12,18 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.cache.annotation.Cacheable;
+
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 public class RelationLinkerServiceFetcher {
 
 	private static final Logger logger = LoggerFactory.getLogger(RelationLinkerServiceFetcher.class);
 
-    @Cacheable(value = "json", key="#question")
-	public ArrayList<Link> getLinksForQuestion( String question, String endpoint) throws Exception {
+	@Cacheable(value = "json", key = "#question")
+	public ArrayList<Link> getLinksForQuestion(String question, String endpoint) throws Exception {
 
 		ArrayList<Link> links = new ArrayList<Link>();
 
