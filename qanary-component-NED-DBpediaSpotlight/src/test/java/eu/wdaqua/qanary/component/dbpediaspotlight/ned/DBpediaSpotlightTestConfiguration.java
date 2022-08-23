@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.spotlightNED;
+package eu.wdaqua.qanary.component.dbpediaspotlight.ned;
 
 import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import org.springframework.boot.test.context.TestConfiguration;

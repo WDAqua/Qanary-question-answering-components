@@ -1,14 +1,12 @@
-package eu.wdaqua.qanary.spotlightNED;
+package eu.wdaqua.qanary.component.dbpediaspotlight.ned;
+
+import com.google.gson.JsonElement;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import com.google.gson.JsonElement;
-
 /**
- * 
- * data object to be initialized by the DBpedia Spotlight service response  
- *
+ * data object to be initialized by the DBpedia Spotlight service response
  */
 public class FoundDBpediaResource {
 	public int begin;

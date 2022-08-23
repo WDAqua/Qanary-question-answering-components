@@ -1,13 +1,12 @@
-package eu.wdaqua.qanary.spotlightNED;
+package eu.wdaqua.qanary.component.dbpediaspotlight.ned;
 
 import com.google.gson.JsonArray;
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.exceptions.DBpediaSpotlightServiceNotAvailable;
+import eu.wdaqua.qanary.component.dbpediaspotlight.ned.exceptions.DBpediaSpotlightServiceNotAvailable;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

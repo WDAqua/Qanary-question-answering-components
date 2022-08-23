@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.spotlightNED;
+package eu.wdaqua.qanary.component.dbpediaspotlight.ned;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

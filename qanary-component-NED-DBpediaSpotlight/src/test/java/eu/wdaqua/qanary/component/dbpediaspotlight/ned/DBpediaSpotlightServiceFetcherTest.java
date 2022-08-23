@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.spotlightNED;
+package eu.wdaqua.qanary.component.dbpediaspotlight.ned;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
