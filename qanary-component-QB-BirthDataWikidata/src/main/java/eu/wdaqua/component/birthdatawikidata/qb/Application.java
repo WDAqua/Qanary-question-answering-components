@@ -1,4 +1,4 @@
-package eu.wdaqua.component.querybuilder;
+package eu.wdaqua.component.birthdatawikidata.qb;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
