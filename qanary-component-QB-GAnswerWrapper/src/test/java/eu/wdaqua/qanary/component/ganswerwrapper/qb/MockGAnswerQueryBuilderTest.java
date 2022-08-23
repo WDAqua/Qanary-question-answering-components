@@ -1,8 +1,8 @@
-package eu.wdaqua.qanary.g_answer.wrapper;
+package eu.wdaqua.qanary.component.ganswerwrapper.qb;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.g_answer.wrapper.messages.GAnswerResult;
+import eu.wdaqua.qanary.component.ganswerwrapper.qb.messages.GAnswerResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +22,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class MockGAnswerQueryBuilderTest {
+class MockGAnswerQueryBuilderTest {
     private static final Logger logger = LoggerFactory.getLogger(MockGAnswerQueryBuilderTest.class);
     private final String applicationName = "GAnswerQueryBuilder";
     // name of query file

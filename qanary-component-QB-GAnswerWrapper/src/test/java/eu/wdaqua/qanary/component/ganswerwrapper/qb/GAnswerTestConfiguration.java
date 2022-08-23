@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.g_answer.wrapper;
+package eu.wdaqua.qanary.component.ganswerwrapper.qb;
 
 import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import org.springframework.boot.test.context.TestConfiguration;

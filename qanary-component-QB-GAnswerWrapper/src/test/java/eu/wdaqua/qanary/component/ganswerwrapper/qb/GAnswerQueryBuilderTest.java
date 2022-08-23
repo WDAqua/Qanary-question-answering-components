@@ -1,8 +1,8 @@
-package eu.wdaqua.qanary.g_answer.wrapper;
+package eu.wdaqua.qanary.component.ganswerwrapper.qb;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.g_answer.wrapper.messages.GAnswerResult;
+import eu.wdaqua.qanary.component.ganswerwrapper.qb.messages.GAnswerResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -76,7 +76,7 @@ class GAnswerQueryBuilderTest {
      * @throws URISyntaxException
      */
     @Test
-    public void givenRestTemplate_whenRequested_thenLogAndModifyResponse() throws InterruptedException, URISyntaxException {
+    void givenRestTemplate_whenRequested_thenLogAndModifyResponse() throws InterruptedException, URISyntaxException {
 
         assertNotNull(restTemplate);
         assertNotNull(myCacheOfResponse);

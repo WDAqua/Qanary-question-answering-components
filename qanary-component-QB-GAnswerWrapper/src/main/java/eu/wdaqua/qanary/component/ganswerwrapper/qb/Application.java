@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.g_answer.wrapper;
+package eu.wdaqua.qanary.component.ganswerwrapper.qb;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
