@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-CLS-CLSNLIOD</artifactId>
-    <version>4.1.1</version>
+    <version>4.1.2</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -91,7 +91,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>eu.wdaqua.qanary.clsnliod.Application</mainClass>
+                    <mainClass>eu.wdaqua.qanary.component.clsnliod.cls.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>
