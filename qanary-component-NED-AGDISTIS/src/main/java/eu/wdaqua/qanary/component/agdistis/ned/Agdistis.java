@@ -1,10 +1,9 @@
-package eu.wdaqua.qanary.agdistis;
+package eu.wdaqua.qanary.component.agdistis.ned;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.component.QanaryComponent;
-
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;

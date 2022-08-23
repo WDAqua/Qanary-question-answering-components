@@ -1,6 +1,5 @@
-package eu.wdaqua.qanary.test;
+package eu.wdaqua.qanary.component.agdistis.ned;
 
-import eu.wdaqua.qanary.agdistis.Application;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
 import org.junit.jupiter.api.BeforeEach;
