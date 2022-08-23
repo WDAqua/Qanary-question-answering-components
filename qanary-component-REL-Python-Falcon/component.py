@@ -1,5 +1,6 @@
 import os
 import requests
+import json
 import logging
 from datetime import datetime
 from fastapi import FastAPI, Request
@@ -44,7 +45,7 @@ async def qanary_service(request: Request):
 
     logging.info(f"Querying FALCON for question: {question_text}")
 
-    response_json = requests.post(FALCON_URL, headers=headers, data={"text": question_text}).json()
+    response_json = requests.post(FALCON_URL, headers=headers, data=json.dumps({"text": question_text})).json()
 
     logging.info(f"FALCON response: {response_json}")
 

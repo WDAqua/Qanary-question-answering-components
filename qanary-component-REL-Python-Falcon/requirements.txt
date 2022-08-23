@@ -1,3 +1,4 @@
 qanary_helpers
 fastapi
 uvicorn
+requests
