@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.rubq.wrapper;
+package eu.wdaqua.qanary.component.rubqwrapper.qb;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;

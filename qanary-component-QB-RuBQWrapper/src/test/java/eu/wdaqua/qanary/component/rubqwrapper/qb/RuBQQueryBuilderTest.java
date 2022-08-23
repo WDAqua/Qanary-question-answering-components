@@ -1,8 +1,8 @@
-package eu.wdaqua.qanary.rubq.wrapper;
+package eu.wdaqua.qanary.component.rubqwrapper.qb;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.rubq.wrapper.messages.RuBQResult;
+import eu.wdaqua.qanary.component.rubqwrapper.qb.messages.RuBQResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class RuBQQueryBuilderTest {
+class RuBQQueryBuilderTest {
     // time span for caching, tests wait this time span during the test runs
     protected final static int MAX_TIME_SPAN_SECONDS = 5;
     private static final Logger logger = LoggerFactory.getLogger(RuBQQueryBuilderTest.class);

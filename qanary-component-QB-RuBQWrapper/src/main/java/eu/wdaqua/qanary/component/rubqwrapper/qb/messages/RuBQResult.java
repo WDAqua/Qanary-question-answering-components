@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.rubq.wrapper.messages;
+package eu.wdaqua.qanary.component.rubqwrapper.qb.messages;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
