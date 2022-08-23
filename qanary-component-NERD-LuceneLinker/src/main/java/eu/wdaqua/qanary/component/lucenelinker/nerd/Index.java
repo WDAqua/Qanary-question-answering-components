@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.LuceneLinker;
+package eu.wdaqua.qanary.component.lucenelinker.nerd;
 
 import org.apache.jena.graph.Triple;
 import org.apache.jena.riot.RDFDataMgr;
@@ -13,11 +13,7 @@ import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.FieldInvertState;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;

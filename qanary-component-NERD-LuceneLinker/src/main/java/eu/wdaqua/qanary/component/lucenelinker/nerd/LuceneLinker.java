@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.LuceneLinker;
+package eu.wdaqua.qanary.component.lucenelinker.nerd;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.component.QanaryComponent;

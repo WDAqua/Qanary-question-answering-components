@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.LuceneLinker;
+package eu.wdaqua.qanary.component.lucenelinker.nerd;
 
 class Annotation {
     public int begin;

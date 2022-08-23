@@ -1,13 +1,12 @@
-package eu.wdaqua.qanary.LuceneLinker;
+package eu.wdaqua.qanary.component.lucenelinker.nerd;
 
+import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-
-import eu.wdaqua.qanary.component.QanaryComponent;
 
 /**
  * Created by didier on 27.03.16.
