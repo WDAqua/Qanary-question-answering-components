@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.FOX;
+package eu.wdaqua.qanary.component.fox.ner;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
