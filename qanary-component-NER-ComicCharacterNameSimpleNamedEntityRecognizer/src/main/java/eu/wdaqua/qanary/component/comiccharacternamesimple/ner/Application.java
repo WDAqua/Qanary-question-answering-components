@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.component.querybuilder;
+package eu.wdaqua.qanary.component.comiccharacternamesimple.ner;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
