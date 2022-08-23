@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.smapherd;
+package eu.wdaqua.qanary.component.smaph.nerd;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
