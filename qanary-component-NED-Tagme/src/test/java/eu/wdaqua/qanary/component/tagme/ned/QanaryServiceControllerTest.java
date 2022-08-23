@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.tagme;
+package eu.wdaqua.qanary.component.tagme.ned;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;

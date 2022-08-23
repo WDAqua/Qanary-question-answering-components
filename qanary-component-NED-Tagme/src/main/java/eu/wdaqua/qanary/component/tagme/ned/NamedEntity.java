@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.tagme;
+package eu.wdaqua.qanary.component.tagme.ned;
 
 class NamedEntity {
     private Double linkProbability;

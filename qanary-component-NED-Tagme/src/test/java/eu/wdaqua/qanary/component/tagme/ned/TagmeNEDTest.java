@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.tagme;
+package eu.wdaqua.qanary.component.tagme.ned;
 
 import org.apache.http.client.ClientProtocolException;
 import org.junit.jupiter.api.BeforeEach;
