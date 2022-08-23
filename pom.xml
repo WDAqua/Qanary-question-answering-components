@@ -26,7 +26,7 @@
                 <module>qanary-component-NER-EntityClassifier</module>
                 <module>qanary-component-NER-EntityClassifier2</module>
                 <module>qanary-component-NER-Ontotext</module>
-                <module>qanary_component-NED-Ontotext</module>
+                <module>qanary-component-NED-Ontotext</module>
                 <module>qanary-component-NER-Babelfy</module>
                 <module>qanary-component-NER-FOX</module>
                 <module>qanary-component-NER-TextRazor</module>
