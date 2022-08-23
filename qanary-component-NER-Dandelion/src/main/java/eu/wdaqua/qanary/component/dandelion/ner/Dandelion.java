@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.dandelion;
+package eu.wdaqua.qanary.component.dandelion.ner;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
