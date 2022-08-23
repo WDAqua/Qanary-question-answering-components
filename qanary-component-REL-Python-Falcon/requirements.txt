@@ -1,0 +1,3 @@
+qanary_helpers
+fastapi
+uvicorn
