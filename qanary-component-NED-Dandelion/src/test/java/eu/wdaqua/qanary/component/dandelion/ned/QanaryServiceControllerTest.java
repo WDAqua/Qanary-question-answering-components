@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.dandelionned;
+package eu.wdaqua.qanary.component.dandelion.ned;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
