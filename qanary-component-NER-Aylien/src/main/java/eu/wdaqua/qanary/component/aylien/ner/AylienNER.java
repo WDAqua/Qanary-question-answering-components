@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.aylien;
+package eu.wdaqua.qanary.component.aylien.ner;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;

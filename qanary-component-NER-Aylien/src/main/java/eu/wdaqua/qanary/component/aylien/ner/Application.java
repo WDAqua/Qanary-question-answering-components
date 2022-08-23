@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.aylien;
+package eu.wdaqua.qanary.component.aylien.ner;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
