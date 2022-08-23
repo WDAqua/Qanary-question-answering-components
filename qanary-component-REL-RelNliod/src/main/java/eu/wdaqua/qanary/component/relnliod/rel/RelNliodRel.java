@@ -1,18 +1,9 @@
-package eu.wdaqua.qanary.relnliod;
+package eu.wdaqua.qanary.component.relnliod.rel;
 
-import java.util.ArrayList;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.component.QanaryComponent;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -29,13 +20,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryUtils;
-import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.util.ResourceUtils;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 @Component
 /**

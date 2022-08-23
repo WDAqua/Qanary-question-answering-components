@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.relnliod;
+package eu.wdaqua.qanary.component.relnliod.rel;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

@@ -1,15 +1,12 @@
-package eu.wdaqua.qanary.relnliod;
+package eu.wdaqua.qanary.component.relnliod.rel;
 
-import java.io.File;
-import java.io.FileReader;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map.Entry;
-import java.util.Scanner;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class TextRazorDbSearch {
 

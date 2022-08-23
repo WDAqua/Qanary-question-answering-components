@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.relnliod;
+package eu.wdaqua.qanary.component.relnliod.rel;
 
 import org.apache.jena.graph.Triple;
 import org.apache.jena.riot.RDFDataMgr;
