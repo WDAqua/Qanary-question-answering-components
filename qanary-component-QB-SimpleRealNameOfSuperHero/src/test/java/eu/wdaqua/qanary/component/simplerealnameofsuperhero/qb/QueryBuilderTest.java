@@ -1,24 +1,23 @@
-package eu.wdaqua.qanary.component.querybuilder;
+package eu.wdaqua.qanary.component.simplerealnameofsuperhero.qb;
+
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URI;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.net.URI;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class QueryBuilderTest {
 
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-
-
-public class TestQueryBuilder {
-
-    private static final Logger logger = LoggerFactory.getLogger(TestQueryBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(QueryBuilderTest.class);
 
     private QueryBuilderSimpleRealNameOfSuperHero qb;
     private String testQuery;

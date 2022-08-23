@@ -1,5 +1,5 @@
 
-package eu.wdaqua.qanary.component.querybuilder;
+package eu.wdaqua.qanary.component.simplerealnameofsuperhero.qb;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
