@@ -1,4 +1,4 @@
-package eu.wdaqua.opentapiocaNED;
+package eu.wdaqua.component.opentapioca.ned;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;

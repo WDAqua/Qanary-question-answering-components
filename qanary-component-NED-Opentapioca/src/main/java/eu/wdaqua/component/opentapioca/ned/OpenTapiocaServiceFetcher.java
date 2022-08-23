@@ -1,4 +1,4 @@
-package eu.wdaqua.opentapiocaNED;
+package eu.wdaqua.component.opentapioca.ned;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

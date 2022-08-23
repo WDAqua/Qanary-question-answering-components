@@ -1,4 +1,4 @@
-package eu.wdaqua.opentapiocaNED;
+package eu.wdaqua.component.opentapioca.ned;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
 import io.swagger.v3.oas.models.OpenAPI;

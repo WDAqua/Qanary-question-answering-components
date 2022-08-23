@@ -1,4 +1,4 @@
-package eu.wdaqua.opentapiocaNED;
+package eu.wdaqua.component.opentapioca.ned;
 
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import org.junit.jupiter.api.Test;
