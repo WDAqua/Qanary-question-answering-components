@@ -1,7 +1,6 @@
-package eu.wdaqua.qanary.ambiverse;
+package eu.wdaqua.qanary.component.ambiverse.ner;
 
-import java.util.TreeMap;
-
+import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -9,8 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.component.QanaryComponent;
+import java.util.TreeMap;
 
 @SpringBootApplication
 @EnableAutoConfiguration
