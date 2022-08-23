@@ -1,11 +1,10 @@
-package eu.wdaqua.qanary.languagedetection.messages;
-
-import java.util.List;
+package eu.wdaqua.qanary.component.shuyo.ld.messages;
 
 import com.cybozu.labs.langdetect.LangDetectException;
-
-import eu.wdaqua.qanary.languagedetection.LanguageDetection;
+import eu.wdaqua.qanary.component.shuyo.ld.LanguageDetection;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.util.List;
 
 public class LanguageDetectionResponse {
 

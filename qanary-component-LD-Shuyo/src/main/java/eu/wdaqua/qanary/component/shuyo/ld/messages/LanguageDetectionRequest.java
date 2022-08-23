@@ -1,8 +1,8 @@
-package eu.wdaqua.qanary.languagedetection.messages;
-
-import javax.validation.constraints.NotBlank;
+package eu.wdaqua.qanary.component.shuyo.ld.messages;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import javax.validation.constraints.NotBlank;
 
 public class LanguageDetectionRequest {
 

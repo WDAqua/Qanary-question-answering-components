@@ -1,7 +1,6 @@
-package eu.wdaqua.qanary.languagedetection.test;
+package eu.wdaqua.qanary.component.shuyo.ld;
 
 import com.cybozu.labs.langdetect.LangDetectException;
-import eu.wdaqua.qanary.languagedetection.LanguageDetection;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

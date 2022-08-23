@@ -1,7 +1,9 @@
-package eu.wdaqua.qanary.languagedetection;
+package eu.wdaqua.qanary.component.shuyo.ld;
 
-import java.net.URISyntaxException;
-
+import com.cybozu.labs.langdetect.LangDetectException;
+import eu.wdaqua.qanary.component.shuyo.ld.messages.LanguageDetectionRequest;
+import eu.wdaqua.qanary.component.shuyo.ld.messages.LanguageDetectionResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,11 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cybozu.labs.langdetect.LangDetectException;
-
-import eu.wdaqua.qanary.languagedetection.messages.LanguageDetectionRequest;
-import eu.wdaqua.qanary.languagedetection.messages.LanguageDetectionResponse;
-import io.swagger.v3.oas.annotations.Operation;
+import java.net.URISyntaxException;
 
 @Controller
 public class LanguageDetectorController {

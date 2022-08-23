@@ -1,8 +1,7 @@
-package eu.wdaqua.qanary.languagedetection.test;
+package eu.wdaqua.qanary.component.shuyo.ld;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
-import eu.wdaqua.qanary.languagedetection.Application;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
