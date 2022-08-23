@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.meaningcloudned;
+package eu.wdaqua.qanary.component.meaningcloud.ned;
 
 import com.google.gson.Gson;
 import eu.wdaqua.qanary.commons.QanaryMessage;

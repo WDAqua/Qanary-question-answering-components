@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.meaningcloudned;
+package eu.wdaqua.qanary.component.meaningcloud.ned;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;

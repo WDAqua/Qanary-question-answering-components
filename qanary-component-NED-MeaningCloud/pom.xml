@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-NED-MeaningCloud</artifactId>
-    <version>3.0.3</version>
+    <version>3.0.4</version>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -94,7 +94,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>eu.wdaqua.qanary.meaningcloudned.Application</mainClass>
+                    <mainClass>eu.wdaqua.qanary.component.meaningcloud.ned.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>

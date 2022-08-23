@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.meaningcloudned;
+package eu.wdaqua.qanary.component.meaningcloud.ned;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
