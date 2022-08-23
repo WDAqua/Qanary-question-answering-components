@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.annotationofspotclass;
+package eu.wdaqua.qanary.component.annotationofspotclass.qb;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.boot.SpringApplication;

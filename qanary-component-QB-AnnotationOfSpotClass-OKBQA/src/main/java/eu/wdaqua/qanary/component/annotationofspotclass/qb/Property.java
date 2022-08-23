@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.annotationofspotclass;
+package eu.wdaqua.qanary.component.annotationofspotclass.qb;
 
 import java.util.ArrayList;
 import java.util.List;

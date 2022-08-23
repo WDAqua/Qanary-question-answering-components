@@ -1,27 +1,28 @@
-package eu.wdaqua.qanary.annotationofspotclass;
+package eu.wdaqua.qanary.component.annotationofspotclass.qb;
 
 import eu.wdaqua.qanary.component.QanaryServiceController;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.inject.Inject;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class TestAnnotationOfSpotClass {
+class AnnotationOfSpotClassTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestAnnotationOfSpotClass.class);
+    private static final Logger logger = LoggerFactory.getLogger(AnnotationOfSpotClassTest.class);
 
     @Inject
     QanaryServiceController controller;
@@ -31,7 +32,7 @@ public class TestAnnotationOfSpotClass {
     private MockMvc mockMvc;
 
     @Test
-    public void testRunCurlPostWithParam() throws Exception {
+    void testRunCurlPostWithParam() throws Exception {
         String contentType = "application/json";
 
         String output = AnnotationofSpotClass.runCurlPOSTWithParam(url, "{  \"string\": \"Which river flows through Seoul?\",  \"language\": \"en\"}", contentType);

@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.annotationofspotclass;
+package eu.wdaqua.qanary.component.annotationofspotclass.qb;
 
 public class MySelection {
     public String word = "";
