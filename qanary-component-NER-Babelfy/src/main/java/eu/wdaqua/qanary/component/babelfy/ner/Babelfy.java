@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.mypackage;
+package eu.wdaqua.qanary.component.babelfy.ner;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
