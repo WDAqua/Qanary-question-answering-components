@@ -1,14 +1,13 @@
-package eu.wdaqua.qanary.sina;
+package eu.wdaqua.qanary.component.sina.qb;
 
-import java.io.IOException;
-
+import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
+import java.io.IOException;
 
 @SpringBootApplication
 @ComponentScan("eu.wdaqua.qanary.component")

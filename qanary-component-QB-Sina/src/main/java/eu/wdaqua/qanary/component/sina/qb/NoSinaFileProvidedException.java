@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.sina;
+package eu.wdaqua.qanary.component.sina.qb;
 
 public class NoSinaFileProvidedException extends RuntimeException {
 
