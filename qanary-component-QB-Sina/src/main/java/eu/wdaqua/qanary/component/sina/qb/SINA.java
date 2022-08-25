@@ -37,6 +37,9 @@ public class SINA extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(SINA.class);
     private String sinaJarFileLocation;
 
+    @Value("${spring.application.name}")
+    private String applicationName;
+
     public SINA(@Value("${sina.jarfilelocation}") String sinaJarFileLocation) throws IOException, InterruptedException {
         logger.info("sina.jarfilelocation: {}", sinaJarFileLocation);
         this.sinaJarFileLocation = this.getValidSinaJarFileAbsoluteLocation(sinaJarFileLocation);
@@ -249,7 +252,7 @@ public class SINA extends QanaryComponent {
                     + "?a" + i + " a qa:AnnotationOfAnswerSPARQL . " //
                     + "?a" + i + " oa:hasTarget <" + questionUri + "> . " //
                     + "?a" + i + " oa:hasBody \"" + queryTemplates[i].replace("\n", " ") + "\" ;" //
-                    + "     oa:annotatedBy <urn:qanary:QB#" + SINA.class.getName() + "> ; " //
+                    + "     oa:annotatedBy <urn:qanary:" + applicationName + "> ; " //
                     + "         oa:annotatedAt ?time ; " //
                     + "         qa:hasScore " + x-- + " . \n";
             sparqlPart2 += "BIND (IRI(str(RAND())) AS ?a" + i + ") . \n";
