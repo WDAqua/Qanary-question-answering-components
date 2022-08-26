@@ -2,9 +2,9 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>qanary-component-ned-agdistis</artifactId>
+    <artifactId>qanary-component-NED-AGDISTIS</artifactId>
     <groupId>eu.wdaqua.qanary.component</groupId>
-    <version>4.1.0</version>
+    <version>4.1.2</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -41,6 +41,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
@@ -73,7 +78,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>eu.wdaqua.qanary.agdistis.Application</mainClass>
+                    <mainClass>eu.wdaqua.qanary.component.agdistis.ned.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>

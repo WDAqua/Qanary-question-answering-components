@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-QE-Wikidata</artifactId>
-    <version>3.1.1</version>
+    <version>3.1.2</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -60,6 +60,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
@@ -104,7 +109,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>eu.wdaqua.queryexecuter.Application</mainClass>
+                    <mainClass>eu.wdaqua.component.wikidata.qe.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>
