@@ -100,7 +100,7 @@ metadata = {
     "written in": "Python"
 }
 
-print(metadata)
+logging.info(f"component metadata: {str(metadata)}") 
 
 registration = Registration(
     name=SERVICE_NAME_COMPONENT,
