@@ -30,7 +30,7 @@ import java.util.List;
  * @author Dennis Diefenbach, AnBo
  */
 @SpringBootApplication
-@ComponentScan("eu.wdaqua.qanary.component")
+@ComponentScan(basePackages = {"eu.wdaqua.qanary"})
 public class Alchemy extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(Alchemy.class);
     private final String alchemyKey = "7fdef5a245edb49cfc711e80217667be512869b9";

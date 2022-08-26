@@ -7,7 +7,6 @@ import org.apache.jena.riot.lang.PipedRDFStream;
 import org.apache.jena.riot.lang.PipedTriplesStream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -18,8 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @SpringBootApplication
-@EnableAutoConfiguration
-@ComponentScan("eu.wdaqua.qanary.component")
+@ComponentScan(basePackages = {"eu.wdaqua.qanary"})
 /**
  * basic class for wrapping functionality to a Qanary component
  * note: there is no need to change something here

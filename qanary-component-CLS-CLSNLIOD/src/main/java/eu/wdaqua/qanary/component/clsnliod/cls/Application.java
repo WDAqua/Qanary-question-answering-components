@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @SpringBootApplication
-@ComponentScan("eu.wdaqua.qanary.component")
+@ComponentScan(basePackages = {"eu.wdaqua.qanary"})
 /**
  * basic class for wrapping functionality to a Qanary component
  * note: there is no need to change something here

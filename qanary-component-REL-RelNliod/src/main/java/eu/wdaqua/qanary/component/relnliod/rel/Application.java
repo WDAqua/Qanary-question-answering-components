@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan("eu.wdaqua.qanary.component")
+@ComponentScan(basePackages = {"eu.wdaqua.qanary"})
 /**
  * basic class for wrapping functionality to a Qanary component
  * note: there is no need to change something here
