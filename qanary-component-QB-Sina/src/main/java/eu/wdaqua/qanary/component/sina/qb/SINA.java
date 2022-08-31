@@ -226,7 +226,10 @@ public class SINA extends QanaryComponent {
         final ProcessBuilder pb = new ProcessBuilder("java", "-jar", sinaJarFileLocation, argument);
         pb.redirectErrorStream(true);
         final Process p = pb.start();
-        p.waitFor(processTimeout, TimeUnit.SECONDS);
+
+        if (!p.waitFor(processTimeout, TimeUnit.SECONDS)) {
+            logger.warn("SINA JAR file execution timed out after {} seconds", processTimeout);
+        }
 
         BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
         String outputRetrieved = "";
