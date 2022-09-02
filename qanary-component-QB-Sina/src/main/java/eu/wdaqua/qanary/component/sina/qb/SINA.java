@@ -227,9 +227,7 @@ public class SINA extends QanaryComponent {
         pb.redirectErrorStream(true);
         final Process p = pb.start();
 
-        if (!p.waitFor(processTimeout, TimeUnit.SECONDS)) {
-            logger.warn("SINA JAR file execution timed out after {} seconds", processTimeout);
-        }
+        p.waitFor(processTimeout, TimeUnit.SECONDS);
 
         BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
         String outputRetrieved = "";
@@ -238,14 +236,23 @@ public class SINA extends QanaryComponent {
             outputRetrieved += line;
         }
         br.close();
-        p.destroy();
+
+        if (p.isAlive()) {
+            logger.warn("SINA JAR file execution timed out after {} seconds", processTimeout);
+
+            p.destroy();
+            p.waitFor(100, TimeUnit.MILLISECONDS);
+            if (p.isAlive()) {
+                p.destroyForcibly();
+                return "";
+            }
+        }
 
         logger.debug("executeExternalSinaJarFile: retrieved output={}", outputRetrieved);
 
         String queryCandidates = outputRetrieved.substring(outputRetrieved.indexOf("list of final templates:") + "list of final templates:".length());
 
         logger.info("Found query candidates: {}", queryCandidates);
-
 
         return queryCandidates;
     }
