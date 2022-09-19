@@ -233,9 +233,9 @@ public class SINA extends QanaryComponent {
             p.waitFor(100, TimeUnit.MILLISECONDS);
             if (p.isAlive()) {
                 p.destroyForcibly();
-                return "";
+                return "[]";
             }
-            return "";
+            return "[]";
         } else {
             BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String outputRetrieved = "";
