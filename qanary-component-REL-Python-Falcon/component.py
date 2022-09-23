@@ -50,12 +50,6 @@ async def qanary_service(request: Request):
     logging.info(f"FALCON response: {response_json}")
 
     for relation in response_json[f"relations_{KG}"]:
-        # workaround for the falcon response
-        if KG == "dbpedia":
-            rel = relation[0]
-        elif KG == "wikidata":
-            rel = relation[1].replace("<", "").replace(">", "")
-
         SPARQLquery = """
                         PREFIX dbr: <http://dbpedia.org/resource/>
                         PREFIX dbo: <http://dbpedia.org/ontology/>
@@ -69,8 +63,11 @@ async def qanary_service(request: Request):
                                 oa:hasBody <{relation}> ;
                                 qa:score \"1.0\"^^xsd:float ;
                                 oa:annotatedAt ?time ;
-                                ?newAnnotation oa:annotatedBy <{component}> ;
-                                oa:hasTarget <{question_uri}> .
+                                oa:annotatedBy <{component}> ;
+                                oa:hasTarget [ 
+                                    a    oa:SpecificResource ;
+                                    oa:hasSource <{question_uri}> ;
+                                ] .
                             }}
                         }}
                         WHERE {{
@@ -80,8 +77,8 @@ async def qanary_service(request: Request):
                     """.format(
                         uuid=triplestore_ingraph_uuid,
                         question_uri=question_uri,
-                        component=SERVICE_NAME_COMPONENT.replace(" ", "-"),
-                        relation=rel)
+                        component="qanary:" + SERVICE_NAME_COMPONENT.replace(" ", "-"),
+                        relation=relation["URI"])
 
         insert_into_triplestore(triplestore_endpoint_url,
                                 SPARQLquery)  # inserting new data to the triplestore
