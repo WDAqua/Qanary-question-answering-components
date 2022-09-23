@@ -1,0 +1,22 @@
+version: '3'
+services:
+  qe-python-sparqlexecute:
+    restart: unless-stopped
+    image: qe-python-sparqlexecuter:0.1.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: $SERVICE_NAME_COMPONENT
+    network_mode: host
+    environment:
+      - SPRING_BOOT_ADMIN_URL=$SPRING_BOOT_ADMIN_URL
+      - SPRING_BOOT_ADMIN_USERNAME=$SPRING_BOOT_ADMIN_USERNAME
+      - SPRING_BOOT_ADMIN_PASSWORD=$SPRING_BOOT_ADMIN_PASSWORD
+      - SERVER_HOST=$SERVER_HOST
+      - SERVER_PORT=$SERVER_PORT
+      - SERVICE_NAME_COMPONENT=$SERVICE_NAME_COMPONENT
+      - SERVICE_DESCRIPTION_COMPONENT=$SERVICE_DESCRIPTION_COMPONENT
+      - KG=$KG
+      - FALCON_URL=$FALCON_URL
+      - PRODUCTION=True
+    command: uvicorn component:app --host 0.0.0.0 --port=$SERVER_PORT
