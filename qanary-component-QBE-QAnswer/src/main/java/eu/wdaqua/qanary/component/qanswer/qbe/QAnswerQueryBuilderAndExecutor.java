@@ -388,14 +388,14 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
                 + " 		qa:score        ?score . \n" //
                 //
                 + "  ?answerType a          qa:AnswerType ; \n" //
-                + " 		rdf:value       ?answerDataType ; \n" //
+                + " 		rdf:value       ?answerDataType . \n" //
                 + "	}\n" // end: graph
                 + "}\n" // end: insert
                 + "WHERE { \n" //
                 + "  BIND (IRI(str(RAND())) AS ?annotationSPARQL) . \n" //
                 + "  BIND (IRI(str(RAND())) AS ?sparql) . \n" //
                 //
-                + "  BIND (IRI(str(RAND())) AS ?annotationAnswerType) . \n" //
+                + "  BIND (IRI(str(RAND())) AS ?annotationOfAnswerType) . \n" //
                 + "  BIND (IRI(str(RAND())) AS ?answerType) . \n" //
                 //
                 + "  BIND (IRI(str(RAND())) AS ?annotationAnswer) . \n" //
