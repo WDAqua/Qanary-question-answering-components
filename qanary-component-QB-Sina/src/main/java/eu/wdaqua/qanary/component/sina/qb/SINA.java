@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.URISyntaxException;
-import java.util.concurrent.TimeUnit;
 
 
 @Component
@@ -41,13 +40,9 @@ public class SINA extends QanaryComponent {
     @Value("${spring.application.name}")
     private String applicationName;
 
-    @Value("${sina.process.timeout}")
-    private int processTimeout;
-
     public SINA(@Value("${sina.jarfilelocation}") String sinaJarFileLocation) throws IOException, InterruptedException {
         logger.info("sina.jarfilelocation: {}", sinaJarFileLocation);
-        this.sinaJarFileLocation = sinaJarFileLocation;
-        //this.sinaJarFileLocation = this.getValidSinaJarFileAbsoluteLocation(sinaJarFileLocation);
+        this.sinaJarFileLocation = this.getValidSinaJarFileAbsoluteLocation(sinaJarFileLocation);
         //this.executeExternalSinaJarFile("http://dbpedia.org/resource/Berlin");
     }
 
@@ -227,34 +222,25 @@ public class SINA extends QanaryComponent {
         final ProcessBuilder pb = new ProcessBuilder("java", "-jar", sinaJarFileLocation, argument);
         pb.redirectErrorStream(true);
         final Process p = pb.start();
+        p.waitFor();
 
-        if (p.waitFor(processTimeout, TimeUnit.SECONDS)) {
-            logger.warn("SINA JAR file execution timed out after {} seconds", processTimeout);
-            p.destroy();
-            p.waitFor(100, TimeUnit.MILLISECONDS);
-            if (p.isAlive()) {
-                p.destroyForcibly();
-                return "[]";
-            }
-            return "[]";
-        } else {
-            BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String outputRetrieved = "";
-            String line;
-            while ((line = br.readLine()) != null) {
-                outputRetrieved += line;
-            }
-            br.close();
-            p.destroy();
-
-            logger.debug("executeExternalSinaJarFile: retrieved output={}", outputRetrieved);
-
-            String queryCandidates = outputRetrieved.substring(outputRetrieved.indexOf("list of final templates:") + "list of final templates:".length());
-
-            logger.info("Found query candidates: {}", queryCandidates);
-
-            return queryCandidates;
+        BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        String outputRetrieved = "";
+        String line;
+        while ((line = br.readLine()) != null) {
+            outputRetrieved += line;
         }
+        br.close();
+        p.destroy();
+
+        logger.debug("executeExternalSinaJarFile: retrieved output={}", outputRetrieved);
+
+        String queryCandidates = outputRetrieved.substring(outputRetrieved.indexOf("list of final templates:") + "list of final templates:".length());
+
+        logger.info("Found query candidates: {}", queryCandidates);
+
+
+        return queryCandidates;
     }
 
     private String createUpdateQueryFromQueryTemplate(final String[] queryTemplates, final QanaryUtils qanaryUtils, String questionUri) {
