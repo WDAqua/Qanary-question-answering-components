@@ -42,7 +42,8 @@ public class SINA extends QanaryComponent {
 
     public SINA(@Value("${sina.jarfilelocation}") String sinaJarFileLocation) throws IOException, InterruptedException {
         logger.info("sina.jarfilelocation: {}", sinaJarFileLocation);
-        this.sinaJarFileLocation = this.getValidSinaJarFileAbsoluteLocation(sinaJarFileLocation);
+        this.sinaJarFileLocation = sinaJarFileLocation;
+        //this.sinaJarFileLocation = this.getValidSinaJarFileAbsoluteLocation(sinaJarFileLocation);
         //this.executeExternalSinaJarFile("http://dbpedia.org/resource/Berlin");
     }
 
@@ -217,9 +218,13 @@ public class SINA extends QanaryComponent {
      * @throws InterruptedException
      */
     protected String executeExternalSinaJarFile(String argument) throws IOException, InterruptedException {
-        logger.info("executeExternalSinaJarFile: argument={} on {}", argument, sinaJarFileLocation);
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource(sinaJarFileLocation).getFile());
+        String absolutePathToSINAJarFile = file.getAbsolutePath();
 
-        final ProcessBuilder pb = new ProcessBuilder("java", "-jar", sinaJarFileLocation, argument);
+        logger.info("executeExternalSinaJarFile: argument={} on {}", argument, absolutePathToSINAJarFile);
+
+        final ProcessBuilder pb = new ProcessBuilder("java", "-jar", absolutePathToSINAJarFile, argument);
         pb.redirectErrorStream(true);
         final Process p = pb.start();
         p.waitFor();
