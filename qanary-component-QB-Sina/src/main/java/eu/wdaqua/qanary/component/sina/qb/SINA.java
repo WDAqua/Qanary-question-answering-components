@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.URISyntaxException;
-import java.util.concurrent.TimeUnit;
 
 
 @Component
@@ -40,9 +39,6 @@ public class SINA extends QanaryComponent {
 
     @Value("${spring.application.name}")
     private String applicationName;
-
-    @Value("${sina.process.timeout}")
-    private int processTimeout;
 
     public SINA(@Value("${sina.jarfilelocation}") String sinaJarFileLocation) throws IOException, InterruptedException {
         logger.info("sina.jarfilelocation: {}", sinaJarFileLocation);
@@ -226,10 +222,7 @@ public class SINA extends QanaryComponent {
         final ProcessBuilder pb = new ProcessBuilder("java", "-jar", sinaJarFileLocation, argument);
         pb.redirectErrorStream(true);
         final Process p = pb.start();
-
-        if (!p.waitFor(processTimeout, TimeUnit.SECONDS)) {
-            logger.warn("SINA JAR file execution timed out after {} seconds", processTimeout);
-        }
+        p.waitFor();
 
         BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
         String outputRetrieved = "";
