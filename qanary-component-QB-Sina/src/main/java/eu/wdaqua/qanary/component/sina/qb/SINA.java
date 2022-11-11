@@ -42,8 +42,8 @@ public class SINA extends QanaryComponent {
 
     public SINA(@Value("${sina.jarfilelocation}") String sinaJarFileLocation) throws IOException, InterruptedException {
         logger.info("sina.jarfilelocation: {}", sinaJarFileLocation);
+
         this.sinaJarFileLocation = sinaJarFileLocation;
-        //this.sinaJarFileLocation = this.getValidSinaJarFileAbsoluteLocation(sinaJarFileLocation);
         //this.executeExternalSinaJarFile("http://dbpedia.org/resource/Berlin");
     }
 
@@ -200,8 +200,6 @@ public class SINA extends QanaryComponent {
      * @throws InterruptedException
      */
     protected String[] runSina(String argument) throws IOException, InterruptedException {
-        logger.info("Path to SINA JAR file: {}", sinaJarFileLocation);
-
         String queryCandidates = executeExternalSinaJarFile(argument);
         queryCandidates = queryCandidates.trim();
         queryCandidates = queryCandidates.substring(1, queryCandidates.length() - 1);
@@ -218,13 +216,12 @@ public class SINA extends QanaryComponent {
      * @throws InterruptedException
      */
     protected String executeExternalSinaJarFile(String argument) throws IOException, InterruptedException {
-        ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource(sinaJarFileLocation).getFile());
-        String absolutePathToSINAJarFile = file.getAbsolutePath();
+        String validSinaJarFileAbsoluteLocation = this.getValidSinaJarFileAbsoluteLocation(sinaJarFileLocation);
+        logger.info("Path to SINA JAR file: {}", validSinaJarFileAbsoluteLocation);
 
-        logger.info("executeExternalSinaJarFile: argument={} on {}", argument, absolutePathToSINAJarFile);
+        logger.info("executeExternalSinaJarFile: argument={} on {}", argument, validSinaJarFileAbsoluteLocation);
 
-        final ProcessBuilder pb = new ProcessBuilder("java", "-jar", absolutePathToSINAJarFile, argument);
+        final ProcessBuilder pb = new ProcessBuilder("java", "-jar", validSinaJarFileAbsoluteLocation, argument);
         pb.redirectErrorStream(true);
         final Process p = pb.start();
         p.waitFor();
@@ -237,6 +234,8 @@ public class SINA extends QanaryComponent {
         }
         br.close();
         p.destroy();
+
+        removeSinaTempFile(validSinaJarFileAbsoluteLocation);
 
         logger.debug("executeExternalSinaJarFile: retrieved output={}", outputRetrieved);
 
@@ -323,6 +322,13 @@ public class SINA extends QanaryComponent {
 
         logger.info("Found JAR file ({}) at {}", sinaJarFileName, sinaJarFileAbsoluteLocation);
         return sinaJarFileAbsoluteLocation;
+    }
+
+    protected void removeSinaTempFile(String sinaJarFile) {
+        File file = new File(sinaJarFile);
+        file.delete();
+
+        logger.info("Removed SINA temp file: {}", sinaJarFile);
     }
 
     protected class Entity {
