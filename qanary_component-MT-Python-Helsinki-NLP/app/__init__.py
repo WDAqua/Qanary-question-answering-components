@@ -1,4 +1,4 @@
-from app.mt_helsinki_nlp import mt_helsinki_nlp
+from app.mt_helsinki_nlp import mt_helsinki_nlp_bp
 from flask import Flask
 
 # default config file (use -c parameter on command line specify a custom config file)
@@ -11,7 +11,7 @@ aboutendpoint = "/about"
 
 # initialize Flask app and add the externalized service information
 app = Flask(__name__)
-app.register_blueprint(mt_helsinki_nlp)
+app.register_blueprint(mt_helsinki_nlp_bp)
 
 
 @app.route(healthendpoint, methods=['GET'])
