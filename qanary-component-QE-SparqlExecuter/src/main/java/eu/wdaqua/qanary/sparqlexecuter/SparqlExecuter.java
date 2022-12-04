@@ -1,24 +1,21 @@
 package eu.wdaqua.qanary.sparqlexecuter;
 
-import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryFactory;
-import org.apache.jena.query.ResultSet;
-import org.apache.jena.query.ResultSetFormatter;
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
+import eu.wdaqua.qanary.component.QanaryComponent;
+import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryUtils;
-import eu.wdaqua.qanary.component.QanaryComponent;
+import java.io.ByteArrayOutputStream;
+import java.net.URI;
+
+import static org.apache.jena.datatypes.xsd.XSDDatatype.XSDstring;
 
 
 @Component
@@ -36,6 +33,12 @@ public class SparqlExecuter extends QanaryComponent {
         this.applicationName = applicationName;
     }
 
+    @Value("${knowledgegraph.endpoint.dbpedia}")
+    private String knowledgegraphEndpointDbpedia;
+
+    @Value("${knowledgegraph.endpoint.wikidata}")
+    private String knowledgegraphEndpointWikidata;
+
     /**
      * implement this method encapsulating the functionality of your Qanary
      * component
@@ -50,52 +53,38 @@ public class SparqlExecuter extends QanaryComponent {
         String myQuestion = myQanaryQuestion.getTextualRepresentation();
         URI myQuestionUri = myQanaryQuestion.getUri();
         // TODO: implement processing of question
-        String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-                + "SELECT ?sparql " //
-                + "FROM <" + myQanaryMessage.getInGraph() + "> " //
-                + "WHERE { " //
-                + "  ?a a qa:AnnotationOfAnswerSPARQL . " //
-                + "  OPTIONAL {?a oa:hasBody ?sparql } " //
-                //+ "  ?a qa:hasScore ?score . " //
-                + "  ?a oa:annotatedAt ?time . " //
-                + "  { " //
-                + "    SELECT ?time { " //
-                + "     ?a a qa:AnnotationOfAnswerSPARQL . " //
-                + "     ?a oa:annotatedAt ?time . " //
-                + "    } ORDER BY DESC(?time) limit 2 " //
-                + "  } " //
-                + "} "
-                + "ORDER BY DESC(?score) LIMIT 1";
-        ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+
+        ResultSet resultset = myQanaryUtils.getQanaryTripleStoreConnector().select(QanaryTripleStoreConnector.getHighestScoreAnnotationOfAnswerInGraph(myQanaryMessage.getInGraph()));
         String sparqlQuery = "";
         while (resultset.hasNext()) {
-            sparqlQuery = resultset.next().get("sparql").toString().replace("\\\"", "\"").replace("\\n", "\n");
+            sparqlQuery = resultset.next().get("selectQueryThatShouldComputeTheAnswer").toString().replace("\\\"", "\"").replace("\\n", "\n");
         }
         logger.info("Generated SPARQL query: {} ", sparqlQuery);
         // STEP 2: execute the first sparql query
 
         String endpoint = "";
         if (sparqlQuery.contains("http://dbpedia.org")) {
-            endpoint = "http://dbpedia.org/sparql";
+            endpoint = this.knowledgegraphEndpointDbpedia;
             logger.info("use DBpedia endpoint");
         } else if (sparqlQuery.contains("http://www.wikidata.org")) {
-            endpoint = "https://query.wikidata.org/sparql";
+            endpoint = this.knowledgegraphEndpointWikidata;
             logger.info("use Wikidata endpoint");
         } else {
+            logger.warn("knowledge graph was unknown");
             return myQanaryMessage;
         }
         // @TODO: extend functionality to use qa:TargetDataset if present
 
         Query query = QueryFactory.create(sparqlQuery);
+        TripleStoreConnector TripleStoreConnector = new TripleStoreConnector(new URI(endpoint));
         String json;
         if (query.isAskType()) {
-            Boolean result = myQanaryUtils.askTripleStore(sparqlQuery, endpoint);
+            Boolean result = TripleStoreConnector.ask(sparqlQuery);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             ResultSetFormatter.outputAsJSON(outputStream, result);
             json = new String(outputStream.toByteArray(), "UTF-8");
         } else {
-            ResultSet result = myQanaryUtils.selectFromTripleStore(sparqlQuery, endpoint);
+            ResultSet result = TripleStoreConnector.select(sparqlQuery);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             ResultSetFormatter.outputAsJSON(outputStream, result);
             json = new String(outputStream.toByteArray(), "UTF-8");
@@ -104,30 +93,20 @@ public class SparqlExecuter extends QanaryComponent {
 
         // STEP 3: Push the the json object to the named graph reserved for the question
         logger.info("Push the the JSON object to the named graph reserved for the answer");
-        sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-                + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-                + "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
-                + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" //
-                + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
-                + "INSERT { " //
-                + "GRAPH <" + myQanaryUtils.getOutGraph() + "> { " //
-                + "  ?b a qa:AnnotationOfAnswerJson ; " //
-                + "     oa:hasTarget <" + myQuestionUri.toString() + "> ; " //
-                + "     oa:hasBody ?answer ; "//
-                + "     oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; " //
-                + "     oa:annotatedAt ?time . " //
-                + "  ?answer a qa:AnswerJson ; " //
-                + "          rdf:value ?jsonAnswer . " //
-                + "  qa:AnswerJson rdfs:subClassOf qa:Answer ." //
-                + "}} " //
-                + "WHERE { " //
-                + "  BIND (IRI(str(RAND())) AS ?b) ." //
-                + "  BIND (IRI(str(RAND())) AS ?answer) ." //
-                + "  BIND (\"" + json.replace("\n", " ").replace("\"", "\\\"") + "\"^^xsd:string AS ?jsonAnswer) ." //
-                + "  BIND (now() as ?time) " //
-                + "}";
-        myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+
+        // define here the parameters for the SPARQL INSERT query
+        QuerySolutionMap bindings = new QuerySolutionMap();
+        // use here the variable names defined in method insertAnnotationOfAnswerSPARQL
+        bindings.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+        bindings.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+        bindings.add("jsonAnswer", ResourceFactory.createTypedLiteral(json.replace("\n", " ").replace("\"", "\\\""), XSDstring));
+        bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+        // get the template of the INSERT query
+        String sparqlInsertAnnotationOfAnswerJson = QanaryTripleStoreConnector.insertAnnotationOfAnswerJson(bindings);
+        logger.info("SPARQL insert for adding data to Qanary triplestore: {}", sparqlInsertAnnotationOfAnswerJson);
+
+        myQanaryUtils.getQanaryTripleStoreConnector().update(sparqlInsertAnnotationOfAnswerJson);
 
 
         return myQanaryMessage;
