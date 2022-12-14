@@ -75,6 +75,8 @@
         <profile>
             <id>needfix</id>
             <modules>
+                <module>qanary-component-NED-DBpediaSpotlight</module>
+                <module>qanary-component-QB-SimpleRealNameOfSuperHero</module>
                 <!--<module>batmanquestion.annotator</module>-->
             </modules>
         </profile>
@@ -89,8 +91,7 @@
         <profile>
             <id>tinytutorial</id>
             <modules>
-                <module>qanary-component-NED-DBpediaSpotlight</module>
-                <module>qanary-component-QB-SimpleRealNameOfSuperHero</module>
+                <module>qanary-component-QB-PlatypusWrapper</module>
             </modules>
         </profile>
     </profiles>
