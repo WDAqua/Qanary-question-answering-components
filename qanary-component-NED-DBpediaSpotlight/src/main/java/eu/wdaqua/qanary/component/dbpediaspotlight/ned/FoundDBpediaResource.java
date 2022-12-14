@@ -24,11 +24,11 @@ public class FoundDBpediaResource {
 	}
 
 	public FoundDBpediaResource(JsonElement jsonElement) throws URISyntaxException {
-		this(jsonElement.getAsJsonObject().get("@surfaceForm").getAsString(),
-				jsonElement.getAsJsonObject().get("@offset").getAsInt(),
-				jsonElement.getAsJsonObject().get("@similarityScore").getAsDouble(),
-				jsonElement.getAsJsonObject().get("@support").getAsInt(),
-				new URI(jsonElement.getAsJsonObject().get("@URI").getAsString()));
+		this(jsonElement.getAsJsonObject().get("surfaceForm").getAsString(),
+				jsonElement.getAsJsonObject().get("offset").getAsInt(),
+				jsonElement.getAsJsonObject().get("similarityScore").getAsDouble(),
+				jsonElement.getAsJsonObject().get("support").getAsInt(),
+				new URI(jsonElement.getAsJsonObject().get("URI").getAsString()));
 	}
 
 	public int getBegin() {
