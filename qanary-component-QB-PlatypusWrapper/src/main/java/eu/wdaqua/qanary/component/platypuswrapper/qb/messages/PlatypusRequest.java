@@ -49,7 +49,7 @@ public class PlatypusRequest {
 
     public String getPlatypusQuestionUrlAsString() {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
-        parameters.add("question", getQuestion());
+        parameters.add("q", getQuestion());
         parameters.add("lang", getLanguage());
 
         UriComponentsBuilder url = UriComponentsBuilder.fromUri(getPlatypusEndpointUrl()).queryParams(parameters);

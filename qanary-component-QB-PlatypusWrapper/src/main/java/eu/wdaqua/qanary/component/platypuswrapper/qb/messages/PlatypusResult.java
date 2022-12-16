@@ -1,6 +1,8 @@
 package eu.wdaqua.qanary.component.platypuswrapper.qb.messages;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import io.swagger.v3.oas.annotations.Hidden;
 import net.minidev.json.JSONObject;
@@ -35,7 +37,14 @@ public class PlatypusResult {
 
     public PlatypusResult(JSONObject json, String question, URI endpoint, String language) throws URISyntaxException {
         jsonParser = new JsonParser();
-        JsonObject parsedJsonObject = jsonParser.parse(json.toJSONString()).getAsJsonObject().getAsJsonObject("member");
+
+        logger.info("parsing platypus result...");
+        JsonElement parsedJsonElement = jsonParser.parse(json.toJSONString());
+        JsonObject jsonObject1 = parsedJsonElement.getAsJsonObject();
+        JsonArray parsedJsonArray = jsonObject1.getAsJsonArray("member");
+
+        //JsonObject parsedJsonObject = jsonParser.parse(json.toJSONString()).getAsJsonObject().getAsJsonObject("member");
+
 
         this.question = question;
         this.language = language;
@@ -45,7 +54,7 @@ public class PlatypusResult {
         this.BOOLEANTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#boolean");
         this.STRINGTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#string");
 
-        initData(parsedJsonObject);
+        initData(parsedJsonArray);
     }
 
     /**
@@ -54,7 +63,8 @@ public class PlatypusResult {
      * @param answers
      * @throws URISyntaxException
      */
-    private void initData(JsonObject answers) throws URISyntaxException {
+    private void initData(JsonArray answersArray) throws URISyntaxException {
+        JsonObject answers = answersArray.get(0).getAsJsonObject();
         logger.debug("responseQuestion: {}", answers);
 
         logger.debug("0. sparql: {}", answers.get("platypus:sparql").getAsString());
