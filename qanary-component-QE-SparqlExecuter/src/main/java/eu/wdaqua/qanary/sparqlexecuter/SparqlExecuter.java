@@ -57,7 +57,7 @@ public class SparqlExecuter extends QanaryComponent {
         ResultSet resultset = myQanaryUtils.getQanaryTripleStoreConnector().select(QanaryTripleStoreConnector.getHighestScoreAnnotationOfAnswerInGraph(myQanaryMessage.getInGraph()));
         String sparqlQuery = "";
         while (resultset.hasNext()) {
-            sparqlQuery = resultset.next().get("selectQueryThatShouldComputeTheAnswer").toString().replace("\\\"", "\"").replace("\\n", "\n");
+            sparqlQuery = resultset.next().get("selectQueryThatShouldComputeTheAnswer").toString().replace("\\\\\"", "\"").replace("\\n", "\n");
         }
         logger.info("Generated SPARQL query: {} ", sparqlQuery);
         // STEP 2: execute the first sparql query
