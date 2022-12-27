@@ -1,10 +1,12 @@
 package eu.wdaqua.component.birthdatawikidata.qb;
 
+import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.QuerySolution;
@@ -17,6 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,6 +40,14 @@ public class BirthDataQueryBuilder extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(BirthDataQueryBuilder.class);
 
     private final String applicationName;
+
+    private final String FIRSTNAME_ANNOTATION = "FIRST_NAME";
+    private final String LASTNAME_ANNOTATION = "LAST_NAME";
+
+    private QanaryMessage myQanaryMessage;
+    private QanaryUtils myQanaryUtils;
+    private QanaryQuestion<String> myQanaryQuestion;
+    private String myQuestion;
 
     private final String[] supportedQuestionPatterns = {
             "([Ww]here and when was )(.*)( born)",
@@ -121,32 +133,92 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         // as well as annotations of Wikidata entities made by the OpenTapioca NED.
 
         // get the question as String
-        QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
-        String myQuestion = myQanaryQuestion.getTextualRepresentation();
+        this.myQanaryMessage = myQanaryMessage;
+        this.myQanaryUtils = this.getUtils(myQanaryMessage);
+        this.myQanaryQuestion = new QanaryQuestion<>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
+        this.myQuestion = myQanaryQuestion.getTextualRepresentation();
 
         // This component is only supposed to answer a specific type of question.
-        // Therefore, we only need to continue if the question asks for birthplace and date.
-        // For this example is enough to match the question against a simple regular expression.
-        // However, a more sophisticated approach is possible.
+        // Therefore, we only need to continue if the question asks for birthplace and date or if ther is an
+        // annotation of the first and lastname.
 
-        if (!this.isQuestionSupported(myQuestion)) {
-            // don't continue the process if the question is not supported
-            logger.info("nothing to do here as quest-on \"{}\" does not have the supported format",
-                    myQuestion);
+
+        // Get the firstname annotation, if it's annotated
+        QuerySolutionMap bindingsForFirstname = new QuerySolutionMap();
+        bindingsForFirstname.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+        bindingsForFirstname.add("value", ResourceFactory.createStringLiteral(FIRSTNAME_ANNOTATION));
+
+        String sparqlCheckFirstname = this.loadQueryFromFile("/queries/getAnnotation.rq", bindingsForFirstname);
+        ResultSet resultsetFirstname = myQanaryUtils.getQanaryTripleStoreConnector().select(sparqlCheckFirstname);
+
+        // Get the lastnaem annotation, if it's annotated
+        QuerySolutionMap bindingsForLastname = new QuerySolutionMap();
+        // the currently used graph
+        bindingsForLastname.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+        // annotated for the current question
+        bindingsForLastname.add("value", ResourceFactory.createStringLiteral(LASTNAME_ANNOTATION));
+
+        String sparqlCheckLastname = this.loadQueryFromFile("/queries/getAnnotation.rq", bindingsForLastname);
+        ResultSet resultsetLastname = myQanaryUtils.getQanaryTripleStoreConnector().select(sparqlCheckLastname);
+
+
+        // STEP 2: Create queries for wikidata if the question is supported or annotations are available
+        ArrayList<String> queriesForAnnotation = new ArrayList<>();
+
+        if (resultsetFirstname.hasNext() && resultsetLastname.hasNext()) {
+            // In this example we are only interested in Entities that were found from another component and
+            // annotated with the annotation "FIRST_NAME" and "LAST_NAME".
+
+            queriesForAnnotation = createQueriesForAnnotation(resultsetFirstname, resultsetLastname);
+        }
+
+        logger.info("no annotation for {} and {} found", FIRSTNAME_ANNOTATION, LASTNAME_ANNOTATION);
+
+        if (this.isQuestionSupported(myQuestion)) {
+            // In this example we are only interested in Entities that were found at a specific point
+            // in the question: e.g. 'when and where was <name> born?'.
+            // Because we do not require entities that might have been found anywhere else in the
+            // question we can filter our results:
+
+            int filterStart = this.getNamePosition(myQuestion, this.supportedQuestionPatterns[this.patternIndex]);
+            // formulate a query to find existing information
+            queriesForAnnotation = createQueriesForAnnotation(filterStart);
+
+        }
+
+        // If no query was created, we can stop here.
+        if (queriesForAnnotation.equals("")) {
+            logger.info("nothing to do here as quest-on \"{}\" does not have the supported format", myQuestion);
             return myQanaryMessage;
         }
 
-        // STEP 2: Get Wikidata entities that were annotated by an NED/NER component.
-        //
-        // In this example we are only interested in Entities that were found at a specific point
-        // in the question: e.g. 'when and where was <name> born?'.
-        // Because we do not require entities that might have been found anywhere else in the
-        // question we can filter our results:
 
-        int filterStart = this.getNamePosition(myQuestion, this.supportedQuestionPatterns[this.patternIndex]);
-        // formulate a query to find existing information
+        for (int i = 0; i < queriesForAnnotation.size(); i++) {
+            // store the created select query as an annotation for the current question
+            // define here the parameters for the SPARQL INSERT query
+            QuerySolutionMap bindings = new QuerySolutionMap();
+            // use here the variable names defined in method insertAnnotationOfAnswerSPARQL
+            bindings.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+            bindings.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+            bindings.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createStringLiteral(queriesForAnnotation.get(i)));
+            bindings.add("confidence", ResourceFactory.createTypedLiteral("1.0", XSDDatatype.XSDfloat)); // as it is rule based, a high confidence is expressed
+            bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
+            // get the template of the INSERT query
+            String insertDataIntoQanaryTriplestoreQuery = QanaryTripleStoreConnector.insertAnnotationOfAnswerSPARQL(bindings);
+            logger.info("SPARQL insert for adding data to Qanary triplestore: {}", insertDataIntoQanaryTriplestoreQuery);
+
+            //STEP 4: Push the computed result to the Qanary triplestore
+            logger.info("store data in graph {} of Qanary triplestore endpoint {}", //
+                    myQanaryMessage.getValues().get(myQanaryMessage.getOutGraph()), //
+                    myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
+            myQanaryUtils.getQanaryTripleStoreConnector().update(insertDataIntoQanaryTriplestoreQuery);
+        }
+
+        return myQanaryMessage;
+    }
+
+    private ArrayList<String> createQueriesForAnnotation(int filterStart) throws IOException, QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed {
         QuerySolutionMap bindingsForAnnotation = new QuerySolutionMap();
         // the currently used graph
         bindingsForAnnotation.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
@@ -155,7 +227,7 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         // only for relevant annotations
         bindingsForAnnotation.add("filterStart", ResourceFactory.createTypedLiteral(String.valueOf(filterStart), XSDDatatype.XSDint));
 
-        String sparqlGetAnnotation = this.loadQueryFromFile("/queries/getAnnotation.rq", bindingsForAnnotation);
+        String sparqlGetAnnotation = this.loadQueryFromFile("/queries/getAnnotationFiltert.rq", bindingsForAnnotation);
 
         // STEP 3: Compute SPARQL select queries that should produce the result for every identified entity
         //
@@ -165,6 +237,7 @@ public class BirthDataQueryBuilder extends QanaryComponent {
 
         // there might be multiple entities identified for one name
         ResultSet resultset = myQanaryUtils.getQanaryTripleStoreConnector().select(sparqlGetAnnotation);
+        ArrayList<String> queries = new ArrayList<>();
         while (resultset.hasNext()) {
             QuerySolution tupel = resultset.next();
             String wikidataResource = tupel.get("wikidataResource").toString();
@@ -184,13 +257,13 @@ public class BirthDataQueryBuilder extends QanaryComponent {
                     + "PREFIX ps: <http://www.wikidata.org/prop/statement/> " //
                     + "select DISTINCT ?personLabel ?birthplaceLabel ?birthdate " //
                     + "where { " //
-                    + "	 values ?allowedPropPlace { pq:P17 } " // allow 'country' as property of birthplace
+                    + "  values ?allowedPropPlace { pq:P17 } " // allow 'country' as property of birthplace
                     + "  values ?person {<" + wikidataResource + ">} " //
                     + "  ?person wdt:P569 ?birthdate . " // this should produce the date of birth
                     + "  {" //
                     + "  ?person wdt:P19 ?birthplace . " // this should produce the place of birth
                     + "  }" //
-                    + "	 UNION" //
+                    + "  UNION" //
                     + "  {" //
                     + "  ?person wdt:P19 ?specificBirthPlace . " //
                     + "  ?person p:P19 _:a . " //
@@ -200,27 +273,84 @@ public class BirthDataQueryBuilder extends QanaryComponent {
                     + "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\" } " //
                     + "}";
 
-            // store the created select query as an annotation for the current question
-            // define here the parameters for the SPARQL INSERT query
-            QuerySolutionMap bindings = new QuerySolutionMap();
-            // use here the variable names defined in method insertAnnotationOfAnswerSPARQL
-            bindings.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
-            bindings.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
-            bindings.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createStringLiteral(createdWikiDataQuery.replace("\"", "\\\"").replace("\n", "\\n")));
-            bindings.add("confidence", ResourceFactory.createTypedLiteral("1.0", XSDDatatype.XSDfloat)); // as it is rule based, a high confidence is expressed
-            bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
-
-            // get the template of the INSERT query
-            String insertDataIntoQanaryTriplestoreQuery = QanaryTripleStoreConnector.insertAnnotationOfAnswerSPARQL(bindings);
-            logger.info("SPARQL insert for adding data to Qanary triplestore: {}", insertDataIntoQanaryTriplestoreQuery);
-
-            //STEP 4: Push the computed result to the Qanary triplestore
-            logger.info("store data in graph {} of Qanary triplestore endpoint {}", //
-                    myQanaryMessage.getValues().get(myQanaryMessage.getOutGraph()), //
-                    myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-            myQanaryUtils.getQanaryTripleStoreConnector().update(insertDataIntoQanaryTriplestoreQuery);
-
+            queries.add(createdWikiDataQuery);
         }
-        return myQanaryMessage;
+
+        return queries;
+    }
+
+    private ArrayList<String> createQueriesForAnnotation(ResultSet resultsetFirstname, ResultSet resultsetLastname) {
+        ArrayList<Integer[]> firstnameStartsEnds = new ArrayList<>();
+        ArrayList<Integer[]> lastnameStartsEnds = new ArrayList<>();
+
+        while (resultsetFirstname.hasNext()) {
+            Integer[] startEnd = new Integer[2];
+            QuerySolution tupel = resultsetFirstname.next();
+            startEnd[0] = tupel.getLiteral("start").getInt();
+            startEnd[1] = tupel.getLiteral("end").getInt();
+
+            firstnameStartsEnds.add(startEnd);
+        }
+
+        while (resultsetLastname.hasNext()) {
+            Integer[] startEnd = new Integer[2];
+            QuerySolution tupel = resultsetLastname.next();
+            startEnd[0] = tupel.getLiteral("start").getInt();
+            startEnd[1] = tupel.getLiteral("end").getInt();
+
+            lastnameStartsEnds.add(startEnd);
+        }
+
+        ArrayList<String> queries = new ArrayList<>();
+        for (int i = 0; i < firstnameStartsEnds.size(); i++) {
+            String firstanme = "";
+            String lastname = "";
+
+
+            try {
+                firstanme = myQuestion.substring(firstnameStartsEnds.get(i)[0], firstnameStartsEnds.get(i)[1]);
+                lastname = myQuestion.substring(lastnameStartsEnds.get(i)[0], lastnameStartsEnds.get(i)[1]);
+            } catch (Exception e) {
+                logger.error("error while get first or lastname: {}", e.getMessage());
+                break;
+            }
+
+            logger.info("creating query for {} {}", firstanme, lastname);
+
+            String createdWikiDataQuery = "" //
+                    + "PREFIX wikibase: <http://wikiba.se/ontology#>" //
+                    + "PREFIX wd: <http://www.wikidata.org/entity/>" //
+                    + "PREFIX wdt: <http://www.wikidata.org/prop/direct/>" //
+                    + "PREFIX bd: <http://www.bigdata.com/rdf#>" //
+                    + "PREFIX p: <http://www.wikidata.org/prop/>" //
+                    + "PREFIX pq: <http://www.wikidata.org/prop/qualifier/>" //
+                    + "PREFIX ps: <http://www.wikidata.org/prop/statement/>" //
+                    + "" //
+                    + "SELECT DISTINCT ?personLabel ?birthplaceLabel ?birthdate WHERE {" //
+                    + "    values ?allowedPropPlace { pq:P17 }" //
+                    + "" //
+                    + "    ?person wdt:P31 wd:Q5." //
+                    + "    ?person wdt:P735 ?fistname ." //
+                    + "    ?person wdt:P734 ?lastname ." //
+                    + "" //
+                    + "    ?fistname rdfs:label \"" + firstanme + "\"@en ." //
+                    + "    ?lastname rdfs:label \"" + lastname + "\"@en ." //
+                    + "" //
+                    + "    ?person wdt:P569 ?birthdate .   " //
+                    + "    {" //
+                    + "        ?person wdt:P19 ?birthplace .   " //
+                    + "    } UNION {" //
+                    + "        ?person wdt:P19 ?specificBirthPlace ." //
+                    + "        ?person p:P19 _:a ." //
+                    + "        _:a ps:P19 ?specificBirthPlace ." //
+                    + "        _:a ?allowedPropPlace ?birthplace ." //
+                    + "    }" //
+                    + "" //
+                    + "    SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\". }" //
+                    + "}";
+            queries.add(createdWikiDataQuery);
+        }
+
+        return queries;
     }
 }
