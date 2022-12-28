@@ -19,7 +19,7 @@ qanary.webservicecalls.cache.specs=maximumSize=10000,expireAfterAccess=3600s
 For the TeBaQA API you can change the following parameter as you need:
 
 ```
-platypus.endpoint.url=
+platypus.endpoint.url=https://qa.askplatyp.us/v0/ask # here is the default endpoint of the Platypus service
 platypus.threshold=0.5
 platypus.endpoint.language.default=en
 platypus.endpoint.language.supported=en,fr,es

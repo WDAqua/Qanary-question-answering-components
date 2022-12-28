@@ -5,7 +5,7 @@
 
 	<groupId>eu.wdaqua.qanary.lcevaluator</groupId>
 	<artifactId>lcevaluator</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>lcevaluator</name>
@@ -39,7 +39,7 @@
 <dependency>
 	<groupId>com.opencsv</groupId>
 	<artifactId>opencsv</artifactId>
-	<version>3.8</version>
+	<version>3.10</version>
 </dependency>
 
         <dependency>

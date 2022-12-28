@@ -1,9 +1,9 @@
 package eu.wdaqua.qanary.component.dbpediaspotlight.ned.exceptions;
 
-public class DBpediaSpotlightServiceNotAvailable extends Exception {
+public class DBpediaSpotlightJsonParsingNotPossible extends Exception {
     private static final long serialVersionUID = 1L;
 
-	public DBpediaSpotlightServiceNotAvailable(String message) {
+	public DBpediaSpotlightJsonParsingNotPossible(String message) {
         super(message);
     }
 }
