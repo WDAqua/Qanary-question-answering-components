@@ -3,26 +3,31 @@ package eu.wdaqua.component.birthdatawikidata.qb;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import io.swagger.v3.oas.annotations.Operation;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * represents a query builder to answer questions regarding birth place and date using Wikidata
+ * represents a query builder to answer questions regarding birthplace and date using Wikidata
  * <p>
  * requirements: expects a textual question to be stored in the Qanary triplestore,
  * written in English language, as well as previously annotated named entities
  * <p>
  * outcome: if the question structure is supported and a previous component (NED/NER) has found
- * named entities then this compoent constructs a Wikidata query that might be used to compute
+ * named entities then this component constructs a Wikidata query that might be used to compute
  * the answer to the question
  */
 
@@ -32,7 +37,13 @@ public class BirthDataQueryBuilder extends QanaryComponent {
 
     private final String applicationName;
 
-    private final String[] supportedQuestionPatterns = {"([Ww]here and when was )(.*)( born)"};
+    private final String[] supportedQuestionPatterns = {
+            "([Ww]here and when was )(.*)( born)",
+            "([Ww]here was )(.*)( born)",
+            "([Ww]hen was )(.*)( born)"
+    };
+
+    private int patternIndex;
 
     public BirthDataQueryBuilder(@Value("$P{spring.application.name}") final String applicationName) {
         this.applicationName = applicationName;
@@ -40,22 +51,28 @@ public class BirthDataQueryBuilder extends QanaryComponent {
 
     /**
      * compare the question against regular expression(s) representing the supported format
+     * and if a match is found, store the matched pattern index
      *
      * @param questionString the textual question
      */
     @Operation(
-            summary = "Check if the question is supported",
+            summary = "Check if the question is supported and store the matched pattern index",
             operationId = "isQuestionSupported",
-            description = "Compare the question against regular expression(s) representing the supported format"
+            description = "Compare the question against regular expression(s) representing the supported format and if a match is found, store the matched pattern index"
     )
     private boolean isQuestionSupported(String questionString) {
-        for (String pattern : this.supportedQuestionPatterns) {
+        for (int i = 0; i < this.supportedQuestionPatterns.length; i++) {
+            String pattern = this.supportedQuestionPatterns[i];
+
             Pattern p = Pattern.compile(pattern);
             Matcher m = p.matcher(questionString);
             logger.info("checking pattern \"{}\"", pattern);
-            if (m.find())
+            if (m.find()) {
+                this.patternIndex = i;
                 return true;
+            }
         }
+
         return false;
     }
 
@@ -76,6 +93,10 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         m.find();
         int index = m.start(2);
         return index;
+    }
+
+    private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
     }
 
     /**
@@ -101,48 +122,40 @@ public class BirthDataQueryBuilder extends QanaryComponent {
 
         // get the question as String
         QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
+        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
         String myQuestion = myQanaryQuestion.getTextualRepresentation();
 
         // This component is only supposed to answer a specific type of question.
-        // Therefore we only need to continue if the question asks for birth place and date.
-        // For this example is is enough to match the question against a simple regular expression.
+        // Therefore, we only need to continue if the question asks for birthplace and date.
+        // For this example is enough to match the question against a simple regular expression.
         // However, a more sophisticated approach is possible.
 
         if (!this.isQuestionSupported(myQuestion)) {
             // don't continue the process if the question is not supported
-            logger.info("nothing to do here as question \"{}\" does not have the supported format",
+            logger.info("nothing to do here as quest-on \"{}\" does not have the supported format",
                     myQuestion);
             return myQanaryMessage;
         }
 
-        // STEP 2: Get Wikidata entities that were annotated by OpenTapioca NED.
+        // STEP 2: Get Wikidata entities that were annotated by an NED/NER component.
         //
-        // In this example we are only interested in Entities that were found at a specifi point
-        // in the question: 'when and where was <name> born?'.
+        // In this example we are only interested in Entities that were found at a specific point
+        // in the question: e.g. 'when and where was <name> born?'.
         // Because we do not require entities that might have been found anywhere else in the
         // question we can filter our results:
 
-        int filterStart = this.getNamePosition(myQuestion, this.supportedQuestionPatterns[0]);
+        int filterStart = this.getNamePosition(myQuestion, this.supportedQuestionPatterns[this.patternIndex]);
         // formulate a query to find existing information
-        String sparqlGetAnnotation = "" //
-                + "PREFIX dbr: <http://dbpedia.org/resource/> " //
-                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-                + "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-                + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " //
-                + "SELECT * " //
-                + "FROM <" + myQanaryMessage.getInGraph().toString() + "> " // the currently used graph
-                + "WHERE { " //
-                + "    ?annotation     oa:hasBody   ?wikidataResource ." // the entity in question
-                + "    ?annotation     qa:score     ?annotationScore ." //
-                + "    ?annotation     oa:hasTarget ?target ." //
-                + "    ?target     oa:hasSource    <" + myQanaryQuestion.getUri().toString() + "> ." // annotated for the current question
-                + "    ?target     oa:hasSelector  ?textSelector ." //
-                + "    ?textSelector   rdf:type    oa:TextPositionSelector ." //
-                + "    ?textSelector   oa:start    ?start ." //
-                + "    ?textSelector   oa:end      ?end ." //
-                + "    FILTER(?start = " + filterStart + ") ." // only for relevant annotations
-                + "}";
+
+        QuerySolutionMap bindingsForAnnotation = new QuerySolutionMap();
+        // the currently used graph
+        bindingsForAnnotation.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+        // annotated for the current question
+        bindingsForAnnotation.add("source", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+        // only for relevant annotations
+        bindingsForAnnotation.add("filterStart", ResourceFactory.createTypedLiteral(String.valueOf(filterStart), XSDDatatype.XSDint));
+
+        String sparqlGetAnnotation = this.loadQueryFromFile("/queries/getAnnotation.rq", bindingsForAnnotation);
 
         // STEP 3: Compute SPARQL select queries that should produce the result for every identified entity
         //
@@ -151,13 +164,16 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         // This query can the used by other components.
 
         // there might be multiple entities identified for one name
-        ResultSet resultset = myQanaryUtils.selectFromTripleStore(sparqlGetAnnotation, myQanaryUtils.getEndpoint().toString());
+        ResultSet resultset = myQanaryUtils.getQanaryTripleStoreConnector().select(sparqlGetAnnotation);
         while (resultset.hasNext()) {
             QuerySolution tupel = resultset.next();
             String wikidataResource = tupel.get("wikidataResource").toString();
             logger.info("creating query for resource: {}", wikidataResource);
 
             // populate a generalized answer query with the specific entity (wikidata ID)
+            QuerySolutionMap bindingsForWikiDataQuery = new QuerySolutionMap();
+            bindingsForWikiDataQuery.add("wikidataResource", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+
             String createdWikiDataQuery = "" //
                     + "PREFIX wikibase: <http://wikiba.se/ontology#> " //
                     + "PREFIX wd: <http://www.wikidata.org/entity/> " //
@@ -185,34 +201,24 @@ public class BirthDataQueryBuilder extends QanaryComponent {
                     + "}";
 
             // store the created select query as an annotation for the current question
-            String insertDataIntoQanaryTriplestoreQuery = "" //
-                    + "PREFIX dbr: <http://dbpedia.org/resource/>" //
-                    + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/>" //
-                    + "PREFIX qa: <http://www.wdaqua.eu/qa#>" //
-                    + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" //
-                    + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>" //
-                    + "" //
-                    + "INSERT { " //
-                    + "GRAPH <" + myQanaryMessage.getInGraph().toString() + ">  {" //
-                    + "        ?newAnnotation rdf:type qa:AnnotationOfAnswerSPARQL ." //
-                    + "        ?newAnnotation oa:hasTarget <" + myQanaryQuestion.getUri().toString() + "> ." //
-                    + "        ?newAnnotation oa:hasBody \""
-                    + createdWikiDataQuery.replace("\"", "\\\"").replace("\n", "\\n") + "\"^^xsd:string ." // the select query that should compute the answer
-                    + "        ?newAnnotation qa:score \"1.0\"^^xsd:float ." // as it is rule based, a high confidence is expressed
-                    + "        ?newAnnotation oa:annotatedAt ?time ." //
-                    + "        ?newAnnotation oa:annotatedBy <urn:qanary:" + this.applicationName + "> ." // identify which component made this annotation
-                    + "    }" //
-                    + "}" //
-                    + "WHERE {" //
-                    + "    BIND (IRI(str(RAND())) AS ?newAnnotation) ." //
-                    + "    BIND (now() as ?time) . " //
-                    + "}";
+            // define here the parameters for the SPARQL INSERT query
+            QuerySolutionMap bindings = new QuerySolutionMap();
+            // use here the variable names defined in method insertAnnotationOfAnswerSPARQL
+            bindings.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+            bindings.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+            bindings.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createStringLiteral(createdWikiDataQuery.replace("\"", "\\\"").replace("\n", "\\n")));
+            bindings.add("confidence", ResourceFactory.createTypedLiteral("1.0", XSDDatatype.XSDfloat)); // as it is rule based, a high confidence is expressed
+            bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+            // get the template of the INSERT query
+            String insertDataIntoQanaryTriplestoreQuery = QanaryTripleStoreConnector.insertAnnotationOfAnswerSPARQL(bindings);
+            logger.info("SPARQL insert for adding data to Qanary triplestore: {}", insertDataIntoQanaryTriplestoreQuery);
 
             //STEP 4: Push the computed result to the Qanary triplestore
             logger.info("store data in graph {} of Qanary triplestore endpoint {}", //
                     myQanaryMessage.getValues().get(myQanaryMessage.getOutGraph()), //
                     myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-            myQanaryUtils.updateTripleStore(insertDataIntoQanaryTriplestoreQuery, myQanaryMessage.getEndpoint());
+            myQanaryUtils.getQanaryTripleStoreConnector().update(insertDataIntoQanaryTriplestoreQuery);
 
         }
         return myQanaryMessage;
