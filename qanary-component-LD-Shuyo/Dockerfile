@@ -1,4 +1,4 @@
-FROM openjdk:11
+FROM openjdk:17
 
 # Add the service itself
 ARG JAR_FILE
