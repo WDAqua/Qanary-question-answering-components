@@ -1,5 +1,6 @@
 package eu.wdaqua.component.birthdatawikidata.qb;
 
+import eu.wdaqua.component.qb.birthdata.wikidata.Application;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package eu.wdaqua.component.birthdatawikidata.qb;
+package eu.wdaqua.component.qb.birthdata.wikidata;
 
 import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -12,6 +12,7 @@ import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,10 @@ import java.util.regex.Pattern;
 @Component
 public class BirthDataQueryBuilder extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(BirthDataQueryBuilder.class);
+
+	private static final String FILENAME_ANNOTATIONS_FILTERED = "/queries/getAnnotationFiltered.rq";
+
+	private static final String FILENAME_WIKIDATA_BIRTHDATA_QUERY = "/queries/getQuestionAnswerFromWikidata.rq";
 
     private final String applicationName;
 
@@ -139,11 +144,11 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         this.myQuestion = myQanaryQuestion.getTextualRepresentation();
 
         // This component is only supposed to answer a specific type of question.
-        // Therefore, we only need to continue if the question asks for birthplace and date or if ther is an
+        // Therefore, we only need to continue if the question asks for birthplace and date or if there is an
         // annotation of the first and lastname.
 
 
-        // Get the firstname annotation, if it's annotated
+        // Get the firstname annotation if it's annotated
         QuerySolutionMap bindingsForFirstname = new QuerySolutionMap();
         bindingsForFirstname.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
         bindingsForFirstname.add("value", ResourceFactory.createStringLiteral(FIRSTNAME_ANNOTATION));
@@ -151,7 +156,7 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         String sparqlCheckFirstname = this.loadQueryFromFile("/queries/getAnnotation.rq", bindingsForFirstname);
         ResultSet resultsetFirstname = myQanaryUtils.getQanaryTripleStoreConnector().select(sparqlCheckFirstname);
 
-        // Get the lastnaem annotation, if it's annotated
+        // Get the lastname annotation, if it's annotated
         QuerySolutionMap bindingsForLastname = new QuerySolutionMap();
         // the currently used graph
         bindingsForLastname.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
@@ -162,21 +167,20 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         ResultSet resultsetLastname = myQanaryUtils.getQanaryTripleStoreConnector().select(sparqlCheckLastname);
 
 
-        // STEP 2: Create queries for wikidata if the question is supported or annotations are available
+        // STEP 2: Create queries for Wikidata if the question is supported or annotations are available
         ArrayList<String> queriesForAnnotation = new ArrayList<>();
 
         if (resultsetFirstname.hasNext() && resultsetLastname.hasNext()) {
-            // In this example we are only interested in Entities that were found from another component and
+            // In this example, we are only interested in Entities that were found from another component and
             // annotated with the annotation "FIRST_NAME" and "LAST_NAME".
-
             queriesForAnnotation = createQueriesForAnnotation(resultsetFirstname, resultsetLastname);
+        } else {
+        	logger.info("no annotation for {} and {} found", FIRSTNAME_ANNOTATION, LASTNAME_ANNOTATION);
         }
-
-        logger.info("no annotation for {} and {} found", FIRSTNAME_ANNOTATION, LASTNAME_ANNOTATION);
 
         if (this.isQuestionSupported(myQuestion)) {
             // In this example we are only interested in Entities that were found at a specific point
-            // in the question: e.g. 'when and where was <name> born?'.
+            // in the question: e.g., 'when and where was <name> born?'.
             // Because we do not require entities that might have been found anywhere else in the
             // question we can filter our results:
 
@@ -187,8 +191,8 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         }
 
         // If no query was created, we can stop here.
-        if (queriesForAnnotation.equals("")) {
-            logger.info("nothing to do here as quest-on \"{}\" does not have the supported format", myQuestion);
+        if (queriesForAnnotation.isEmpty() || queriesForAnnotation.get(0).isBlank() ) {
+            logger.warn("nothing to do here as question \"{}\" does not have the supported format", myQuestion);
             return myQanaryMessage;
         }
 
@@ -227,7 +231,7 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         // only for relevant annotations
         bindingsForAnnotation.add("filterStart", ResourceFactory.createTypedLiteral(String.valueOf(filterStart), XSDDatatype.XSDint));
 
-        String sparqlGetAnnotation = this.loadQueryFromFile("/queries/getAnnotationFiltert.rq", bindingsForAnnotation);
+        String sparqlGetAnnotation = this.loadQueryFromFile(FILENAME_ANNOTATIONS_FILTERED, bindingsForAnnotation);
 
         // STEP 3: Compute SPARQL select queries that should produce the result for every identified entity
         //
@@ -240,44 +244,22 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         ArrayList<String> queries = new ArrayList<>();
         while (resultset.hasNext()) {
             QuerySolution tupel = resultset.next();
-            String wikidataResource = tupel.get("wikidataResource").toString();
+            RDFNode wikidataResource = tupel.get("wikidataResource");
             logger.info("creating query for resource: {}", wikidataResource);
-
-            // populate a generalized answer query with the specific entity (wikidata ID)
-            QuerySolutionMap bindingsForWikiDataQuery = new QuerySolutionMap();
-            bindingsForWikiDataQuery.add("wikidataResource", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
-
-            String createdWikiDataQuery = "" //
-                    + "PREFIX wikibase: <http://wikiba.se/ontology#> " //
-                    + "PREFIX wd: <http://www.wikidata.org/entity/> " //
-                    + "PREFIX wdt: <http://www.wikidata.org/prop/direct/> " //
-                    + "PREFIX bd: <http://www.bigdata.com/rdf#> " //
-                    + "PREFIX p: <http://www.wikidata.org/prop/> " //
-                    + "PREFIX pq: <http://www.wikidata.org/prop/qualifier/> " //
-                    + "PREFIX ps: <http://www.wikidata.org/prop/statement/> " //
-                    + "select DISTINCT ?personLabel ?birthplaceLabel ?birthdate " //
-                    + "where { " //
-                    + "  values ?allowedPropPlace { pq:P17 } " // allow 'country' as property of birthplace
-                    + "  values ?person {<" + wikidataResource + ">} " //
-                    + "  ?person wdt:P569 ?birthdate . " // this should produce the date of birth
-                    + "  {" //
-                    + "  ?person wdt:P19 ?birthplace . " // this should produce the place of birth
-                    + "  }" //
-                    + "  UNION" //
-                    + "  {" //
-                    + "  ?person wdt:P19 ?specificBirthPlace . " //
-                    + "  ?person p:P19 _:a . " //
-                    + "  _:a ps:P19 ?specificBirthPlace . " // the above place might be too specific
-                    + "  _:a ?allowedPropPlace ?birthplace . "// get the country if it is provided
-                    + "  }" //
-                    + "  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\" } " //
-                    + "}";
-
+            String createdWikiDataQuery = createWikidataSparqlQuery(wikidataResource);
             queries.add(createdWikiDataQuery);
         }
 
         return queries;
     }
+
+	public String createWikidataSparqlQuery(RDFNode wikidataResource) throws IOException {
+		// populate a generalized answer query with the specific entity (Wikidata ID)
+		QuerySolutionMap bindingsForWikidataResultQuery = new QuerySolutionMap();
+		// set expected person as parameter for Wikidata query
+		bindingsForWikidataResultQuery.add("person", wikidataResource);
+		return this.loadQueryFromFile(FILENAME_WIKIDATA_BIRTHDATA_QUERY, bindingsForWikidataResultQuery);
+	}
 
     private ArrayList<String> createQueriesForAnnotation(ResultSet resultsetFirstname, ResultSet resultsetLastname) {
         ArrayList<Integer[]> firstnameStartsEnds = new ArrayList<>();
@@ -317,6 +299,7 @@ public class BirthDataQueryBuilder extends QanaryComponent {
 
             logger.info("creating query for {} {}", firstanme, lastname);
 
+            // TODO: please extract to external method as it was done for createWikidataSparqlQuery
             String createdWikiDataQuery = "" //
                     + "PREFIX wikibase: <http://wikiba.se/ontology#>" //
                     + "PREFIX wd: <http://www.wikidata.org/entity/>" //
@@ -330,10 +313,10 @@ public class BirthDataQueryBuilder extends QanaryComponent {
                     + "    values ?allowedPropPlace { pq:P17 }" //
                     + "" //
                     + "    ?person wdt:P31 wd:Q5." //
-                    + "    ?person wdt:P735 ?fistname ." //
+                    + "    ?person wdt:P735 ?firstname ." //
                     + "    ?person wdt:P734 ?lastname ." //
                     + "" //
-                    + "    ?fistname rdfs:label \"" + firstanme + "\"@en ." //
+                    + "    ?firstname rdfs:label \"" + firstanme + "\"@en ." //
                     + "    ?lastname rdfs:label \"" + lastname + "\"@en ." //
                     + "" //
                     + "    ?person wdt:P569 ?birthdate .   " //
