@@ -3,10 +3,11 @@ import logging
 import os
 from flask import Blueprint, jsonify, request
 from qanary_helpers.qanary_queries import get_text_question_in_graph, insert_into_triplestore
-from transformers import MarianTokenizer, MarianMTModel
+from transformers.models.marian.modeling_marian import MarianMTModel
+from transformers.models.marian.tokenization_marian import MarianTokenizer
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
-mt_helsinki_nlp = Blueprint('mt_helsinki_nlp', __name__, template_folder='templates')
+mt_helsinki_nlp_bp = Blueprint('mt_helsinki_nlp_bp', __name__, template_folder='templates')
 
 SERVICE_NAME_COMPONENT = os.environ['SERVICE_NAME_COMPONENT']
 supported_langs = ['ru', 'es', 'de', 'fr']
@@ -15,7 +16,7 @@ models = {lang: MarianMTModel.from_pretrained('Helsinki-NLP/opus-mt-{lang}-en'.f
 tokenizers = {lang: MarianTokenizer.from_pretrained('Helsinki-NLP/opus-mt-{lang}-en'.format(lang=lang)) for lang in supported_langs}
 
 
-@mt_helsinki_nlp.route("/annotatequestion", methods=['POST'])
+@mt_helsinki_nlp_bp.route("/annotatequestion", methods=['POST'])
 def qanary_service():
     """the POST endpoint required for a Qanary service"""
     
@@ -81,7 +82,7 @@ def qanary_service():
     return jsonify(request.get_json())
 
 
-@mt_helsinki_nlp.route("/", methods=['GET'])
+@mt_helsinki_nlp_bp.route("/", methods=['GET'])
 def index():
     """an examplary GET endpoint returning "hello world (String)"""
 
