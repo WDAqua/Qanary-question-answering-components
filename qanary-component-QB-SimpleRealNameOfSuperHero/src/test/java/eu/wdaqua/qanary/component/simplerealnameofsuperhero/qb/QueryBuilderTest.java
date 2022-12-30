@@ -24,7 +24,7 @@ public class QueryBuilderTest {
 
     @Before
     public void setUp() {
-        qb = new QueryBuilderSimpleRealNameOfSuperHero();
+        qb = new QueryBuilderSimpleRealNameOfSuperHero("test.name");
         testQuery = "" // 
                 + "PREFIX dbr: <http://dbpedia.org/resource/> \n" //
                 + "PREFIX dct: <http://purl.org/dc/terms/> \n" //
@@ -60,7 +60,7 @@ public class QueryBuilderTest {
     public void testCreateAndInsertAnswerSPARQL() throws Exception {
         // given a QanaryMessage, QanaryQuestion and created Query
         QanaryMessage qanaryMessage = mock(QanaryMessage.class);
-        QanaryQuestion<?> qanaryQuestion = mock(QanaryQuestion.class);
+        QanaryQuestion<String> qanaryQuestion = mock(QanaryQuestion.class);
 
         URI ingraph = new URI("urn:qanary:ingraph");
         URI uri = new URI("test_question_uri");

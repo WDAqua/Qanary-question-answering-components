@@ -388,7 +388,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
                 + " 		qa:score        ?score . \n" //
                 //
                 + "  ?answerType a          qa:AnswerType ; \n" //
-                + " 		rdf:value       ?answerDataType . \n" //
+                + " 		rdf:value       ?answerDataType ; \n" //
                 + "	}\n" // end: graph
                 + "}\n" // end: insert
                 + "WHERE { \n" //
