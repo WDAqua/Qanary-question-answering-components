@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-QB-PlatypusWrapper</artifactId>
-    <version>3.1.1</version>
+    <version>3.1.2</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -121,7 +121,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>eu.wdaqua.qanary.platypus.wrapper.Application</mainClass>
+                    <mainClass>eu.wdaqua.qanary.component.platypuswrapper.qb.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>

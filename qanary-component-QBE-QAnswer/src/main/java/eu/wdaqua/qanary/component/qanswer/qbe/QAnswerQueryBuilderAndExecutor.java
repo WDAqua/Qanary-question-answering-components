@@ -395,7 +395,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
                 + "  BIND (IRI(str(RAND())) AS ?annotationSPARQL) . \n" //
                 + "  BIND (IRI(str(RAND())) AS ?sparql) . \n" //
                 //
-                + "  BIND (IRI(str(RAND())) AS ?annotationAnswerType) . \n" //
+                + "  BIND (IRI(str(RAND())) AS ?annotationOfAnswerType) . \n" //
                 + "  BIND (IRI(str(RAND())) AS ?answerType) . \n" //
                 //
                 + "  BIND (IRI(str(RAND())) AS ?annotationAnswer) . \n" //

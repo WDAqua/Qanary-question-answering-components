@@ -26,7 +26,7 @@
                 <module>qanary-component-NER-EntityClassifier</module>
                 <module>qanary-component-NER-EntityClassifier2</module>
                 <module>qanary-component-NER-Ontotext</module>
-                <module>qanary_component-NED-Ontotext</module>
+                <module>qanary-component-NED-Ontotext</module>
                 <module>qanary-component-NER-Babelfy</module>
                 <module>qanary-component-NER-FOX</module>
                 <module>qanary-component-NER-TextRazor</module>
@@ -39,9 +39,9 @@
                 <module>qanary-component-NER-Aylien</module>
                 <module>qanary-component-NED-Aylien</module>
                 <module>qanary-component-NED-Ambiverse</module>
-                <module>qanary-component-REL-RelationLinker1</module>
+                <!-- <module>qanary-component-REL-RelationLinker1</module> -->
+                <!-- <module>qanary-component-REL-RelationLinker2</module> -->
                 <module>qanary-component-REL-ReMatch</module>
-                <module>qanary-component-REL-RelationLinker2</module>
                 <module>qanary-component-REL-RelNliod</module>
                 <module>qanary-component-CLS-CLSNLIOD</module>
                 <module>qanary-component-QB-Sina</module>
@@ -75,6 +75,8 @@
         <profile>
             <id>needfix</id>
             <modules>
+                <module>qanary-component-NED-DBpediaSpotlight</module>
+                <module>qanary-component-QB-SimpleRealNameOfSuperHero</module>
                 <!--<module>batmanquestion.annotator</module>-->
             </modules>
         </profile>
@@ -89,8 +91,7 @@
         <profile>
             <id>tinytutorial</id>
             <modules>
-                <module>qanary-component-NED-DBpediaSpotlight</module>
-                <module>qanary-component-QB-SimpleRealNameOfSuperHero</module>
+                <module>qanary-component-QB-PlatypusWrapper</module>
             </modules>
         </profile>
     </profiles>
