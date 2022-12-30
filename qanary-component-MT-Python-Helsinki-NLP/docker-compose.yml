@@ -1,22 +1,11 @@
 version: '3'
 services:
-  mt-helsinki-nlp:
-    # image: qanary/qanary-component-mt-python-helsinki-nlp:0.1.0
+  mt-helsinki-nlp: # for building from source
     build:
       context: .
       dockerfile: Dockerfile
-    network_mode: host
-    # ports:
-      # - 40120:40120
+    # or use image: qanary/qanary-component-mt-python-helsinki-nlp:latest
+    network_mode: host # or use ports
     restart: unless-stopped
-    environment:
-      - SERVER_PORT=40120
-      - SPRING_BOOT_ADMIN_URL=http://porque.cs.upb.de:40111
-      - SERVER_HOST=http://porque.cs.upb.de
-      - SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE-BASE-URL=http://porque.cs.upb.de:40120
-      - SPRING_BOOT_ADMIN_USERNAME=admin
-      - SPRING_BOOT_ADMIN_PASSWORD=admin
-      - SERVICE_NAME_COMPONENT=MT-Helsinki-NLP
-      - SERVICE_DESCRIPTION_COMPONENT=Translates question to English
     volumes:
-      - /data-disk2/aleksandr_ws/huggingface-docker-cache:/root/.cache/huggingface/transformers
+      - /path/to/huggingface-docker-cache:/root/.cache/huggingface/transformers # for caching huggingface models
