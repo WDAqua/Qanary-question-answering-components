@@ -40,9 +40,11 @@ import java.util.regex.Pattern;
 public class BirthDataQueryBuilder extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(BirthDataQueryBuilder.class);
 
-	private static final String FILENAME_ANNOTATIONS_FILTERED = "/queries/getAnnotationFiltered.rq";
+    private static final String FILENAME_ANNOTATIONS = "/queries/getAnnotation.rq";
+    private static final String FILENAME_ANNOTATIONS_FILTERED = "/queries/getAnnotationFiltered.rq";
 
-	private static final String FILENAME_WIKIDATA_BIRTHDATA_QUERY = "/queries/getQuestionAnswerFromWikidata.rq";
+    private static final String FILENAME_WIKIDATA_BIRTHDATA_QUERY_PERSON = "/queries/getQuestionAnswerFromWikidataByPerson.rq";
+    private static final String FILENAME_WIKIDATA_BIRTHDATA_QUERY_FIRST_AND_LASTNAME = "/queries/getQuestionAnswerFromWikidataByFirstLastname.rq";
 
     private final String applicationName;
 
@@ -153,7 +155,7 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         bindingsForFirstname.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
         bindingsForFirstname.add("value", ResourceFactory.createStringLiteral(FIRSTNAME_ANNOTATION));
 
-        String sparqlCheckFirstname = this.loadQueryFromFile("/queries/getAnnotation.rq", bindingsForFirstname);
+        String sparqlCheckFirstname = this.loadQueryFromFile(FILENAME_ANNOTATIONS, bindingsForFirstname);
         ResultSet resultsetFirstname = myQanaryUtils.getQanaryTripleStoreConnector().select(sparqlCheckFirstname);
 
         // Get the lastname annotation, if it's annotated
@@ -163,7 +165,7 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         // annotated for the current question
         bindingsForLastname.add("value", ResourceFactory.createStringLiteral(LASTNAME_ANNOTATION));
 
-        String sparqlCheckLastname = this.loadQueryFromFile("/queries/getAnnotation.rq", bindingsForLastname);
+        String sparqlCheckLastname = this.loadQueryFromFile(FILENAME_ANNOTATIONS, bindingsForLastname);
         ResultSet resultsetLastname = myQanaryUtils.getQanaryTripleStoreConnector().select(sparqlCheckLastname);
 
 
@@ -253,15 +255,7 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         return queries;
     }
 
-	public String createWikidataSparqlQuery(RDFNode wikidataResource) throws IOException {
-		// populate a generalized answer query with the specific entity (Wikidata ID)
-		QuerySolutionMap bindingsForWikidataResultQuery = new QuerySolutionMap();
-		// set expected person as parameter for Wikidata query
-		bindingsForWikidataResultQuery.add("person", wikidataResource);
-		return this.loadQueryFromFile(FILENAME_WIKIDATA_BIRTHDATA_QUERY, bindingsForWikidataResultQuery);
-	}
-
-    private ArrayList<String> createQueriesForAnnotation(ResultSet resultsetFirstname, ResultSet resultsetLastname) {
+    private ArrayList<String> createQueriesForAnnotation(ResultSet resultsetFirstname, ResultSet resultsetLastname) throws IOException {
         ArrayList<Integer[]> firstnameStartsEnds = new ArrayList<>();
         ArrayList<Integer[]> lastnameStartsEnds = new ArrayList<>();
 
@@ -299,41 +293,27 @@ public class BirthDataQueryBuilder extends QanaryComponent {
 
             logger.info("creating query for {} {}", firstanme, lastname);
 
-            // TODO: please extract to external method as it was done for createWikidataSparqlQuery
-            String createdWikiDataQuery = "" //
-                    + "PREFIX wikibase: <http://wikiba.se/ontology#>" //
-                    + "PREFIX wd: <http://www.wikidata.org/entity/>" //
-                    + "PREFIX wdt: <http://www.wikidata.org/prop/direct/>" //
-                    + "PREFIX bd: <http://www.bigdata.com/rdf#>" //
-                    + "PREFIX p: <http://www.wikidata.org/prop/>" //
-                    + "PREFIX pq: <http://www.wikidata.org/prop/qualifier/>" //
-                    + "PREFIX ps: <http://www.wikidata.org/prop/statement/>" //
-                    + "" //
-                    + "SELECT DISTINCT ?personLabel ?birthplaceLabel ?birthdate WHERE {" //
-                    + "    values ?allowedPropPlace { pq:P17 }" //
-                    + "" //
-                    + "    ?person wdt:P31 wd:Q5." //
-                    + "    ?person wdt:P735 ?firstname ." //
-                    + "    ?person wdt:P734 ?lastname ." //
-                    + "" //
-                    + "    ?firstname rdfs:label \"" + firstanme + "\"@en ." //
-                    + "    ?lastname rdfs:label \"" + lastname + "\"@en ." //
-                    + "" //
-                    + "    ?person wdt:P569 ?birthdate .   " //
-                    + "    {" //
-                    + "        ?person wdt:P19 ?birthplace .   " //
-                    + "    } UNION {" //
-                    + "        ?person wdt:P19 ?specificBirthPlace ." //
-                    + "        ?person p:P19 _:a ." //
-                    + "        _:a ps:P19 ?specificBirthPlace ." //
-                    + "        _:a ?allowedPropPlace ?birthplace ." //
-                    + "    }" //
-                    + "" //
-                    + "    SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\". }" //
-                    + "}";
+            String createdWikiDataQuery = createWikidataSparqlQuery(firstanme, lastname);
             queries.add(createdWikiDataQuery);
         }
 
         return queries;
+    }
+
+    public String createWikidataSparqlQuery(RDFNode wikidataResource) throws IOException {
+        // populate a generalized answer query with the specific entity (Wikidata ID)
+        QuerySolutionMap bindingsForWikidataResultQuery = new QuerySolutionMap();
+        // set expected person as parameter for Wikidata query
+        bindingsForWikidataResultQuery.add("person", wikidataResource);
+        return this.loadQueryFromFile(FILENAME_WIKIDATA_BIRTHDATA_QUERY_PERSON, bindingsForWikidataResultQuery);
+    }
+
+    public String createWikidataSparqlQuery(String firstname, String lastname) throws IOException {
+        // populate a generalized answer query with the specific entity (Wikidata ID)
+        QuerySolutionMap bindingsForWikidataResultQuery = new QuerySolutionMap();
+        // set expected last and firstname as parameter for Wikidata query
+        bindingsForWikidataResultQuery.add("firstnameValue", ResourceFactory.createLangLiteral(firstname, "en"));
+        bindingsForWikidataResultQuery.add("lastnameValue", ResourceFactory.createLangLiteral(lastname, "en"));
+        return this.loadQueryFromFile(FILENAME_WIKIDATA_BIRTHDATA_QUERY_FIRST_AND_LASTNAME, bindingsForWikidataResultQuery);
     }
 }
