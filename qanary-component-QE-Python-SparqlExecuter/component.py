@@ -22,14 +22,25 @@ SPRING_BOOT_ADMIN_USERNAME = os.environ['SPRING_BOOT_ADMIN_USERNAME']
 SPRING_BOOT_ADMIN_PASSWORD = os.environ['SPRING_BOOT_ADMIN_PASSWORD']
 SERVER_HOST = os.environ['SERVER_HOST']
 SERVER_PORT = os.environ['SERVER_PORT']
-KG = os.environ['KG']
-SERVICE_NAME_COMPONENT = os.environ['SERVICE_NAME_COMPONENT'] + "-" + KG
+SERVICE_NAME_COMPONENT = os.environ['SERVICE_NAME_COMPONENT']
 SERVICE_DESCRIPTION_COMPONENT = os.environ['SERVICE_DESCRIPTION_COMPONENT']
-FALCON_URL = os.environ['FALCON_URL']
 ENDPOINT = os.environ['SPARQL_ENDPOINT']
 
 URL_COMPONENT = f"http://{SERVER_HOST}:{SERVER_PORT}"
 headers = {'Content-Type': 'application/json'}
+agent_header = str(os.getenv("AGENT_HEADER"))
+dummy_answers = {
+    "head": {
+        "link": [],
+        "vars": [
+            "dummy"
+        ]
+    },
+    "results": {
+        "bindings": []
+    }
+}
+
 
 app = FastAPI()
 
@@ -38,8 +49,6 @@ def execute(query: str, endpoint_url: str = ENDPOINT):
     https://dbpedia.org/sparql
     https://query.wikidata.org/bigdata/namespace/wdq/sparql
     """
-    agent_header = {'User-Agent': 'wiki_parser_online/0.17.1 (https://deeppavlov.ai;'
-                                        ' info@deeppavlov.ai) deeppavlov/0.17.1'}
     try:
         sparql = SPARQLWrapper(endpoint_url)
         sparql.agent = str(agent_header)
@@ -78,12 +87,15 @@ async def qanary_service(request: Request):
     """.format(uuid=triplestore_ingraph_uuid)
 
     logging.info(f"Querying for SPARQL queries: {sparql}")
+    try:
+        generated_sparql = query_triplestore(triplestore_endpoint_url, sparql)["results"]["bindings"][0]["sparql"]["value"]
 
-    generated_sparql = query_triplestore(triplestore_endpoint_url, sparql)
+        logging.info(f"SPARQL query generated: {generated_sparql}")
 
-    logging.info(f"SPARQL query generated: {generated_sparql}")
-
-    json_string = json.dumps(execute(query=generated_sparql, endpoint_url=ENDPOINT), ensure_ascii=False).replace('\\"',"").replace('"', '\\"')
+        json_string = json.dumps(execute(query=generated_sparql, endpoint_url=ENDPOINT), ensure_ascii=False).replace('\\"',"").replace('"', '\\"')
+    except Exception as e:
+        logging.info(f"No SPARQL was generated")
+        json_string = json.loads(dummy_answers)
 
     SPARQLquery = """
     PREFIX dbr: <http://dbpedia.org/resource/>
@@ -100,7 +112,7 @@ async def qanary_service(request: Request):
         oa:annotatedAt ?time ;
         oa:annotatedBy <{component}> .
 
-        ?answer a qa:AnswerJson ;
+        ?answerJson a qa:AnswerJson ;
             rdf:value "{json_string}"^^xsd:string  .
             
         qa:AnswerJson rdfs:subClassOf qa:Answer .
@@ -108,7 +120,7 @@ async def qanary_service(request: Request):
     }}
     WHERE {{
         BIND (IRI(str(RAND())) AS ?annotationAnswer) .
-        BIND (IRI(str(RAND())) AS ?answer) .
+        BIND (IRI(str(RAND())) AS ?answerJson) .
         BIND (now() as ?time) 
     }}
     """.format(

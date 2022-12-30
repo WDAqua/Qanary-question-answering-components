@@ -1,24 +1,12 @@
 version: '3'
 services:
-  rel-python-falcon:
-    restart: unless-stopped
-    image: rel-python-falcon:0.1.0
+  rel-python-falcon: # for building from source
+    # or use image: qanary/qanary-component-rel-python-falcon:latest
     build:
       context: .
       dockerfile: Dockerfile
+    env_file:
+      - .env
     container_name: $SERVICE_NAME_COMPONENT
-    network_mode: host
-    # ports:
-      # - $SERVER_PORT:80
-    environment:
-      - SPRING_BOOT_ADMIN_URL=$SPRING_BOOT_ADMIN_URL
-      - SPRING_BOOT_ADMIN_USERNAME=$SPRING_BOOT_ADMIN_USERNAME
-      - SPRING_BOOT_ADMIN_PASSWORD=$SPRING_BOOT_ADMIN_PASSWORD
-      - SERVER_HOST=$SERVER_HOST
-      - SERVER_PORT=$SERVER_PORT
-      - SERVICE_NAME_COMPONENT=$SERVICE_NAME_COMPONENT
-      - SERVICE_DESCRIPTION_COMPONENT=$SERVICE_DESCRIPTION_COMPONENT
-      - KG=$KG
-      - FALCON_URL=$FALCON_URL
-      - PRODUCTION=True
-    command: uvicorn component:app --host 0.0.0.0 --port=$SERVER_PORT
+    network_mode: host # usage of ports also possible
+    command: uvicorn component:app --host 0.0.0.0 --port=$SERVER_PORT # for additional options see uvicorn documentation

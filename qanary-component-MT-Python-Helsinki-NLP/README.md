@@ -4,6 +4,8 @@
 
 MT tool that uses pre-trained models by Helsinki NLP implemented in transformers library
 
+Docker Hub image: `qanary/qanary-component-mt-python-opusmt`
+
 ## Input specification
 
 Not applicable as the textual question is a default parameter
@@ -39,7 +41,7 @@ git clone https://github.com/WDAqua/Qanary-question-answering-components.git
 2. Switch to the component's directory:
 
 ```bash
-cd Qanary-question-answering-components/qanary_component-Python-MT-Helsinki-NLP
+cd Qanary-question-answering-components/qanary-component-Python-MT-Helsinki-NLP
 ```
 
 3. Set the environment variables in the `.env` file
