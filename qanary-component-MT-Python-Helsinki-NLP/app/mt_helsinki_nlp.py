@@ -26,6 +26,7 @@ def qanary_service():
     logging.info("endpoint: %s, inGraph: %s, outGraph: %s" % (triplestore_endpoint, triplestore_ingraph, triplestore_outgraph))
 
     text = get_text_question_in_graph(triplestore_endpoint=triplestore_endpoint, graph=triplestore_ingraph)[0]['text']
+    question_uri = get_text_question_in_graph(triplestore_endpoint=triplestore_endpoint, graph=triplestore_ingraph)[0]['uri']
     logging.info(f'Question Text: {text}')
     
     lang, prob = langid.classify(text)
@@ -68,10 +69,10 @@ def qanary_service():
         }}
     """.format(
         uuid=triplestore_ingraph,
-        qanary_question_uri=triplestore_endpoint,
+        qanary_question_uri=question_uri,
         translation_result=result,
         src_lang=lang,
-        app_name="{0}:Python".format(SERVICE_NAME_COMPONENT)
+        app_name=SERVICE_NAME_COMPONENT
     )
     
     logging.info(f'SPARQL: {SPARQLquery}')

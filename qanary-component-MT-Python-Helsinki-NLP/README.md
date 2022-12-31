@@ -4,6 +4,8 @@
 
 MT tool that uses pre-trained models by Helsinki NLP implemented in transformers library
 
+Docker Hub image: `qanary/qanary-component-mt-python-opusmt`
+
 ## Input specification
 
 Not applicable as the textual question is a default parameter
@@ -39,27 +41,20 @@ git clone https://github.com/WDAqua/Qanary-question-answering-components.git
 2. Switch to the component's directory:
 
 ```bash
-cd Qanary-question-answering-components/qanary_component-Python-MT-Helsinki-NLP
+cd Qanary-question-answering-components/qanary-component-Python-MT-Helsinki-NLP
 ```
 
-3. Build the Docker container: 
+3. Set the environment variables in the `.env` file
 
 ```bash
-docker build -t mt-helsinki-nlp-component:latest .
-```
-
-6. Run the Docker container with the following environment variables (here it is assumed that the service uses port 41062, all values can be changed w.r.t. your individual needs):
-```bash
-docker run -d -p 41062:41062 \
-    -e SPRING_BOOT_ADMIN_URL='https://webengineering.ins.hs-anhalt.de:43740' \
-    -e SPRING_BOOT_ADMIN_USERNAME='admin' \
-    -e SPRING_BOOT_ADMIN_PASSWORD='admin' \
-    -e SERVICE_HOST='http://webengineering.ins.hs-anhalt.de' \
-    -e SERVICE_PORT=41062 \
-    -e SERVICE_NAME_COMPONENT='MT-Helsinki-NLP-Component' \
-    -e SERVICE_DESCRIPTION_COMPONENT='MT tool that uses pre-trained models by Helsinki NLP implemented in transformers library' \
-    -v /data/huggingface-docker-cache:/root/.cache/huggingface/transformers \
-    mt-helsinki-nlp-component:latest
+SERVER_PORT=40120
+SPRING_BOOT_ADMIN_URL=http://qanary-pipeline-host:40111
+SERVER_HOST=http://public-component-host
+SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE-BASE-URL=http://public-component-host:40120
+SPRING_BOOT_ADMIN_USERNAME=admin
+SPRING_BOOT_ADMIN_PASSWORD=admin
+SERVICE_NAME_COMPONENT=MT-Helsinki-NLP
+SERVICE_DESCRIPTION_COMPONENT=Translates question to English
 ```
 
 The parameters description:
@@ -67,10 +62,23 @@ The parameters description:
 * `SPRING_BOOT_ADMIN_URL` -- URL of the Qanary pipeline (see Step 1 and Step 2 of the [tutorial](https://github.com/WDAqua/Qanary/wiki/Qanary-tutorial:-How-to-build-a-trivial-Question-Answering-pipeline))
 * `SPRING_BOOT_ADMIN_USERNAME` -- the admin username of the Qanary pipeline
 * `SPRING_BOOT_ADMIN_PASSWORD` -- the admin password of the Qanary pipeline
-* `SERVICE_HOST` -- the host of your Qanary component without protocol prefix (e.g., `http://`). It has to be visible to the Qanary pipeline (i.e., a callback from the Qanary pipeline can be executed).
-* `SERVICE_PORT` -- the port of your Qanary component (has to be visible to the Qanary pipeline)
+* `SERVER_HOST` -- the host of your Qanary component without protocol prefix (e.g., `http://`). It has to be visible to the Qanary pipeline (i.e., a callback from the Qanary pipeline can be executed).
+* `SERVER_PORT` -- the port of your Qanary component (has to be visible to the Qanary pipeline)
+* `SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE-BASE-URL` -- the URL of your Qanary component (has to be visible to the Qanary pipeline)
 * `SERVICE_NAME_COMPONENT` -- the name of your Qanary component (for better identification)
 * `SERVICE_DESCRIPTION_COMPONENT` -- the description of your Qanary component
+
+4. Build the Docker image: 
+
+```bash
+docker-compose build .
+```
+
+5. Run the the component with docker-compose:
+
+```bash
+docker-compose up
+```
 
 After execution, component creates Qanary annotation in the Qanary triplestore:
 ```

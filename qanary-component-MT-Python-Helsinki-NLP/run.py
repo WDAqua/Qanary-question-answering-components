@@ -8,13 +8,13 @@ from app import app, healthendpoint, aboutendpoint
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
-SPRING_BOOT_ADMIN_URL = os.environ['SPRING_BOOT_ADMIN_URL']
-SPRING_BOOT_ADMIN_USERNAME = os.environ['SPRING_BOOT_ADMIN_USERNAME']
-SPRING_BOOT_ADMIN_PASSWORD = os.environ['SPRING_BOOT_ADMIN_PASSWORD']
-SERVICE_HOST = os.environ['SERVICE_HOST']
-SERVICE_PORT = os.environ['SERVICE_PORT']
-SERVICE_NAME_COMPONENT = '{0}-{1}'.format(os.environ['SERVICE_NAME_COMPONENT'], SERVICE_PORT)
-SERVICE_DESCRIPTION_COMPONENT = os.environ['SERVICE_DESCRIPTION_COMPONENT']
+SPRING_BOOT_ADMIN_URL = os.getenv('SPRING_BOOT_ADMIN_URL')
+SPRING_BOOT_ADMIN_USERNAME = os.getenv('SPRING_BOOT_ADMIN_USERNAME')
+SPRING_BOOT_ADMIN_PASSWORD = os.getenv('SPRING_BOOT_ADMIN_PASSWORD')
+SERVICE_HOST = os.getenv('SERVER_HOST')
+SERVICE_PORT = os.getenv('SERVER_PORT')
+SERVICE_NAME_COMPONENT = os.getenv('SERVICE_NAME_COMPONENT')
+SERVICE_DESCRIPTION_COMPONENT = os.getenv('SERVICE_DESCRIPTION_COMPONENT')
 URL_COMPONENT = f"http://{SERVICE_HOST}:{SERVICE_PORT}"
 
 # define metadata that will be shown in the Spring Boot Admin server UI
@@ -32,6 +32,8 @@ registration = Registration(
     healthUrl=f"{SERVICE_HOST}:{SERVICE_PORT}{healthendpoint}",
     metadata=metadata
 )
+
+logging.info(f"Start registration on: {SPRING_BOOT_ADMIN_URL} with the credentials: {SPRING_BOOT_ADMIN_USERNAME}/{SPRING_BOOT_ADMIN_PASSWORD}")
 
 # start a thread that will contact iteratively the Spring Boot Admin server
 registrator_thread = Registrator(
