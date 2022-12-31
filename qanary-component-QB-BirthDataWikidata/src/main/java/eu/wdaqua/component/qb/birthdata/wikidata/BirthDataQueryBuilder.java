@@ -44,14 +44,16 @@ public class BirthDataQueryBuilder extends QanaryComponent {
     private static final String FILENAME_ANNOTATIONS_FILTERED = "/queries/getAnnotationFiltered.rq";
 
     private static final String FILENAME_WIKIDATA_BIRTHDATA_QUERY_PERSON = "/queries/getQuestionAnswerFromWikidataByPerson.rq";
-    private static final String FILENAME_WIKIDATA_BIRTHDATA_QUERY_FIRST_AND_LASTNAME = "/queries/getQuestionAnswerFromWikidataByFirstLastname.rq";
+    private static final String FILENAME_WIKIDATA_BIRTHDATA_QUERY_FIRST_AND_LASTNAME = "/queries/getQuestionAnswerFromWikidataByFirstnameLastname.rq";
+
+    private static final String FIRSTNAME_ANNOTATION = "FIRST_NAME";
+    private static final String LASTNAME_ANNOTATION = "LAST_NAME";
+
+    private static final String GRAPH = "graph";
+    private static final String VALUE = "value";
 
     private final String applicationName;
 
-    private final String FIRSTNAME_ANNOTATION = "FIRST_NAME";
-    private final String LASTNAME_ANNOTATION = "LAST_NAME";
-
-    private QanaryMessage myQanaryMessage;
     private QanaryUtils myQanaryUtils;
     private QanaryQuestion<String> myQanaryQuestion;
     private String myQuestion;
@@ -140,7 +142,6 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         // as well as annotations of Wikidata entities made by the OpenTapioca NED.
 
         // get the question as String
-        this.myQanaryMessage = myQanaryMessage;
         this.myQanaryUtils = this.getUtils(myQanaryMessage);
         this.myQanaryQuestion = new QanaryQuestion<>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
         this.myQuestion = myQanaryQuestion.getTextualRepresentation();
@@ -152,8 +153,8 @@ public class BirthDataQueryBuilder extends QanaryComponent {
 
         // Get the firstname annotation if it's annotated
         QuerySolutionMap bindingsForFirstname = new QuerySolutionMap();
-        bindingsForFirstname.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
-        bindingsForFirstname.add("value", ResourceFactory.createStringLiteral(FIRSTNAME_ANNOTATION));
+        bindingsForFirstname.add(GRAPH, ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+        bindingsForFirstname.add(VALUE, ResourceFactory.createStringLiteral(FIRSTNAME_ANNOTATION));
 
         String sparqlCheckFirstname = this.loadQueryFromFile(FILENAME_ANNOTATIONS, bindingsForFirstname);
         ResultSet resultsetFirstname = myQanaryUtils.getQanaryTripleStoreConnector().select(sparqlCheckFirstname);
@@ -161,9 +162,9 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         // Get the lastname annotation, if it's annotated
         QuerySolutionMap bindingsForLastname = new QuerySolutionMap();
         // the currently used graph
-        bindingsForLastname.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+        bindingsForLastname.add(GRAPH, ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
         // annotated for the current question
-        bindingsForLastname.add("value", ResourceFactory.createStringLiteral(LASTNAME_ANNOTATION));
+        bindingsForLastname.add(VALUE, ResourceFactory.createStringLiteral(LASTNAME_ANNOTATION));
 
         String sparqlCheckLastname = this.loadQueryFromFile(FILENAME_ANNOTATIONS, bindingsForLastname);
         ResultSet resultsetLastname = myQanaryUtils.getQanaryTripleStoreConnector().select(sparqlCheckLastname);
@@ -204,7 +205,7 @@ public class BirthDataQueryBuilder extends QanaryComponent {
             // define here the parameters for the SPARQL INSERT query
             QuerySolutionMap bindings = new QuerySolutionMap();
             // use here the variable names defined in method insertAnnotationOfAnswerSPARQL
-            bindings.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+            bindings.add(GRAPH, ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
             bindings.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
             bindings.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createStringLiteral(queriesForAnnotation.get(i)));
             bindings.add("confidence", ResourceFactory.createTypedLiteral("1.0", XSDDatatype.XSDfloat)); // as it is rule based, a high confidence is expressed
@@ -227,7 +228,7 @@ public class BirthDataQueryBuilder extends QanaryComponent {
     private ArrayList<String> createQueriesForAnnotation(int filterStart) throws IOException, QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed {
         QuerySolutionMap bindingsForAnnotation = new QuerySolutionMap();
         // the currently used graph
-        bindingsForAnnotation.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+        bindingsForAnnotation.add(GRAPH, ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
         // annotated for the current question
         bindingsForAnnotation.add("source", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
         // only for relevant annotations

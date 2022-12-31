@@ -15,13 +15,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import eu.wdaqua.component.qb.birthdata.wikidata.BirthDataQueryBuilder;
+import eu.wdaqua.component.qb.birthdata.wikidata.web.messages.WikidataBirthdataFromFirstnameLastnameSparqlQueryResponse;
 import eu.wdaqua.component.qb.birthdata.wikidata.web.messages.WikidataBirthdataFromPersonResourceSparqlQueryResponse;
+import eu.wdaqua.component.qb.birthdata.wikidata.web.messages.WikidataFirstnameLastnameRequest;
 import eu.wdaqua.component.qb.birthdata.wikidata.web.messages.WikidataPersonRequest;
 import io.swagger.v3.oas.annotations.Operation;
 
 @Controller
 public class BirthDataQueryBuilderController {
-	protected static final String API = "/api";
+	protected static final String SPARQLBYRESOURCE = "/sparqlQueryByResource";
+	protected static final String SPARQLBYFIRSTNAMELASTNAME = "/sparqlQueryByFirstnameLastname";
 	private static final Logger logger = LoggerFactory.getLogger(BirthDataQueryBuilderController.class);
 	private BirthDataQueryBuilder myBirthDataQueryBuilder;
 
@@ -29,12 +32,12 @@ public class BirthDataQueryBuilderController {
 		this.myBirthDataQueryBuilder = myBirthDataQueryBuilder;
 	}
 
-	@GetMapping(value = BirthDataQueryBuilderController.API)
+	@GetMapping(value = BirthDataQueryBuilderController.SPARQLBYRESOURCE)
 	public ResponseEntity<String> getDummyResponse() {
 		return new ResponseEntity<>("only POST is supported", HttpStatus.I_AM_A_TEAPOT);
 	}
 
-	@PostMapping(value = BirthDataQueryBuilderController.API, produces = "application/json")
+	@PostMapping(value = BirthDataQueryBuilderController.SPARQLBYRESOURCE, produces = "application/json")
 	@ResponseBody
 	@Operation(summary = "Computes a SPARQL for the given resource to retrieve the birth data from the Wikidata knowledge graph (no execution)", //
 			operationId = "getWikidataSparqlQueryForFetchingTheBirthdataOfAPerson", //
@@ -47,4 +50,20 @@ public class BirthDataQueryBuilderController {
 		String sparqlQuery = this.myBirthDataQueryBuilder.createWikidataSparqlQuery(wikidataResource);
 		return new WikidataBirthdataFromPersonResourceSparqlQueryResponse(sparqlQuery, wikidataResource);
 	}
+
+	@PostMapping(value = BirthDataQueryBuilderController.SPARQLBYFIRSTNAMELASTNAME, produces = "application/json")
+	@ResponseBody
+	@Operation(summary = "Computes a SPARQL for the given firstname and lastname to retrieve the birth data from the Wikidata knowledge graph (no execution)", //
+			operationId = "getWikidataSparqlQueryForFetchingTheBirthdataForFirstnameLastname", //
+			description = "Only the firstname and lastname are required that should match to a Wikidata person instance. " //
+					+ "Examples: \"Angela\"/\"Merkel\" ")
+	public WikidataBirthdataFromFirstnameLastnameSparqlQueryResponse getWikidataSparqlQueryForFetchingTheBirthdataForFirstnameLastname(
+			@RequestBody WikidataFirstnameLastnameRequest myFirstnameLastname) throws IOException {
+		logger.info("getWikidataSparqlQueryForFetchingTheBirthdataForFirstnameLastname: {}", myFirstnameLastname);
+		String sparqlQuery = this.myBirthDataQueryBuilder.createWikidataSparqlQuery(myFirstnameLastname.getFirstname(),
+				myFirstnameLastname.getLastname());
+		return new WikidataBirthdataFromFirstnameLastnameSparqlQueryResponse(myFirstnameLastname.getFirstname(),
+				myFirstnameLastname.getLastname(), sparqlQuery);
+	}
+
 }

@@ -7,20 +7,30 @@ PREFIX p: <http://www.wikidata.org/prop/>
 PREFIX pq: <http://www.wikidata.org/prop/qualifier/> 
 PREFIX ps: <http://www.wikidata.org/prop/statement/> 
 
-SELECT DISTINCT ?personLabel ?birthplaceLabel ?birthdate WHERE {
+SELECT DISTINCT ?firstnameLabel ?lastnameLabel ?birthplace ?birthplaceLabel ?birthdate WHERE {
   VALUES ?allowedPropPlace {
     pq:P17
   }
-  ?person wdt:P569 ?birthdate.
-  { 
-  	?person wdt:P19 ?birthplace. 
+  
+  ?person wdt:P735 ?firstname .
+  ?person wdt:P734 ?lastname .
+
+  OPTIONAL {
+  	?person wdt:P569 ?birthdate.
   }
-  UNION
-  {
-    ?person wdt:P19 ?specificBirthPlace;
-      p:P19 _:a.
-    _:a ps:P19 ?specificBirthPlace;
-      ?allowedPropPlace ?birthplace.
+  
+  OPTIONAL {
+	  { 
+	  	?person wdt:P19 ?birthplace. 
+	  }
+	  UNION
+	  {
+	    ?person wdt:P19 ?specificBirthPlace;
+	      p:P19 _:a.
+	    _:a ps:P19 ?specificBirthPlace;
+	      ?allowedPropPlace ?birthplace.
+	  }
   }
+  
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }

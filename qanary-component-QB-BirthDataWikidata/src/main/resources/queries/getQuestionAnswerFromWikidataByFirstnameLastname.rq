@@ -1,3 +1,4 @@
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX wikibase: <http://wikiba.se/ontology#>
 PREFIX wd: <http://www.wikidata.org/entity/>
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>
@@ -6,7 +7,7 @@ PREFIX p: <http://www.wikidata.org/prop/>
 PREFIX pq: <http://www.wikidata.org/prop/qualifier/>
 PREFIX ps: <http://www.wikidata.org/prop/statement/>
 
-SELECT DISTINCT ?personLabel ?birthplaceLabel ?birthdate WHERE {
+SELECT DISTINCT ?person ?birthplace ?birthplaceLabel ?birthdate WHERE {
     values ?allowedPropPlace { pq:P17 }
 
     ?person wdt:P31 wd:Q5.
@@ -16,15 +17,20 @@ SELECT DISTINCT ?personLabel ?birthplaceLabel ?birthdate WHERE {
     ?firstname rdfs:label ?firstnameValue .
     ?lastname rdfs:label ?lastnameValue .
 
-    ?person wdt:P569 ?birthdate .
-    {
-        ?person wdt:P19 ?birthplace .
-    } UNION {
-        ?person wdt:P19 ?specificBirthPlace .
-        ?person p:P19 _:a .
-        _:a ps:P19 ?specificBirthPlace .
-        _:a ?allowedPropPlace ?birthplace .
+	OPTIONAL { # allow the person to have no birthdate
+    	?person wdt:P569 ?birthdate .
     }
-
+    
+    OPTIONAL { # allow the person to have no birthplace 
+	    {
+	        ?person wdt:P19 ?birthplace .
+	    } UNION {
+	        ?person wdt:P19 ?specificBirthPlace .
+	        ?person p:P19 _:a .
+	        _:a ps:P19 ?specificBirthPlace .
+	        _:a ?allowedPropPlace ?birthplace .
+	    }
+	}
+	
     SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
