@@ -4,6 +4,7 @@ WORKDIR /home/falcon-component
 
 COPY requirements.txt ./
 RUN pip install --upgrade pip -r requirements.txt; exit 0
+RUN pip install "uvicorn[standard]"
 
 COPY component/ ./component/
 COPY run.py  ./
