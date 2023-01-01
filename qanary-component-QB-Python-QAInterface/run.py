@@ -16,7 +16,7 @@ SERVICE_PORT = os.environ['SERVICE_PORT']
 SERVICE_NAME_COMPONENT = '{0}-{1}-{2}'.format(os.environ['SERVICE_NAME_COMPONENT'], os.environ['QA_SYSTEM_NAME'],
                                               SERVICE_PORT)
 SERVICE_DESCRIPTION_COMPONENT = os.environ['SERVICE_DESCRIPTION_COMPONENT']
-URL_COMPONENT = f"http://{SERVICE_HOST}:{SERVICE_PORT}"
+URL_COMPONENT = f"{SERVICE_HOST}:{SERVICE_PORT}"
 
 # define metadata that will be shown in the Spring Boot Admin server UI
 metadata = {
