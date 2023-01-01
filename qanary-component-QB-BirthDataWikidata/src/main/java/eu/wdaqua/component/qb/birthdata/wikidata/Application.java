@@ -1,5 +1,6 @@
-package eu.wdaqua.component.birthdatawikidata.qb;
+package eu.wdaqua.component.qb.birthdata.wikidata;
 
+import eu.wdaqua.component.qb.birthdata.wikidata.web.BirthDataQueryBuilderController;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -36,6 +37,11 @@ public class Application {
 	@Bean
 	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
 		return new BirthDataQueryBuilder(applicationName);
+	}
+	
+	@Bean 
+	public BirthDataQueryBuilderController BirthDataQueryBuilderController(BirthDataQueryBuilder myBirthDataQueryBuilder) {
+		return new BirthDataQueryBuilderController(myBirthDataQueryBuilder);
 	}
 
 	@Bean
