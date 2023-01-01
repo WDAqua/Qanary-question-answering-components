@@ -16,7 +16,7 @@ do
     docker build -t "${versioned_image_name}" .
     docker tag "${versioned_image_name}" "${latest_image_name}"
     echo "Pushing ${versioned_image_name} and ${latest_image_name}"
-    docker push "${file_name}"
-    docker push "${latest_file_name}"
+    docker push "${versioned_image_name}"
+    docker push "${latest_image_name}"
     cd ..
 done

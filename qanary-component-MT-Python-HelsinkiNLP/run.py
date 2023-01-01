@@ -4,7 +4,7 @@ from datetime import datetime
 from qanary_helpers.registration import Registration
 from qanary_helpers.registrator import Registrator
 
-from app import app, healthendpoint, aboutendpoint
+from component import app, healthendpoint, aboutendpoint
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
