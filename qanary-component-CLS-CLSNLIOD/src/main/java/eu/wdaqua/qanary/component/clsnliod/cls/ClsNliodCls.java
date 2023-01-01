@@ -3,7 +3,10 @@ package eu.wdaqua.qanary.component.clsnliod.cls;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
+import org.apache.jena.query.QuerySolutionMap;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +29,8 @@ import java.util.Map.Entry;
  * @see <a href="https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F" target="_top">Github wiki howto</a>
  */
 public class ClsNliodCls extends QanaryComponent {
+
+    private final String FILENAME_ANNOTATIONS_FILTERED = "insert_one_annotation_of_class.rq";
 
     private static final Logger logger = LoggerFactory.getLogger(ClsNliodCls.class);
 
@@ -67,9 +72,9 @@ public class ClsNliodCls extends QanaryComponent {
             in.close();
             xmlResp = response.toString();
 
-            System.out.println("Curl Response: \n" + xmlResp);
-            logger.info("Response {}", xmlResp);
+            logger.info("Curl Response {}", xmlResp);
         } catch (Exception e) {
+            logger.error("Error in runCurlPOSTWithParam", e);
         }
         return (xmlResp);
     }
@@ -108,13 +113,15 @@ public class ClsNliodCls extends QanaryComponent {
 
             url = "http://ws.okbqa.org:1515/templategeneration/rocknrole";
             data = "{  \"string\":\"" + myQuestion + "\",\"language\":\"" + language1 + "\"}";//"{  \"string\": \"Which river flows through Seoul?\",  \"language\": \"en\"}";
-            System.out.println("\ndata :" + data);
-            System.out.println("\nComponent : 21");
+            logger.info("data :{}", data);
+            logger.info("Component : 21");
             String output1 = "";
 
             try {
                 output1 = ClsNliodCls.runCurlPOSTWithParam(url, data, contentType);
             } catch (Exception e) {
+                logger.error("Error run url post with param URL:{}, data:{}, ContentType:{}, Error: {}",
+                        url, data, contentType, e);
             }
 
             logger.info("The output template is: {}", output1);
@@ -132,7 +139,7 @@ public class ClsNliodCls extends QanaryComponent {
                 ms.begin = myQuestion.indexOf(wrd);
                 ms.end = ms.begin + wrd.length();
                 posLstl.add(ms);
-                System.out.println("classRdf: " + wrd);
+                logger.info("classRdf: " + wrd);
 
                 logger.info("Apply vocabulary alignment on outgraph");
 
@@ -140,7 +147,7 @@ public class ClsNliodCls extends QanaryComponent {
                 try {
                     String myKey1 = wrd.trim();
                     if (myKey1 != null && !myKey1.equals("")) {
-                        System.out.println("searchDbLinkInTTL: " + myKey1);
+                        logger.info("searchDbLinkInTTL: " + myKey1);
                         for (Entry<String, String> e : DbpediaRecorodClass.get().tailMap(myKey1).entrySet()) {
                             if (e.getKey().contains(myKey1)) {
                                 dbpediaClass = e.getValue();
@@ -165,7 +172,7 @@ public class ClsNliodCls extends QanaryComponent {
                 }
                 if (dbpediaClass != null)
                     dbLinkListSet.add(dbpediaClass);
-                System.out.println("searchDbLinkInTTL: " + dbpediaClass);
+                logger.info("searchDbLinkInTTL: " + dbpediaClass);
             }
             if (cacheEnabled) {
                 writeToCache(myQuestion, dbLinkListSet);
@@ -173,37 +180,32 @@ public class ClsNliodCls extends QanaryComponent {
 
         }
 
-        System.out.println("DbLinkListSet : " + dbLinkListSet.toString());
+        logger.info("DbLinkListSet : " + dbLinkListSet.toString());
         logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
         // TODO: insert data in QanaryMessage.outgraph
 
         logger.info("apply vocabulary alignment on outgraph");
         // TODO: implement this (custom for every component)
         for (String urls : dbLinkListSet) {
-            String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> " //
-                    + "prefix oa: <http://www.w3.org/ns/openannotation/core/> " //
-                    + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " //
-                    + "prefix dbp: <http://dbpedia.org/property/> " //
-                    + "INSERT { " //
-                    + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
-                    + "  ?a a qa:AnnotationOfClass . " //
-                    + "  ?a oa:hasTarget [ " //
-                    + "           a    oa:SpecificResource; " //
-                    + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
-                    + "  ] ; " //
-                    + "     oa:hasBody <" + urls + "> ;" //
-                    + "     oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; " //
-                    + "	    oa:annotatedAt ?time  " //
-                    + "}} " //
-                    + "WHERE { " //
-                    + "BIND (IRI(str(RAND())) AS ?a) ." //
-                    + "BIND (now() as ?time) " //
-                    + "}";
-            logger.info("Sparql query {}", sparql);
-            myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+            QuerySolutionMap bindings = new QuerySolutionMap();
+            // use here the variable names defined in method insertAnnotationOfAnswerSPARQL
+            bindings.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+            bindings.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+            bindings.add("answer", ResourceFactory.createStringLiteral(urls));
+            bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+            // get the template of the INSERT query
+            String sparql = this.loadQueryFromFile(FILENAME_ANNOTATIONS_FILTERED, bindings);
+            logger.info("SPARQL insert for adding data to Qanary triplestore: {}", sparql);
+
+            myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
         }
         return myQanaryMessage;
 
+    }
+
+    private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
     }
 
     private FileCacheResult readFromCache(String myQuestion) throws IOException {
@@ -238,7 +240,7 @@ public class ClsNliodCls extends QanaryComponent {
             br.close();
         } catch (FileNotFoundException e) {
             //handle this
-            logger.info("{}", e);
+            logger.error("{}", e);
         }
         return cacheResult;
     }
@@ -254,7 +256,7 @@ public class ClsNliodCls extends QanaryComponent {
             buffWriter.close();
         } catch (FileNotFoundException e) {
             //handle this
-            logger.info("{}", e);
+            logger.error("{}", e);
         }
     }
 

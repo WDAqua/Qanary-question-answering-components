@@ -7,6 +7,8 @@ import org.apache.jena.riot.lang.PipedRDFStream;
 import org.apache.jena.riot.lang.PipedTriplesStream;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -50,6 +52,8 @@ public class Application {
 
 class DbpediaRecorodClass {
 
+	private static final Logger logger = LoggerFactory.getLogger(DbpediaRecorodClass.class);
+
 	private static TreeMap<String, String> map = new TreeMap<String, String>();
 	//private static final Logger logger = LoggerFactory.getLogger(DbpediaRecorodProperty.class);
 
@@ -72,11 +76,11 @@ class DbpediaRecorodClass {
 
 	public static void createDbpediaRecorodClass() {
 
-		System.out.println("Starting createDbpediaRecorodProperty()");
+		logger.info("Starting createDbpediaRecorodProperty()");
 		try {
 			File filename = new File("qanary_component-CLS-CLSNLIOD/src/main/resources/dbpedia_3Eng_class.ttl");
 			//File filename = new File("src/main/resources/dbpedia_3Eng_class.ttl");
-			System.out.println(filename.getAbsolutePath());
+			logger.info(filename.getAbsolutePath());
 
 			PipedRDFIterator<org.apache.jena.graph.Triple> iter = new PipedRDFIterator<>();
 			final PipedRDFStream<org.apache.jena.graph.Triple> inputStream = new PipedTriplesStream(iter);
@@ -101,7 +105,7 @@ class DbpediaRecorodClass {
 			DbpediaRecorodClass.print();
 			//	executor.shutdown();
 		} catch (Exception e) {
-			System.out.println("Except: {}" + e);
+			logger.error("Except: {}" + e);
 			// TODO Auto-generated catch block
 		}
 
@@ -110,6 +114,7 @@ class DbpediaRecorodClass {
 }
 
 class PropertyRetrival {
+	private static final Logger logger = LoggerFactory.getLogger(PropertyRetrival.class);
 
 	public Property retrival(String s) {
 		Property p = new Property();
@@ -197,6 +202,7 @@ class PropertyRetrival {
 
 			//System.out.println("List of Subjects: "+ids.toString());
 		} catch (Exception e) {
+			logger.error("Except: {}" + e);
 			e.printStackTrace();
 		}
 		return p;
