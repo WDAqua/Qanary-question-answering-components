@@ -5,4 +5,5 @@ WORKDIR /home/falcon-component
 COPY requirements.txt ./
 RUN pip install --upgrade pip -r requirements.txt; exit 0
 
-COPY component.py  ./
+COPY component/ ./component/
+COPY run.py  ./

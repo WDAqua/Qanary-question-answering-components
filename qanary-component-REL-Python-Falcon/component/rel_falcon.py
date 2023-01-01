@@ -1,11 +1,11 @@
 import os
-import requests
 import json
 import logging
+import requests
+
 from datetime import datetime
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, PlainTextResponse
-import uvicorn
 
 from qanary_helpers.registration import Registration
 from qanary_helpers.registrator import Registrator
@@ -112,4 +112,5 @@ reg_thread.setDaemon(True)
 reg_thread.start()
 
 if __name__ == "__main__":
+    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=int(SERVER_PORT))
