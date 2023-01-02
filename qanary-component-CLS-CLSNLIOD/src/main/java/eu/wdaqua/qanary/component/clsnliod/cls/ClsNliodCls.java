@@ -74,7 +74,7 @@ public class ClsNliodCls extends QanaryComponent {
 
             logger.info("Curl Response {}", xmlResp);
         } catch (Exception e) {
-            logger.error("Error in runCurlPOSTWithParam", e);
+            logger.error("Error in runCurlPOSTWithParam: {}", e);
         }
         return (xmlResp);
     }
@@ -125,8 +125,8 @@ public class ClsNliodCls extends QanaryComponent {
             }
 
             logger.info("The output template is: {}", output1);
-            PropertyRetrival propertyRetrival = new PropertyRetrival();
-            Property property = propertyRetrival.retrival(output1);
+            PropertyRetrieval propertyRetrival = new PropertyRetrieval();
+            Property property = propertyRetrival.retrieval(output1);
 
             List<MySelection> posLstl = new ArrayList<MySelection>();
 
@@ -139,7 +139,7 @@ public class ClsNliodCls extends QanaryComponent {
                 ms.begin = myQuestion.indexOf(wrd);
                 ms.end = ms.begin + wrd.length();
                 posLstl.add(ms);
-                logger.info("classRdf: " + wrd);
+                logger.info("classRdf: {}", wrd);
 
                 logger.info("Apply vocabulary alignment on outgraph");
 
@@ -147,8 +147,8 @@ public class ClsNliodCls extends QanaryComponent {
                 try {
                     String myKey1 = wrd.trim();
                     if (myKey1 != null && !myKey1.equals("")) {
-                        logger.info("searchDbLinkInTTL: " + myKey1);
-                        for (Entry<String, String> e : DbpediaRecorodClass.get().tailMap(myKey1).entrySet()) {
+                        logger.info("searchDbLinkInTTL: {}", myKey1);
+                        for (Entry<String, String> e : DbpediaRecordClass.get().tailMap(myKey1).entrySet()) {
                             if (e.getKey().contains(myKey1)) {
                                 dbpediaClass = e.getValue();
                                 break;
@@ -172,7 +172,7 @@ public class ClsNliodCls extends QanaryComponent {
                 }
                 if (dbpediaClass != null)
                     dbLinkListSet.add(dbpediaClass);
-                logger.info("searchDbLinkInTTL: " + dbpediaClass);
+                logger.info("searchDbLinkInTTL: {}", dbpediaClass);
             }
             if (cacheEnabled) {
                 writeToCache(myQuestion, dbLinkListSet);
@@ -180,7 +180,7 @@ public class ClsNliodCls extends QanaryComponent {
 
         }
 
-        logger.info("DbLinkListSet : " + dbLinkListSet.toString());
+        logger.info("DbLinkListSet : {}", dbLinkListSet.toString());
         logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
         // TODO: insert data in QanaryMessage.outgraph
 

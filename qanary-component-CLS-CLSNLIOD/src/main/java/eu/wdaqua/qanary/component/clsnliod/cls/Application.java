@@ -33,7 +33,7 @@ public class Application {
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
-		DbpediaRecorodClass.createDbpediaRecorodClass();
+		DbpediaRecordClass.createDbpediaRecorodClass();
 	}
 
 	/**
@@ -50,12 +50,11 @@ public class Application {
 	}
 }
 
-class DbpediaRecorodClass {
+class DbpediaRecordClass {
 
-	private static final Logger logger = LoggerFactory.getLogger(DbpediaRecorodClass.class);
+	private static final Logger logger = LoggerFactory.getLogger(DbpediaRecordClass.class);
 
 	private static TreeMap<String, String> map = new TreeMap<String, String>();
-	//private static final Logger logger = LoggerFactory.getLogger(DbpediaRecorodProperty.class);
 
 	public static void put(String property, String dbpediaLink) {
 
@@ -98,14 +97,14 @@ class DbpediaRecorodClass {
 			executor.shutdown();
 			while (iter.hasNext()) {
 				org.apache.jena.graph.Triple next = iter.next();
-				DbpediaRecorodClass.put(next.getObject().toString().replaceAll("\"", "").toLowerCase(),
+				DbpediaRecordClass.put(next.getObject().toString().replaceAll("\"", "").toLowerCase(),
 						next.getSubject().toString());
 				//	System.out.println(iter.next().toString());
 			}
-			DbpediaRecorodClass.print();
+			DbpediaRecordClass.print();
 			//	executor.shutdown();
 		} catch (Exception e) {
-			logger.error("Except: {}" + e);
+			logger.error("Except: {}", e);
 			// TODO Auto-generated catch block
 		}
 
@@ -113,10 +112,10 @@ class DbpediaRecorodClass {
 
 }
 
-class PropertyRetrival {
-	private static final Logger logger = LoggerFactory.getLogger(PropertyRetrival.class);
+class PropertyRetrieval {
+	private static final Logger logger = LoggerFactory.getLogger(PropertyRetrieval.class);
 
-	public Property retrival(String s) {
+	public Property retrieval(String s) {
 		Property p = new Property();
 		//String input="";
 
@@ -202,7 +201,7 @@ class PropertyRetrival {
 
 			//System.out.println("List of Subjects: "+ids.toString());
 		} catch (Exception e) {
-			logger.error("Except: {}" + e);
+			logger.error("Except: {}", e);
 			e.printStackTrace();
 		}
 		return p;
