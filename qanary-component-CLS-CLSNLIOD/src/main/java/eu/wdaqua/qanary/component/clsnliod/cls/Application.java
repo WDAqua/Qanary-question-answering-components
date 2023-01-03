@@ -7,6 +7,8 @@ import org.apache.jena.riot.lang.PipedRDFStream;
 import org.apache.jena.riot.lang.PipedTriplesStream;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,7 +33,7 @@ public class Application {
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
-		DbpediaRecorodClass.createDbpediaRecorodClass();
+		DbpediaRecordClass.createDbpediaRecorodClass();
 	}
 
 	/**
@@ -48,10 +50,11 @@ public class Application {
 	}
 }
 
-class DbpediaRecorodClass {
+class DbpediaRecordClass {
+
+	private static final Logger logger = LoggerFactory.getLogger(DbpediaRecordClass.class);
 
 	private static TreeMap<String, String> map = new TreeMap<String, String>();
-	//private static final Logger logger = LoggerFactory.getLogger(DbpediaRecorodProperty.class);
 
 	public static void put(String property, String dbpediaLink) {
 
@@ -72,11 +75,11 @@ class DbpediaRecorodClass {
 
 	public static void createDbpediaRecorodClass() {
 
-		System.out.println("Starting createDbpediaRecorodProperty()");
+		logger.info("Starting createDbpediaRecorodProperty()");
 		try {
 			File filename = new File("qanary_component-CLS-CLSNLIOD/src/main/resources/dbpedia_3Eng_class.ttl");
 			//File filename = new File("src/main/resources/dbpedia_3Eng_class.ttl");
-			System.out.println(filename.getAbsolutePath());
+			logger.info(filename.getAbsolutePath());
 
 			PipedRDFIterator<org.apache.jena.graph.Triple> iter = new PipedRDFIterator<>();
 			final PipedRDFStream<org.apache.jena.graph.Triple> inputStream = new PipedTriplesStream(iter);
@@ -94,14 +97,14 @@ class DbpediaRecorodClass {
 			executor.shutdown();
 			while (iter.hasNext()) {
 				org.apache.jena.graph.Triple next = iter.next();
-				DbpediaRecorodClass.put(next.getObject().toString().replaceAll("\"", "").toLowerCase(),
+				DbpediaRecordClass.put(next.getObject().toString().replaceAll("\"", "").toLowerCase(),
 						next.getSubject().toString());
 				//	System.out.println(iter.next().toString());
 			}
-			DbpediaRecorodClass.print();
+			DbpediaRecordClass.print();
 			//	executor.shutdown();
 		} catch (Exception e) {
-			System.out.println("Except: {}" + e);
+			logger.error("Except: {}", e);
 			// TODO Auto-generated catch block
 		}
 
@@ -109,9 +112,10 @@ class DbpediaRecorodClass {
 
 }
 
-class PropertyRetrival {
+class PropertyRetrieval {
+	private static final Logger logger = LoggerFactory.getLogger(PropertyRetrieval.class);
 
-	public Property retrival(String s) {
+	public Property retrieval(String s) {
 		Property p = new Property();
 		//String input="";
 
@@ -197,6 +201,7 @@ class PropertyRetrival {
 
 			//System.out.println("List of Subjects: "+ids.toString());
 		} catch (Exception e) {
+			logger.error("Except: {}", e);
 			e.printStackTrace();
 		}
 		return p;

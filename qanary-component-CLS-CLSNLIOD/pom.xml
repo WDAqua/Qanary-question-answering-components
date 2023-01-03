@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-CLS-CLSNLIOD</artifactId>
-    <version>4.1.2</version>
+    <version>4.1.4</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -13,8 +13,8 @@
         <version>2.6.7</version>
     </parent>
     <properties>
-        <java.version>11</java.version>
-        <qanary.version>[3.1.2,4.0.0)</qanary.version>
+        <java.version>17</java.version>
+        <qanary.version>[3.4.1,4.0.0)</qanary.version>
         <docker.image.prefix>qanary</docker.image.prefix>
         <docker.image.name>qanary-component-cls-clsnliod</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
