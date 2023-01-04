@@ -6,8 +6,11 @@ import com.cybozu.labs.langdetect.LangDetectException;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.apache.commons.io.IOUtils;
+import org.apache.jena.query.QuerySolutionMap;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +37,8 @@ import java.util.jar.JarFile;
  */
 @Component
 public class LanguageDetection extends QanaryComponent {
+	private final String FILENAME_ANNOTATIONS_FILTERED = "insert_one_annotation_of_language.rq";
+
 	private static final Logger logger = LoggerFactory.getLogger(LanguageDetection.class);
 	private static boolean languageProfileLoaded = false;
 	private final String applicationName;
@@ -98,8 +103,7 @@ public class LanguageDetection extends QanaryComponent {
 		ArrayList<String> languages = (ArrayList<String>) getDetectedLanguages(myQuestion);
 
 		// STEP 3: The language tag is pushed to the Qanary triple store
-		this.setLanguageText(languages, myQanaryQuestion.getUri(), myQanaryMessage.getOutGraph(),
-				myQanaryMessage.getEndpoint(), myQanaryUtils);
+		this.setLanguageText(languages, myQanaryQuestion, myQanaryUtils);
 
 		return myQanaryMessage;
 	}
@@ -130,29 +134,25 @@ public class LanguageDetection extends QanaryComponent {
 		return new ArrayList<>(Arrays.asList(detectedLangOfGivenQuestion));
 	}
 
-	public void setLanguageText(List<String> languages, URI question, URI outGraph, URI endpoint,
-			QanaryUtils myQanaryUtils) throws Exception {
-		String part = "";
+	public void setLanguageText(List<String> languages, QanaryQuestion myQanaryQuestion, QanaryUtils myQanaryUtils) throws Exception {
 		for (int i = 0; i < languages.size(); i++) {
-			part += "?a oa:hasBody \"" + languages.get(i) + "\" . ";
+			QuerySolutionMap bindings = new QuerySolutionMap();
+			// use here the variable names defined in method insertAnnotationOfAnswerSPARQL
+			bindings.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+			bindings.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+			bindings.add("language", ResourceFactory.createStringLiteral(languages.get(i)));
+			bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+			// get the template of the INSERT query
+			String sparql = this.loadQueryFromFile(FILENAME_ANNOTATIONS_FILTERED, bindings);
+			logger.info("SPARQL insert for adding data to Qanary triplestore: {}", sparql);
+
+			myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 		}
-		String sparql = "" //
-				+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-				+ "INSERT { " //
-				+ "	GRAPH <" + outGraph + "> { " //
-				+ "		?a a qa:AnnotationOfQuestionLanguage . " //
-				+ part //
-				+ "		?a 	oa:hasTarget <" + question + "> ; " //
-				+ "   		oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; " //
-				+ "   		oa:annotatedAt ?time  " //
-				+ " } " //
-				+ "} " //
-				+ "WHERE { " //
-				+ "	BIND (IRI(str(RAND())) AS ?a) . " //
-				+ "	BIND (now() as ?time) . " //
-				+ "}";
-		myQanaryUtils.updateTripleStore(sparql, endpoint);
+	}
+
+	private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+		return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
 	}
 
 }
