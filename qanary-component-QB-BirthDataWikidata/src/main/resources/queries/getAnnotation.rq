@@ -8,12 +8,14 @@ SELECT * WHERE {
 		?annotation     oa:hasBody   ?wikidataResource .
 		?annotation     qa:score     ?annotationScore .
 		?annotation     oa:hasTarget ?target .
+
+		FILTER (?wikidataResource = ?value)
+
 		?target     oa:hasSource    ?source .
 		?target     oa:hasSelector  ?textSelector .
 		?textSelector   rdf:type    oa:TextPositionSelector .
 		?textSelector   oa:start    ?start .
 		?textSelector   oa:end      ?end .
-		FILTER(?start = ?filterStart) .
 	}
 }
 ORDER BY ?start
