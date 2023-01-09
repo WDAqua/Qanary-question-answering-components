@@ -1,23 +1,24 @@
-# A out-of-the-box Qanary Language Classifier Component
+= A out-of-the-box Qanary Language Classifier Component
 
 The component is classifying the queston of the current process (already stored in the Qanary triplestore) using the Shuyo language model.
-The component is creating a new annotation of the type `qa:AnnotationOfQuestionLanguage`. 
+The component is creating a new annotation of the type `qa:AnnotationOfQuestionLanguage`.
 
-## Data 
+== Data
 
 To retrieve all information computed by this Qanary component from the Qanary triplestore you might use the following SPARQL query:
 
-```sparql
-PREFIX qa: <http://www.wdaqua.eu/qa#> 
-SELECT * 
-FROM <YOURCURRENTGRAPHID> 
-WHERE { 
-    ?a a qa:AnnotationOfQuestionLanguage . 
+[source, sparql]
+----
+PREFIX qa: <http://www.wdaqua.eu/qa#>
+SELECT *
+FROM <YOURCURRENTGRAPHID>
+WHERE {
+    ?a a qa:AnnotationOfQuestionLanguage .
     ?a ?p ?o .
 }
-```
+----
 
-## Additional Web Interfaces
+== Additional Web Interfaces
 
 An additional QAnswer API wrapper is provided: `POST` method at `/api`.
 You should provide the following data in a JSON format:
@@ -26,31 +27,33 @@ You should provide the following data in a JSON format:
 
 Examples:
 
-```json
+[source, json]
+----
 {
   "question": "What is the capital of Germany?"
 }
-```
+----
 
-## Input specification
+== Input specification
 
 Not applicable as the textual question is a default parameter
 
-## Output specification
+== Output specification
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <urn:qanary:output> a qa:AnnotationOfQuestionLanguage .
-<urn:qanary:output> oa:hasTarget <urn:myQanaryQuestion> ; 
+<urn:qanary:output> oa:hasTarget <urn:myQanaryQuestion> ;
   oa:hasBody "lang-id"^^xsd:string ;
   oa:annotatedBy <urn:qanary:LDShuyo> ;
   oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
-```
+----
 
-### API documentation
+=== API documentation
 
 The OpenAPI (Swagger) documentation is available at `/swagger-ui.html` (Web page) and `/api-docs` (JSON format).
 You might redefine the documentation endpoints in your application.properties file.
