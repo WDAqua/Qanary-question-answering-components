@@ -181,7 +181,7 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         	logger.info("no annotation for {} and {} found", FIRSTNAME_ANNOTATION, LASTNAME_ANNOTATION);
         }
 
-        if (this.isQuestionSupported(myQuestion)) {
+        if ((queriesForAnnotation.isEmpty() || queriesForAnnotation.get(0).isBlank()) && this.isQuestionSupported(myQuestion)) {
             // In this example we are only interested in Entities that were found at a specific point
             // in the question: e.g., 'when and where was <name> born?'.
             // Because we do not require entities that might have been found anywhere else in the
