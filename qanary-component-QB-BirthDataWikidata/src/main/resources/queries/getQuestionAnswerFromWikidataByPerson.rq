@@ -34,3 +34,4 @@ SELECT DISTINCT ?firstnameLabel ?lastnameLabel ?birthplace ?birthplaceLabel ?bir
   
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
+ORDER BY ?firstnameLabel ?lastnameLabel
