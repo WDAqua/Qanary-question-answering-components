@@ -1,5 +1,7 @@
-from app.qa_interface import qa_interface
+from component.qa_interface import qa_interface
 from flask import Flask
+
+version = "0.1.0"
 
 # default config file (use -c parameter on command line specify a custom config file)
 configfile = "app.conf"

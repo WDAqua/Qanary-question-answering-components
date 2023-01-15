@@ -1,14 +1,10 @@
 import os
 import json
-import uvicorn
 import logging
-from datetime import datetime
-from fastapi import FastAPI, Request
+from fastapi import APIRouter, Request
 from SPARQLWrapper import SPARQLWrapper, JSON
 from fastapi.responses import JSONResponse, PlainTextResponse
 
-from qanary_helpers.registration import Registration
-from qanary_helpers.registrator import Registrator
 from qanary_helpers.qanary_queries import insert_into_triplestore, get_text_question_in_graph, query_triplestore
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
@@ -17,16 +13,10 @@ if not os.getenv("PRODUCTION"):
     from dotenv import load_dotenv
     load_dotenv() # required for debugging outside Docker
 
-SPRING_BOOT_ADMIN_URL = os.environ['SPRING_BOOT_ADMIN_URL']    
-SPRING_BOOT_ADMIN_USERNAME = os.environ['SPRING_BOOT_ADMIN_USERNAME']
-SPRING_BOOT_ADMIN_PASSWORD = os.environ['SPRING_BOOT_ADMIN_PASSWORD']
-SERVER_HOST = os.environ['SERVER_HOST']
-SERVER_PORT = os.environ['SERVER_PORT']
+
 SERVICE_NAME_COMPONENT = os.environ['SERVICE_NAME_COMPONENT']
-SERVICE_DESCRIPTION_COMPONENT = os.environ['SERVICE_DESCRIPTION_COMPONENT']
 ENDPOINT = os.environ['SPARQL_ENDPOINT']
 
-URL_COMPONENT = f"http://{SERVER_HOST}:{SERVER_PORT}"
 headers = {'Content-Type': 'application/json'}
 agent_header = str(os.getenv("AGENT_HEADER"))
 dummy_answers = {
@@ -42,7 +32,11 @@ dummy_answers = {
 }
 
 
-app = FastAPI()
+router = APIRouter(
+    tags=[SERVICE_NAME_COMPONENT],
+    responses={404: {"description": "Not found"}},
+)
+
 
 def execute(query: str, endpoint_url: str = ENDPOINT):
     """
@@ -64,7 +58,7 @@ def execute(query: str, endpoint_url: str = ENDPOINT):
         
         return {'error': e} 
 
-@app.post("/annotatequestion")
+@router.post("/annotatequestion")
 async def qanary_service(request: Request):
     request_json = await request.json()
     triplestore_endpoint_url = request_json["values"]["urn:qanary#endpoint"]
@@ -134,31 +128,6 @@ async def qanary_service(request: Request):
 
     return JSONResponse(content=request_json)
 
-
-@app.get("/health")
+@router.get("/health")
 def health():
     return PlainTextResponse(content="alive") 
-
-
-metadata = {
-    "start": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-    "description": SERVICE_DESCRIPTION_COMPONENT,
-    "written in": "Python"
-}
-
-logging.info(f"component metadata: {str(metadata)}") 
-
-registration = Registration(
-    name=SERVICE_NAME_COMPONENT,
-    serviceUrl=f"{URL_COMPONENT}",
-    healthUrl=f"{URL_COMPONENT}/health",
-    metadata=metadata
-)
-
-reg_thread = Registrator(SPRING_BOOT_ADMIN_URL, SPRING_BOOT_ADMIN_USERNAME,
-                        SPRING_BOOT_ADMIN_PASSWORD, registration)
-reg_thread.setDaemon(True)
-reg_thread.start()
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=int(SERVER_PORT))
