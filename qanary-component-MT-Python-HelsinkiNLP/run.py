@@ -4,7 +4,7 @@ from datetime import datetime
 from qanary_helpers.registration import Registration
 from qanary_helpers.registrator import Registrator
 
-from app import app, healthendpoint, aboutendpoint
+from component import app, healthendpoint, aboutendpoint
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
@@ -15,7 +15,7 @@ SERVICE_HOST = os.getenv('SERVER_HOST')
 SERVICE_PORT = os.getenv('SERVER_PORT')
 SERVICE_NAME_COMPONENT = os.getenv('SERVICE_NAME_COMPONENT')
 SERVICE_DESCRIPTION_COMPONENT = os.getenv('SERVICE_DESCRIPTION_COMPONENT')
-URL_COMPONENT = f"http://{SERVICE_HOST}:{SERVICE_PORT}"
+URL_COMPONENT = f"{SERVICE_HOST}:{SERVICE_PORT}"
 
 # define metadata that will be shown in the Spring Boot Admin server UI
 metadata = {

@@ -7,7 +7,7 @@ PREFIX p: <http://www.wikidata.org/prop/>
 PREFIX pq: <http://www.wikidata.org/prop/qualifier/>
 PREFIX ps: <http://www.wikidata.org/prop/statement/>
 
-SELECT DISTINCT ?person ?birthplace ?birthplaceLabel ?birthdate WHERE {
+SELECT DISTINCT ?person ?personLabel ?birthplace ?birthplaceLabel ?birthdate WHERE {
     values ?allowedPropPlace { pq:P17 }
 
     ?person wdt:P31 wd:Q5.
@@ -34,3 +34,4 @@ SELECT DISTINCT ?person ?birthplace ?birthplaceLabel ?birthdate WHERE {
 	
     SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
+ORDER BY ?personLabel

@@ -1,7 +1,8 @@
 version: '3'
 services:
-  rel-python-falcon: # for building from source
+  qanary-component-rel-python-falcon: # for building from source
     # or use image: qanary/qanary-component-rel-python-falcon:latest
+    image: qanary/qanary-component-rel-python-falcon:latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,4 +10,3 @@ services:
       - .env
     container_name: $SERVICE_NAME_COMPONENT
     network_mode: host # usage of ports also possible
-    command: uvicorn component:app --host 0.0.0.0 --port=$SERVER_PORT # for additional options see uvicorn documentation
