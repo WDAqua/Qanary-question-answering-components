@@ -1,18 +1,19 @@
-# NED Babelfy
+= NED Babelfy
 
-## Description
+== Description
 
 Receives a textual question recognizes and disambiguates named entities and stores them.
 
-## Input specification
+== Input specification
 
 Not applicable as the textual question is a default parameter
 
-## Output specification
+== Output specification
 
 Comment: no score in the output
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -29,4 +30,4 @@ Comment: no score in the output
 <urn:qanary:output> oa:hasBody <urn:dbr:Resource> ;
     oa:annotatedBy <urn:qanary:Babelfy> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
-```
+----
