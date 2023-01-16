@@ -1,18 +1,20 @@
-# NED AGDISTIS
+= NED AGDISTIS
 
-## Description
+== Description
 
-Receives a textual question and the spots from an NER component, disambiguates the spots and stores the corresponding
+Receives a textual question and the spots from an NER component, disambiguate the spots and stores the corresponding
 named entities.
 
-## Input specification
+== Input specification
 
-```ttl
+
+[source,ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
-<urn:qanary:input> a qa:AnnotationOfSpotInstance . 
-<urn:qanary:input> oa:hasTarget [ 
+<urn:qanary:input> a qa:AnnotationOfSpotInstance .
+<urn:qanary:input> oa:hasTarget [
     a    oa:SpecificResource ;
     oa:hasSource  <urn:qanary:myQuestion> ;
     oa:hasSelector  [
@@ -21,13 +23,14 @@ named entities.
         oa:end  "5"^^xsd:nonNegativeInteger .
     ]
 ] ;
-```
+----
 
-## Output specification
+== Output specification
 
 Comment: no score in the output
 
-```ttl
+[source,ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -44,4 +47,4 @@ Comment: no score in the output
 <urn:qanary:output> oa:hasBody <urn:dbr:Resource> ;
     oa:annotatedBy <http://agdistis.aksw.org> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
-```
+----
