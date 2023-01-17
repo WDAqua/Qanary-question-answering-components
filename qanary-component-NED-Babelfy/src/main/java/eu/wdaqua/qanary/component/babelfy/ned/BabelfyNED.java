@@ -53,24 +53,20 @@ public class BabelfyNED extends QanaryComponent {
 	@Override
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("process: {}", myQanaryMessage);
-		// TODO: implement processing of question
 
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
 		QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 
-		logger.info("Question {}", myQuestion);
+		logger.info("Question: {}", myQuestion);
+		
+		// fetch data from external API
 		ArrayList<BabelfyServiceFetcher.Link> links = babelfyServiceFetcher.getLinksForQuestion(
 				babelfyConfiguration.getEndpoint(), myQuestion, babelfyConfiguration.getParameters()
 		);
 
-
-		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-		// TODO: insert data in QanaryMessage.outgraph
-
-		logger.info("apply vocabulary alignment on outgraph");
-		// TODO: implement this (custom for every component)
-
+		logger.debug("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
+		logger.debug("apply vocabulary alignment on outgraph");
 		for (BabelfyServiceFetcher.Link l : links) {
 			QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
 			bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
@@ -82,7 +78,7 @@ public class BabelfyNED extends QanaryComponent {
 
 			// get the template of the INSERT query
 			String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
-			logger.info("Sparql query {}", sparql);
+			logger.info("SPARQL query: {}", sparql);
 			myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 
 		}
