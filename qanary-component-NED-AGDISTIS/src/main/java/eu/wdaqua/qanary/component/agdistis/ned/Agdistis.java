@@ -3,16 +3,22 @@ package eu.wdaqua.qanary.component.agdistis.ned;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -25,8 +31,17 @@ import java.util.ArrayList;
 
 @Component
 public class Agdistis extends QanaryComponent {
-    private final String agdistisService = "http://139.18.2.164:8080/AGDISTIS";
+    @Value("${agdistis.service.url}")
+    private String agdistisServiceUrl;
     private static final Logger logger = LoggerFactory.getLogger(Agdistis.class);
+
+    private final String applicationName;
+    private final String FILENAME_SPOTS_FROM_GRAPH = "select_all_spots_from_graph.rq";
+    private final String FILENAME_INSERT_ANNOTATION = "insert_one_annotation.rq";
+
+    public Agdistis(@Value("${spring.application.name}") final String applicationName) {
+        this.applicationName = applicationName;
+    }
 
     public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
         try {
@@ -42,25 +57,12 @@ public class Agdistis extends QanaryComponent {
             String myQuestion = myQanaryQuestion.getTextualRepresentation();
 
             // Retrieves the spots from the knowledge graph
-            String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> "
-                    + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> "
-                    + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> "
-                    + "SELECT ?start ?end "
-                    + "FROM <" + myQanaryMessage.getInGraph() + "> "
-                    + "WHERE { "
-                    + "?a a qa:AnnotationOfSpotInstance . "
-                    + "?a oa:hasTarget [ "
-                    + "		a    oa:SpecificResource; "
-                    + "		oa:hasSource    ?q; "
-                    + "		oa:hasSelector  [ "
-                    + "			a oa:TextPositionSelector ; "
-                    + "			oa:start ?start ; "
-                    + "			oa:end  ?end "
-                    + "		] "
-                    + "] ; "
-                    + "} "
-                    + "ORDER BY ?start ";
-            ResultSet r = myQanaryUtils.selectFromTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+            QuerySolutionMap bindings = new QuerySolutionMap();
+            bindings.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+            String sparql = this.loadQueryFromFile(FILENAME_SPOTS_FROM_GRAPH, bindings);
+
+            ResultSet r = myQanaryUtils.getQanaryTripleStoreConnector().select(sparql);
+
             ArrayList<Spot> spots = new ArrayList<Spot>();
             while (r.hasNext()) {
                 QuerySolution s = r.next();
@@ -72,7 +74,7 @@ public class Agdistis extends QanaryComponent {
             }
 
             // Step 2: Call the AGDISTIS service
-            // Informations about the AGDISTIS API can be found here: https://github.com/AKSW/AGDISTIS/wiki/2-Asking-the-webservice
+            // Information about the AGDISTIS API can be found here: https://github.com/AKSW/AGDISTIS/wiki/2-Asking-the-webservice
             // curl --data-urlencode "text='The <entity>University of Leipzig</entity> in <entity>Barack Obama</entity>.'" -d type='agdistis' http://139.18.2.164:8080/AGDISTIS
             // Match the format "The <entity>University of Leipzig</entity> in <entity>Barack Obama</entity>."
             String input = myQuestion;
@@ -85,13 +87,13 @@ public class Agdistis extends QanaryComponent {
                 offset += "<entity>".length() + "</entity>".length();
             }
             // String input="The <entity>University of Leipzig</entity> in <entity>Barack Obama</entity>.";
-            logger.info("Input to Agdistis: " + input);
-            UriComponentsBuilder service = UriComponentsBuilder.fromHttpUrl(agdistisService);
-            logger.info("Service request " + service);
+            logger.info("Input to AGDISTIS: {}", input);
+            UriComponentsBuilder service = UriComponentsBuilder.fromHttpUrl(agdistisServiceUrl);
+            logger.info("Service request: {}", service);
             String body = "type=agdistis&" + "text='" + URLEncoder.encode(input, "UTF-8") + "'";
             RestTemplate restTemplate = new RestTemplate();
             String response = restTemplate.postForObject(service.build().encode().toUri(), body, String.class);
-            logger.info("JSON document from Agdistis api {}", response);
+            logger.info("JSON document from AGDISTIS API: {}", response);
             // Extract entities
             ArrayList<Link> links = new ArrayList<Link>();
             JSONArray arr = new JSONArray(response);
@@ -106,40 +108,31 @@ public class Agdistis extends QanaryComponent {
             }
 
             //STEP4: Push the result of the component to the triplestore
-            logger.info("Apply commons alignment on outgraph");
+            logger.debug("Apply commons alignment on outgraph");
             for (Link l : links) {
-                sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
-                        + "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
-                        + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> "
-                        + "INSERT { "
-                        + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { "
-                        + "  ?a a qa:AnnotationOfInstance . "
-                        + "  ?a oa:hasTarget [ "
-                        + "           a    oa:SpecificResource; "
-                        + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; "
-                        + "           oa:hasSelector  [ "
-                        + "                    a oa:TextPositionSelector ; "
-                        + "                    oa:start \"" + l.begin + "\"^^xsd:nonNegativeInteger ; "
-                        + "                    oa:end  \"" + l.end + "\"^^xsd:nonNegativeInteger  "
-                        + "           ] "
-                        + "  ] . "
-                        + "  ?a oa:hasBody <" + l.link + "> ;"
-                        + "     oa:annotatedBy <http://agdistis.aksw.org> ; "
-                        + "	    oa:annotatedAt ?time  "
-                        + "}} "
-                        + "WHERE { "
-                        + "BIND (IRI(str(RAND())) AS ?a) ."
-                        + "BIND (now() as ?time) "
-                        + "}";
-                logger.info("Sparql query {}", sparql);
-                myQanaryUtils.updateTripleStore(sparql, myQanaryQuestion.getEndpoint().toString());
+                QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+                bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+                bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+                bindingsForInsert.add("start", ResourceFactory.createTypedLiteral(String.valueOf(l.begin), XSDDatatype.XSDnonNegativeInteger));
+                bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(l.end), XSDDatatype.XSDnonNegativeInteger));
+                bindingsForInsert.add("answer", ResourceFactory.createStringLiteral(l.link));
+                bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+                // get the template of the INSERT query
+                sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
+                logger.info("SPARQL query: {}", sparql);
+                myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
             }
             long estimatedTime = System.currentTimeMillis() - startTime;
-            logger.info("Time {}", estimatedTime);
+            logger.info("Time: {}", estimatedTime);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return myQanaryMessage;
+    }
+
+    private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
     }
 
     class Spot {

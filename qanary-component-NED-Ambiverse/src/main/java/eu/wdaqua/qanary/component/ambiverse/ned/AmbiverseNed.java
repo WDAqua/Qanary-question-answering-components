@@ -3,8 +3,12 @@ package eu.wdaqua.qanary.component.ambiverse.ned;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.apache.commons.io.IOUtils;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.query.QuerySolutionMap;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,15 +35,21 @@ import java.util.Arrays;
  */
 public class AmbiverseNed extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(AmbiverseNed.class);
-    private final String CLIENT_ID = "5e15e933"; // TODO: move to application.properties
-    private final String CLIENT_SECRET = "a09256c925adc9e2279435038df9d55e"; // TODO: move to application.properties
-    private String urlAccessToken = "https://api.ambiverse.com/oauth/token"; // TODO: move to application.properties
-    private String urlEntityLinkServicePlain = "api.ambiverse.com/v2/entitylinking/analyze"; // TODO: move to
+    @Value("${ambiverse.client.id}")
+    private String CLIENT_ID;
+    @Value("${ambiverse.client.secret}")
+    private String CLIENT_SECRET;
+    @Value("${ambiverse.access.token.url}")
+    private String urlAccessToken;
+    @Value("${ambiverse.entity.link.service.plain.url}")
+    private String urlEntityLinkServicePlain;
     // application.properties
     private String applicationName;
 
     private String urlEntityLinkService;
     private String[] accessTokenCmd;
+
+    private String FILENAME_INSERT_ANNOTATION = "insert_one_annotation.rq";
 
     /*
      * constructor calling super constructor and showing printing the used command
@@ -124,7 +134,7 @@ public class AmbiverseNed extends QanaryComponent {
                     // String url= (String)explrObjectEL.getJSONObject("entity").get("url");
                     // String finalUrl =
                     // "http://dbpedia.org/resource"+url.substring(28).replace("%20", "_");
-                    logger.info("Question: {} {}", begin, end);
+                    logger.info("Question at index: {}-{}", begin, end);
                     Selection s = new Selection();
                     s.begin = begin;
                     s.end = end;
@@ -142,7 +152,7 @@ public class AmbiverseNed extends QanaryComponent {
                     selections.add(s);
                 }
             } else {
-                logger.error("Access_Token: ", "Access token can not be accessed");
+                logger.error("Access_Token: {}", "Access token can not be accessed");
             }
 
         } catch (JSONException e) {
@@ -157,35 +167,27 @@ public class AmbiverseNed extends QanaryComponent {
         }
 
         logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-        logger.info("apply vocabulary alignment on outgraph");
-        // TODO: implement this (custom for every component)
+        logger.debug("apply vocabulary alignment on outgraph");
         for (Selection s : selections) {
-            String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-                    + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-                    + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-                    + "INSERT { " + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
-                    + "  ?a a qa:AnnotationOfInstance . " //
-                    + "  ?a oa:hasTarget [ " //
-                    + "           a    oa:SpecificResource; " //
-                    + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
-                    + "           oa:hasSelector  [ " //
-                    + "                    a oa:TextPositionSelector ; " //
-                    + "                    oa:start \"" + s.begin + "\"^^xsd:nonNegativeInteger ; " //
-                    + "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " //
-                    + "           ] " //
-                    + "  ] . " //
-                    + "  ?a oa:hasBody <" + s.link + "> ;" //
-                    + "     oa:annotatedBy <urn:qanary.NED#" + this.applicationName + "> ; " //
-                    + "	    oa:annotatedAt ?time  " + "}} " //
-                    + "WHERE { " //
-                    + "  BIND (IRI(str(RAND())) AS ?a) ."//
-                    + "  BIND (now() as ?time) " //
-                    + "}";
-            logger.debug("Sparql query: {}", sparql);
-            myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+            QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+            bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+            bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+            bindingsForInsert.add("start", ResourceFactory.createTypedLiteral(String.valueOf(s.begin), XSDDatatype.XSDnonNegativeInteger));
+            bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(s.end), XSDDatatype.XSDnonNegativeInteger));
+            bindingsForInsert.add("answer", ResourceFactory.createStringLiteral(s.link));
+            bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+            // get the template of the INSERT query
+            String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
+            logger.info("SPARQL query: {}", sparql);
+            myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
         }
         return myQanaryMessage;
 
+    }
+
+    private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
     }
 
     class Selection {
