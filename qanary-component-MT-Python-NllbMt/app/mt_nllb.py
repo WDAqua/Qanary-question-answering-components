@@ -48,7 +48,6 @@ def qanary_service():
 
     # TODO: maybe check for language annotation
     # if none, use default
-    # alternative: query LibreTranslate with automatic language detection
 
     #lang, prob = langid.classify(text)
     lang = detect(text)
@@ -56,7 +55,7 @@ def qanary_service():
 
 
     ## MAIN FUNCTIONALITY
-    tokenizer.src_lang = lang_code_map[lang] # TODO: do formats match? 
+    tokenizer.src_lang = lang_code_map[lang] 
     logging.info(f"source language mapped code: {tokenizer.src_lang}")
     batch = tokenizer(text, return_tensors="pt")
 
