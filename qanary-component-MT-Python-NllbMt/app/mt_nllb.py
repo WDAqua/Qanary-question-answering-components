@@ -12,7 +12,7 @@ logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
 mt_nllb_bp = Blueprint("mt_nllb_bp", __name__, template_folder="templates")
 
 SERVICE_NAME_COMPONENT = os.environ["SERVICE_NAME_COMPONENT"]
-supported_langs = ["en"] # TODO: check supported languages for LibreTranslate
+supported_langs = ["en"] # TODO: check supported languages 
 langid.set_languages(supported_langs)
 # TODO: check code mapping
 
