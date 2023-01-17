@@ -119,4 +119,4 @@ def index():
     """examplary GET endpoint"""
 
     logging.info("host_url: %s" % (request.host_url))
-    return "Python MT LibreTranslate NLP Qanary component"
+    return "Python MT NLLB Qanary component"
