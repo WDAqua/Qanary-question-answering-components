@@ -87,13 +87,13 @@ public class Agdistis extends QanaryComponent {
                 offset += "<entity>".length() + "</entity>".length();
             }
             // String input="The <entity>University of Leipzig</entity> in <entity>Barack Obama</entity>.";
-            logger.info("Input to Agdistis: " + input);
+            logger.info("Input to AGDISTIS: {}", input);
             UriComponentsBuilder service = UriComponentsBuilder.fromHttpUrl(agdistisServiceUrl);
-            logger.info("Service request " + service);
+            logger.info("Service request: {}", service);
             String body = "type=agdistis&" + "text='" + URLEncoder.encode(input, "UTF-8") + "'";
             RestTemplate restTemplate = new RestTemplate();
             String response = restTemplate.postForObject(service.build().encode().toUri(), body, String.class);
-            logger.info("JSON document from Agdistis api {}", response);
+            logger.info("JSON document from AGDISTIS API: {}", response);
             // Extract entities
             ArrayList<Link> links = new ArrayList<Link>();
             JSONArray arr = new JSONArray(response);
@@ -108,7 +108,7 @@ public class Agdistis extends QanaryComponent {
             }
 
             //STEP4: Push the result of the component to the triplestore
-            logger.info("Apply commons alignment on outgraph");
+            logger.debug("Apply commons alignment on outgraph");
             for (Link l : links) {
                 QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
                 bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
@@ -120,11 +120,11 @@ public class Agdistis extends QanaryComponent {
 
                 // get the template of the INSERT query
                 sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
-                logger.info("Sparql query {}", sparql);
+                logger.info("SPARQL query: {}", sparql);
                 myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
             }
             long estimatedTime = System.currentTimeMillis() - startTime;
-            logger.info("Time {}", estimatedTime);
+            logger.info("Time: {}", estimatedTime);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
