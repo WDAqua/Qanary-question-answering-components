@@ -68,6 +68,11 @@ public class BirthDataQueryBuilder extends QanaryComponent {
 
     public BirthDataQueryBuilder(@Value("$P{spring.application.name}") final String applicationName) {
         this.applicationName = applicationName;
+	// check if files exists and are not empty
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_ANNOTATIONS);
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_ANNOTATIONS_FILTERED);
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_WIKIDATA_BIRTHDATA_QUERY_PERSON);
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_WIKIDATA_BIRTHDATA_QUERY_FIRST_AND_LASTNAME);
     }
 
     /**
