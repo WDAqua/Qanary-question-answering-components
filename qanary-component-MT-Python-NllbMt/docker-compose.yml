@@ -1,0 +1,10 @@
+version: '3'
+services: 
+  mt-nllb:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    network_mode: host
+    env_file:
+      - .env
+
