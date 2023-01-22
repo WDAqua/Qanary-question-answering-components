@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +36,7 @@ import java.util.jar.JarFile;
  */
 @Component
 public class LanguageDetection extends QanaryComponent {
-	private final String FILENAME_ANNOTATIONS_FILTERED = "insert_one_annotation_of_language.rq";
+	private final String FILENAME_ANNOTATIONS_FILTERED = "/queries/insert_one_annotation_of_question_language.rq";
 
 	private static final Logger logger = LoggerFactory.getLogger(LanguageDetection.class);
 	private static boolean languageProfileLoaded = false;
@@ -47,7 +46,19 @@ public class LanguageDetection extends QanaryComponent {
 			throws IOException, LangDetectException {
 
 		this.applicationName = applicationName;
+		
+		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_ANNOTATIONS_FILTERED);
 
+		this.safeLoadProfile();
+	}
+	
+	/**
+	 * load profile with several fallbacks
+	 * 
+	 * @throws IOException
+	 * @throws LangDetectException
+	 */
+	private void safeLoadProfile() throws IOException, LangDetectException {
 		// just do this once as the DetectorFactory will crash otherwise
 		if (!languageProfileLoaded) {
 			languageProfileLoaded = true;
@@ -90,10 +101,9 @@ public class LanguageDetection extends QanaryComponent {
 	@Override
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("Qanary Message: {}", myQanaryMessage);
-		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
 
 		// STEP 1: Retrieve the question
-		QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
+		QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion();
 
 		// question string is required as input for the service call
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
@@ -103,7 +113,7 @@ public class LanguageDetection extends QanaryComponent {
 		ArrayList<String> languages = (ArrayList<String>) getDetectedLanguages(myQuestion);
 
 		// STEP 3: The language tag is pushed to the Qanary triple store
-		this.setLanguageText(languages, myQanaryQuestion, myQanaryUtils);
+		this.setLanguageText(languages, myQanaryQuestion, this.getUtils());
 
 		return myQanaryMessage;
 	}
@@ -134,7 +144,7 @@ public class LanguageDetection extends QanaryComponent {
 		return new ArrayList<>(Arrays.asList(detectedLangOfGivenQuestion));
 	}
 
-	public void setLanguageText(List<String> languages, QanaryQuestion myQanaryQuestion, QanaryUtils myQanaryUtils) throws Exception {
+	public void setLanguageText(List<String> languages, QanaryQuestion<?> myQanaryQuestion, QanaryUtils myQanaryUtils) throws Exception {
 		for (int i = 0; i < languages.size(); i++) {
 			QuerySolutionMap bindings = new QuerySolutionMap();
 			// use here the variable names defined in method insertAnnotationOfAnswerSPARQL
