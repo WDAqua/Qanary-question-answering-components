@@ -7,6 +7,3 @@ services:
     network_mode: host
     env_file:
       - .env
-    volumes:
-      - /path/to/huggingface-docker-cache:/root/.cache/huggingface/transformers # for caching huggingface models
-
