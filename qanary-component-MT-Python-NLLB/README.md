@@ -20,13 +20,13 @@ Not applicable as the textual question is a default parameter
 <urn:qanary:output1> a qa:AnnotationOfQuestionTranslation ;
     oa:hasTarget <urn:myQanaryQuestion>; 
     oa:hasBody "translation_result"@en ;
-    oa:annotatedBy <urn:qanary:PythonMTNllb> ;
+    oa:annotatedBy <urn:qanary:PythonMTNLLB> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 
 <urn:qanary:output2> a qa:AnnotationOfQuestionLanguage .
   oa:hasTarget <urn:myQanaryQuestion> ; 
   oa:hasBody "lang-id"^^xsd:string ;
-  oa:annotatedBy <urn:qanary:PythonMTNllb> ;
+  oa:annotatedBy <urn:qanary:PythonMTNLLB> ;
   oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ```
 
@@ -41,7 +41,7 @@ git clone https://github.com/WDAqua/Qanary-question-answering-components.git
 2. Switch to the component's directory:
 
 ```bash
-cd Qanary-question-answering-components/qanary-component-Python-MT-Nllb
+cd Qanary-question-answering-components/qanary-component-Python-MT-NLLB
 ```
 
 3. Set the environment variables in the `.env` file
@@ -53,7 +53,7 @@ SERVER_HOST=http://public-component-host
 SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE-BASE-URL=http://public-component-host:40120
 SPRING_BOOT_ADMIN_USERNAME=admin
 SPRING_BOOT_ADMIN_PASSWORD=admin
-SERVICE_NAME_COMPONENT=MT-Nllb
+SERVICE_NAME_COMPONENT=MT-NLLB
 SERVICE_DESCRIPTION_COMPONENT=Translates question to English
 ```
 

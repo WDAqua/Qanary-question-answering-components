@@ -1,6 +1,0 @@
-Flask==2.2.2
-langdetect==1.0.9
-langid==1.1.6
-mock==5.0.1
-qanary_helpers==0.2.2
-transformers==4.25.1
