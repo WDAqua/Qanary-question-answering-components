@@ -1,12 +1,21 @@
 version: '3'
 services: 
-  mt-nllb:
+  build:
+    image: qanary-component-mt-python-nllb
     build: 
       context: .
       dockerfile: Dockerfile
     network_mode: host
     env_file:
       - .env
-    volumes:
-      - /path/to/huggingface-docker-cache:/root/.cache/huggingface/transformers # for caching huggingface models
+  # tag latest
+  latest:
+    extends: build 
+    image: qanary-component-mt-python-nllb:latest
+  version: 
+    extends: build
+    image: qanary-component-mt-python-nllb:${SERVICE_VERSION:-latest}
+
+
+  # tag specific version
 
