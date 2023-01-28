@@ -12,10 +12,7 @@ services:
   latest:
     extends: build 
     image: qanary-component-mt-python-nllb:latest
+  # tag version
   version: 
     extends: build
     image: qanary-component-mt-python-nllb:${SERVICE_VERSION:-latest}
-
-
-  # tag specific version
-
