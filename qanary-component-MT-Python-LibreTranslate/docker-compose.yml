@@ -1,0 +1,25 @@
+version: "3.5"
+services:
+  libretranslate:
+    image: libretranslate
+    restart: unless-stopped
+    command: ['--host', '0.0.0.0']
+    network_mode: host
+  # component
+  build:
+    image: qanary-component-mt-python-libretranslate
+    build:
+      context: .
+      dockerfile: Dockerfile
+    network_mode: host
+    env_file:
+      - .env
+  # tag latest
+  latest:
+    extends: build
+    image: qanary-component-mt-python-libretranslate:latest
+  # tag version
+  version:
+    extends: build
+    image: qanary-component-mt-python-libretranslate:${SERVICE_VERSION:-latest}
+
