@@ -49,7 +49,7 @@ public class AmbiverseNed extends QanaryComponent {
     private String urlEntityLinkService;
     private String[] accessTokenCmd;
 
-    private String FILENAME_INSERT_ANNOTATION = "insert_one_annotation.rq";
+    private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
 
     /*
      * constructor calling super constructor and showing printing the used command
@@ -59,6 +59,9 @@ public class AmbiverseNed extends QanaryComponent {
         super();
 
         this.applicationName = applicationName;
+
+        // check if files exists and are not empty
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
 
         urlEntityLinkService = "https://" + urlEntityLinkServicePlain;
         String[] accessTokenCmd = {"curl", "-X", "POST", "--header", "Content-Type: application/x-www-form-urlencoded",
