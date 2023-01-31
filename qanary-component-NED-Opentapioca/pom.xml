@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary-component-NED-Opentapioca</artifactId>
-	<version>3.1.4</version>
+	<version>3.2.0</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -14,7 +14,7 @@
 	</parent>
 	<properties>
 		<java.version>11</java.version>
-		<qanary.version>[3.1.2,4.0.0)</qanary.version>
+		<qanary.version>[3.7.0,4.0.0)</qanary.version>
 		<spring-boot-admin.version>2.6.7</spring-boot-admin.version>
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<docker.image.name>qanary-component-ned-opentapioca</docker.image.name>
@@ -50,7 +50,6 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>3.0.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -83,13 +82,23 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-to-slf4j</artifactId>
-			<version>[2.15.0,3.)</version>
+			<version>[2.19.0,3.)</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.logging.log4j</groupId>
 					<artifactId>log4j-api</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.hazelcast/hazelcast -->
+		<dependency>
+		    <groupId>com.hazelcast</groupId>
+		    <artifactId>hazelcast</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.hazelcast/hazelcast-spring -->
+		<dependency>
+		    <groupId>com.hazelcast</groupId>
+		    <artifactId>hazelcast-spring</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
