@@ -40,7 +40,7 @@ public class Application {
 	}
 	
 	@Bean 
-	public BirthDataQueryBuilderController BirthDataQueryBuilderController(BirthDataQueryBuilder myBirthDataQueryBuilder) {
+	public BirthDataQueryBuilderController getBirthDataQueryBuilderController(BirthDataQueryBuilder myBirthDataQueryBuilder) {
 		return new BirthDataQueryBuilderController(myBirthDataQueryBuilder);
 	}
 
