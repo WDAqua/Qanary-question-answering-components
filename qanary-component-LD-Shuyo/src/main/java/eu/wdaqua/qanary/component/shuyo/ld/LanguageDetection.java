@@ -37,7 +37,7 @@ import java.util.jar.JarFile;
  */
 @Component
 public class LanguageDetection extends QanaryComponent {
-	private final String FILENAME_ANNOTATIONS_FILTERED = "insert_one_annotation_of_language.rq";
+	private final String FILENAME_ANNOTATIONS_FILTERED = "/queries/insert_one_annotation_of_language.rq";
 
 	private static final Logger logger = LoggerFactory.getLogger(LanguageDetection.class);
 	private static boolean languageProfileLoaded = false;
@@ -47,6 +47,9 @@ public class LanguageDetection extends QanaryComponent {
 			throws IOException, LangDetectException {
 
 		this.applicationName = applicationName;
+
+		// check if files exists and are not empty
+		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_ANNOTATIONS_FILTERED);
 
 		// just do this once as the DetectorFactory will crash otherwise
 		if (!languageProfileLoaded) {
