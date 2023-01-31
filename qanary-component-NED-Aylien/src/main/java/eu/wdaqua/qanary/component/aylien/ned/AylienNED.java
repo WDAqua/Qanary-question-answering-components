@@ -40,10 +40,13 @@ public class AylienNED extends QanaryComponent {
 
 	private final String applicationName;
 
-	private String FILENAME_INSERT_ANNOTATION = "insert_one_annotation.rq";
+	private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
 
 	public AylienNED(@Value("${spring.application.name}") final String applicationName) throws Exception {
 		this.applicationName = applicationName;
+
+		// check if files exists and are not empty
+		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
 	}
 
 	/**
