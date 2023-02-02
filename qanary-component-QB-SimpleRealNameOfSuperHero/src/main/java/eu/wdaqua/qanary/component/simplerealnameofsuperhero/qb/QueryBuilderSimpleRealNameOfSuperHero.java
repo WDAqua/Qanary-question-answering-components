@@ -75,27 +75,32 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 			return myQanaryMessage;
 		}
 
+		// TODO: move to external file
 		// the SPARQL query to get the annotations of named entities created by another
 		// component
 		String sparqlGetAnnotation = "" //
-				+ "PREFIX dbr: <http://dbpedia.org/resource/> " //
-				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-				+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-				+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " //
-				+ "SELECT * " //
-				+ "FROM <" + myQanaryMessage.getInGraph().toString() + "> " //
-				+ "WHERE { " //
-				+ "    ?annotation     oa:hasBody   ?dbpediaResource ." //
-				+ "    ?annotation     qa:score     ?annotationScore ." //
-				+ "    ?annotation     oa:hasTarget ?target ." //
-				+ "    ?target     oa:hasSource    <" + myQanaryQuestion.getUri().toString() + "> ." //
-				+ "    ?target     oa:hasSelector  ?textSelector ." //
-				+ "    ?textSelector   rdf:type    oa:TextPositionSelector ." //
-				+ "    ?textSelector   oa:start    ?start ." //
-				+ "    ?textSelector   oa:end      ?end ." //
-				+ "    FILTER(?start = " + supportedQuestionPrefix.length() + ") ." //
-				+ "}";
-
+				+ "PREFIX dbr: <http://dbpedia.org/resource/> \n" //
+				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> \n" //
+				+ "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
+				+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
+				+ "SELECT * \n" //
+				+ "FROM <" + myQanaryMessage.getInGraph().toString() + "> \n" //
+				+ "WHERE { \n" //
+				+ "    ?annotation     oa:hasBody   ?dbpediaResource .\n" //
+				+ "    ?annotation     qa:score     ?annotationScore .\n" //
+				+ "    ?annotation     oa:hasTarget ?target .\n" //
+				+ "    { \n" //
+				+ "        ?target     oa:hasSource    <" + myQanaryQuestion.getUri().toString() + "> .\n" //
+				+ "    } UNION { " //
+				+ "        ?target     oa:hasSource    <urn:qanary:currentQuestion> . \n" // 
+				+ "    } " //
+				+ "    ?target     oa:hasSelector  ?textSelector .\n" //
+				+ "    ?textSelector   rdf:type    oa:TextPositionSelector .\n" //
+				+ "    ?textSelector   oa:start    ?start .\n" //
+				+ "    ?textSelector   oa:end      ?end .\n" //
+				+ "    FILTER(?start = " + supportedQuestionPrefix.length() + ") .\n" //
+				+ "}\n";
+		logger.info("sparqlGetAnnotation: {}", sparqlGetAnnotation);
 		ResultSet resultset = triplestoreConnector.select(sparqlGetAnnotation);
 
 		while (resultset.hasNext()) {
