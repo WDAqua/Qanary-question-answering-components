@@ -52,8 +52,8 @@ public class Application {
 	}
 
 	@Bean
-	public QanaryComponent qanaryComponent() {
-		return new DBpediaSpotlightNED();
+	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
+		return new DBpediaSpotlightNED(applicationName);
 	}
 
 	@Bean
