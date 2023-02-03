@@ -109,7 +109,7 @@ public class DBpediaSpotlightNED extends QanaryComponent {
 			bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
 			bindingsForInsert.add("start", ResourceFactory.createTypedLiteral(String.valueOf(found.getBegin()), XSDDatatype.XSDnonNegativeInteger));
 			bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(found.getEnd()), XSDDatatype.XSDnonNegativeInteger));
-			bindingsForInsert.add("answer", ResourceFactory.createStringLiteral(found.getResource().toString()));
+			bindingsForInsert.add("answer", ResourceFactory.createResource(found.getResource().toString()));
 			bindingsForInsert.add("score", ResourceFactory.createTypedLiteral(String.valueOf(found.getSimilarityScore()), XSDDatatype.XSDdecimal));
 			bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
