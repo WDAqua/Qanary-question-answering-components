@@ -1,0 +1,19 @@
+prefix qa: <http://www.wdaqua.eu/qa#>
+prefix oa: <http://www.w3.org/ns/openannotation/core/>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+
+INSERT {
+GRAPH ?graph {
+    ?a a qa:AnnotationOfClass .
+    ?a oa:hasTarget [
+        a    oa:SpecificClass;
+        oa:hasSource    ?targetQuestion.
+    ] .
+    ?a oa:hasBody ?answer ;
+    oa:annotatedBy ?application ;
+    oa:annotatedAt ?time
+}}
+WHERE {
+    BIND (IRI(str(RAND())) AS ?a) .
+    BIND (now() as ?time)
+}
