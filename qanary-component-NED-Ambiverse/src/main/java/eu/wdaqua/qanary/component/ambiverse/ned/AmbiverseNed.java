@@ -137,7 +137,7 @@ public class AmbiverseNed extends QanaryComponent {
                     // String url= (String)explrObjectEL.getJSONObject("entity").get("url");
                     // String finalUrl =
                     // "http://dbpedia.org/resource"+url.substring(28).replace("%20", "_");
-                    logger.info("Question: {} {}", begin, end);
+                    logger.info("Question at index: {}-{}", begin, end);
                     Selection s = new Selection();
                     s.begin = begin;
                     s.end = end;
@@ -155,7 +155,7 @@ public class AmbiverseNed extends QanaryComponent {
                     selections.add(s);
                 }
             } else {
-                logger.error("Access_Token: ", "Access token can not be accessed");
+                logger.error("Access_Token: {}", "Access token can not be accessed");
             }
 
         } catch (JSONException e) {
@@ -170,7 +170,7 @@ public class AmbiverseNed extends QanaryComponent {
         }
 
         logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-        logger.info("apply vocabulary alignment on outgraph");
+        logger.debug("apply vocabulary alignment on outgraph");
         for (Selection s : selections) {
             QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
             bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
@@ -182,7 +182,7 @@ public class AmbiverseNed extends QanaryComponent {
 
             // get the template of the INSERT query
             String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
-            logger.info("Sparql query {}", sparql);
+            logger.info("SPARQL query: {}", sparql);
             myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
         }
         return myQanaryMessage;

@@ -58,21 +58,20 @@ public class AylienNED extends QanaryComponent {
 	@Override
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("process: {}", myQanaryMessage);
-		// TODO: implement processing of question
 
+		// Step 1: fetch Qanary data of current process
 		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
 		QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
 		String myQuestion = myQanaryQuestion.getTextualRepresentation();
 
+		// Step 2: fetch data from external API
 		// call to external API
 		ArrayList<AylienServiceFetcher.Link> links = aylienServiceFetcher.getLinksForQuestion(
 				aylienConfiguration.getEndpoint(), myQuestion
 		);
 
+		// Step 3: store new information into Qanary triplestore for following components
 		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-		// TODO: insert data in QanaryMessage.outgraph
-
-		logger.info("apply vocabulary alignment on outgraph");
 		for (AylienServiceFetcher.Link l : links) {
 			QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
 			bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
@@ -84,7 +83,7 @@ public class AylienNED extends QanaryComponent {
 
 			// get the template of the INSERT query
 			String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
-			logger.info("Sparql query {}", sparql);
+			logger.info("SPARQL query: {}", sparql);
 			myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 		}
 		return myQanaryMessage;
