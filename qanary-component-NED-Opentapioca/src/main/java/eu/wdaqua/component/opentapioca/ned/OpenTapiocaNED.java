@@ -1,6 +1,8 @@
 package eu.wdaqua.component.opentapioca.ned;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
@@ -66,7 +68,7 @@ public class OpenTapiocaNED extends QanaryComponent {
         // As such only the textual question is required.
 
         QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<String>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
+        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
         String questionText = myQanaryQuestion.getTextualRepresentation();
         logger.info("processing question \"{}\" with OpenTapioca at {}.", //
                 questionText, openTapiocaConfiguration.getEndpoint());
@@ -79,6 +81,10 @@ public class OpenTapiocaNED extends QanaryComponent {
         JsonArray resources;
         resources = openTapiocaServiceFetcher.getJsonFromService(//
                 questionText, openTapiocaConfiguration.getEndpoint());
+        
+        for (JsonElement jsonElement : resources) {
+			logger.info("found resource: {}", jsonElement);
+		}
 
         // parse the results to extract the required information:
         // - resource uri
@@ -99,7 +105,7 @@ public class OpenTapiocaNED extends QanaryComponent {
                 myQanaryMessage.getEndpoint());
 
         // update the Qanary triplestore with the created insert query
-        myQanaryUtils.updateTripleStore(sparqlInsert, myQanaryMessage.getEndpoint().toString());
+        myQanaryUtils.getQanaryTripleStoreConnector().update(sparqlInsert);
 
         return myQanaryMessage;
     }
@@ -119,7 +125,8 @@ public class OpenTapiocaNED extends QanaryComponent {
                     + "(the result of this component) in the Qanary Triplestore"
     )
     public String createSparqlInsertQuery(List<FoundWikidataResource> foundWikidataResources, QanaryQuestion myQanaryQuestion) throws Exception {
-        String sparql, sparqlbind;
+        String sparql;
+        String sparqlbind;
 
         sparql = "" //
                 + "PREFIX qa: <http://www.wdaqua.eu/qa#> " //

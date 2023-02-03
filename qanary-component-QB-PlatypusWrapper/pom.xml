@@ -22,6 +22,7 @@
             a artifactId not following the naming conventions, (c.f., https://maven.apache.org/guides/mini/guide-naming-conventions.html) -->
         <docker.image.name>qanary-component-qb-platypuswrapper</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
+        <springdoc.version>1.6.14</springdoc.version>
     </properties>
 
     <dependencies>
@@ -86,12 +87,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.6.9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.6.9</version>
+            <version>${springdoc.version}</version>
         </dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>

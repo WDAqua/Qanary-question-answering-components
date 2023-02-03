@@ -18,4 +18,4 @@ SELECT * WHERE {
 		?textSelector   oa:end      ?end .
 	}
 }
-ORDER BY ?start
+ORDER BY DESC(?annotationScore) 

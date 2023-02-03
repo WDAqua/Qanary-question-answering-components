@@ -1,24 +1,5 @@
 package eu.wdaqua.component.opentapioca.ned;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import io.swagger.v3.oas.annotations.Operation;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.util.Assert;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -27,10 +8,48 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.http.client.ClientProtocolException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
+import io.swagger.v3.oas.annotations.Operation;
+
+@RestController
 public class OpenTapiocaServiceFetcher {
 
+    private RestTemplate restTemplate;
+    
     private static final Logger logger = LoggerFactory.getLogger(OpenTapiocaServiceFetcher.class);
 
+    public OpenTapiocaServiceFetcher(RestTemplateWithCaching restTemplate) {
+    	this.restTemplate = restTemplate;
+    }
+    
+    /**
+     * internal access to functionality shows a log message even if cached request
+     * 
+     * @param myQuestion
+     * @param endpoint
+     * @return
+     * @throws IOException
+     */
+    public JsonArray getJsonFromService(
+            String myQuestion, String endpoint) throws IOException {
+        logger.info("call OpenTapioca endpoint (wrapper): {} -> question='{}'", endpoint, myQuestion);
+    	return this.getJsonFromServiceInternal(myQuestion, endpoint);
+    }
     /**
      * Perform a POST request with the provided question to the specified endpoint
      *
@@ -45,30 +64,36 @@ public class OpenTapiocaServiceFetcher {
             operationId = "getJsonFromService", //
             description = "Perform a POST request with the provided question to the specified endpoint" //
     )
-    public JsonArray getJsonFromService(
-            String myQuestion, String endpoint) throws ClientProtocolException, IOException {
-
+    @PostMapping(value="/fetch", consumes=MediaType.ALL_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+    // @Cacheable(value="opentapiocaCache", key = "{#myQuestion, #endpoint}")
+    public JsonArray getJsonFromServiceInternal(
+            String myQuestion, String endpoint) throws IOException {
+    	
         Assert.notNull(myQuestion, "Question must not be null");
 
-        String uriGetParameter = "query=" + URLEncoder.encode(
-                myQuestion, StandardCharsets.UTF_8.toString());
+    	String uriGetParameter = "query=" + URLEncoder.encode(myQuestion, StandardCharsets.UTF_8.toString());
+    	String getUri = endpoint + "?" + uriGetParameter;
 
-        // build the request
-        HttpClient client = HttpClients.custom().build();
-        HttpUriRequest request = RequestBuilder.post() //
-                .setUri(endpoint)    //
-                .setHeader(HttpHeaders.ACCEPT, "applcation/json") //
-                .setEntity(new StringEntity(uriGetParameter))
-                .build();
-        HttpResponse response = client.execute(request);
-        HttpEntity responseEntity = response.getEntity();
-
-        // parse the response data as JSON to get Wikidata resources
-        String json = EntityUtils.toString(responseEntity);
-        JsonElement root = JsonParser.parseString(json);
-        JsonArray resources = root.getAsJsonObject().get("annotations").getAsJsonArray();
-
-        logger.info("found {} annotations for \"{}\"", resources.size(), myQuestion);
+        logger.info("call OpenTapioca endpoint (cachable): {}", getUri);
+        
+        JsonArray resources = new JsonArray();
+        
+        try {			
+	    	ResponseEntity<String> result = restTemplate.getForEntity(getUri, String.class); 
+	        
+        	if (!(result.getStatusCodeValue() >= 200 && result.getStatusCodeValue() < 400 )) {
+        		logger.error("OpenTapioca endpoint responds with HTTP error: {}", result.getStatusCodeValue());
+		        logger.error("found {} annotations for \"{}\"", resources.size(), myQuestion);
+        		return resources;
+        	} else {
+		        // parse the response data as JSON to get Wikidata resources
+		        JsonElement root = JsonParser.parseString(result.getBody());
+		        resources = root.getAsJsonObject().get("annotations").getAsJsonArray();
+		        logger.info("found {} annotations for \"{}\"", resources.size(), myQuestion);
+        	}
+		} catch (Exception e) {
+			logger.error("error in getJsonFromService: {}", e.getMessage());
+		}
 
         return resources;
     }

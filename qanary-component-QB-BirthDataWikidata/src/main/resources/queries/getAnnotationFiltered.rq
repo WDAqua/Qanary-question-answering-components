@@ -16,3 +16,4 @@ SELECT * WHERE {
 		FILTER(?start = ?filterStart) .
 	}
 }
+ORDER BY DESC(?annotationScore) 

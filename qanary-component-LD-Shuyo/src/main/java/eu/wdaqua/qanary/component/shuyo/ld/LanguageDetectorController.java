@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.net.URISyntaxException;
-
 @Controller
 public class LanguageDetectorController {
 	private static final Logger logger = LoggerFactory.getLogger(LanguageDetectorController.class);
@@ -25,7 +23,7 @@ public class LanguageDetectorController {
 			@Value("${server.port}") String serverPort, //
 			@Value("${springdoc.api-docs.path}") String swaggerApiDocsPath, //
 			@Value("${springdoc.swagger-ui.path}") String swaggerUiPath //
-	) throws URISyntaxException {
+	) {
 		this.myLanguageDetection = myLanguageDetection;
 		logger.info("Service API docs available at http://0.0.0.0:{}{}", serverPort, swaggerApiDocsPath);
 		logger.info("Service API docs UI available at http://0.0.0.0:{}{}", serverPort, swaggerUiPath);
@@ -71,7 +69,7 @@ public class LanguageDetectorController {
 			@RequestBody LanguageDetectionRequest myLanguageDetectionRequest) throws LangDetectException {
 		LanguageDetectionResponse result = new LanguageDetectionResponse(this.myLanguageDetection,
 				myLanguageDetectionRequest.getText());
-		logger.info("LanguageDetectionResponse: {}", result.toString());
-		return new HttpEntity<LanguageDetectionResponse>(result);
+		logger.info("LanguageDetectionResponse: {}", result);
+		return new HttpEntity<>(result);
 	}
 }

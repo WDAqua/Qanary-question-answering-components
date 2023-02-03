@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-REL-RelationLinker2</artifactId>
-    <version>3.1.3</version>
+    <version>3.1.4</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -14,7 +14,7 @@
     </parent>
     <properties>
         <java.version>11</java.version>
-        <qanary.version>[3.1.2,4.0.0)</qanary.version>
+        <qanary.version>[3.6.1,4.0.0)</qanary.version>
         <docker.image.prefix>qanary</docker.image.prefix>
         <docker.image.name>qanary-component-rel-relationlinker2</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
@@ -35,7 +35,7 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-to-slf4j</artifactId>
-            <version>[2.15.0,3.)</version>
+            <version>[2.19.0,3.)</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.logging.log4j</groupId>
@@ -88,12 +88,6 @@
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path-assert</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.9.1</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
     <build>

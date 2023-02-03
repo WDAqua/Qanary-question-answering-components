@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 public class OpenTapiocaNEDSparqlTest {
 
     @Mock
-    QanaryQuestion myQanaryQuestion;
+    QanaryQuestion<String> myQanaryQuestion;
 
     @Mock
     OpenTapiocaConfiguration openTapiocaConfiguration;

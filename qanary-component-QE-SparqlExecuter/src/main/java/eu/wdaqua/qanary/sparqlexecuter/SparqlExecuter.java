@@ -49,10 +49,11 @@ public class SparqlExecuter extends QanaryComponent {
     public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
         logger.info("process: {}", myQanaryMessage);
         QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
+        QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion<>(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
+
+        // STEP 1: get the required data from the triplestore
         String myQuestion = myQanaryQuestion.getTextualRepresentation();
         URI myQuestionUri = myQanaryQuestion.getUri();
-        // TODO: implement processing of question
 
         ResultSet resultset = myQanaryUtils.getQanaryTripleStoreConnector().select(QanaryTripleStoreConnector.getHighestScoreAnnotationOfAnswerInGraph(myQanaryMessage.getInGraph()));
         String sparqlQuery = "";
@@ -60,8 +61,11 @@ public class SparqlExecuter extends QanaryComponent {
             sparqlQuery = resultset.next().get("selectQueryThatShouldComputeTheAnswer").toString().replace("\\\"", "\"").replace("\\n", "\n");
         }
         logger.info("Generated SPARQL query: {} ", sparqlQuery);
-        // STEP 2: execute the first sparql query
+        if(resultset.getRowNumber() > 1) {
+        	logger.warn("There are {} SPARQL queries that might represent the correct answer. Just the first one is used.", resultset.getRowNumber());
+        }
 
+        // STEP 2: execute the first SPARQL query
         String endpoint = "";
         if (sparqlQuery.contains("http://dbpedia.org")) {
             endpoint = this.knowledgegraphEndpointDbpedia;
@@ -73,25 +77,26 @@ public class SparqlExecuter extends QanaryComponent {
             logger.warn("knowledge graph was unknown");
             return myQanaryMessage;
         }
-        // @TODO: extend functionality to use qa:TargetDataset if present
+        // TODO: extend functionality to use qa:TargetDataset if present
 
         Query query = QueryFactory.create(sparqlQuery);
-        TripleStoreConnector TripleStoreConnector = new TripleStoreConnector(new URI(endpoint));
+        TripleStoreConnector myTripleStoreConnector = new TripleStoreConnector(new URI(endpoint));
         String json;
+        ByteArrayOutputStream outputStream;
         if (query.isAskType()) {
-            Boolean result = TripleStoreConnector.ask(sparqlQuery);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            Boolean result = myTripleStoreConnector.ask(sparqlQuery);
+            outputStream = new ByteArrayOutputStream();
             ResultSetFormatter.outputAsJSON(outputStream, result);
-            json = new String(outputStream.toByteArray(), "UTF-8");
         } else {
-            ResultSet result = TripleStoreConnector.select(sparqlQuery);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ResultSet result = myTripleStoreConnector.select(sparqlQuery);
+            outputStream = new ByteArrayOutputStream();
             ResultSetFormatter.outputAsJSON(outputStream, result);
-            json = new String(outputStream.toByteArray(), "UTF-8");
         }
+        json = new String(outputStream.toByteArray(), "UTF-8");
+
         logger.info("Generated answers in RDF json: {}", json);
 
-        // STEP 3: Push the the json object to the named graph reserved for the question
+        // STEP 3: Push the the JSON object to the named graph reserved for the question
         logger.info("Push the the JSON object to the named graph reserved for the answer");
 
         // define here the parameters for the SPARQL INSERT query
