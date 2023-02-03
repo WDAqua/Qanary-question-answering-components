@@ -38,10 +38,13 @@ public class BabelfyNED extends QanaryComponent {
 	@Inject
 	private BabelfyConfiguration babelfyConfiguration;
 
-	private String FILENAME_INSERT_ANNOTATION = "insert_one_annotation.rq";
+	private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
 
 	public BabelfyNED(@Value("${spring.application.name}") final String applicationName) {
 		this.applicationName = applicationName;
+
+		// check if files exists and are not empty
+		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
 	}
 
 	/**

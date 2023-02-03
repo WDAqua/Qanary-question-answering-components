@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-NED-Babelfy</artifactId>
-    <version>3.1.4</version>
+    <version>3.1.5</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -13,7 +13,7 @@
     </parent>
     <properties>
         <java.version>17</java.version>
-        <qanary.version>[3.4.1,4.0.0)</qanary.version>
+        <qanary.version>[3.6.1,4.0.0)</qanary.version>
         <docker.image.prefix>qanary</docker.image.prefix>
         <docker.image.name>qanary-component-ned-babelfy</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
