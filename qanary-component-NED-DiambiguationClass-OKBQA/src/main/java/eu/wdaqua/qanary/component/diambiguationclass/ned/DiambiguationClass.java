@@ -91,7 +91,7 @@ public class DiambiguationClass extends QanaryComponent {
         }
         in.close();
         xmlResp = response.toString();
-        logger.debug("the curl Get output : {}", xmlResp);
+        logger.debug("the curl GET output: {}", xmlResp);
         return xmlResp;
     }
 
@@ -129,7 +129,7 @@ public class DiambiguationClass extends QanaryComponent {
             in.close();
             xmlResp = response.toString();
 
-            logger.info("Response {}", xmlResp);
+            logger.info("Response: {}", xmlResp);
         } catch (Exception e) {
         }
         return (xmlResp);
@@ -169,7 +169,7 @@ public class DiambiguationClass extends QanaryComponent {
         // Now fetch the language, in our case it is "en".
 
         String language1 = "en";
-        logger.info("Langauge of the Question: {}", language1);
+        logger.info("Language of the question: {}", language1);
 
         String data = "";
         String contentType = "application/json";
@@ -188,7 +188,7 @@ public class DiambiguationClass extends QanaryComponent {
         // flows through Seoul?\",
         // \"language\": \"en\"}";
         logger.debug("data : {}", data);
-        logger.debug("Component : 21");
+        logger.debug("OKBQA component: 21");
         String output1 = "";
         // pass the input in CURL command and call the function.
 
@@ -214,8 +214,8 @@ public class DiambiguationClass extends QanaryComponent {
 
         contentType = "application/json";
 
-        logger.debug("data : {}", data);
-        logger.debug("Component : 7");
+        logger.debug("data: {}", data);
+        logger.debug("OKBQA component: 7");
         output1 = "";
         try {
             logger.debug("Calling inside ===============");
@@ -252,19 +252,17 @@ public class DiambiguationClass extends QanaryComponent {
 
                             allClassses.get(var).remove(allClassses.get(var).entrySet().iterator().next().getKey());
                             allClassses.get(var).put(urls, score);
-                            logger.debug("var: {}, url : {} , Score : {}", var, urls, score);
+                            logger.debug("var: {}, url: {}, score: {}", var, urls, score);
                         }
 
                     } else {
                         urlsAndScore.put(urls, score);
-                        logger.debug("var: {}, url : {} , Score : {}", var, urls, score);
+                        logger.debug("var: {}, url: {} , score: {}", var, urls, score);
                         // allUrls.put("classes", urlsAndScore);
                         allClassses.put(var, urlsAndScore);
                     }
-
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -288,7 +286,7 @@ public class DiambiguationClass extends QanaryComponent {
 
                 count++;
             }
-            logger.debug("Count is : {}", count);
+            logger.debug("Count is: {}", count);
         }
         return myQanaryMessage;
 
