@@ -97,7 +97,7 @@ public class TagmeNED extends QanaryComponent {
             bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
             bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
             bindingsForInsert.add("start", ResourceFactory.createTypedLiteral(String.valueOf(l.getBegin()), XSDDatatype.XSDnonNegativeInteger));
-            bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(l.getLinkProbability()), XSDDatatype.XSDnonNegativeInteger));
+            bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(l.getEnd()), XSDDatatype.XSDnonNegativeInteger));
             bindingsForInsert.add("score", ResourceFactory.createTypedLiteral(String.valueOf(l.getLinkProbability()), XSDDatatype.XSDfloat));
             bindingsForInsert.add("answer", ResourceFactory.createResource(l.getLink().toString()));
             bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
