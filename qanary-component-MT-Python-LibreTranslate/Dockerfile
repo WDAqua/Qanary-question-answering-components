@@ -8,12 +8,7 @@ RUN pip install gunicorn
 
 COPY app app
 COPY run.py boot.sh ./
-COPY setup_data.sh ./
-COPY .env ./
 
 RUN chmod +x boot.sh
-RUN chmod +x setup_data.sh
-
-#RUN ./setup_data.sh
 
 ENTRYPOINT ["./boot.sh"]
