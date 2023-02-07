@@ -14,7 +14,8 @@ SERVICE_NAME_COMPONENT = os.environ["SERVICE_NAME_COMPONENT"]
 
 
 target_lang = 'en'
-lt_url = "http://localhost:5000/translate"
+TRANSLATE_ENDPOINT = os.environ["TRANSLATE_ENDPOINT"]
+LANGUAGES_ENDPOINT = os.environ["LANGUAGES_ENDPOINT"]
 
 
 
@@ -39,7 +40,7 @@ def qanary_service():
     logging.info(f"source language: {lang}")
 
     ## TODO: MAIN FUNCTIONALITY
-    result = translate_input(text, lang)
+    result, _ = translate_input(text, lang)
 
     # building SPARQL query TODO: verify this annotation AnnotationOfQuestionTranslation ??
     SPARQLquery = """
@@ -98,19 +99,29 @@ def translate_input(text, source_lang):
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
-    response = requests.request("POST", lt_url, headers=headers, data=req_json)
+    response = requests.request("POST", TRANSLATE_ENDPOINT, headers=headers, data=req_json)
     logging.info(f"got response json: {response.json()}")
-    translation = response.json()['translatedText']
-    return translation
+    translation = response.json().get('translatedText')
+    error = response.json().get('error')
+    return translation, error
 
 
-def test_connection():
-    logging.info(f"testing connection to {lt_url}")
+def check_connection():
+    logging.info(f"checking connection to {TRANSLATE_ENDPOINT}")
+    error = "(No error message available)" #empty error message
+    success = "The test translation was successful"
     try:
-        t = translate_input("eingabe zum testen", "de")
+        # TODO: test with supported language? 
+        t, error = translate_input("eingabe zum testen", "de")
         logging.info(f"got translation: {t}")
         assert len(t) > 0
-        return True
-    except Exception as e: 
-        logging.info(f"test failed with {e}")
-        return False
+        return True, success
+    except Exception: 
+        logging.info(f"test failed with {error}")
+        return False, error
+
+
+def get_languages():
+    languages = requests.request("GET", LANGUAGES_ENDPOINT).json()
+    valid_sources = [(f"{language['name']} ({language['code']})") for language in languages if 'en' in language['targets'] and 'en' not in language['code']]
+    return valid_sources

@@ -1,10 +1,12 @@
 version: "3.5"
 services:
   libretranslate:
-    image: libretranslate
+    image: libretranslate/libretranslate:latest
     restart: unless-stopped
-    command: ['--host', '0.0.0.0']
-    network_mode: host
+    ports:
+      - "5000:5000"
+    volumes:
+      - "./models:/home/libretranslate/.local/cache"
   # component
   build:
     image: qanary-component-mt-python-libretranslate

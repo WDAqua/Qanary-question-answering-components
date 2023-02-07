@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.10.8
 
 COPY requirements.txt ./
 
@@ -9,6 +9,7 @@ RUN pip install gunicorn
 COPY app app
 COPY run.py boot.sh ./
 COPY setup_data.sh ./
+COPY .env ./
 
 RUN chmod +x boot.sh
 RUN chmod +x setup_data.sh
