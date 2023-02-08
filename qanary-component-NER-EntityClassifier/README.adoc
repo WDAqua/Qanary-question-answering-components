@@ -1,13 +1,13 @@
-# NER Entity Classifier
+= NER Entity Classifier
 
 ## Description
 
 This is a dummy component
 
-## Input specification
+== Input specification
 
 This is a dummy component
 
-## Output specification
+== Output specification
 
 This is a dummy component
