@@ -1,16 +1,17 @@
-# NER Alchemy
+= NER Alchemy
 
-## Description
+== Description
 
 Receives a textual question recognizes and links named entities with the Alchemy API and stores them.
 
-## Input specification
+== Input specification
 
 Not applicable as the textual question is a default parameter
 
-## Output specification
+== Output specification
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -28,4 +29,4 @@ Not applicable as the textual question is a default parameter
     qa:score "0.5"^^xsd:decimal ;
     oa:annotatedBy <urn:qanary:Alchemy> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
-```
+----
