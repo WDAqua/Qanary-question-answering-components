@@ -1,18 +1,19 @@
-# NER Lucene Linker
+= NER Lucene Linker
 
-## Description
+== Description
 
 Receives a textual question, tokenizes it with Lucene, links named entities given a static textual file and stores them.
 
-## Input specification
+== Input specification
 
 Not applicable as the textual question is a default parameter
 
-## Output specification
+#== Output specification
 
 Comment: no score in the output.
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -29,4 +30,4 @@ Comment: no score in the output.
 <urn:qanary:output> oa:hasBody <dbr:Entity> ;
     oa:annotatedBy <urn:qanary:LuceneLinker> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
-```
+----
