@@ -1,18 +1,19 @@
-# NER Stanford
+= NER Stanford
 
-## Description
+== Description
 
 Receives a textual question, and uses Stanford NLP library to for NER task. Saves resulting named entities.
 
-## Input specification
+== Input specification
 
 Not applicable as the textual question is a default parameter
 
-## Output specification
+== Output specification
 
 Comment: no score in the output
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -28,4 +29,4 @@ Comment: no score in the output
     ] .
 <urn:qanary:output> oa:annotatedBy <urn:qanary:StanfordNLP> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
-```
+----
