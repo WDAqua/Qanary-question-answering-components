@@ -1,26 +1,26 @@
-# smaph-erd Wrapper for Qanary
-============================
+= smaph-erd Wrapper for Qanary
 
-## Description
+== Description
 
-In order to use this component you need to install the [smaph-erd fork](https://github.com/WDAqua/smaph-erd) and run
+In order to use this component you need to install the https://github.com/WDAqua/smaph-erd[smaph-erd fork] and run
 smaph system first.
 
 Alternatively the Dockerfile included will create a docker container running smaph and its wrapper for Qanary. Before
 you will start the docker container you will need to:
 
-* obtain a key of the Bing Search API [here](https://datamarket.azure.com/dataset/bing/search)
-* edit **smaph-config.xml** replacing **BING_KEY** with your [Primary Account Key](https://datamarket.azure.com/account)
+* obtain a key of the Bing Search API https://datamarket.azure.com/dataset/bing/search[here]
+* edit **smaph-config.xml** replacing **BING_KEY** with your https://datamarket.azure.com/account[Primary Account Key]
 
-## Input specification
+== Input specification
 
 Not applicable as the textual question is a default parameter
 
-## Output specification
+== Output specification
 
 Comment: no score in the output
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -36,4 +36,4 @@ Comment: no score in the output
     ] .
 <urn:qanary:output> oa:annotatedBy <urn:qanary:SmaphErd> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
-```
+----
