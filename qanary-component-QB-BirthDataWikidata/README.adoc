@@ -1,14 +1,15 @@
-# QB BirthData Wikidata component
+= QB BirthData Wikidata component
 
-## Description
+== Description
 
 Receives a disambiguated entity and builds a SPARQL query over Wikidata about all the data related to birth of an entity
 
-## Input specification
+== Input specification
 
 Comment: missing `<urn:qanary:input> a qa:AnnotationOfInstance .`
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -23,13 +24,14 @@ Comment: missing `<urn:qanary:input> a qa:AnnotationOfInstance .`
         oa:end  "5"^^xsd:nonNegativeInteger
     ]
 ] .
-```
+----
 
-## Output specification
+== Output specification
 
 Comment: `qa:score` is `xsd:float` while in the ontology it is [decimal](https://github.com/WDAqua/QAOntology/blob/6d25ebc8970b93452b5bb970a8e2f526be9841a5/qanary.ttl#L31)
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -39,4 +41,4 @@ Comment: `qa:score` is `xsd:float` while in the ontology it is [decimal](https:/
     qa:score "0.5"^^xsd:float ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
     oa:annotatedBy <urn:qanary:QB#applicationName > .
-```
+----
