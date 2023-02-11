@@ -1,0 +1,24 @@
+PREFIX qa: <http://www.wdaqua.eu/qa#>
+PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+
+SELECT ?a ?dbpediaResource ?startOfSpecificResource ?endOfSpecificResource ?annotatorComponent ?time
+FROM ?graph
+WHERE {
+    VALUES ?dbpediaResource {
+        ?targetQuestion
+    } .
+    ?a a qa:AnnotationOfSpotInstance .
+    ?a oa:hasTarget [
+        a               oa:SpecificResource ;
+        oa:hasSource    ?dbpediaResource ;
+        oa:hasSelector  [
+            a        oa:TextPositionSelector ;
+            oa:start ?startOfSpecificResource ;
+            oa:end   ?endOfSpecificResource .
+        ] .
+    ] .
+    ?a oa:annotatedAt ?time .
+# The component was originally built to look specifically for
+# annotations of ComicCharacterNameSimpleNamedEntityRecognizer:
+#   ?a oa:annotatedBy <urn:qanary:component:ComicCharacterNameSimpleNamedEntityRecognizer> .
+}

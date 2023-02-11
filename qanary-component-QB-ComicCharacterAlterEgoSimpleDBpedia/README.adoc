@@ -1,14 +1,15 @@
-# QB ComicCharacterAlterEgoSimpleQueryBuilder component
+= QB ComicCharacterAlterEgoSimpleQueryBuilder component
 
-## Description
+== Description
 
 Receives a disambiguated entity and builds a SPARQL query over Wikidata about all the data related to birth of an entity
 
-## Input specification
+== Input specification
 
 Comment: non-standard type `qa:AnnotationOfSpotInstance` is used
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -23,13 +24,14 @@ Comment: non-standard type `qa:AnnotationOfSpotInstance` is used
     ]
 ] .
 <urn:qanary:input> oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
-```
+----
 
-## Output specification
+== Output specification
 
 Comment: complex `oa:hasTarget` is used
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -42,4 +44,4 @@ Comment: complex `oa:hasTarget` is used
     qa:score "0.5"^^xsd:float ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
     oa:annotatedBy <urn:qanary:applicationName > .
-```
+----
