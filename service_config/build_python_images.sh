@@ -1,7 +1,5 @@
 #!/bin/bash
 
-cd ..
-
 images=$(ls | grep -P "qanary-component.*Python-[a-zA-Z]+$")
 
 for dir in $images
