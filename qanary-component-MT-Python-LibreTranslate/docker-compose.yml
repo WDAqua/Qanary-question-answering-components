@@ -9,14 +9,11 @@ services:
       - "./models:/home/libretranslate/.local/cache"
   # component
   component:
-    image: qanary-component-mt-python-libretranslate:${SERVICE_VERSION:-latest}
+    # for building from source
+    image: qanary-component-mt-python-libretranslate:latest
     build:
       context: .
       dockerfile: Dockerfile
     network_mode: host
     env_file:
       - .env
-#  # tag latest
-#  latest:
-#    extends: component
-#    image: qanary-component-mt-python-libretranslate:latest
