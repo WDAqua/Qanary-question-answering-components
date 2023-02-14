@@ -20,7 +20,7 @@ Not applicable as the textual question is a default parameter.
 <urn:qanary:output1> a qa:AnnotationOfQuestionTranslation ;
     oa:hasTarget <urn:myQanaryQuestion>; 
     oa:hasBody "translation_result"@en ;
-    oa:annotatedBy <urn:qanary:PythonMTMBart> ;
+    oa:annotatedBy <urn:qanary:PythonMTLibreTranslate> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 
 <urn:qanary:output2> a qa:AnnotationOfQuestionLanguage .
@@ -52,7 +52,7 @@ SPRING_BOOT_ADMIN_URL=http://qanary-pipeline-host:40111
 SERVER_HOST=http://public-component-host
 SPRING_BOOT_ADMIN_USERNAME=admin
 SPRING_BOOT_ADMIN_PASSWORD=admin
-SERVICE_NAME_COMPONENT=MT-MBart
+SERVICE_NAME_COMPONENT=LibreTranslate
 TRANSLATE_ENDPOINT=http://localhost:5000/translate
 LANGUAGES_ENDPOINT=http://localhost:5000/languages
 ```
