@@ -1,14 +1,11 @@
 version: '3'
 services: 
   build:
-    image: qanary-component-mt-python-mbart:${SERVICE_VERSION:-latest}
+    # for building from source
+    image: qanary-component-mt-python-mbart:latest
     build: 
       context: .
       dockerfile: Dockerfile
     network_mode: host
     env_file:
       - .env
-# # tag latest
-# latest:
-#   extends: build
-#   image: qanary-component-mt-python-mbart:latest

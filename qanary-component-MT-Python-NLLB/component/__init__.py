@@ -1,5 +1,7 @@
-from app.mt_mbart_nlp import mt_mbart_nlp_bp
+from app.mt_nllb import mt_nllb_bp
 from flask import Flask 
+
+version = "0.1.0"
 
 # default config file
 configfile = "app.conf"
@@ -11,7 +13,7 @@ aboutendpoint = "/about"
 
 # init Flask app and add externalized service information
 app = Flask(__name__)
-app.register_blueprint(mt_mbart_nlp_bp)
+app.register_blueprint(mt_nllb_bp)
 
 @app.route(healthendpoint, methods=["GET"])
 def health():
