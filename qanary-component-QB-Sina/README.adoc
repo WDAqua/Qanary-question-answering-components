@@ -1,12 +1,13 @@
-# QB SINA component
+= QB SINA component
 
 Receives 3 data structures: `AnnotationOfClass`, `AnnotationOfRelation`, and `AnnotationOfInstance`. Depending on the availability of them, generates a query and stores it.
 
-## Input specification
+== Input specification
 
 Comment: `qa:AnnotationOfInstance` does not have `oa:annotatedAt`
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -17,9 +18,10 @@ Comment: `qa:AnnotationOfInstance` does not have `oa:annotatedAt`
     ]; 
     oa:hasBody ?uri ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
-```
+----
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -30,9 +32,10 @@ Comment: `qa:AnnotationOfInstance` does not have `oa:annotatedAt`
     ];
     oa:hasBody ?uri ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
-```
+----
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -47,11 +50,12 @@ Comment: `qa:AnnotationOfInstance` does not have `oa:annotatedAt`
         ]
     ] .
 <urn:qanary:input> oa:hasBody <dbr:Resource> .
-```
+----
 
-## Output specification
+== Output specification
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -61,4 +65,4 @@ Comment: `qa:AnnotationOfInstance` does not have `oa:annotatedAt`
     qa:score "0.5"^^xsd:float ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
     oa:annotatedBy <urn:qanary:applicationName > .
-```
+----
