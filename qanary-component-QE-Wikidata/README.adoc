@@ -1,12 +1,13 @@
-# QE Wikidata component
+= QE Wikidata component
 
-## Description
+== Description
 
 Receives a SPARQL query over Wikidata, executes it and writes result in JSON format.
 
-## Input specification
+== Input specification
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -15,11 +16,12 @@ Receives a SPARQL query over Wikidata, executes it and writes result in JSON for
    oa:hasBody "sparql query over dbpedia or wikidata" ;
    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
    qa:score "0.5"^^xsd:float .
-```
+----
 
-## Output specification
+== Output specification
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -34,4 +36,4 @@ Receives a SPARQL query over Wikidata, executes it and writes result in JSON for
 ?answer a qa:AnswerJson ;
     rdf:value "jsonString"^^xsd:string  .
 qa:AnswerJson rdfs:subClassOf qa:Answer .
-```
+----
