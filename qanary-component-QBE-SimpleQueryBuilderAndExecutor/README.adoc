@@ -1,12 +1,13 @@
-# Query Builder
+= Query Builder
 
-## Description
+== Description
 
 Receives 3 optional data structures: `AnnotationOfClass`, `AnnotationOfRelation`, and `AnnotationOfInstance`. Depending on the availability of them, generates a query over DBpedia and stores it.
 
-## Input specification
+== Input specification
 
-```ttl
+[source,ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -16,9 +17,10 @@ Receives 3 optional data structures: `AnnotationOfClass`, `AnnotationOfRelation`
         oa:hasSource ?q ;
     ];
     oa:hasBody ?uri .
-```
+----
 
-```ttl
+[source,ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -28,9 +30,10 @@ Receives 3 optional data structures: `AnnotationOfClass`, `AnnotationOfRelation`
         oa:hasSource ?q ;
     ];
     oa:hasBody ?uri .
-```
+----
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -45,11 +48,12 @@ Receives 3 optional data structures: `AnnotationOfClass`, `AnnotationOfRelation`
         ]
     ] .
 <urn:qanary:input> oa:hasBody <dbr:Resource> .
-```
+----
 
-## Output specification
+== Output specification
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -58,9 +62,10 @@ Receives 3 optional data structures: `AnnotationOfClass`, `AnnotationOfRelation`
     oa:hasBody "sparql query" ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
     oa:annotatedBy <urn:qanary:QB#applicationName > .
-```
+----
 
-```ttl
+[source, ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -71,6 +76,6 @@ Receives 3 optional data structures: `AnnotationOfClass`, `AnnotationOfRelation`
     oa:hasBody "jsonString"^^xsd:string ;
     oa:annotatedBy <urn:qanary:QB#applicationName > ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
-```
+----
 
 Remark: in SparqlExecuter `?answer a qa:AnswerJson` is used
