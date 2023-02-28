@@ -240,7 +240,7 @@ public class QueryBuilder extends QanaryComponent {
             QuerySolutionMap bindingsForInsertSparql = new QuerySolutionMap();
             bindingsForInsertSparql.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
             bindingsForInsertSparql.add("body", ResourceFactory.createStringLiteral(generatedQuery));
-            bindingsForInsertSparql.add("answer", ResourceFactory.createStringLiteral(answerID));
+            bindingsForInsertSparql.add("answer", ResourceFactory.createResource(answerID));
             bindingsForInsertSparql.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
             // get the template of the INSERT query
@@ -261,7 +261,7 @@ public class QueryBuilder extends QanaryComponent {
             QuerySolutionMap bindingsForInsertJson = new QuerySolutionMap();
             bindingsForInsertJson.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
             bindingsForInsertJson.add("body", ResourceFactory.createStringLiteral(json));
-            bindingsForInsertJson.add("answer", ResourceFactory.createStringLiteral(answerID));
+            bindingsForInsertJson.add("answer", ResourceFactory.createResource(answerID));
             bindingsForInsertJson.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
             // get the template of the INSERT query
