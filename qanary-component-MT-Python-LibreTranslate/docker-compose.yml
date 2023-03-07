@@ -1,0 +1,19 @@
+version: "3.5"
+services:
+  libretranslate:
+    image: libretranslate/libretranslate:latest
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - "./models:/path/to/your/local/cache"
+  # component
+  component:
+    # for building from source
+    image: qanary-component-mt-python-libretranslate:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    network_mode: host
+    env_file:
+      - .env

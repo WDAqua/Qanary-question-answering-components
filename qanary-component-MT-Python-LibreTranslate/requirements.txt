@@ -1,0 +1,7 @@
+Flask==2.2.2
+langdetect==1.0.9
+langid==1.1.6
+mock==3.0.5
+python-dotenv==0.21.1
+qanary_helpers==0.2.2
+gunicorn==20.1.0
