@@ -6,7 +6,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - "./models:/home/libretranslate/.local/cache"
+      - "./models:/path/to/your/local/cache"
   # component
   component:
     # for building from source
