@@ -1,0 +1,23 @@
+PREFIX dbr: <http://dbpedia.org/resource/>
+prefix oa: <http://www.w3.org/ns/openannotation/core/>
+prefix qa: <http://www.wdaqua.eu/qa#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+
+INSERT {
+GRAPH ?graph {
+    ?newAnnotation rdf:type qa:AnnotationOfAnswerSPARQL .
+    ?newAnnotation oa:hasTarget [
+        a    oa:SpecificResource;
+        oa:hasSource    ?targetQuestion;
+    ] .
+    ?newAnnotation oa:hasBody ?answer .
+    ?newAnnotation qa:score ?score .
+    ?newAnnotation oa:annotatedAt ?time .
+    ?newAnnotation oa:annotatedBy ?application .
+
+}}
+WHERE {
+    BIND (IRI(str(RAND())) AS ?newAnnotation) .
+    BIND (now() as ?time) .
+}

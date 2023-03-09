@@ -46,15 +46,16 @@ public class LanguageDetection extends QanaryComponent {
 			throws IOException, LangDetectException {
 
 		this.applicationName = applicationName;
-		
+
+		// check if files exists and are not empty
 		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_ANNOTATIONS_FILTERED);
 
 		this.safeLoadProfile();
 	}
-	
+
 	/**
 	 * load profile with several fallbacks
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws LangDetectException
 	 */

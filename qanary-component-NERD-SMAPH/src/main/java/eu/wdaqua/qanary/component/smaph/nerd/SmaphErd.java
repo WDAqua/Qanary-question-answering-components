@@ -6,6 +6,7 @@ import eu.wdaqua.qanary.commons.ontology.TextPositionSelector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,9 @@ import java.util.List;
 @Component
 public class SmaphErd extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(SmaphErd.class);
-    private String service = "http://localhost:9090/smaph/rest/default";
+
+    @Value("${smaph.service.uri}")
+    private String service;
 
     @Override
     public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {

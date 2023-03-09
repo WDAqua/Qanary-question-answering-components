@@ -4,8 +4,12 @@ import com.google.gson.Gson;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.query.QuerySolutionMap;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,6 +42,8 @@ public class WatsonNED extends QanaryComponent {
     private final URI watsonServiceURL;
     private final String watsonServiceKey;
 
+    private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
+
     public WatsonNED(
             @Value("${spring.application.name}") final String applicationName,
             @Value("${ned-watson.cache.enabled}") final boolean cacheEnabled,
@@ -50,6 +56,9 @@ public class WatsonNED extends QanaryComponent {
         this.cacheFile = cacheFile;
         this.watsonServiceURL = watsonServiceURL;
         this.watsonServiceKey = watsonServiceKey;
+
+        // check if files exists and are not empty
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
     }
 
     /**
@@ -86,33 +95,19 @@ public class WatsonNED extends QanaryComponent {
 
         for (NamedEntity namedEntity : namedEntityList) {
             // the SPARQL query to push all entities into the triplestore
-            String sparqlUpdateQuery = "" //
-                    		+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-                            + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/>  " //
-                            + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>" //
-                            + "INSERT { " //
-                            + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
-                            + "?a a qa:AnnotationOfInstance . " //
-                            + "?a oa:hasTarget [ " //
-                            + "	a oa:SpecificResource; " //
-                            + "	oa:hasSource    <" + myQanaryQuestion.getUri() + ">; \n" //
-                            + "	oa:hasSelector  [ " //
-                            + "		a oa:TextPositionSelector ; " //
-                            + "		oa:start \"" + namedEntity.getBegin() + "\"^^xsd:nonNegativeInteger ; " //
-                            + "		oa:end  \"" + namedEntity.getEnd() + "\"^^xsd:nonNegativeInteger ; " //
-                            + "		qa:score \"" + namedEntity.getConfidence() + "\"^^xsd:float " //
-                            + "	] " //
-                            + "] . " //
-                            + "?a oa:hasBody <" + namedEntity.getUri() + "> ; \n" //
-                            + "oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; " //
-                            + "oa:annotatedAt ?time  " //
-                            + "}} " //
-                            + "WHERE { " //
-                            + "BIND (IRI(str(RAND())) AS ?a) . " //
-                            + "BIND (now() as ?time) " //
-                            + "} ";
+            QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+            bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+            bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+            bindingsForInsert.add("start", ResourceFactory.createTypedLiteral(String.valueOf(namedEntity.getBegin()), XSDDatatype.XSDnonNegativeInteger));
+            bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(namedEntity.getEnd()), XSDDatatype.XSDnonNegativeInteger));
+            bindingsForInsert.add("score", ResourceFactory.createTypedLiteral(String.valueOf(namedEntity.getConfidence()), XSDDatatype.XSDfloat));
+            bindingsForInsert.add("answer", ResourceFactory.createResource(namedEntity.getUri().toString()));
+            bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
-            myQanaryUtils.getQanaryTripleStoreConnector().update(sparqlUpdateQuery);
+            // get the template of the INSERT query
+            String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
+            logger.info("SPARQL query: {}", sparql);
+            myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
         }
         return myQanaryMessage;
     }
@@ -301,6 +296,10 @@ public class WatsonNED extends QanaryComponent {
             // handle this
             logger.error("File not found: \n{}", e);
         }
+    }
+
+    private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
     }
 
     /**

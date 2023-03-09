@@ -3,6 +3,7 @@ package eu.wdaqua.qanary.component.dandelion.ned;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -11,6 +12,9 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.query.QuerySolutionMap;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -18,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -38,8 +43,13 @@ public class DandelionNED extends QanaryComponent {
 
     private final String applicationName;
 
+	private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
+
 	public DandelionNED(@Value("${spring.application.name}") final String applicationName) throws Exception {
 		this.applicationName = applicationName;
+
+		// check if files exists and are not empty
+		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
 
 		for (int i = 0; i < 10; i++) {
 			try {
@@ -165,31 +175,24 @@ public class DandelionNED extends QanaryComponent {
 		// TODO: implement this (custom for every component)
 
 		for (Link l : links) {
-			String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-					+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-					+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-					+ "INSERT { " + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
-					+ "  ?a a qa:AnnotationOfInstance . " //
-					+ "  ?a oa:hasTarget [ " //
-					+ "           a    oa:SpecificResource; " //
-					+ "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
-					+ "           oa:hasSelector  [ " //
-					+ "                    a oa:TextPositionSelector ; " //
-					+ "                    oa:start \"" + l.begin + "\"^^xsd:nonNegativeInteger ; " //
-					+ "                    oa:end  \"" + l.end + "\"^^xsd:nonNegativeInteger  " //
-					+ "           ] " //
-					+ "  ] . " //
-					+ "  ?a oa:hasBody <" + l.link + "> ;" //
-					+ "     oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; " //
-					+ "	    oa:annotatedAt ?time  " + "}} " //
-					+ "WHERE { " //
-					+ "  BIND (IRI(str(RAND())) AS ?a) ."//
-					+ "  BIND (now() as ?time) " //
-					+ "}";
-			logger.debug("Sparql query: {}", sparql);
+			QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+			bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+			bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+			bindingsForInsert.add("start", ResourceFactory.createTypedLiteral(String.valueOf(l.begin), XSDDatatype.XSDnonNegativeInteger));
+			bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(l.end), XSDDatatype.XSDnonNegativeInteger));
+			bindingsForInsert.add("answer", ResourceFactory.createStringLiteral(l.link));
+			bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+			// get the template of the INSERT query
+			String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
+			logger.info("SPARQL query: {}", sparql);
 			myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 		}
 		return myQanaryMessage;
+	}
+
+	private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+		return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
 	}
 
 	class Link {
