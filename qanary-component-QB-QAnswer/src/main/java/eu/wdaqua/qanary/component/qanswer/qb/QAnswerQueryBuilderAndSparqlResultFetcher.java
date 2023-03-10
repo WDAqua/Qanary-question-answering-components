@@ -55,11 +55,13 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
     private RestTemplate myRestTemplate;
     private String langDefault;
     private String knowledgeBaseDefault;
+    private String userDefault;
 
     public QAnswerQueryBuilderAndSparqlResultFetcher( //
                                                       float threshold, //
                                                       @Qualifier("langDefault") String langDefault, //
                                                       @Qualifier("knowledgeBaseDefault") String knowledgeBaseDefault, //
+                                                      @Qualifier("userDefault") String userDefault, //
                                                       @Qualifier("endpointUrl") URI endpoint, //
                                                       @Value("${spring.application.name}") final String applicationName, //
                                                       RestTemplateWithCaching restTemplate //
@@ -75,11 +77,14 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
                         + "was " + langDefault + " (length=" + langDefault.length() + ")";
         assert !(knowledgeBaseDefault == null || knowledgeBaseDefault.trim().isEmpty()) : //
                 "knowledgeBaseDefault cannot be null or empty: " + knowledgeBaseDefault;
+        assert !(userDefault == null || userDefault.trim().isEmpty()) : //
+                "userDefault cannot be null or empty: " + userDefault;
 
         this.threshold = threshold;
         this.endpoint = endpoint;
         this.langDefault = langDefault;
         this.knowledgeBaseDefault = knowledgeBaseDefault;
+        this.userDefault = userDefault;
         this.myRestTemplate = restTemplate;
         this.applicationName = applicationName;
 
@@ -108,6 +113,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
 
         String lang = null;
         String knowledgeBaseId = null;
+        String user = null;
 
         if (lang == null) {
             lang = langDefault;
@@ -115,6 +121,10 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
 
         if (knowledgeBaseId == null) {
             knowledgeBaseId = knowledgeBaseDefault;
+        }
+
+        if (user == null) {
+            user = userDefault;
         }
 
         URI endpoint = myQanaryMessage.getEndpoint();
@@ -130,7 +140,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
         // QAnswer API
         String questionStringWithResources = computeQuestionStringWithReplacedResources(questionString,
                 retrievedNamedEntities, threshold);
-        QAnswerResult result = requestQAnswerWebService(endpoint, questionStringWithResources, lang, knowledgeBaseId);
+        QAnswerResult result = requestQAnswerWebService(endpoint, questionStringWithResources, lang, knowledgeBaseId, user);
 
         // STEP 3: add new information to Qanary triplestore
         String sparql = getSparqlInsertQuery(myQanaryQuestion.getOutGraph(), result);
@@ -142,7 +152,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
     }
 
     protected QAnswerResult requestQAnswerWebService(URI qanaryApiUri, String questionString, String lang,
-                                                     String knowledgeBaseId) throws URISyntaxException, MalformedURLException {
+                                                     String knowledgeBaseId, String user) throws URISyntaxException, MalformedURLException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.set("User-Agent", "Qanary/" + this.getClass().getName());
@@ -151,18 +161,20 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
         parameters.put("question", questionString);
         parameters.put("lang", lang);
         parameters.put("kb", knowledgeBaseId);
+        parameters.put("user", user);
 
         String urlTemplate = UriComponentsBuilder.fromHttpUrl(this.endpoint.toURL().toURI().toASCIIString()) //
                 .queryParam("question", "{question}") //
                 .queryParam("lang", "{lang}") //
                 .queryParam("kb", "{kb}") //
+                .queryParam("user", "{user}") //
                 .encode().toUriString();
 
         HttpEntity<JSONObject> response = myRestTemplate.getForEntity(urlTemplate, JSONObject.class, parameters);
         logger.info("QAnswer JSON result for question '{}': {}", questionString,
                 response.getBody().getAsString("questions"));
 
-        return new QAnswerResult(response.getBody(), questionString, qanaryApiUri, lang, knowledgeBaseId);
+        return new QAnswerResult(response.getBody(), questionString, qanaryApiUri, lang, knowledgeBaseId, user);
     }
 
     /**

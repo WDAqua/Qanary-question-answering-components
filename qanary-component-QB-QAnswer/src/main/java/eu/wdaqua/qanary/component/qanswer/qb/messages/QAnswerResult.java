@@ -28,11 +28,12 @@ public class QAnswerResult {
     private com.google.gson.JsonParser jsonParser;
     private URI endpoint;
     private String knowledgebaseId;
+    private String user;
     private String language;
     private String question;
     private List<JsonObject> values;
 
-    public QAnswerResult(JSONObject json, String question, URI endpoint, String language, String knowledgebaseId)
+    public QAnswerResult(JSONObject json, String question, URI endpoint, String language, String knowledgebaseId, String user)
             throws URISyntaxException {
         jsonParser = new JsonParser();
 
@@ -44,6 +45,7 @@ public class QAnswerResult {
         this.question = question;
         this.language = language;
         this.knowledgebaseId = knowledgebaseId;
+        this.user = user;
         this.endpoint = endpoint;
 
         this.RESOURCETYPEURI = new URI("http://www.w3.org/2001/XMLSchema#anyURI");
@@ -77,6 +79,10 @@ public class QAnswerResult {
 
     public String getKnowledgebaseId() {
         return knowledgebaseId;
+    }
+
+    public String getUser() {
+        return user;
     }
 
     public String getLanguage() {

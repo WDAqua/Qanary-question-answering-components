@@ -37,6 +37,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcherController {
     private URI endpoint;
     private String langFallback;
     private String knowledgeBaseDefault;
+    private String userDefault;
 
     // TODO: create an RESTful endpoint that is returning the computed triples
 
@@ -44,6 +45,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcherController {
                                                                 QAnswerQueryBuilderAndSparqlResultFetcher myQAnswerQueryBuilderAndExecutor, //
                                                                 @Qualifier("langDefault") String langDefault, //
                                                                 @Qualifier("knowledgeBaseDefault") String knowledgeBaseDefault, //
+                                                                @Qualifier("userDefault") String userDefault, //
                                                                 @Qualifier("endpointUrl") URI endpoint, //
                                                                 @Value("${server.port}") String serverPort, //
                                                                 @Value("${springdoc.api-docs.path}") String swaggerApiDocsPath, //
@@ -53,6 +55,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcherController {
         this.endpoint = endpoint;
         this.langFallback = langDefault;
         this.knowledgeBaseDefault = knowledgeBaseDefault;
+        this.userDefault = userDefault;
 
         logger.info("Service API docs available at http://0.0.0.0:{}{}", serverPort, swaggerApiDocsPath);
         logger.info("Service API docs UI available at http://0.0.0.0:{}{}", serverPort, swaggerUiPath);
@@ -108,10 +111,10 @@ public class QAnswerQueryBuilderAndSparqlResultFetcherController {
             throws URISyntaxException, MalformedURLException {
         logger.info("requestQAnswerWebService: {} ", request);
         request.replaceNullValuesWithDefaultValues(this.getEndpoint(), this.getLangFallback(),
-                this.getKnowledgeBaseDefault());
+                this.getKnowledgeBaseDefault(), this.getUserDefault());
         QAnswerResult result = myQAnswerQueryBuilderAndExecutor.requestQAnswerWebService(
                 request.getQanswerEndpointUrl(), request.getQuestion(), request.getLanguage(),
-                request.getKnowledgeBaseId());
+                request.getKnowledgeBaseId(), request.getUser());
         return result;
     }
 
@@ -122,13 +125,14 @@ public class QAnswerQueryBuilderAndSparqlResultFetcherController {
      * @param questionString
      * @param lang
      * @param knowledgeBaseId
+     * @param user
      * @return
      * @throws MalformedURLException
      * @throws URISyntaxException
      */
     protected QAnswerResult requestQAnswerWebService(URI qanaryApiUri, String questionString, String lang,
-                                                     String knowledgeBaseId) throws MalformedURLException, URISyntaxException {
-        return myQAnswerQueryBuilderAndExecutor.requestQAnswerWebService(qanaryApiUri, questionString, lang, knowledgeBaseId);
+                                                     String knowledgeBaseId, String user) throws MalformedURLException, URISyntaxException {
+        return myQAnswerQueryBuilderAndExecutor.requestQAnswerWebService(qanaryApiUri, questionString, lang, knowledgeBaseId, user);
     }
 
     @PostMapping(value = QAnswerQueryBuilderAndSparqlResultFetcherController.DEMO, produces = "application/json")
@@ -146,7 +150,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcherController {
             throws URISyntaxException, MalformedURLException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed {
         logger.info("requestDemoResultWebService: {} ", request);
         request.replaceNullValuesWithDefaultValues(this.getEndpoint(), this.getLangFallback(),
-                this.getKnowledgeBaseDefault());
+                this.getKnowledgeBaseDefault(), this.getUserDefault());
         QAnswerResult result = this.requestQAnswerWebService(request);
         String sparqQuery = myQAnswerQueryBuilderAndExecutor.getSparqlInsertQuery(endpoint, result);
         return new QAnswerQanaryWrapperResult(result, sparqQuery);
@@ -162,6 +166,10 @@ public class QAnswerQueryBuilderAndSparqlResultFetcherController {
 
     public String getKnowledgeBaseDefault() {
         return knowledgeBaseDefault;
+    }
+
+    public String getUserDefault() {
+        return userDefault;
     }
 
 }
