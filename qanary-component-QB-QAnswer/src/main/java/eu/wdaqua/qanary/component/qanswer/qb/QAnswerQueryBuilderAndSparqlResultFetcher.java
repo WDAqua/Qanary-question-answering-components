@@ -1,5 +1,6 @@
 package eu.wdaqua.qanary.component.qanswer.qb;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -9,8 +10,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -56,6 +60,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
     private String langDefault;
     private String knowledgeBaseDefault;
     private String userDefault;
+    private final String FILENAME_GET_ANNOTATED_ENTITIES = "/queries/get_annotated_entities.rq";
 
     public QAnswerQueryBuilderAndSparqlResultFetcher( //
                                                       float threshold, //
@@ -88,6 +93,8 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
         this.myRestTemplate = restTemplate;
         this.applicationName = applicationName;
 
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_GET_ANNOTATED_ENTITIES);
+        
         logger.debug("RestTemplate: {}", restTemplate);
 
     }
@@ -172,7 +179,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
 
         HttpEntity<JSONObject> response = myRestTemplate.getForEntity(urlTemplate, JSONObject.class, parameters);
         logger.info("QAnswer JSON result for question '{}': {}", questionString,
-                response.getBody().getAsString("questions"));
+                response.getBody().getAsString("question"));
 
         return new QAnswerResult(response.getBody(), questionString, qanaryApiUri, lang, knowledgeBaseId, user);
     }
@@ -189,26 +196,14 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
             throws Exception {
         LinkedList<NamedEntity> namedEntities = new LinkedList<>();
 
-        String sparqlGetAnnotation = "" //
-                + "PREFIX dbr: <http://dbpedia.org/resource/> \n" //
-                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> \n" //
-                + "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
-                + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
-                + "SELECT ?entityResource ?annotationScore ?start ?end " //
-                + "FROM <" + inGraph.toString() + "> \n" //
-                + "WHERE { \n" //
-                + "    ?annotation    	oa:hasBody   	?entityResource .\n" //
-                + "    ?annotation 		oa:hasTarget 	?target .\n" //
-                + "    ?target 			oa:hasSource    <" + myQanaryQuestion.getUri().toString() + "> .\n" //
-                + "    ?target     		oa:hasSelector  ?textSelector .\n" //
-                + "    ?textSelector 	rdf:type    	oa:TextPositionSelector .\n" //
-                + "    ?textSelector  	oa:start    	?start .\n" //
-                + "    ?textSelector  	oa:end      	?end .\n" //
-                + "    OPTIONAL { \n" //
-                + "			?annotation qa:score	?annotationScore . \n" // we cannot be sure that a score is provided
-                + "	   }\n" //
-                + "}\n";
+        QuerySolutionMap bindingsForSelectAnnotations = new QuerySolutionMap();
+		bindingsForSelectAnnotations.add("GRAPH", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+		bindingsForSelectAnnotations.add("QUESTION_URI", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
 
+		// get the template of the SELECT query
+		String sparqlGetAnnotations = this.loadQueryFromFile(FILENAME_GET_ANNOTATED_ENTITIES, bindingsForSelectAnnotations);
+		logger.info("SPARQL query: {}", sparqlGetAnnotations);        
+        
         boolean ignored = false;
         Float score;
         int start;
@@ -216,7 +211,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
         QuerySolution tupel;
 
         QanaryTripleStoreConnector connector = myQanaryUtils.getQanaryTripleStoreConnector();
-        ResultSet resultset = connector.select(sparqlGetAnnotation);
+        ResultSet resultset = connector.select(sparqlGetAnnotations);
         while (resultset.hasNext()) {
             tupel = resultset.next();
             start = tupel.get("start").asLiteral().getInt();
@@ -249,6 +244,10 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
         }
         return namedEntities;
     }
+    
+	private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException  {
+		return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
+	}    
 
     /**
      * create a QAnswer-compatible format of the question
