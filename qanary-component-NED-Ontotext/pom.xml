@@ -5,15 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-NED-Ontotext</artifactId>
-    <version>3.0.2</version>
+    <version>3.0.3</version>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.5.5</version>
     </parent>
     <properties>
-        <java.version>11</java.version>
-        <qanary.version>[2.0.0,4.0.0)</qanary.version>
+        <java.version>17</java.version>
+        <qanary.version>[3.7.0,4.0.0)</qanary.version>
         <docker.image.prefix>qanary</docker.image.prefix>
         <docker.image.name>ned-ontotext</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>

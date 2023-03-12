@@ -71,7 +71,7 @@ The parameters description:
 4. Build the Docker image: 
 
 ```bash
-docker-compose build .
+docker-compose build 
 ```
 
 5. Run the the component with docker-compose:

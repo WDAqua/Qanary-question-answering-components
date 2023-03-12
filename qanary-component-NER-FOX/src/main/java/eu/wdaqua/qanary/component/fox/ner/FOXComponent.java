@@ -3,7 +3,11 @@ package eu.wdaqua.qanary.component.fox.ner;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.query.QuerySolutionMap;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +18,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.UUID;
 
@@ -30,8 +35,13 @@ public class FOXComponent extends QanaryComponent {
 
     private final String applicationName;
 
+    private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
+
     public FOXComponent(@Value("${spring.application.name}") final String applicationName) {
         this.applicationName = applicationName;
+
+        // check if files exists and are not empty
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
     }
 
     /**
@@ -66,7 +76,7 @@ public class FOXComponent extends QanaryComponent {
         RestTemplate myRestTemplate = new RestTemplate();
         ResponseEntity<String> model = myRestTemplate.exchange(foxService, HttpMethod.POST, request, String.class);
         String response = model.getBody();
-        logger.info("Response from FOX API" + response);
+        logger.info("Response from FOX API: {}", response);
 
         // STEP4: Vocabulary alignment
         logger.info("Apply commons alignment on outgraph");
@@ -81,47 +91,32 @@ public class FOXComponent extends QanaryComponent {
         //Insert data into temporary graph
         String sparql = "INSERT DATA { GRAPH <" + namedGraphTemp + "> {" + triples + "}}";
         logger.info(sparql);
-        myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+        myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 
         //Align to QANARY commons
-        sparql = "prefix qa: <http://www.wdaqua.eu/qa#> " //
-                + "prefix oa: <http://www.w3.org/ns/openannotation/core/> " //
-                + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " //
-                + "INSERT { " //
-                + "GRAPH <" + myQanaryMessage.getOutGraph() + "> { " //
-                + "  ?a a qa:AnnotationOfSpotInstance . " //
-                + "  ?a oa:hasTarget [ " //
-                + "           a    oa:SpecificResource; " //
-                + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
-                + "           oa:hasSelector  [ " //
-                + "                    a oa:TextPositionSelector ; " //
-                + "                    oa:start ?begin ; " //
-                + "                    oa:end  ?end " //
-                + "           ] " //
-                + "  ] ; " //
-                + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ;" //
-                + "	    oa:annotatedAt ?time  " //
-                + "}} " //
-                + "WHERE { " //
-                + "	SELECT ?a ?s ?begin ?end ?time " //
-                + "	WHERE { " //
-                + "		graph <" + namedGraphTemp + "> { " //
-                + "			?s	<http://ns.aksw.org/scms/beginIndex> ?begin . " //
-                + "			?s  <http://ns.aksw.org/scms/endIndex> ?end . " //
-                + "			BIND (IRI(str(RAND())) AS ?a) ." //
-                + "			BIND (now() as ?time) " //
-                + "		} " //
-                + "	} " //
-                + "}";
-        myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+
+        QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+        bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+        bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+        bindingsForInsert.add("tmpGraph", ResourceFactory.createResource(namedGraphTemp));
+        bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+        // get the template of the INSERT query
+        sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
+        logger.info("SPARQL query: {}", sparql);
+        myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 
         //Drop the temporary graph
         sparql = "DROP SILENT GRAPH <" + namedGraphTemp + ">";
-        myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+        myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 
         long estimatedTime = System.currentTimeMillis() - startTime;
         logger.info("Time: {}", estimatedTime);
 
         return myQanaryMessage;
+    }
+
+    private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
     }
 }

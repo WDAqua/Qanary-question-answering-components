@@ -70,12 +70,13 @@ class QanaryCustomControllerTest {
         String question = "What is the capital of Spain";
         String lang = "en";
         String kb = "wikidata";
+        String user = "open";
 
-        QAnswerResult result0 = customController.requestQAnswerWebService(this.realEndpoint, question, lang, kb);
+        QAnswerResult result0 = customController.requestQAnswerWebService(this.realEndpoint, question, lang, kb, user);
         assertTrue(result0.getValues().size() > 0, "the number of fetched results should be > 0, but  was " + result0.getValues().size());
         assertTrue(result0.getValues().size() <= 60, "the number of fetched results should be <= 60, but  was " + result0.getValues().size());
 
-        QAnswerRequest requestMessage = new QAnswerRequest(question, lang, kb);
+        QAnswerRequest requestMessage = new QAnswerRequest(question, lang, kb, user);
 
         MvcResult res;
         try {

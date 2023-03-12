@@ -1,9 +1,13 @@
 package eu.wdaqua.qanary.component.diambiguationclass.ned;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.update.UpdateExecutionFactory;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateProcessor;
@@ -13,9 +17,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -37,16 +39,26 @@ import java.util.Map;
  *      "https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F"
  *      target="_top">Github wiki howto</a>
  */
-// TODO: replace System.out.println by logger.debug
 // TODO: remove try catch blocks with empty catch blocks
-// TODO: move Agdistis URL to configuration file 
 public class DiambiguationClass extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(DiambiguationClass.class);
 
+    @Value("${agdistis.url}")
+    private String agdistisUrl;
+
+    @Value("${templategeneration.url}")
+    private String templategenerationUrl;
+
     private final String applicationName;
+    private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
+    private String FILENAME_SELECT_ANNOTATED_LANGUAGES = "/queries/select_annotated_languages.rq";
 
     public DiambiguationClass(@Value("${spring.application.name}") final String applicationName) {
         this.applicationName = applicationName;
+
+        // check if files exists and are not empty
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_SELECT_ANNOTATED_LANGUAGES);
     }
 
     public static String runCurlGetWithParam(String weburl, String data, String contentType)
@@ -79,7 +91,7 @@ public class DiambiguationClass extends QanaryComponent {
         }
         in.close();
         xmlResp = response.toString();
-        System.out.println("the curl Get output : " + xmlResp);
+        logger.debug("the curl GET output: {}", xmlResp);
         return xmlResp;
     }
 
@@ -117,8 +129,7 @@ public class DiambiguationClass extends QanaryComponent {
             in.close();
             xmlResp = response.toString();
 
-            System.out.println("Curl Response: \n" + xmlResp);
-            logger.info("Response {}", xmlResp);
+            logger.info("Response: {}", xmlResp);
         } catch (Exception e) {
         }
         return (xmlResp);
@@ -130,48 +141,36 @@ public class DiambiguationClass extends QanaryComponent {
      * component
      */
     @Override
-    public QanaryMessage process(QanaryMessage myQanaryMessage) {
+    public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
         //org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
         logger.info("process: {}", myQanaryMessage);
-        // TODO: implement processing of question
 
         // STEP1: Retrieve the named graph and the endpoint
-        String endpoint = myQanaryMessage.getEndpoint().toASCIIString();
-        String namedGraph = myQanaryMessage.getInGraph().toASCIIString();
-        System.out.println("Graph is" + namedGraph);
-        logger.info("Endpoint: {}", endpoint);
-        logger.info("InGraph: {}", namedGraph);
-        // TODO: implement this (custom for every component)
+        QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
+        QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
+        String myQuestion = myQanaryQuestion.getTextualRepresentation();
 
         // STEP2: Retrieve information that are needed for the computations
         // Here, we need two parameters as input to be fetched from triplestore-
         // question and language of the question.
-        // So first, Retrive the uri where the question is exposed
-        String sparql = "PREFIX qa:<http://www.wdaqua.eu/qa#> " + "SELECT ?questionuri " + "FROM <" + namedGraph + "> "
-                + "WHERE {?questionuri a qa:Question}";
+        logger.info("Question: {}", myQuestion);
 
-        ResultSet result = selectTripleStore(sparql, endpoint);
-        String uriQuestion = result.next().getResource("questionuri").toString();
-        logger.info("Uri of the question: {}", uriQuestion);
-        // Retrive the question itself
-        RestTemplate restTemplate = new RestTemplate();
-        // TODO: pay attention to "/raw" maybe change that
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(uriQuestion + "/raw", String.class);
-        String question = responseEntity.getBody();
-        logger.info("Question: {}", question);
-
-        // the below mentioned SPARQL query to fetch annotation of language from
+        // the below-mentioned SPARQL query to fetch annotation of language from
         // triplestore
-        String questionlang = "PREFIX qa:<http://www.wdaqua.eu/qa#> " + "SELECT ?lang " + "FROM <" + namedGraph + "> "
-                + "WHERE {?q a qa:Question ." + " ?anno <http://www.w3.org/ns/openannotation/core/hasTarget> ?q ."
-                + " ?anno <http://www.w3.org/ns/openannotation/core/hasBody> ?lang ."
-                + " ?anno a qa:AnnotationOfQuestionLanguage}";
-        // Now fetch the language, in our case it is "en".
-        ResultSet result1 = selectTripleStore(questionlang, endpoint);
-        String language1 = "en";
-        logger.info("Langauge of the Question: {}", language1);
 
-        String url = "";
+        QuerySolutionMap bindingsForSelect = new QuerySolutionMap();
+        bindingsForSelect.add("graph", ResourceFactory.createResource(myQanaryQuestion.getInGraph().toASCIIString()));
+
+        // get the template of the INSERT query
+        String sparql = this.loadQueryFromFile(FILENAME_SELECT_ANNOTATED_LANGUAGES, bindingsForSelect);
+        logger.info("SPARQL query: {}", sparql);
+        ResultSet result1 = myQanaryUtils.getQanaryTripleStoreConnector().select(sparql);
+
+        // Now fetch the language, in our case it is "en".
+
+        String language1 = "en";
+        logger.info("Language of the question: {}", language1);
+
         String data = "";
         String contentType = "application/json";
 
@@ -184,18 +183,19 @@ public class DiambiguationClass extends QanaryComponent {
 
         // now arrange the Web service and input parameters in the way, which is needed
         // for CURL command
-        url = "http://121.254.173.90:1515/templategeneration/rocknrole";
-        data = "{  \"string\":\"" + question + "\",\"language\":\"" + language1 + "\"}";// "{ \"string\": \"Which river
+
+        data = "{  \"string\":\"" + myQuestion + "\",\"language\":\"" + language1 + "\"}";// "{ \"string\": \"Which river
         // flows through Seoul?\",
         // \"language\": \"en\"}";
-        System.out.println("\ndata :" + data);
-        System.out.println("\nComponent : 21");
+        logger.debug("data : {}", data);
+        logger.debug("OKBQA component: 21");
         String output1 = "";
         // pass the input in CURL command and call the function.
 
         try {
-            output1 = DiambiguationClass.runCurlPOSTWithParam(url, data, contentType);
+            output1 = DiambiguationClass.runCurlPOSTWithParam(templategenerationUrl, data, contentType);
         } catch (Exception e) {
+            logger.error("Error in runCurlPOSTWithParam", e);
         }
         // System.out.println("The output template is:" +output1);
         logger.info("The output template is: {}", output1);
@@ -210,21 +210,20 @@ public class DiambiguationClass extends QanaryComponent {
          *
          */
 
-        url = "http://121.254.173.90:2357/agdistis/run?";
         data = output1.substring(1, output1.length() - 1);
 
         contentType = "application/json";
 
-        System.out.println("\ndata :" + data);
-        System.out.println("\nComponent : 7");
+        logger.debug("data: {}", data);
+        logger.debug("OKBQA component: 7");
         output1 = "";
         try {
-            System.out.println("Calling inside ===============");
-            output1 = DiambiguationClass.runCurlGetWithParam(url, data, contentType);
+            logger.debug("Calling inside ===============");
+            output1 = DiambiguationClass.runCurlGetWithParam(agdistisUrl, data, contentType);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("The output template is:" + output1);
+        logger.debug("The output template is: {}", output1);
 
         Map<String, Map<String, Double>> allClassses = new HashMap<String, Map<String, Double>>();
         try {
@@ -253,19 +252,17 @@ public class DiambiguationClass extends QanaryComponent {
 
                             allClassses.get(var).remove(allClassses.get(var).entrySet().iterator().next().getKey());
                             allClassses.get(var).put(urls, score);
-                            System.out.println("var: " + var + "url : " + urls + " , Score : " + score);
+                            logger.debug("var: {}, url: {}, score: {}", var, urls, score);
                         }
 
                     } else {
                         urlsAndScore.put(urls, score);
-                        System.out.println("var: " + var + "url : " + urls + " , Score : " + score);
+                        logger.debug("var: {}, url: {} , score: {}", var, urls, score);
                         // allUrls.put("classes", urlsAndScore);
                         allClassses.put(var, urlsAndScore);
                     }
-
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -274,43 +271,43 @@ public class DiambiguationClass extends QanaryComponent {
             Map<String, Double> allUrls = allClassses.get(vars);
             int count = 0;
             for (String urls : allUrls.keySet()) {
-                System.out.println("Inside : Literal: " + urls);
-                sparql = "prefix qa: <http://www.wdaqua.eu/qa#> " //
-                        + "prefix oa: <http://www.w3.org/ns/openannotation/core/> " //
-                        + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " //
-                        + "INSERT { " + "GRAPH <" + namedGraph + "> { "  //
-                        + " ?a a qa:AnnotationOfClass . " //
-                        + " ?a oa:hasTarget [ " //
-                        + " 	a oa:SpecificClass; " //
-                        + " 	oa:hasSource <" + uriQuestion + ">; " //
-                        + " ] . " //
-                        + " ?a oa:hasBody <" + urls + "> ;" //
-                        + " oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; " //
-                        + " oa:annotatedAt ?time " //
-                        + "}} " + "WHERE { "//
-                        + "BIND (IRI(str(RAND())) AS ?a) ." //
-                        + "BIND (now() as ?time) " //
-                        + "}";//
-                logger.info("Sparql query {}", sparql);
-                loadTripleStore(sparql, endpoint);
+                logger.debug("Inside : Literal: {}", urls);
+
+                QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+                bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+                bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+                bindingsForInsert.add("answer", ResourceFactory.createResource(urls));
+                bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+                // get the template of the INSERT query
+                sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
+                logger.info("SPARQL query: {}", sparql);
+                myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
+
                 count++;
             }
-            System.out.println("Count is : " + count);
+            logger.debug("Count is: {}", count);
         }
         return myQanaryMessage;
 
     }
 
+    @Deprecated(since="3.1.3", forRemoval=true)
     private void loadTripleStore(String sparqlQuery, String endpoint) {
         UpdateRequest request = UpdateFactory.create(sparqlQuery);
         UpdateProcessor proc = UpdateExecutionFactory.createRemote(request, endpoint);
         proc.execute();
     }
 
+    @Deprecated(since="3.1.3", forRemoval=true)
     private ResultSet selectTripleStore(String sparqlQuery, String endpoint) {
         Query query = QueryFactory.create(sparqlQuery);
         QueryExecution qExe = QueryExecutionFactory.sparqlService(endpoint, query);
         return qExe.execSelect();
+    }
+
+    private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
     }
 
     class ClassesStructure {

@@ -5,15 +5,15 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary-component-QE-SparqlExecuter</artifactId>
-	<version>3.1.5</version>
+	<version>3.1.7</version>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.6.7</version>
 	</parent>
 	<properties>
-		<java.version>11</java.version>
-		<qanary.version>[3.6.1,4.0.0)</qanary.version>
+		<java.version>17</java.version>
+		<qanary.version>[3.7.0,4.0.0)</qanary.version>
 		<jena.version>4.5.0</jena.version><!-- latest working version -->
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<docker.image.name>qanary-component-qe-sparqlexecuter</docker.image.name>

@@ -1,8 +1,13 @@
 package eu.wdaqua.qanary.component.lucenelinker.nerd;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.update.UpdateExecutionFactory;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateProcessor;
@@ -43,8 +48,13 @@ public class LuceneLinker extends QanaryComponent {
 
     private final String applicationName;
 
+    private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
+
     public LuceneLinker(@Value("${spring.application.name}") final String applicationName) {
         this.applicationName = applicationName;
+
+        // check if files exists and are not empty
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
     }
 
     /**
@@ -56,26 +66,12 @@ public class LuceneLinker extends QanaryComponent {
 
         try {
             // STEP1: Retrieve the named graph and the endpoint
-            String endpoint = myQanaryMessage.getEndpoint().toASCIIString();
-            String namedGraph = myQanaryMessage.getInGraph().toASCIIString();
-            logger.info("Endpoint: {}", endpoint);
-            logger.info("InGraph: {}", namedGraph);
+            QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
+            QanaryQuestion<String> myQanaryQuestion = new QanaryQuestion(myQanaryMessage, myQanaryUtils.getQanaryTripleStoreConnector());
+            String myQuestion = myQanaryQuestion.getTextualRepresentation();
+            logger.info("Question {}", myQuestion);
 
             // STEP2: Retrieve information that are needed for the computations
-            //Retrive the uri where the question is exposed
-            String sparql = "PREFIX qa:<http://www.wdaqua.eu/qa#> "
-                    + "SELECT ?questionuri "
-                    + "FROM <" + namedGraph + "> "
-                    + "WHERE {?questionuri a qa:Question}";
-            ResultSet result = selectTripleStore(sparql, endpoint);
-            String uriQuestion = result.next().getResource("questionuri").toString();
-            logger.info("Uri of the question: {}", uriQuestion);
-            //Retrive the question itself
-            RestTemplate restTemplate = new RestTemplate();
-            //TODO: pay attention to "/raw" maybe change that
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity(uriQuestion + "/raw", String.class);
-            String question = responseEntity.getBody();
-            logger.info("Question: {}", question);
 
             //String question="Who was influenced by Socrates?";
             //String question="Give me all Swedish oceanographers.";
@@ -87,7 +83,7 @@ public class LuceneLinker extends QanaryComponent {
             ArrayList<String> stopWords = new ArrayList<String>(Arrays.asList(new String[]{"give", "me", "is", "are", "was", "were", "has", "have", "had", "do", "does", "did", "of", "the", "a", "in", "by", "to", "me", "all", "with", "from", "for", "and", "who"}));
             Analyzer analyzer = new StandardAnalyzer(CharArraySet.EMPTY_SET);
             //Analyzer analyzer = index.analyzer;
-            TokenStream tokenStream = analyzer.tokenStream(null, new StringReader(question));
+            TokenStream tokenStream = analyzer.tokenStream(null, new StringReader(myQuestion));
             tokenStream.reset();
             List<AttributeSource> tokens = new ArrayList<AttributeSource>();
             while (tokenStream.incrementToken()) {
@@ -154,7 +150,7 @@ public class LuceneLinker extends QanaryComponent {
             Iterator<Annotation> it = annotations.iterator();
             while (it.hasNext()) {
                 Annotation a = it.next();
-                if (stopWords.contains(question.substring(a.begin, a.end).toLowerCase())) {
+                if (stopWords.contains(myQuestion.substring(a.begin, a.end).toLowerCase())) {
                     it.remove();
                 }
             }
@@ -178,39 +174,36 @@ public class LuceneLinker extends QanaryComponent {
             logger.info("Apply commons alignment on outgraph");
 
             for (Annotation a : annotations) {
-                sparql = "prefix qa: <http://www.wdaqua.eu/qa#> " //
-                        + "prefix oa: <http://www.w3.org/ns/openannotation/core/> " //
-                        + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " //
-                        + "INSERT { " //
-                        + "GRAPH <" + namedGraph + "> { " //
-                        + "  ?a a qa:AnnotationOfInstance . " //
-                        + "  ?a oa:hasTarget [ " //
-                        + "           a    oa:SpecificResource; " //
-                        + "           oa:hasSource    <" + uriQuestion + ">; " //
-                        + "           oa:hasSelector  [ " //
-                        + "                    a oa:TextPositionSelector ; " //
-                        + "                    oa:start \"" + a.begin + "\"^^xsd:nonNegativeInteger ; " //
-                        + "                    oa:end  \"" + a.end + "\"^^xsd:nonNegativeInteger  " //
-                        + "           ] " //
-                        + "  ] . " //
-                        + "  ?a oa:hasBody <" + a.uri + "> ;" //
-                        + "     oa:annotatedBy <urn:qanary:"+this.applicationName+"> ;" //
-                        + "	    oa:annotatedAt ?time  " //
-                        + "}} " //
-                        + "WHERE { " //
-                        + "BIND (IRI(str(RAND())) AS ?a) ." //
-                        + "BIND (now() as ?time) " //
-                        + "}";
-                loadTripleStore(sparql, endpoint);
+
+                QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+                bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+                bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+                bindingsForInsert.add("start", ResourceFactory.createTypedLiteral(String.valueOf(a.begin), XSDDatatype.XSDnonNegativeInteger));
+                bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(a.end), XSDDatatype.XSDnonNegativeInteger));
+                bindingsForInsert.add("answer", ResourceFactory.createResource(a.uri));
+                bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+                // get the template of the INSERT query
+                String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
+                logger.info("SPARQL query: {}", sparql);
+                myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
+
             }
         } catch (IOException e) {
+            logger.error("Error: {}", e);
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (ParseException e) {
+            logger.error("Error: {}", e);
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (InvalidTokenOffsetsException e) {
+            logger.error("Error: {}", e);
             // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            logger.error("Error: {}", e);
             e.printStackTrace();
         }
         long estimatedTime = System.currentTimeMillis() - startTime;
@@ -219,12 +212,18 @@ public class LuceneLinker extends QanaryComponent {
         return myQanaryMessage;
     }
 
+    private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
+    }
+
+    @Deprecated(since = "3.1.5", forRemoval = true)
     private void loadTripleStore(String sparqlQuery, String endpoint) {
         UpdateRequest request = UpdateFactory.create(sparqlQuery);
         UpdateProcessor proc = UpdateExecutionFactory.createRemote(request, endpoint);
         proc.execute();
     }
 
+    @Deprecated(since = "3.1.5", forRemoval = true)
     private ResultSet selectTripleStore(String sparqlQuery, String endpoint) {
         Query query = QueryFactory.create(sparqlQuery);
         QueryExecution qExe = QueryExecutionFactory.sparqlService(endpoint, query);

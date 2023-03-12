@@ -36,11 +36,15 @@ public class Agdistis extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(Agdistis.class);
 
     private final String applicationName;
-    private final String FILENAME_SPOTS_FROM_GRAPH = "select_all_spots_from_graph.rq";
-    private final String FILENAME_INSERT_ANNOTATION = "insert_one_annotation.rq";
+    private final String FILENAME_SPOTS_FROM_GRAPH = "/queries/select_all_spots_from_graph.rq";
+    private final String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
 
     public Agdistis(@Value("${spring.application.name}") final String applicationName) {
         this.applicationName = applicationName;
+
+        // check if files exists and are not empty
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_SPOTS_FROM_GRAPH);
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
     }
 
     public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {

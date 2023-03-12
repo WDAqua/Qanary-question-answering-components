@@ -1,0 +1,41 @@
+= QB RuBQ wrapper component
+
+== Description
+
+The main task of this component is to manage the communication between the Qanary pipeline and the RuBQ API and to
+prepare the data. To do this, the component fetches the submitted question and sends the text attribute to the
+RuBQ API. The result from the API is processed, stored in the triple store and is then available in the Qanary
+pipeline.
+
+== Configuration
+
+The component uses a cache to minimise the processing time.
+For the configuration you can change the following parameter as you need:
+
+----
+qanary.webservicecalls.cache.specs=maximumSize=10000,expireAfterAccess=3600s
+----
+
+For the TeBaQA API you can change the following parameter as you need:
+
+----
+rubq.endpoint.url=
+rubq.threshold=0.5
+rubq.endpoint.language.default=en
+rubq.endpoint.language.supported=en,ru
+----
+
+**rubq.endpoint.url**: The URL of the API endpoint,
+make sure that the API accepts requests with the parameters
+"question" for the question text.
+
+**rubq.threshold**: The threshold for the answer.
+
+**rubq.endpoint.language.default**: The default language of the API.
+
+**rubq.endpoint.language.supported**: The list of supported languages of the API,
+e.g. `rubq.endpoint.language.supported=en,ru`.
+
+== Further references
+
+- https://github.com/WDAqua/Qanary/wiki//How-to-start-a-standard-java-Qanary-component[How to start a standard java Qanary component]
