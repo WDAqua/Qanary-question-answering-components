@@ -9,31 +9,35 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public class QAnswerRequest {
-    @Schema(description = "Endpoint URL of QAnswer API (default is already available)", example = "https://qanswer-core1.univ-st-etienne.fr/api/qa/full", required = false)
+    @Schema(description = "Endpoint URL of QAnswer API (default is already available)", example = "https://qanswer-core1.univ-st-etienne.fr/api/qa/full", required = true)
     private URI qanswerEndpointUrl;
     @NotBlank
     @Schema(description = "Question for that the results will be fetched from the QAnswer API", example = "What is the capital of Germany?", required = true)
     private String question;
-    @Schema(description = "2-character language identifier (e.g., en, de, fr, it, es, pt)", example = "en", required = false)
+    @Schema(description = "2-character language identifier (e.g., en, de, fr, it, es, pt)", example = "en", required = true)
     private String language;
-    @Schema(description = "ID of knowledge graph from that the results should be fetched from QAnswer ('dbpedia' is also supported by QAnswer, please see the QAnswer website for details)", example = "wikidata", required = false)
+    @Schema(description = "ID of knowledge graph from that the results should be fetched from QAnswer ('dbpedia' is also supported by QAnswer, please see the QAnswer website for details)", example = "wikidata", required = true)
     private String knowledgeBaseId;
+    @Schema(description = "Username of QAnswer app", example = "open", required = true)
+    private String user;
 
     public QAnswerRequest() {
 
     }
 
-    public QAnswerRequest(URI qanswerEndpointUrl, String question, String language, String knowledgeBaseId) {
+    public QAnswerRequest(URI qanswerEndpointUrl, String question, String language, String knowledgeBaseId, String user) {
         this.qanswerEndpointUrl = qanswerEndpointUrl;
         this.question = question;
         this.language = language;
         this.knowledgeBaseId = knowledgeBaseId;
+        this.user = user;
     }
 
-    public QAnswerRequest(String question, String language, String knowledgeBaseId) {
+    public QAnswerRequest(String question, String language, String knowledgeBaseId, String user) {
         this.question = question;
         this.language = language;
         this.knowledgeBaseId = knowledgeBaseId;
+        this.user = user;
     }
 
     public URI getQanswerEndpointUrl() {
@@ -68,14 +72,22 @@ public class QAnswerRequest {
         this.knowledgeBaseId = knowledgeBaseId;
     }
 
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
     @Override
     public String toString() {
         return "QAnswerRequest: endpoint=" + this.getQanswerEndpointUrl() + ", question=" + this.getQuestion()
-                + ", lang=" + this.getLanguage() + ", knowledgeBaseId=" + this.getKnowledgeBaseId();
+                + ", lang=" + this.getLanguage() + ", knowledgeBaseId=" + this.getKnowledgeBaseId() + ", user=" + this.getUser();
     }
 
     public void replaceNullValuesWithDefaultValues(URI endpointDefault, String langDefault,
-                                                   String knowledgeBaseDefault) {
+                                                   String knowledgeBaseDefault, String userDefault) {
 
         if (this.getQanswerEndpointUrl() == null) {
             this.setQanswerEndpointUrl(endpointDefault);
@@ -87,6 +99,10 @@ public class QAnswerRequest {
 
         if (this.getKnowledgeBaseId() == null || this.getKnowledgeBaseId().isBlank()) {
             this.setKnowledgeBaseId(knowledgeBaseDefault);
+        }
+
+        if (this.getUser() == null || this.getUser().isBlank()) {
+            this.setUser(userDefault);
         }
     }
 
