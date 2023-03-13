@@ -1,5 +1,9 @@
 package eu.wdaqua.qanary.component.dbpediaspotlight.ned;
 
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +16,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.client.RestTemplate;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
+import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.dbpediaspotlight.ned.exceptions.DBpediaSpotlightServiceNotAvailable;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -44,16 +49,12 @@ public class Application {
 			@Value("${dbpediaspotlight.test-question}") String testQuestion, //
 			@Value("${dbpediaspotlight.confidence.minimum}") float confidenceMinimum, //
 			@Value("${dbpediaspotlight.endpoint:https://api.dbpedia-spotlight.org/en/annotate}") String endpoint, //
-			@Value("${dbpediaspotlight.perform-live-check-on-component-start:true}") boolean performLiveCheckOnComponentStart //
+			@Value("${dbpediaspotlight.perform-live-check-on-component-start:true}") boolean performLiveCheckOnComponentStart, //
+			@Value("${dbpediaspotlight.endpoint.ssl.certificatevalidation.ignore:false}") final boolean ignore
 	) throws DBpediaSpotlightServiceNotAvailable {
 		this.checkSpotlightServiceAvailability(testQuestion, endpoint, confidenceMinimum,
-				myDBpediaSpotlightServiceFetcher(), performLiveCheckOnComponentStart);
+				myDBpediaSpotlightServiceFetcher(), performLiveCheckOnComponentStart, ignore);
 		return new DBpediaSpotlightConfiguration(confidenceMinimum, endpoint);
-	}
-
-	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
-		return new DBpediaSpotlightNED(applicationName);
 	}
 
 	@Bean
@@ -62,7 +63,7 @@ public class Application {
 	}
 
 	private void checkSpotlightServiceAvailability(String testQuestion, String endpoint, float confidenceMinimum,
-			DBpediaSpotlightServiceFetcher dBpediaSpotlightServiceFetcher, boolean performLiveCheckOnComponentStart)
+			DBpediaSpotlightServiceFetcher dBpediaSpotlightServiceFetcher, boolean performLiveCheckOnComponentStart, boolean ignore)
 			throws DBpediaSpotlightServiceNotAvailable {
 
 		if (!performLiveCheckOnComponentStart) {
@@ -74,6 +75,10 @@ public class Application {
 			logger.warn("live check of endpoint {} will be executed with question '{}'", endpoint, testQuestion);
 			String err;
 			try {
+				if(ignore) {
+					restTemplate.setRequestFactory(DBpediaSpotlightNED.getRequestFactoryForSslVerficationDeactivation());
+					logger.warn("SSL certificate validation deactivated.");
+				}
 				dBpediaSpotlightServiceFetcher.getJsonFromService(testQuestion, endpoint, confidenceMinimum,
 						restTemplate, myCacheOfResponses);
 				return;
