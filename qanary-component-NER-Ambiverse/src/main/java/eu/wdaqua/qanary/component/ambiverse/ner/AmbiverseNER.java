@@ -3,8 +3,12 @@ package eu.wdaqua.qanary.component.ambiverse.ner;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.apache.commons.io.IOUtils;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.query.QuerySolutionMap;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,13 +32,21 @@ import java.util.Arrays;
  */
 public class AmbiverseNER extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(AmbiverseNER.class);
-	private final String CLIENT_ID = "5e15e933";
-	private final String CLIENT_SECRET = "a09256c925adc9e2279435038df9d55e";
+	@Value("${ambiverse.client.id}")
+	private String CLIENT_ID;
+
+	@Value("${ambiverse.client.secred}")
+	private String CLIENT_SECRET;
+
+	private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
 
 	private final String applicationName;
 
 	public AmbiverseNER(@Value("${spring.application.name}") final String applicationName) {
 		this.applicationName = applicationName;
+
+		// check if files exists and are not empty
+		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
 	}
 
 	/**
@@ -91,7 +103,7 @@ public class AmbiverseNER extends QanaryComponent {
 				logger.error("Process PEL: {}", IOUtils.toString(pEL.getErrorStream()));
 				InputStream instreamEL = pEL.getInputStream();
 				String textEL = IOUtils.toString(instreamEL, StandardCharsets.UTF_8.name());
-				;
+
 				JSONObject response = new JSONObject(textEL);
 				logger.info("response: {}", response.toString());
 				JSONArray jsonArrayEL = response.getJSONArray("matches");
@@ -126,37 +138,28 @@ public class AmbiverseNER extends QanaryComponent {
 			// TODO Auto-generated catch block
 		}
 		logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-		// TODO: insert data in QanaryMessage.outgraph
 
 		logger.info("apply vocabulary alignment on outgraph");
-		// TODO: implement this (custom for every component)
 		for (Selection s : selections) {
-			String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> " //
-					+ "prefix oa: <http://www.w3.org/ns/openannotation/core/> " //
-					+ "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " //
-					+ "INSERT { " + "GRAPH <" + myQanaryMessage.getOutGraph() //
-					+ "> { " //
-					+ "  ?a a qa:AnnotationOfSpotInstance . " //
-					+ "  ?a oa:hasTarget [ " //
-					+ "           a    oa:SpecificResource; " //
-					+ "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
-					+ "           oa:hasSelector  [ " //
-					+ "                    a oa:TextPositionSelector ; " //
-					+ "                    oa:start \"" + s.begin + "\"^^xsd:nonNegativeInteger ; " //
-					+ "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " //
-					+ "           ] " //
-					+ "  ] ; " //
-					+ "     oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; " //
-					+ "	    oa:annotatedAt ?time  " //
-					+ "}} " //
-					+ "WHERE { " //
-					+ "BIND (IRI(str(RAND())) AS ?a) ." //
-					+ "BIND (now() as ?time) " //
-					+ "}";
-			myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+
+			QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+			bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+			bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+			bindingsForInsert.add("start", ResourceFactory.createTypedLiteral(String.valueOf(s.begin), XSDDatatype.XSDnonNegativeInteger));
+			bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(s.end), XSDDatatype.XSDnonNegativeInteger));
+			bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+			// get the template of the INSERT query
+			String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
+			logger.info("SPARQL query: {}", sparql);
+			myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 		}
 		return myQanaryMessage;
 
+	}
+
+	private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+		return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
 	}
 
 	class Selection {

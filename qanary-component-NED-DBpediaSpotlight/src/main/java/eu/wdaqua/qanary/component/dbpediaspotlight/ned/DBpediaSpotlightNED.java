@@ -1,12 +1,29 @@
 package eu.wdaqua.qanary.component.dbpediaspotlight.ned;
 
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.net.ssl.SSLContext;
 
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
+
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.query.QuerySolutionMap;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,6 +33,7 @@ import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
+import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
 
@@ -39,7 +57,7 @@ public class DBpediaSpotlightNED extends QanaryComponent {
 
 	@Autowired
 	CacheOfRestTemplateResponse myCacheOfResponses;
-	@Autowired
+
 	RestTemplate restTemplate;
 
 	@Inject
@@ -51,10 +69,81 @@ public class DBpediaSpotlightNED extends QanaryComponent {
 	@Inject
 	private DBpediaSpotlightServiceFetcher myDBpediaSpotlightServiceFetcher;
 
+	private boolean ignoreSslCertificate;
+
+	private final String applicationName;
+	private static final String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
+
+	public DBpediaSpotlightNED( //
+			@Value("${spring.application.name}") final String applicationName, //
+			@Value("${dbpediaspotlight.endpoint.ssl.certificatevalidation.ignore:false}") final boolean ignore, //
+			RestTemplateWithCaching restTemplate //
+	) {
+		this.applicationName = applicationName;
+		this.restTemplate = restTemplate;
+		this.setIgnoreSslCertificate(ignore);
+
+		// check if files exists and are not empty
+		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
+	}
+
+	public void setIgnoreSslCertificate(boolean flag) {
+		this.ignoreSslCertificate = flag;
+	}
+
+	public boolean getIgnoreSslCertificate() {
+		return this.ignoreSslCertificate;
+	}
+
+	/**
+	 * deactivates the SSL certificate validation for the restTemplate
+	 * 
+	 * @throws NoSuchAlgorithmException
+	 * @throws KeyManagementException
+	 * @throws KeyStoreException
+	 */
+	private void deactivateRestTemplateCertificateValidation()
+			throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+
+		this.restTemplate.setRequestFactory(getRequestFactoryForSslVerficationDeactivation());
+		logger.warn("SSL certifcate validation deactivated for DBpedia spotlight server");
+	}
+
+	/**
+	 * create a request factory capable of bypassing SSL certificates
+	 * 
+	 * @return
+	 * @throws KeyManagementException
+	 * @throws NoSuchAlgorithmException
+	 * @throws KeyStoreException
+	 */
+	protected static HttpComponentsClientHttpRequestFactory getRequestFactoryForSslVerficationDeactivation()
+			throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+		TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+
+		SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy)
+				.build();
+
+		SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
+
+		CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
+
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+
+		requestFactory.setHttpClient(httpClient);
+
+		return requestFactory;
+	}
+
 	/**
 	 * standard method for processing a message from the central Qanary component
 	 */
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
+
+		// deactivate SSL check if demanded
+		if (this.getIgnoreSslCertificate()) {
+			deactivateRestTemplateCertificateValidation();
+		}
 
 		// STEP 1: Retrieve the information needed for the computations
 		// i.e., retrieve the current question
@@ -64,7 +153,6 @@ public class DBpediaSpotlightNED extends QanaryComponent {
 		logger.info("process question \"{}\" with DBpedia Spotlight at '{}' and minimum confidence: {}", //
 				myQuestion, myDBpediaSpotlightConfiguration.getEndpoint(),
 				myDBpediaSpotlightConfiguration.getConfidenceMinimum());
-		String sparql, sparqlbind;
 
 		// STEP2: Call the DBpedia NED service
 		JsonArray resources = myDBpediaSpotlightServiceFetcher.getJsonFromService(myQuestion, //
@@ -87,46 +175,33 @@ public class DBpediaSpotlightNED extends QanaryComponent {
 		// TODO: create one larger SPARQL INSERT query that adds all discovered named
 		// entities at once
 
-		// TODO: CREATE SPARQL USE TEMPLATE IN COMMONS
-		sparql = "" //
-				+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-				+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-				+ "INSERT { ";
-		sparqlbind = "";
-		String name = this.myQanaryComponentConfiguration.getApplicationName();
-		int i = 0;
 		for (FoundDBpediaResource found : foundDBpediaResources) {
-			sparql += "" //
-					+ "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
-					+ "  ?a" + i + " a qa:AnnotationOfInstance . " //
-					+ "  ?a" + i + " oa:hasTarget [ " //
-					+ "           a    oa:SpecificResource; " //
-					+ "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
-					+ "           oa:hasSelector  [ " //
-					+ "                    a oa:TextPositionSelector ; " //
-					+ "                    oa:start \"" + found.getBegin() + "\"^^xsd:nonNegativeInteger ; " //
-					+ "                    oa:end  \"" + found.getEnd() + "\"^^xsd:nonNegativeInteger  " //
-					+ "           ] " //
-					+ "  ] . " //
-					+ "  ?a" + i + " oa:hasBody <" + found.getResource() + "> ;" //
-					+ "     	 oa:annotatedBy <urn:qanary:" + name + "> ; " //
-					+ "	    	 oa:annotatedAt ?time ; " //
-					+ "     	 qa:score \"" + found.getSimilarityScore() + "\"^^xsd:decimal . " //
-					+ "	}"; // end: graph
-			sparqlbind += "  BIND (IRI(str(RAND())) AS ?a" + i + ") .";
-			i++;
+
+			QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+			bindingsForInsert.add("graph",
+					ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+			bindingsForInsert.add("targetQuestion",
+					ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+			bindingsForInsert.add("start", ResourceFactory.createTypedLiteral(String.valueOf(found.getBegin()),
+					XSDDatatype.XSDnonNegativeInteger));
+			bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(found.getEnd()),
+					XSDDatatype.XSDnonNegativeInteger));
+			bindingsForInsert.add("answer", ResourceFactory.createResource(found.getResource().toString()));
+			bindingsForInsert.add("score", ResourceFactory
+					.createTypedLiteral(String.valueOf(found.getSimilarityScore()), XSDDatatype.XSDdecimal));
+			bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+			// get the template of the INSERT query
+			String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
+			logger.info("SPARQL query: {}", sparql);
+			myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 		}
 
-		sparql += "" //
-				+ "} " // end: insert
-				+ "WHERE { " //
-				+ sparqlbind //
-				+ "  BIND (now() as ?time) " //
-				+ "}";
-		myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
-
 		return myQanaryMessage;
+	}
+
+	private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+		return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
 	}
 
 }

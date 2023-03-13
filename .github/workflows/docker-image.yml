@@ -20,10 +20,12 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - uses: actions/checkout@v3
-      - name: Build the Docker images and Push to Dockerhub
+      - name: Build and push Java components
         run: bash -c ./service_config/build_images.sh
+      - name: Build and push Python components
+        run: bash -c ./service_config/build_python_images.sh
       - name: Init update
-        env:
-          API_KEY: ${{ secrets.API_KEY }}
-          UPDATER_HOST: ${{ secrets.UPDATER_HOST }}
-        run: cd service_config && python init_services.py update
+        uses: MindMaster98/docker-service-updater@v0.1.5
+        with:
+          api_key: ${{ secrets.API_KEY }}
+          updater_host: ${{ secrets.UPDATER_HOST }}

@@ -3,6 +3,7 @@ package eu.wdaqua.qanary.component.babelfy.ner;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -11,6 +12,9 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.query.QuerySolutionMap;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -36,8 +40,16 @@ public class Babelfy extends QanaryComponent {
 
     private final String applicationName;
 
+    private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
+
+    @Value("${babelfy.key}")
+    private String key;
+
     public Babelfy(@Value("${spring.application.name}") final String applicationName) {
         this.applicationName = applicationName;
+
+        // check if files exists and are not empty
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
     }
 
     /**
@@ -49,7 +61,6 @@ public class Babelfy extends QanaryComponent {
     @Override
     public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
         logger.info("process: {}", myQanaryMessage);
-        // TODO: implement processing of question
         // STEP1: Retrieve the named graph and the endpoint
 
         QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
@@ -65,7 +76,7 @@ public class Babelfy extends QanaryComponent {
         logger.info("Path {}", thePath);
 
         HttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpget = new HttpGet("https://babelfy.io/v1/disambiguate?text=" + thePath + "&lang=AGNOSTIC&key=54c2f995-0b2a-4f46-beb0-002202765241");
+        HttpGet httpget = new HttpGet("https://babelfy.io/v1/disambiguate?text=" + thePath + "&lang=AGNOSTIC&key=" + key );
         //httpget.addHeader("User-Agent", USER_AGENT);
         HttpResponse response = httpclient.execute(httpget);
         try {
@@ -94,44 +105,35 @@ public class Babelfy extends QanaryComponent {
                 }
             }
         } catch (ClientProtocolException e) {
-            logger.info("Exception: {}", e);
+            logger.error("Exception: {}", e);
             // TODO Auto-generated catch block
         } catch (IOException e1) {
-            logger.info("Except: {}", e1);
+            logger.error("Except: {}", e1);
             // TODO Auto-generated catch block
         }
         logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-        // TODO: insert data in QanaryMessage.outgraph
 
         logger.info("apply vocabulary alignment on outgraph");
-        // TODO: implement this (custom for every component)
         for (Selection s : selections) {
-            String sparql = "" //
-                    + "prefix qa: <http://www.wdaqua.eu/qa#> " //
-                    + "prefix oa: <http://www.w3.org/ns/openannotation/core/> " //
-                    + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " //
-                    + "INSERT { " //
-                    + "GRAPH <" + myQanaryMessage.getOutGraph() + "> { " //
-                    + "  ?a a qa:AnnotationOfSpotInstance . " //
-                    + "  ?a oa:hasTarget [ " //
-                    + "           a    oa:SpecificResource; " //
-                    + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
-                    + "           oa:hasSelector  [ " //
-                    + "                    a oa:TextPositionSelector ; " //
-                    + "                    oa:start \"" + s.begin + "\"^^xsd:nonNegativeInteger ; " //
-                    + "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " //
-                    + "           ] " //
-                    + "  ] ; " //
-                    + "     oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; " //
-                    + "	    oa:annotatedAt ?time  " //
-                    + "}} " //
-                    + "WHERE { " //
-                    + "BIND (IRI(str(RAND())) AS ?a) ." //
-                    + "BIND (now() as ?time) " //
-                    + "}";
-            myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+
+            QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+            bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+            bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+            bindingsForInsert.add("start", ResourceFactory.createTypedLiteral(String.valueOf(s.begin), XSDDatatype.XSDnonNegativeInteger));
+            bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(s.end), XSDDatatype.XSDnonNegativeInteger));
+            bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+            // get the template of the INSERT query
+            String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
+            logger.info("SPARQL query: {}", sparql);
+            myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
+
         }
         return myQanaryMessage;
+    }
+
+    private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
     }
 
     class Selection {

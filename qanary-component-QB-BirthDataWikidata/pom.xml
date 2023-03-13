@@ -5,21 +5,21 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary-component-QB-BirthDataWikidata</artifactId>
-	<version>3.2.5</version>
-
+	<version>3.2.9</version>
+  
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.6.7</version>
 	</parent>
 	<properties>
-		<java.version>11</java.version>
-		<qanary.version>[3.4.1,4.0.0)</qanary.version>
+		<java.version>17</java.version>
+		<qanary.version>[3.7.0,4.0.0)</qanary.version>
 		<spring-boot-admin.version>2.6.7</spring-boot-admin.version>
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<docker.image.name>qanary-component-qb-birthdata-wikidata</docker.image.name>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-		<springdoc-openapi-version>1.6.14</springdoc-openapi-version>
+		<springdoc-openapi-version>1.6.12</springdoc-openapi-version>
 	</properties>
 
 	<dependencies>

@@ -4,13 +4,17 @@ import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,11 +44,22 @@ public class SINA extends QanaryComponent {
     @Value("${spring.application.name}")
     private String applicationName;
 
+    private String FILENAME_GET_ENTITIES = "/queries/get_entities.rq";
+    private String FILENAME_GET_RELATIONS = "/queries/get_relations.rq";
+    private String FILENAME_GET_CLASSES = "/queries/get_classes.rq";
+    private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
+
     public SINA(@Value("${sina.jarfilelocation}") String sinaJarFileLocation) throws IOException, InterruptedException {
         logger.info("sina.jarfilelocation: {}", sinaJarFileLocation);
 
         this.sinaJarFileLocation = sinaJarFileLocation;
         //this.executeExternalSinaJarFile("http://dbpedia.org/resource/Berlin");
+
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_GET_ENTITIES);
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_GET_RELATIONS);
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_GET_CLASSES);
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
+
     }
 
     /**
@@ -70,42 +85,38 @@ public class SINA extends QanaryComponent {
         if (argument.length() > 2 && StringUtils.countMatches(argument, "dbpedia") <= 3) {
             final String endpoint = myQanaryMessage.getEndpoint().toString();
             final String[] queryTemplates = runSina(argument);
-            final String questionUri = getQuestionURI(qanaryUtils, myQanaryMessage.getInGraph().toString(), endpoint);
-            final String updateQuery = createUpdateQueryFromQueryTemplate(queryTemplates, qanaryUtils, questionUri);
+//            final String questionUri = getQuestionURI(qanaryUtils, myQanaryMessage.getInGraph().toString(), endpoint);
+//            final String updateQuery = createUpdateQueryFromQueryTemplate(queryTemplates, qanaryUtils, questionUri);
 
-            logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-            logger.info("apply vocabulary alignment on outgraph");
-            qanaryUtils.updateTripleStore(updateQuery, endpoint);
+            int x = 10;
+            for (int i = 0; i < queryTemplates.length; i++) {
+
+                QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+                bindingsForInsert.add("graph", ResourceFactory.createResource(qanaryQuestion.getOutGraph().toASCIIString()));
+                bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(qanaryQuestion.getUri().toASCIIString()));
+                bindingsForInsert.add("body", ResourceFactory.createTypedLiteral(queryTemplates[i], XSDDatatype.XSDstring));
+                bindingsForInsert.add("score", ResourceFactory.createTypedLiteral(String.valueOf(x--), XSDDatatype.XSDfloat));
+                bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+                // get the template of the INSERT query
+                String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
+                logger.info("SPARQL query: {}", sparql);
+                qanaryUtils.getQanaryTripleStoreConnector().update(sparql);
+            }
         } else {
             logger.info("Argument is Null {}", argument);
         }
         return myQanaryMessage;
     }
 
-    private StringBuilder fetchEntities(final QanaryQuestion<String> qanaryQuestion, final QanaryUtils qanaryUtils) throws SparqlQueryFailed {
-        final String sparql = "" //
-                + "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-                + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-                + "SELECT ?start ?end ?uri " //
-                + "FROM <" + qanaryQuestion.getInGraph() + "> " //
-                + "WHERE { " //
-                + "    ?a a qa:AnnotationOfInstance . " //
-                + "    ?a oa:hasTarget [ " //
-                + "		     a               oa:SpecificResource; " //
-                + "		     oa:hasSource    ?q; " //
-                + "	         oa:hasSelector  [ " //
-                + "			         a        oa:TextPositionSelector ; " //
-                + "			         oa:start ?start ; " //
-                + "			         oa:end   ?end " //
-                + "		     ] " //
-                + "    ] . " //
-                + " ?a oa:hasBody ?uri ; " //
-                + "} ";
+    private StringBuilder fetchEntities(final QanaryQuestion<String> qanaryQuestion, final QanaryUtils qanaryUtils) throws SparqlQueryFailed, IOException {
+        QuerySolutionMap bindingsForGetEntities = new QuerySolutionMap();
+        bindingsForGetEntities.add("graph", ResourceFactory.createResource(qanaryQuestion.getInGraph().toASCIIString()));
 
-        logger.info("fetchEntities for given question with query {}", sparql);
+        String sparqlGetEntities = this.loadQueryFromFile(FILENAME_GET_ENTITIES, bindingsForGetEntities);
+        logger.info("fetchEntities for given question with query: {}", sparqlGetEntities);
+        final ResultSet entitiesResultSet = qanaryUtils.getQanaryTripleStoreConnector().select(sparqlGetEntities);
 
-        final ResultSet entitiesResultSet = qanaryUtils.selectFromTripleStore(sparql, qanaryUtils.getEndpoint().toString());
         final StringBuilder argument = new StringBuilder();
         while (entitiesResultSet.hasNext()) {
             QuerySolution s = entitiesResultSet.next();
@@ -118,27 +129,15 @@ public class SINA extends QanaryComponent {
         return argument;
     }
 
-    private StringBuilder fetchRelations(final QanaryQuestion<String> qanaryQuestion, final QanaryUtils qanaryUtils) throws SparqlQueryFailed, QanaryExceptionNoOrMultipleQuestions, URISyntaxException {
-        final String sparql = "" //
-                + "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-                + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-                + "SELECT ?relationurl " //
-                + "FROM <" + qanaryQuestion.getInGraph() + "> " //
-                + "WHERE { " //
-                + "  ?a a qa:AnnotationOfRelation . " //
-                + "  ?a oa:hasTarget [ " //
-                + "           a    oa:SpecificResource; " //
-                + "           oa:hasSource    <" + qanaryQuestion.getUri() + ">; " //
-                + "  ] ; " //
-                + "     oa:hasBody ?relationurl ;" //
-                + "	    oa:annotatedAt ?time  " //
-                + "} " //
-                + "ORDER BY ?start ";
+    private StringBuilder fetchRelations(final QanaryQuestion<String> qanaryQuestion, final QanaryUtils qanaryUtils) throws SparqlQueryFailed, QanaryExceptionNoOrMultipleQuestions, URISyntaxException, IOException {
+        QuerySolutionMap bindingsForGetRelations = new QuerySolutionMap();
+        bindingsForGetRelations.add("graph", ResourceFactory.createResource(qanaryQuestion.getInGraph().toASCIIString()));
+        bindingsForGetRelations.add("targetQuestion", ResourceFactory.createResource(qanaryQuestion.getUri().toASCIIString()));
 
-        logger.info("fetchRelations for given question with query {}", sparql);
+        String sparqlGetRelations = this.loadQueryFromFile(FILENAME_GET_RELATIONS, bindingsForGetRelations);
+        logger.info("fetchRelations for given question with query {}", sparqlGetRelations);
+        final ResultSet relationResultSet = qanaryUtils.getQanaryTripleStoreConnector().select(sparqlGetRelations);
 
-        final ResultSet relationResultSet = qanaryUtils.selectFromTripleStore(sparql, qanaryUtils.getEndpoint().toString());
         final StringBuilder argument = new StringBuilder();
         while (relationResultSet.hasNext()) {
             QuerySolution s = relationResultSet.next();
@@ -154,26 +153,14 @@ public class SINA extends QanaryComponent {
         return argument;
     }
 
-    private StringBuilder fetchClasses(final QanaryQuestion<String> qanaryQuestion, final QanaryUtils qanaryUtils) throws SparqlQueryFailed, QanaryExceptionNoOrMultipleQuestions, URISyntaxException {
-        final String sparql = "" //
-                + "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-                + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-                + "SELECT ?uri " //
-                + "FROM <" + qanaryQuestion.getInGraph() + "> " //
-                + "WHERE { " //
-                + "  ?a a qa:AnnotationOfClass . " //
-                + "  ?a oa:hasTarget [ " //
-                + "           a    oa:SpecificResource; " //
-                + "           oa:hasSource    <" + qanaryQuestion.getUri() + ">; " //
-                + "  ] ; " //
-                + "     oa:hasBody ?uri ;" //
-                + "	    oa:annotatedAt ?time  " //
-                + "} " //
-                + "ORDER BY ?start ";
+    private StringBuilder fetchClasses(final QanaryQuestion<String> qanaryQuestion, final QanaryUtils qanaryUtils) throws SparqlQueryFailed, QanaryExceptionNoOrMultipleQuestions, URISyntaxException, IOException {
+        QuerySolutionMap bindingsForGetClasses = new QuerySolutionMap();
+        bindingsForGetClasses.add("graph", ResourceFactory.createResource(qanaryQuestion.getInGraph().toASCIIString()));
+        bindingsForGetClasses.add("targetQuestion", ResourceFactory.createResource(qanaryQuestion.getUri().toASCIIString()));
 
-        logger.info("fetchClasses for given question with query {}", sparql);
-        final ResultSet classResultSet = qanaryUtils.selectFromTripleStore(sparql, qanaryUtils.getEndpoint().toString());
+        String sparqlGetClasses = this.loadQueryFromFile(FILENAME_GET_CLASSES, bindingsForGetClasses);
+        logger.info("fetchClasses for given question with query {}", sparqlGetClasses);
+        final ResultSet classResultSet = qanaryUtils.getQanaryTripleStoreConnector().select(sparqlGetClasses);
         final StringBuilder argument = new StringBuilder();
         while (classResultSet.hasNext()) {
             QuerySolution s = classResultSet.next();
@@ -184,7 +171,7 @@ public class SINA extends QanaryComponent {
         return argument;
     }
 
-    private String fetchEntitiesRelationsAndClasses(final QanaryQuestion<String> qanaryQuestion, final QanaryUtils qanaryUtils) throws SparqlQueryFailed, QanaryExceptionNoOrMultipleQuestions, URISyntaxException {
+    private String fetchEntitiesRelationsAndClasses(final QanaryQuestion<String> qanaryQuestion, final QanaryUtils qanaryUtils) throws SparqlQueryFailed, QanaryExceptionNoOrMultipleQuestions, URISyntaxException, IOException {
         final StringBuilder argument = fetchEntities(qanaryQuestion, qanaryUtils);
         argument.append(fetchRelations(qanaryQuestion, qanaryUtils));
         argument.append(fetchClasses(qanaryQuestion, qanaryUtils));
@@ -247,47 +234,6 @@ public class SINA extends QanaryComponent {
         return queryCandidates;
     }
 
-    private String createUpdateQueryFromQueryTemplate(final String[] queryTemplates, final QanaryUtils qanaryUtils, String questionUri) {
-        String sparqlPart1 = "";
-        String sparqlPart2 = "";
-        int x = 10;
-        for (int i = 0; i < queryTemplates.length; i++) {
-            sparqlPart1 += "" //
-                    + "?a" + i + " a qa:AnnotationOfAnswerSPARQL . " //
-                    + "?a" + i + " oa:hasTarget <" + questionUri + "> . " //
-                    + "?a" + i + " oa:hasBody \"" + queryTemplates[i].replace("\n", " ") + "\" ;" //
-                    + "     oa:annotatedBy <urn:qanary:" + applicationName + "> ; " //
-                    + "         oa:annotatedAt ?time ; " //
-                    + "         qa:hasScore " + x-- + " . \n";
-            sparqlPart2 += "BIND (IRI(str(RAND())) AS ?a" + i + ") . \n";
-        }
-
-        final String sparql = "" //
-                + "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-                + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-                + "INSERT { " //
-                + "  GRAPH <" + qanaryUtils.getInGraph() + "> { " + sparqlPart1 + "}" //
-                + "} " //
-                + "WHERE { " //
-                + "  " + sparqlPart2 //
-                + "  BIND (IRI(str(RAND())) AS ?b) ." //
-                + "  BIND (now() as ?time) . " //
-                + "}";
-        return sparql;
-    }
-
-    private String getQuestionURI(QanaryUtils myQanaryUtils, String namedGraph, String endpoint) throws SparqlQueryFailed {
-        String sparql = "" //
-                + "PREFIX qa:<http://www.wdaqua.eu/qa#> " //
-                + "SELECT ?questionuri " //
-                + "FROM <" + namedGraph + "> " //
-                + "WHERE {?questionuri a qa:Question}";
-
-        ResultSet result = myQanaryUtils.selectFromTripleStore(sparql, endpoint);
-        return result.next().getResource("questionuri").toString();
-    }
-
     /**
      * computes the absolute SINA JAR file location and checks if the file is present there
      *
@@ -329,6 +275,10 @@ public class SINA extends QanaryComponent {
         file.delete();
 
         logger.info("Removed SINA temp file: {}", sinaJarFile);
+    }
+
+    private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
     }
 
     protected class Entity {

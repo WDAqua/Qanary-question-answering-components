@@ -7,13 +7,17 @@ import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 @Component
@@ -39,9 +43,18 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 
 	private String supportedQuestionPrefix = "What is the real name of ";
 
+	private String FILENAME_GET_ANNOTATION_OF_NAMED_ENTITIES = "/queries/get_annotation_of_named_entities.rq";
+	private String FILENAME_DBPEDIA_QUERY = "/queries/dbpedia_query.rq";
+	private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
+
 	public QueryBuilderSimpleRealNameOfSuperHero(@Value("${spring.application.name}") String applicationName) {
 		this.applicationName = applicationName;
 		logger.info("application name: {}", this.getApplicationName());
+
+		// check if files exists and are not empty
+		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_GET_ANNOTATION_OF_NAMED_ENTITIES);
+		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_DBPEDIA_QUERY);
+		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
 	}
 
 	public String getApplicationName() {
@@ -77,25 +90,15 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 
 		// the SPARQL query to get the annotations of named entities created by another
 		// component
-		String sparqlGetAnnotation = "" //
-				+ "PREFIX dbr: <http://dbpedia.org/resource/> " //
-				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-				+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-				+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " //
-				+ "SELECT * " //
-				+ "FROM <" + myQanaryMessage.getInGraph().toString() + "> " //
-				+ "WHERE { " //
-				+ "    ?annotation     oa:hasBody   ?dbpediaResource ." //
-				+ "    ?annotation     qa:score     ?annotationScore ." //
-				+ "    ?annotation     oa:hasTarget ?target ." //
-				+ "    ?target     oa:hasSource    <" + myQanaryQuestion.getUri().toString() + "> ." //
-				+ "    ?target     oa:hasSelector  ?textSelector ." //
-				+ "    ?textSelector   rdf:type    oa:TextPositionSelector ." //
-				+ "    ?textSelector   oa:start    ?start ." //
-				+ "    ?textSelector   oa:end      ?end ." //
-				+ "    FILTER(?start = " + supportedQuestionPrefix.length() + ") ." //
-				+ "}";
 
+		QuerySolutionMap bindingsForGetAnnotationOfNamedEntities = new QuerySolutionMap();
+		bindingsForGetAnnotationOfNamedEntities.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+		bindingsForGetAnnotationOfNamedEntities.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+		bindingsForGetAnnotationOfNamedEntities.add("startValue", ResourceFactory.createTypedLiteral(String.valueOf(supportedQuestionPrefix.length()), XSDDatatype.XSDnonNegativeInteger));
+
+		// get the template of the INSERT query
+		String sparqlGetAnnotation = this.loadQueryFromFile(FILENAME_GET_ANNOTATION_OF_NAMED_ENTITIES, bindingsForGetAnnotationOfNamedEntities);
+		logger.info("sparqlGetAnnotation: {}", sparqlGetAnnotation);
 		ResultSet resultset = triplestoreConnector.select(sparqlGetAnnotation);
 
 		while (resultset.hasNext()) {
@@ -132,22 +135,16 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 	 * @param dbpediaResource
 	 * @return
 	 */
-	public String getDBpediaQuery(String dbpediaResource) {
-		return "" //
-				+ "PREFIX dbr: <http://dbpedia.org/resource/> \n" //
-				+ "PREFIX dct: <http://purl.org/dc/terms/> \n" //
-				+ "PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n" //
-				+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
-				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" //
-				+ "SELECT * WHERE { \n" //
-				+ "  ?resource foaf:name ?answer . \n" // real name of superhero
-				+ "  ?resource rdfs:label ?label . \n" // get the character name of the superhero
-				+ "  FILTER(LANG(?label) = \"en\") . \n" // only English names
-				+ "  ?resource dct:subject dbr:Category:Superheroes_with_alter_egos . \n" // only superheros
-				+ "  FILTER(! strStarts(LCASE(?label), LCASE(?answer))). \n" // filter starting with the same name
-				+ "  VALUES ?resource { <" + dbpediaResource + "> } . \n" // only for this specific resource
-				+ "} \n" //
-				+ "ORDER BY ?resource";
+	public String getDBpediaQuery(String dbpediaResource) throws IOException {
+
+		QuerySolutionMap bindingsForDbpediaQuery = new QuerySolutionMap();
+		bindingsForDbpediaQuery.add("dbpediaResource", ResourceFactory.createResource(dbpediaResource));
+
+		// get the template of the INSERT query
+		String sparql = this.loadQueryFromFile(FILENAME_DBPEDIA_QUERY, bindingsForDbpediaQuery);
+		logger.debug("DBpedia query: {}", sparql);
+
+		return sparql;
 	}
 
 	/**
@@ -164,30 +161,23 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 	 */
 	public String getInsertQuery(QanaryMessage myQanaryMessage, QanaryQuestion<String> myQanaryQuestion,
 			String createdDBpediaQuery)
-			throws SparqlQueryFailed, URISyntaxException, QanaryExceptionNoOrMultipleQuestions {
-		return "" //
-				+ "PREFIX dbr: <http://dbpedia.org/resource/>" //
-				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/>" //
-				+ "PREFIX qa: <http://www.wdaqua.eu/qa#>" //
-				+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" //
-				+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>" //
-				+ "" //
-				+ "INSERT { " //
-				+ "GRAPH <" + myQanaryMessage.getOutGraph().toString() + ">  {" //
-				+ "        ?newAnnotation rdf:type qa:AnnotationOfAnswerSPARQL ." //
-				+ "        ?newAnnotation oa:hasTarget <" + myQanaryQuestion.getUri().toString() + "> ." //
-				+ "        ?newAnnotation oa:hasBody \""
-				+ createdDBpediaQuery.replace("\"", "\\\"").replace("\n", "\\n") + "\"^^xsd:string ." //
-				// as it is rule based, a high confidence is expressed
-				+ "        ?newAnnotation qa:score \"1.0\"^^xsd:float ."
-				+ "        ?newAnnotation oa:annotatedAt ?time ." //
-				+ "        ?newAnnotation oa:annotatedBy <urn:qanary:" + this.getApplicationName() + "> ." //
-				+ "    }" //
-				+ "}" //
-				+ "WHERE {" //
-				+ "    BIND (IRI(str(RAND())) AS ?newAnnotation) ." // a new ID
-				+ "    BIND (now() as ?time) . " // timestamp
-				+ "}";
+			throws SparqlQueryFailed, URISyntaxException, QanaryExceptionNoOrMultipleQuestions, IOException {
+
+		QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+		bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+		bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+		bindingsForInsert.add("body", ResourceFactory.createTypedLiteral(createdDBpediaQuery, XSDDatatype.XSDstring));
+		bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+		// get the template of the INSERT query
+		String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
+		logger.info("SPARQL query: {}", sparql);
+
+		return sparql;
+	}
+
+	private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+		return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
 	}
 
 }

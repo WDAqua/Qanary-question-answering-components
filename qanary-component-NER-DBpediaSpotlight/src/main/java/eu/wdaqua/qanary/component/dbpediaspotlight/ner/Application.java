@@ -41,10 +41,11 @@ public class Application {
 																		@Value("${dbpediaspotlight.test-question}") String testQuestion, //
 																		@Value("${dbpediaspotlight.confidence.minimum}") float confidenceMinimum, //
 																		@Value("${dbpediaspotlight.endpoint:https://api.dbpedia-spotlight.org/en/annotate}") String endpoint, //
-																		DBpediaSpotlightServiceFetcher dBpediaSpotlightServiceFetcher //
+																		DBpediaSpotlightServiceFetcher dBpediaSpotlightServiceFetcher, //
+																		@Value("${dbpediaspotlight.endpoint.check.availability:false}") boolean checkAvailability //
 	) throws DBpediaSpotlightServiceNotAvailable {
 		this.checkSpotlightServiceAvailability(testQuestion, endpoint, confidenceMinimum,
-				dBpediaSpotlightServiceFetcher);
+				dBpediaSpotlightServiceFetcher, checkAvailability);
 		logger.debug("endpoint: {}", endpoint);
 		return new DBpediaSpotlightConfiguration(confidenceMinimum, endpoint);
 	}
@@ -55,7 +56,14 @@ public class Application {
 	}
 
 	private void checkSpotlightServiceAvailability(String testQuestion, String endpoint, float confidenceMinimum,
-												   DBpediaSpotlightServiceFetcher dBpediaSpotlightServiceFetcher) throws DBpediaSpotlightServiceNotAvailable {
+												   DBpediaSpotlightServiceFetcher dBpediaSpotlightServiceFetcher,
+												   boolean checkAvailability
+	) throws DBpediaSpotlightServiceNotAvailable {
+		if (checkAvailability == false) {
+			logger.warn("Availability check of DBpedia Spotlight service is disabled!");
+			return;
+		}
+
 		String err;
 		try {
 			JsonArray response = dBpediaSpotlightServiceFetcher.getJsonFromService(testQuestion, endpoint,

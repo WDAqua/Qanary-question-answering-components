@@ -13,7 +13,7 @@
         <version>2.6.7</version>
     </parent>
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <qanary.version>[3.7.1,4.0.0)</qanary.version>
         <spring-boot-admin.version>2.7.9</spring-boot-admin.version>
         <docker.image.prefix>qanary</docker.image.prefix>
@@ -89,11 +89,12 @@
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>${springdoc.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
+		    <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-data-rest -->
+    		<dependency>
+		      	<groupId>org.springdoc</groupId>
+			      <artifactId>springdoc-openapi-data-rest</artifactId>
             <version>${springdoc.version}</version>
-        </dependency>
+		    </dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>

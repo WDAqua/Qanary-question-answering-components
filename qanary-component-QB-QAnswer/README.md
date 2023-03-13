@@ -56,6 +56,9 @@ qanswer.endpoint.language.default=en
 
 # define the knowledge base ID that should be used by the QAnswer API
 qanswer.endpoint.knowledgebase.default=wikidata
+
+# define the user that should be used by the QAnswer API
+qanswer.endpoint.user.default=open
 ```
 
 ## Additional Web Interfaces

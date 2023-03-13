@@ -1,33 +1,36 @@
 package eu.wdaqua.component.opentapioca.ned;
 
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
+import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.endpointKey;
+import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.inGraphKey;
+import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.outGraphKey;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
 
-import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 class QanaryServiceControllerTest {
-    private static final Logger logger = LoggerFactory.getLogger(QanaryServiceControllerTest.class);
+    @SuppressWarnings("unused")
+	private static final Logger logger = LoggerFactory.getLogger(QanaryServiceControllerTest.class);
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext applicationContext;

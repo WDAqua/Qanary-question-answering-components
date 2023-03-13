@@ -10,6 +10,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -33,8 +34,11 @@ import java.util.List;
 @ComponentScan(basePackages = {"eu.wdaqua.qanary"})
 public class Alchemy extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(Alchemy.class);
-    private final String alchemyKey = "7fdef5a245edb49cfc711e80217667be512869b9";
-    private final String alchemyService = "http://access.alchemyapi.com/calls/text/TextGetRankedNamedEntities";
+    @Value("${alchemy.key}")
+    private String alchemyKey;
+
+    @Value("${alchemy.service}")
+    private String alchemyService;
 
     /**
      * main method starting the spring application

@@ -38,6 +38,9 @@ public class MeaningCloud extends QanaryComponent {
 
     private final String applicationName;
 
+    @Value("${meaningcloud.key}")
+    private String meaningCloudKey;
+
     public MeaningCloud(@Value("${spring.application.name}") final String applicationName) {
         this.applicationName = applicationName;
     }
@@ -66,7 +69,7 @@ public class MeaningCloud extends QanaryComponent {
 
         HttpClient httpclient = HttpClients.createDefault();
         HttpGet httpget = new HttpGet(
-                "https://api.meaningcloud.com/topics-2.0?key=57748bf27b54ff6a49d2a0947e15754c&of=json&lang=en&ilang=en&txt="
+                "https://api.meaningcloud.com/topics-2.0?key=" + meaningCloudKey + "&of=json&lang=en&ilang=en&txt="
                         + thePath + "&tt=e&uw=y");
         // httpget.addHeader("User-Agent", USER_AGENT);
         HttpResponse response = httpclient.execute(httpget);
@@ -104,10 +107,10 @@ public class MeaningCloud extends QanaryComponent {
                 }
             }
         } catch (ClientProtocolException e) {
-            logger.info("Exception: {}", e);
+            logger.error("Exception: {}", e);
             // TODO Auto-generated catch block
         } catch (IOException e1) {
-            logger.info("Except: {}", e1);
+            logger.error("Except: {}", e1);
             // TODO Auto-generated catch block
         }
         logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
@@ -116,6 +119,9 @@ public class MeaningCloud extends QanaryComponent {
         logger.info("apply vocabulary alignment on outgraph");
         // TODO: implement this (custom for every component)
         for (Selection s : selections) {
+
+
+
             String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
                     + "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
                     + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> " + "INSERT { " + "GRAPH <"

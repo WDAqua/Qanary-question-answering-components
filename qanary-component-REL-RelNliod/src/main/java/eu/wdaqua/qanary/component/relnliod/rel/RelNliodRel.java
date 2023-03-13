@@ -3,6 +3,7 @@ package eu.wdaqua.qanary.component.relnliod.rel;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -14,6 +15,9 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.query.QuerySolutionMap;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -48,6 +52,8 @@ public class RelNliodRel extends QanaryComponent {
     private final DbpediaRecordProperty dbpediaRecordProperty;
     private final RemovalList removalList;
 
+    private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
+
     public RelNliodRel(@Value("${spring.application.name}") final String applicationName,
                        @Value("${rel-nliod.cache.enabled}") final Boolean cacheEnabled,
                        @Value("${rel-nliod.cache.file}") final String cacheFile,
@@ -62,6 +68,9 @@ public class RelNliodRel extends QanaryComponent {
         this.textRazorServiceKey = textRazorServiceKey;
         this.dbpediaRecordProperty = dbpediaRecordProperty;
         this.removalList = removalList;
+
+        // check if files exists and are not empty
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
     }
 
     /**
@@ -138,27 +147,17 @@ public class RelNliodRel extends QanaryComponent {
 
         // for all URLs found using the called API
         for (String urls : dbLinkListSet) {
-            String sparql = "prefix qa: <http://www.wdaqua.eu/qa#> "
-                    + "prefix oa: <http://www.w3.org/ns/openannotation/core/> "
-                    + "prefix xsd: <http://www.w3.org/2001/XMLSchema#> "
-                    + "prefix dbp: <http://dbpedia.org/property/> "
-                    + "INSERT { "
-                    + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { "
-                    + "  ?a a qa:AnnotationOfRelation . "
-                    + "  ?a oa:hasTarget [ "
-                    + "           a    oa:SpecificResource; "
-                    + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; "
-                    + "  ] ; "
-                    + "     oa:hasBody <" + urls + "> ;"
-                    + "     oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; "
-                    + "	    oa:annotatedAt ?time  "
-                    + "}} "
-                    + "WHERE { "
-                    + "BIND (IRI(str(RAND())) AS ?a) ."
-                    + "BIND (now() as ?time) "
-                    + "}";
+
+            QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+            bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+            bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+            bindingsForInsert.add("answer", ResourceFactory.createResource(urls));
+            bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+            // get the template of the INSERT query
+            String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
             logger.info("Sparql query {}", sparql);
-            myQanaryUtils.updateTripleStore(sparql, myQanaryMessage.getEndpoint().toString());
+            myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
         }
 
         return myQanaryMessage;
@@ -213,6 +212,10 @@ public class RelNliodRel extends QanaryComponent {
             //handle this
             logger.info("{}", e);
         }
+    }
+
+    private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
     }
 
     class FileCacheResult {
