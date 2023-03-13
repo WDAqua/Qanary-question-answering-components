@@ -1,5 +1,6 @@
 package eu.wdaqua.qanary.component.qanswer.qb;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -9,8 +10,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -55,11 +59,14 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
     private RestTemplate myRestTemplate;
     private String langDefault;
     private String knowledgeBaseDefault;
+    private String userDefault;
+    private final String FILENAME_GET_ANNOTATED_ENTITIES = "/queries/get_annotated_entities.rq";
 
     public QAnswerQueryBuilderAndSparqlResultFetcher( //
                                                       float threshold, //
                                                       @Qualifier("langDefault") String langDefault, //
                                                       @Qualifier("knowledgeBaseDefault") String knowledgeBaseDefault, //
+                                                      @Qualifier("userDefault") String userDefault, //
                                                       @Qualifier("endpointUrl") URI endpoint, //
                                                       @Value("${spring.application.name}") final String applicationName, //
                                                       RestTemplateWithCaching restTemplate //
@@ -75,14 +82,19 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
                         + "was " + langDefault + " (length=" + langDefault.length() + ")";
         assert !(knowledgeBaseDefault == null || knowledgeBaseDefault.trim().isEmpty()) : //
                 "knowledgeBaseDefault cannot be null or empty: " + knowledgeBaseDefault;
+        assert !(userDefault == null || userDefault.trim().isEmpty()) : //
+                "userDefault cannot be null or empty: " + userDefault;
 
         this.threshold = threshold;
         this.endpoint = endpoint;
         this.langDefault = langDefault;
         this.knowledgeBaseDefault = knowledgeBaseDefault;
+        this.userDefault = userDefault;
         this.myRestTemplate = restTemplate;
         this.applicationName = applicationName;
 
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_GET_ANNOTATED_ENTITIES);
+        
         logger.debug("RestTemplate: {}", restTemplate);
 
     }
@@ -108,6 +120,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
 
         String lang = null;
         String knowledgeBaseId = null;
+        String user = null;
 
         if (lang == null) {
             lang = langDefault;
@@ -115,6 +128,10 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
 
         if (knowledgeBaseId == null) {
             knowledgeBaseId = knowledgeBaseDefault;
+        }
+
+        if (user == null) {
+            user = userDefault;
         }
 
         URI endpoint = myQanaryMessage.getEndpoint();
@@ -130,7 +147,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
         // QAnswer API
         String questionStringWithResources = computeQuestionStringWithReplacedResources(questionString,
                 retrievedNamedEntities, threshold);
-        QAnswerResult result = requestQAnswerWebService(endpoint, questionStringWithResources, lang, knowledgeBaseId);
+        QAnswerResult result = requestQAnswerWebService(endpoint, questionStringWithResources, lang, knowledgeBaseId, user);
 
         // STEP 3: add new information to Qanary triplestore
         String sparql = getSparqlInsertQuery(myQanaryQuestion.getOutGraph(), result);
@@ -142,7 +159,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
     }
 
     protected QAnswerResult requestQAnswerWebService(URI qanaryApiUri, String questionString, String lang,
-                                                     String knowledgeBaseId) throws URISyntaxException, MalformedURLException {
+                                                     String knowledgeBaseId, String user) throws URISyntaxException, MalformedURLException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.set("User-Agent", "Qanary/" + this.getClass().getName());
@@ -151,18 +168,20 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
         parameters.put("question", questionString);
         parameters.put("lang", lang);
         parameters.put("kb", knowledgeBaseId);
+        parameters.put("user", user);
 
         String urlTemplate = UriComponentsBuilder.fromHttpUrl(this.endpoint.toURL().toURI().toASCIIString()) //
                 .queryParam("question", "{question}") //
                 .queryParam("lang", "{lang}") //
                 .queryParam("kb", "{kb}") //
+                .queryParam("user", "{user}") //
                 .encode().toUriString();
 
         HttpEntity<JSONObject> response = myRestTemplate.getForEntity(urlTemplate, JSONObject.class, parameters);
         logger.info("QAnswer JSON result for question '{}': {}", questionString,
-                response.getBody().getAsString("questions"));
+                response.getBody().getAsString("question"));
 
-        return new QAnswerResult(response.getBody(), questionString, qanaryApiUri, lang, knowledgeBaseId);
+        return new QAnswerResult(response.getBody(), questionString, qanaryApiUri, lang, knowledgeBaseId, user);
     }
 
     /**
@@ -177,26 +196,14 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
             throws Exception {
         LinkedList<NamedEntity> namedEntities = new LinkedList<>();
 
-        String sparqlGetAnnotation = "" //
-                + "PREFIX dbr: <http://dbpedia.org/resource/> \n" //
-                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> \n" //
-                + "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
-                + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
-                + "SELECT ?entityResource ?annotationScore ?start ?end " //
-                + "FROM <" + inGraph.toString() + "> \n" //
-                + "WHERE { \n" //
-                + "    ?annotation    	oa:hasBody   	?entityResource .\n" //
-                + "    ?annotation 		oa:hasTarget 	?target .\n" //
-                + "    ?target 			oa:hasSource    <" + myQanaryQuestion.getUri().toString() + "> .\n" //
-                + "    ?target     		oa:hasSelector  ?textSelector .\n" //
-                + "    ?textSelector 	rdf:type    	oa:TextPositionSelector .\n" //
-                + "    ?textSelector  	oa:start    	?start .\n" //
-                + "    ?textSelector  	oa:end      	?end .\n" //
-                + "    OPTIONAL { \n" //
-                + "			?annotation qa:score	?annotationScore . \n" // we cannot be sure that a score is provided
-                + "	   }\n" //
-                + "}\n";
+        QuerySolutionMap bindingsForSelectAnnotations = new QuerySolutionMap();
+		bindingsForSelectAnnotations.add("GRAPH", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+		bindingsForSelectAnnotations.add("QUESTION_URI", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
 
+		// get the template of the SELECT query
+		String sparqlGetAnnotations = this.loadQueryFromFile(FILENAME_GET_ANNOTATED_ENTITIES, bindingsForSelectAnnotations);
+		logger.info("SPARQL query: {}", sparqlGetAnnotations);        
+        
         boolean ignored = false;
         Float score;
         int start;
@@ -204,7 +211,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
         QuerySolution tupel;
 
         QanaryTripleStoreConnector connector = myQanaryUtils.getQanaryTripleStoreConnector();
-        ResultSet resultset = connector.select(sparqlGetAnnotation);
+        ResultSet resultset = connector.select(sparqlGetAnnotations);
         while (resultset.hasNext()) {
             tupel = resultset.next();
             start = tupel.get("start").asLiteral().getInt();
@@ -237,6 +244,10 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
         }
         return namedEntities;
     }
+    
+	private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException  {
+		return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
+	}    
 
     /**
      * create a QAnswer-compatible format of the question

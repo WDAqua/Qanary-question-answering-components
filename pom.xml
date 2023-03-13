@@ -37,11 +37,7 @@
                 <module>qanary-component-NER-Ambiverse</module>
                 <module>qanary-component-NER-ComicCharacterNameSimpleNamedEntityRecognizer</module>
                 <module>qanary-component-NER-Aylien</module>
-                <module>qanary-component-NED-Aylien</module>
                 <module>qanary-component-NED-Ambiverse</module>
-                <!-- <module>qanary-component-REL-RelationLinker1</module> -->
-                <!-- <module>qanary-component-REL-RelationLinker2</module> -->
-                <module>qanary-component-REL-ReMatch</module>
                 <module>qanary-component-REL-RelNliod</module>
                 <module>qanary-component-CLS-CLSNLIOD</module>
                 <module>qanary-component-QB-Sina</module>

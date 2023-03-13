@@ -1,0 +1,11 @@
+PREFIX dbr: <http://dbpedia.org/resource/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX pt: <http://purl.org/dc/terms/>
+
+SELECT ?hero (str(?herolabel) as ?herolabelString) (lang(?herolabel) as ?herolabelLang)
+WHERE {
+    ?hero pt:subject dbr:Category:Superhero_film_characters .
+    ?hero rdfs:label ?herolabel .
+}
+LIMIT 10000
