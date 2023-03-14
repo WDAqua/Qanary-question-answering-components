@@ -33,12 +33,14 @@ public class QAnswerResult {
     private String type;
     private URI datatype;
     private double confidence;
+    private String jsonString;
 
     public QAnswerResult(JSONObject json, String question, URI endpoint, String language, String knowledgebaseId, String user) throws URISyntaxException, NoLiteralFieldFoundException {
         jsonParser = new JsonParser();
         JsonArray parsedJsonArray = jsonParser.parse(json.toJSONString()).getAsJsonObject().getAsJsonArray("questions")
                 .getAsJsonArray();
 
+        this.jsonString = json.toString();
         this.question = question;
         this.language = language;
         this.knowledgebaseId = knowledgebaseId;
@@ -300,5 +302,9 @@ public class QAnswerResult {
 
     public String getSparql() {
         return sparql;
+    }
+
+    public String getJsonString() {
+        return jsonString;
     }
 }

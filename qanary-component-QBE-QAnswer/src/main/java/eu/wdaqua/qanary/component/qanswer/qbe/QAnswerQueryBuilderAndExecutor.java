@@ -419,6 +419,15 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
                 //
                 + "  ?answerType a          qa:AnswerType ; \n" //
                 + " 		rdf:value       ?answerDataType ; \n" //
+                // JSON answer (GERBIL)
+                + "  ?annotationAnswerJson a qa:AnnotationOfAnswerJson ; \n" //
+                + " 		oa:hasTarget    ?question ; \n" //
+                + "         oa:hasBody      ?answerJson ; \n " //
+                + " 		oa:annotatedBy  ?service ; \n" //
+                + " 		oa:annotatedAt  ?time ; \n" //
+                + " 		qa:score        ?score . \n" //
+                //
+                + "  ?answerJson rdf:value  ?json . \n " //
                 + "	}\n" // end: graph
                 + "}\n" // end: insert
                 + "WHERE { \n" //
@@ -431,6 +440,9 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
                 + "  BIND (IRI(str(RAND())) AS ?annotationAnswer) . \n" //
                 + "  BIND (IRI(str(RAND())) AS ?answer) . \n" //
                 //
+                + "  BIND (IRI(str(RAND())) AS ?annotationAnswerJson) . \n" //
+                + "  BIND (IRI(str(RAND())) AS ?answerJson) . \n" //
+                //
                 + "  BIND (IRI(str(RAND())) AS ?annotationImprovedQuestion) . \n" //
                 + "  BIND (IRI(str(RAND())) AS ?improvedQuestion) . \n" //
                 //
@@ -442,8 +454,8 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
                 + "  BIND (\"" + improvedQuestion + "\"^^xsd:string  AS ?improvedQuestionText ) . \n" //
                 + "  BIND ( <" + result.getDatatype() + "> AS ?answerDataType) . \n" //
                 + "  BIND ( <" + knowledgeGraphEndpoints.get(usedKnowledgeGraph) + "> AS ?knowledgeGraph) . \n" //
+                + "  BIND (\"" + result.getJsonString().replace("\"", "\\\"").replace("\\\\", "\\\\\\").replace("\\n", "").replace("\\t", "").replace("\\/", "/") + "\"^^xsd:string AS ?json ). \n "  //
                 + "}\n";
-
 
         logger.info("SPARQL INSERT for adding data to the Qanary triplestore: ", sparql);
         return sparql;
