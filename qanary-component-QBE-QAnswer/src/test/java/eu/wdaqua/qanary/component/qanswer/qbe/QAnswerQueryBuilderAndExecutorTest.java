@@ -66,7 +66,7 @@ class QAnswerQueryBuilderAndExecutorTest {
     @Test
     void testTransformationOfNamedEntites() throws URISyntaxException, MalformedURLException {
         float threshold = 0.5f;
-        QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, "en", "dbpedia",
+        QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, "en", "dbpedia", "open",
                 new URI("urn:no:endpoint"), applicationName, restTemplate);
         List<TestData> myTestData = new LinkedList<>();
 
@@ -89,7 +89,7 @@ class QAnswerQueryBuilderAndExecutorTest {
     @Test
     void testThresholdBehavior() throws URISyntaxException, MalformedURLException {
         float threshold = 0.4f;
-        QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, "en", "wikidata",
+        QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, "en", "wikidata", "open",
                 new URI("urn:no:endpoint"), applicationName, restTemplate);
         List<TestData> myTestData = new LinkedList<>();
 
@@ -145,11 +145,12 @@ class QAnswerQueryBuilderAndExecutorTest {
         float threshold = 0.4f;
         String lang = "en";
         String kb = "wikidata";
+        String user = "open";
 
-        QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, lang, kb,
+        QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, lang, kb, user,
                 this.realEndpoint, applicationName, restTemplate);
         String question = "What is the capital of Germany?";
-        QAnswerResult result0 = testWebService(myApp, question, lang, kb);
+        QAnswerResult result0 = testWebService(myApp, question, lang, kb, user);
 
         URI germanyUri = getWikidataURI("Q183");
         String expectedQuestion = "What is the capital of " + germanyUri.toString() + " ?";
@@ -164,7 +165,7 @@ class QAnswerQueryBuilderAndExecutorTest {
                         + "' but computed '" + computedQuestion + "'");
 
         //
-        QAnswerResult result1 = testWebService(myApp, computedQuestion, lang, kb);
+        QAnswerResult result1 = testWebService(myApp, computedQuestion, lang, kb, user);
 
         logger.warn("results: {} of {}  vs.  {} of {}", result0.getValues().size(), result0.getType(),
                 result1.getValues().size(), result1.getType());
@@ -179,7 +180,7 @@ class QAnswerQueryBuilderAndExecutorTest {
     }
 
     /**
-     * test actual results from the QAnswer API with question 'Cities in France?'
+     * test actual results from the QAnswer API with question 'Person born in Paris'
      * --> many resources
      *
      * @throws URISyntaxException
@@ -188,26 +189,27 @@ class QAnswerQueryBuilderAndExecutorTest {
      * @throws MalformedURLException
      */
     @Test
-    void testWebServicePersonBornInFranceResultManyResources() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
+    void testWebServicePersonBornInParisResultManyResources() throws URISyntaxException, ParseException, NoLiteralFieldFoundException, MalformedURLException {
         float threshold = 0.4f;
         String lang = "en";
         String kb = "wikidata";
+        String user = "open";
         int min = 2;
         int max = 1000;
 
-        QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, lang, kb,
+        QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, lang, kb, user,
                 this.realEndpoint, applicationName, restTemplate);
-        String question = "Person born in France.";
-        QAnswerResult result0 = testWebService(myApp, question, lang, kb);
+        String question = "Person born in Paris.";
+        QAnswerResult result0 = testWebService(myApp, question, lang, kb, user);
         assertTrue(result0.getValues().size() >= min, "problem: not " + result0.getValues().size() + " >= " + min);
         assertTrue(result0.getValues().size() <= max, "problem: not " + result0.getValues().size() + " <= " + max);
         assertEquals("uri", result0.getType());
 
-        URI franceUri = getWikidataURI("Q142");
-        String expectedQuestion = "Person born in " + franceUri.toString() + " .";
+        URI parisUri = getWikidataURI("Q90");
+        String expectedQuestion = "Person born in " + parisUri.toString();
 
         List<NamedEntity> entities0 = new LinkedList<>();
-        entities0.add(new NamedEntity(franceUri, 15, "France", threshold + 0.001f));
+        entities0.add(new NamedEntity(parisUri, 15, "France", threshold + 0.001f));
         String computedQuestion = myApp.computeQuestionStringWithReplacedResources(question, entities0, threshold);
 
         // check correct transformation of the given question
@@ -216,7 +218,7 @@ class QAnswerQueryBuilderAndExecutorTest {
                         + "' but computed '" + computedQuestion + "'");
 
         // Note: we do not know the exact number of cities in France provided by QAnswer
-        QAnswerResult result1 = testWebService(myApp, computedQuestion, lang, kb);
+        QAnswerResult result1 = testWebService(myApp, computedQuestion, lang, kb, user);
 
         assertTrue(result1.getValues().size() >= min, "problem: not " + result1.getValues().size() + " >= " + min);
         assertTrue(result1.getValues().size() <= max, "problem: not " + result1.getValues().size() + " <= " + max);
@@ -250,11 +252,12 @@ class QAnswerQueryBuilderAndExecutorTest {
         float threshold = 0.4f;
         String lang = "en";
         String kb = "wikidata";
+        String user = "open";
 
-        QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, lang, kb,
+        QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, lang, kb, user,
                 this.realEndpoint, applicationName, restTemplate);
         String question = "Is Berlin the capital of Germany";
-        QAnswerResult result0 = testWebService(myApp, question, lang, kb);
+        QAnswerResult result0 = testWebService(myApp, question, lang, kb, user);
 
         URI berlinUri = getWikidataURI("Q64");
         String expectedQuestion = "Is " + berlinUri.toString() + " the capital of Germany";
@@ -271,7 +274,7 @@ class QAnswerQueryBuilderAndExecutorTest {
                         + "' but computed '" + computedQuestion + "'");
 
         // receive a boolean answer
-        QAnswerResult result1 = testWebService(myApp, computedQuestion, lang, kb);
+        QAnswerResult result1 = testWebService(myApp, computedQuestion, lang, kb, user);
 
         String errorMessage = "'" + question + "' -> " + result0.getType() + "  =!=  '" + computedQuestion + "' -> "
                 + result1.getType();
@@ -299,11 +302,12 @@ class QAnswerQueryBuilderAndExecutorTest {
         float threshold = 0.4f;
         String lang = "en";
         String kb = "wikidata";
+        String user = "open";
 
-        QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, lang, kb,
+        QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, lang, kb, user,
                 this.realEndpoint, applicationName, restTemplate);
         String question = "population of france";
-        QAnswerResult result0 = testWebService(myApp, question, lang, kb);
+        QAnswerResult result0 = testWebService(myApp, question, lang, kb, user);
 
         URI everestUri = getWikidataURI("Q142");
         String expectedQuestion = "population of " + everestUri.toString();
@@ -318,7 +322,7 @@ class QAnswerQueryBuilderAndExecutorTest {
                         + "' but computed '" + computedQuestion + "'");
 
         // receive a boolean answer
-        QAnswerResult result1 = testWebService(myApp, computedQuestion, lang, kb);
+        QAnswerResult result1 = testWebService(myApp, computedQuestion, lang, kb, user);
 
         String errorMessage = "'" + question + "' -> " + result0.getType() + "  =!=  '" + computedQuestion + "' -> "
                 + result1.getType();
@@ -344,11 +348,12 @@ class QAnswerQueryBuilderAndExecutorTest {
         float threshold = 0.4f;
         String lang = "en";
         String kb = "wikidata";
+        String user = "open";
 
-        QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, lang, kb,
+        QAnswerQueryBuilderAndExecutor myApp = new QAnswerQueryBuilderAndExecutor(threshold, lang, kb, user, 
                 this.realEndpoint, applicationName, restTemplate);
         String question = "what is the nickname of Rome";
-        QAnswerResult result0 = testWebService(myApp, question, lang, kb);
+        QAnswerResult result0 = testWebService(myApp, question, lang, kb, user);
 
         assertEquals("literal", result0.getType());
         assertEquals(result0.STRINGTYPEURI, result0.getDatatype());
@@ -356,10 +361,11 @@ class QAnswerQueryBuilderAndExecutorTest {
     }
 
 
-    private QAnswerResult testWebService(QAnswerQueryBuilderAndExecutor myApp, String question, String lang, String kb)
-            throws URISyntaxException, NoLiteralFieldFoundException {
-        QAnswerResult result = myApp.requestQAnswerWebService(realEndpoint, question, lang, kb);
-        assertFalse(result.getType().isEmpty());
+    private QAnswerResult testWebService(QAnswerQueryBuilderAndExecutor myApp, String question, String lang, String kb, String user)
+            throws URISyntaxException, MalformedURLException, NoLiteralFieldFoundException {
+        QAnswerResult result = myApp.requestQAnswerWebService(realEndpoint, question, lang, kb, user);
+        logger.info("testWebService result: {}", result);
+        assertTrue(result.getValues().size() > 0);
         return result;
     }
 
