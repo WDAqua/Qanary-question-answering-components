@@ -15,26 +15,22 @@ public class QAnswerRequest {
     private String language;
     @Schema(description = "ID of knowledge graph from that the results should be fetched from QAnswer ('dbpedia' is not supported by QAnswer)", example = "wikidata", required = false)
     private String knowledgeBaseId;
-    @Schema(description = "Username of QAnswer app", example = "open", required = true)
-    private String user;
 
     public QAnswerRequest() {
 
     }
 
-    public QAnswerRequest(URI qanswerEndpointUrl, String question, String language, String knowledgeBaseId, String user) {
+    public QAnswerRequest(URI qanswerEndpointUrl, String question, String language, String knowledgeBaseId) {
         this.qanswerEndpointUrl = qanswerEndpointUrl;
         this.question = question;
         this.language = language;
         this.knowledgeBaseId = knowledgeBaseId;
-        this.user = user;
     }
 
-    public QAnswerRequest(String question, String language, String knowledgeBaseId, String user) {
+    public QAnswerRequest(String question, String language, String knowledgeBaseId) {
         this.question = question;
         this.language = language;
         this.knowledgeBaseId = knowledgeBaseId;
-        this.user = user;
     }
 
     public URI getQanswerEndpointUrl() {
@@ -69,22 +65,14 @@ public class QAnswerRequest {
         this.knowledgeBaseId = knowledgeBaseId;
     }
 
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
     @Override
     public String toString() {
         return "QAnswerRequest: endpoint=" + this.getQanswerEndpointUrl() + ", question=" + this.getQuestion()
-                + ", lang=" + this.getLanguage() + ", knowledgeBaseId=" + this.getKnowledgeBaseId() + ", user=" + this.getUser();
+                + ", lang=" + this.getLanguage() + ", knowledgeBaseId=" + this.getKnowledgeBaseId();
     }
 
     public void replaceNullValuesWithDefaultValues(URI endpointDefault, String langDefault,
-                                                   String knowledgeBaseDefault, String userDefault) {
+                                                   String knowledgeBaseDefault) {
 
         if (this.getQanswerEndpointUrl() == null) {
             this.setQanswerEndpointUrl(endpointDefault);
@@ -96,10 +84,6 @@ public class QAnswerRequest {
 
         if (this.getKnowledgeBaseId() == null || this.getKnowledgeBaseId().isBlank()) {
             this.setKnowledgeBaseId(knowledgeBaseDefault);
-        }
-
-        if (this.getUser() == null || this.getUser().isBlank()) {
-            this.setUser(userDefault);
         }
     }
 

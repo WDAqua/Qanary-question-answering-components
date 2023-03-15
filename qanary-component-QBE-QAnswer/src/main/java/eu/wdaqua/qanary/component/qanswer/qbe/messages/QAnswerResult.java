@@ -25,7 +25,6 @@ public class QAnswerResult {
     private com.google.gson.JsonParser jsonParser;
     private URI endpoint;
     private String knowledgebaseId;
-    private String user;
     private String language;
     private String question;
     private String sparql;
@@ -33,18 +32,15 @@ public class QAnswerResult {
     private String type;
     private URI datatype;
     private double confidence;
-    private String jsonString;
 
-    public QAnswerResult(JSONObject json, String question, URI endpoint, String language, String knowledgebaseId, String user) throws URISyntaxException, NoLiteralFieldFoundException {
+    public QAnswerResult(JSONObject json, String question, URI endpoint, String language, String knowledgebaseId) throws URISyntaxException, NoLiteralFieldFoundException {
         jsonParser = new JsonParser();
         JsonArray parsedJsonArray = jsonParser.parse(json.toJSONString()).getAsJsonObject().getAsJsonArray("questions")
                 .getAsJsonArray();
 
-        this.jsonString = json.toString();
         this.question = question;
         this.language = language;
         this.knowledgebaseId = knowledgebaseId;
-        this.user = user;
         this.endpoint = endpoint;
 
         this.RESOURCETYPEURI = new URI("http://www.w3.org/2001/XMLSchema#anyURI");
@@ -284,10 +280,6 @@ public class QAnswerResult {
         return knowledgebaseId;
     }
 
-    public String getUser() {
-        return user;
-    }
-
     public String getLanguage() {
         return language;
     }
@@ -302,9 +294,5 @@ public class QAnswerResult {
 
     public String getSparql() {
         return sparql;
-    }
-
-    public String getJsonString() {
-        return jsonString;
     }
 }

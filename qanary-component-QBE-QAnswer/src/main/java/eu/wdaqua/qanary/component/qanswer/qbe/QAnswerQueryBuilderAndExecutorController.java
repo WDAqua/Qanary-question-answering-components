@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.MalformedURLException;
 
 @Controller
 public class QAnswerQueryBuilderAndExecutorController {
@@ -25,13 +24,11 @@ public class QAnswerQueryBuilderAndExecutorController {
     private URI endpoint;
     private String langFallback;
     private String knowledgeBaseDefault;
-	private String userDefault;
 
     public QAnswerQueryBuilderAndExecutorController( //
                                                      QAnswerQueryBuilderAndExecutor myQAnswerQueryBuilderAndExecutor, //
                                                      @Qualifier("langDefault") String langDefault, //
                                                      @Qualifier("knowledgeBaseDefault") String knowledgeBaseDefault, //
-			                                         @Qualifier("userDefault") String userDefault, //
                                                      @Qualifier("endpointUrl") URI endpoint, //
                                                      @Value("${server.port}") String serverPort, //
                                                      @Value("${springdoc.api-docs.path}") String swaggerApiDocsPath, //
@@ -41,7 +38,6 @@ public class QAnswerQueryBuilderAndExecutorController {
         this.endpoint = endpoint;
         this.langFallback = langDefault;
         this.knowledgeBaseDefault = knowledgeBaseDefault;
-		this.userDefault = userDefault;
 
         logger.info("Service API docs available at http://0.0.0.0:{}{}", serverPort, swaggerApiDocsPath);
         logger.info("Service API docs UI available at http://0.0.0.0:{}{}", serverPort, swaggerUiPath);
@@ -93,10 +89,10 @@ public class QAnswerQueryBuilderAndExecutorController {
                     + "\"Is Berlin the capital of Germany\" " //
     )
     public QAnswerResult requestQAnswerWebService(@RequestBody QAnswerRequest request)
-            throws URISyntaxException, MalformedURLException, NoLiteralFieldFoundException {
+            throws URISyntaxException, NoLiteralFieldFoundException {
         logger.info("requestQAnswerWebService: {} ", request);
         request.replaceNullValuesWithDefaultValues(this.getEndpoint(), this.getLangFallback(),
-                this.getKnowledgeBaseDefault(), this.getUserDefault());
+                this.getKnowledgeBaseDefault());
         return myQAnswerQueryBuilderAndExecutor.requestQAnswerWebService(request);
     }
 
@@ -111,9 +107,5 @@ public class QAnswerQueryBuilderAndExecutorController {
     public String getKnowledgeBaseDefault() {
         return knowledgeBaseDefault;
     }
-
-	public String getUserDefault() {
-		return userDefault;
-	}
 
 }
