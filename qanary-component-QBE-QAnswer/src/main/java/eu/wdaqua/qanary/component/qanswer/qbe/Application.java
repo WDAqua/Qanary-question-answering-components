@@ -42,6 +42,12 @@ public class Application {
         return knowledgeBaseDefault;
     }
 
+    @Bean(name = "userDefault")
+    String userDefault(
+            @Value("${qanswer.endpoint.user.default:open}") String userDefault) {
+        return userDefault;
+    }
+
     @Bean(name = "endpointUrl")
     URI endpointUrl(@Value("${qanswer.endpoint.url}") String endpointUrl) throws URISyntaxException {
         return new URI(endpointUrl);
