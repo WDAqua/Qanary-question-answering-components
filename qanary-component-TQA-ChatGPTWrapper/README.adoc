@@ -1,0 +1,42 @@
+= ChatGPT Wrapper
+
+== Description
+
+This component is a wrapper for the https://platform.openai.com/overview[OpenAI API].
+It sends the given question to the https://platform.openai.com/docs/api-reference/completions[completions API]
+and store all returned choices in the graph.
+
+== Input specification
+
+This component takes as input the question.
+
+== Output specification
+
+[source, ttl]
+----
+PREFIX  qa:   <http://www.wdaqua.eu/qa#>
+PREFIX  oa:   <http://www.w3.org/ns/openannotation/core/>
+PREFIX  dbr:  <http://dbpedia.org/resource/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+INSERT {
+  GRAPH <urn:qanary#outGraph> {
+    ?newAnnotation rdf:type qa:AnnotationOfAnswerJson .
+    ?newAnnotation oa:hasTarget <urn:qanary#endpoint> .
+    ?newAnnotation oa:hasBody ?answer .
+    ?newAnnotation oa:annotatedAt ?time .
+    ?newAnnotation oa:annotatedBy <urn:qanary:> .
+    ?answer rdf:type qa:AnswerJson .
+    ?answer rdf:value "{\"choices\":[{\"text\":\"\\n\\nThis is indeed a test\",\"index\":0,\"finish_reason\":\"length\"}]}" .
+    qa:AnswerJson rdfs:subClassOf qa:Answer .
+  }
+}
+WHERE
+{
+    BIND(iri(str(rand())) AS ?newAnnotation)
+    BIND(iri(str(rand())) AS ?answer)
+    BIND(now() AS ?time)
+}
+----
