@@ -52,6 +52,7 @@ class DBpediaSpotlightServiceFetcherTest {
     static {
     	// deactivate the live test of the real-world webservice
         System.setProperty("dbpediaspotlight.perform-live-check-on-component-start", "false");
+        System.setProperty("dbpediaspotlight.endpoint.ssl.certificatevalidation.ignore", "false");
     }
     
     @BeforeEach
@@ -101,6 +102,7 @@ class DBpediaSpotlightServiceFetcherTest {
         HttpEntity<LoginForm> requestEntity = new HttpEntity<LoginForm>(loginForm, headers);
 
         long numberOfNewlyExecutedRequests = myCacheOfResponse.getNumberOfExecutedRequests();
+        logger.debug("execute POST request on {}", TESTSERVICEURL);
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(TESTSERVICEURL, requestEntity, String.class);
         numberOfNewlyExecutedRequests = myCacheOfResponse.getNumberOfExecutedRequests() - numberOfNewlyExecutedRequests;
         logger.info("numberOfExecutedRequest since last request: new={}, count={}, teststatus={}", //

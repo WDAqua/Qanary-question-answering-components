@@ -1,0 +1,17 @@
+PREFIX qa: <http://www.wdaqua.eu/qa#>
+PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+INSERT {
+GRAPH ?graph {
+    ?answer a qa:Answer .
+    ?b a qa:AnnotationOfAnswerJSON ;
+       oa:hasTarget ?answer ;
+       oa:hasBody ?body ;
+       oa:annotatedBy ?application ;
+       oa:annotatedAt ?time
+}}
+WHERE {
+  BIND (IRI(str(RAND())) AS ?b)
+  BIND (now() as ?time)
+}

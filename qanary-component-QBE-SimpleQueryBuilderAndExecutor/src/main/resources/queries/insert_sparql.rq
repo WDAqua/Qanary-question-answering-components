@@ -1,0 +1,17 @@
+PREFIX qa: <http://www.wdaqua.eu/qa#>
+PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+INSERT {
+GRAPH ?graph {
+    ?answer a qa:Answer .
+    ?a a qa:AnnotationOfAnswerSPARQL .
+    ?a oa:hasTarget ?answer .
+    ?a oa:hasBody ?body ;
+       oa:annotatedBy ?application ;
+       oa:annotatedAt ?time .
+}}
+WHERE {
+	BIND (IRI(str(RAND())) AS ?a) .
+	BIND (now() as ?time) .
+}

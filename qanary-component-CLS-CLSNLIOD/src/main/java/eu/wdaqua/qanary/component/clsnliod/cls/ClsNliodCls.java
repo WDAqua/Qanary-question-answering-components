@@ -30,7 +30,7 @@ import java.util.Map.Entry;
  */
 public class ClsNliodCls extends QanaryComponent {
 
-    private final String FILENAME_ANNOTATIONS_FILTERED = "insert_one_annotation_of_class.rq";
+    private final String FILENAME_ANNOTATIONS_FILTERED = "/queries/insert_one_annotation_of_class.rq";
 
     private static final Logger logger = LoggerFactory.getLogger(ClsNliodCls.class);
 
@@ -44,6 +44,9 @@ public class ClsNliodCls extends QanaryComponent {
         this.applicationName = applicationName;
         this.cacheEnabled = cacheEnabled;
         this.cacheFile = cacheFile;
+
+        // check if files exists and are not empty
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_ANNOTATIONS_FILTERED);
     }
 
     public static String runCurlPOSTWithParam(String weburl, String data, String contentType) throws Exception {

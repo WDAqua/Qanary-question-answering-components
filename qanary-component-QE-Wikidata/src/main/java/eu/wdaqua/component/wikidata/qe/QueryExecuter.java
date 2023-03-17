@@ -4,19 +4,23 @@ import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import io.swagger.v3.oas.annotations.Operation;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
@@ -34,8 +38,15 @@ public class QueryExecuter extends QanaryComponent {
 
 	private final String applicationName;
 
+	private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
+	private String FILENAME_GET_ANNOTATION = "/queries/get_annotation.rq";
+
 	public QueryExecuter(@Value("${spring.application.name}") final String applicationName) {
 		this.applicationName = applicationName;
+
+		// check if files exists and are not empty
+		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
+		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_GET_ANNOTATION);
 	}
 
 	/**
@@ -81,43 +92,18 @@ public class QueryExecuter extends QanaryComponent {
 			operationId = "getSparqlInsertQuery", //
 			description = "Create a query to store the computed information in the Qanary triplestore")
 	public String getSparqlInsertQuery(URI outGraph, URI question, String answerJson)
-			throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed {
+			throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
 
 		answerJson = answerJson.replace("\"", "\\\"").replace("\n", "\\n");
-		String sparql = "" //
-				+ "PREFIX dbr: <http://dbpedia.org/resource/> \n" //
-				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> \n" //
-				+ "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
-				+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
-				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n" //
-				+ "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n" //
-				+ "" //
-				+ "INSERT { \n" //
-				+ "GRAPH <" + outGraph.toASCIIString() + ">  {\n" //
-				+ "  ?annotationAnswer a	qa:AnnotationOfAnswerJson ; \n" //
-				+ "			oa:hasTarget	?question ; \n" //
-				+ "			oa:hasBody		?answer ; \n" //
-				+ "			oa:annotatedBy	?service ; \n" //
-				+ "			oa:annotatedAt	?time ; \n" //
-				+ "			qa:score		?score . \n" //
-				//
-				+ "  ?answer	a			qa:AnswerJson ;\n" //
-				+ "	   rdf:value			?answerJson . \n" // the answer
-				//
-				+ "  qa:AnswerJson rdfs:subClassOf qa:Answer . \n " //
-				//
-				+ " }\n" // end: graph
-				+ "}\n" // end: insert
-				+ "WHERE { \n" //
-				+ "  BIND (IRI(str(RAND())) AS ?annotationAnswer) . \n" //
-				+ "  BIND (IRI(str(RAND())) AS ?answer) . \n" //
-				// values
-				+ "  BIND (now() AS ?time) . \n" //
-				+ "  BIND (<" + question.toASCIIString() + "> AS ?question) . \n" //
-				+ "  BIND (\"" + answerJson + "\"^^xsd:string AS ?answerJson) . \n" //
-				+ "  BIND (\"1.0\"^^xsd:float AS ?score) . \n" // rule based
-				+ "  BIND (<urn:qanary:" + this.applicationName + "> AS ?service) . \n" // 
-				+ "}\n";
+
+		QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+		bindingsForInsert.add("graph", ResourceFactory.createResource(outGraph.toASCIIString()));
+		bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(question.toASCIIString()));
+		bindingsForInsert.add("answerJson", ResourceFactory.createTypedLiteral(answerJson, XSDDatatype.XSDstring));
+		bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+		// get the template of the INSERT query
+		String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
 		return sparql;
 	}
 
@@ -167,21 +153,13 @@ public class QueryExecuter extends QanaryComponent {
 
 		// Here we fetch those annotations (AnnotationOfAnswerSPARQL) from the Qanary
 		// triplestore
-		String sparqlSelectQuery = "" //
-				+ "PREFIX dbr: <http://dbpedia.org/resource/> " //
-				+ "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-				+ "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-				+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " //
-				+ "SELECT * " //
-				+ "FROM <" + myQanaryMessage.getInGraph().toString() + "> " // the currently used graph
-				+ "WHERE { " //
-				+ "	   ?annotation		a			qa:AnnotationOfAnswerSPARQL ." //
-				+ "    ?annotation     oa:hasBody   ?wikidataQueryData ." // the entity in question
-				+ " 		?wikidataQueryData a		 qa:SparqlQuery ." // a SPARQL query object
-				+ " 		?wikidataQueryData rdf:value ?wikidataQuery ." // the SPARQL query string
-				+ "    ?annotation     qa:score     ?annotationScore ." //
-				+ "    ?annotation     oa:hasTarget <" + myQanaryQuestion.getUri().toString() + "> ." //
-				+ "}";
+
+		QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+		bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getInGraph().toASCIIString()));
+		bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+
+		// get the template of the INSERT query
+		String sparqlSelectQuery = this.loadQueryFromFile(FILENAME_GET_ANNOTATION, bindingsForInsert);
 
 		// fetch data from the triplestore
 		ResultSet resultset = myQanaryUtils.getQanaryTripleStoreConnector().select(sparqlSelectQuery);
@@ -219,5 +197,9 @@ public class QueryExecuter extends QanaryComponent {
 			}
 		}
 		return myQanaryMessage;
+	}
+
+	private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+		return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
 	}
 }

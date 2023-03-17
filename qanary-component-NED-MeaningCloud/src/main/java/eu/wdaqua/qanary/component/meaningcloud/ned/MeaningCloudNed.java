@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -12,6 +13,9 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.query.QuerySolutionMap;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,10 +41,23 @@ public class MeaningCloudNed extends QanaryComponent {
     private final String applicationName;
     private final String cacheFilePath;
 
+    private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
+
+    private String meaningCloudUrl;
+    private String meaningCloudKey;
+
     public MeaningCloudNed(@Value("${spring.application.name}") final String applicationName,
-                           @Value("${ned-meaningcloud.cache.file}") final String cacheFilePath) throws Exception {
+                           @Value("${ned-meaningcloud.cache.file}") final String cacheFilePath,
+                           @Value("${meaningcloud.api.url}") final String meaningCloudUrl,
+                           @Value("${meaningcloud.api.key}") final String meaningCloudKey
+    ) throws Exception {
         this.applicationName = applicationName;
         this.cacheFilePath = cacheFilePath;
+        this.meaningCloudUrl = meaningCloudUrl;
+        this.meaningCloudKey = meaningCloudKey;
+
+        // check if files exists and are not empty
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
 
         for (int i = 0; i < 10; i++) {
             try {
@@ -65,9 +82,8 @@ public class MeaningCloudNed extends QanaryComponent {
         thePath = URLEncoder.encode(myQuestion, "UTF-8");
 
         HttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpget = new HttpGet(
-                "https://api.meaningcloud.com/topics-2.0?key=57748bf27b54ff6a49d2a0947e15754c&of=json&lang=en&ilang=en&txt="
-                        + thePath + "&tt=e&uw=y");
+        String url = meaningCloudUrl + "?key=" + meaningCloudKey + "&of=json&lang=en&ilang=en&txt="+ thePath + "&tt=e&uw=y";
+        HttpGet httpget = new HttpGet(url);
         // httpget.addHeader("User-Agent", USER_AGENT);
         HttpResponse response = httpclient.execute(httpget);
 
@@ -173,7 +189,7 @@ public class MeaningCloudNed extends QanaryComponent {
 
                 HttpClient httpclient = HttpClients.createDefault();
                 HttpGet httpget = new HttpGet(
-                        "https://api.meaningcloud.com/topics-2.0?key=57748bf27b54ff6a49d2a0947e15754c&of=json&lang=en&ilang=en&txt="
+                        meaningCloudUrl + "?key=" + meaningCloudKey + "&of=json&lang=en&ilang=en&txt="
                                 + thePath + "&tt=e&uw=y");
                 // httpget.addHeader("User-Agent", USER_AGENT);
                 HttpResponse response = httpclient.execute(httpget);
@@ -235,47 +251,40 @@ public class MeaningCloudNed extends QanaryComponent {
                 } catch (JSONException e) {
                     logger.error("Exception: {}", e);
                 } catch (ClientProtocolException e) {
-                    logger.info("Exception: {}", e);
+                    logger.error("Exception: {}", e);
                     // TODO Auto-generated catch block
                 } catch (IOException e1) {
-                    logger.info("Except: {}", e1);
+                    logger.error("Except: {}", e1);
                     // TODO Auto-generated catch block
                 }
             }
         } catch (FileNotFoundException e) {
             //handle this
-            logger.info("{}", e);
+            logger.error("{}", e);
         }
         logger.info("store data in graph {}", myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-        // TODO: insert data in QanaryMessage.outgraph
-
         logger.info("apply vocabulary alignment on outgraph");
-        // TODO: implement this (custom for every component)
         for (Selection s : selections) {
-            String sparql = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-                    + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-                    + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-                    + "INSERT { " + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
-                    + "  ?a a qa:AnnotationOfInstance . " //
-                    + "  ?a oa:hasTarget [ " //
-                    + "           a    oa:SpecificResource; " //
-                    + "           oa:hasSource    <" + myQanaryQuestion.getUri() + ">; " //
-                    + "           oa:hasSelector  [ " //
-                    + "                    a oa:TextPositionSelector ; " //
-                    + "                    oa:start \"" + s.begin + "\"^^xsd:nonNegativeInteger ; " //
-                    + "                    oa:end  \"" + s.end + "\"^^xsd:nonNegativeInteger  " //
-                    + "           ] " //
-                    + "  ] . " //
-                    + "  ?a oa:hasBody <" + s.link + "> ;" //
-                    + "     oa:annotatedBy <urn:qanary:" + this.applicationName + "> ; " //
-                    + "	    oa:annotatedAt ?time  " + "}} " //
-                    + "WHERE { " //
-                    + "  BIND (IRI(str(RAND())) AS ?a) ."//
-                    + "  BIND (now() as ?time) " //
-                    + "}";
+
+            QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+            bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+            bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+            bindingsForInsert.add("start", ResourceFactory.createTypedLiteral(String.valueOf(s.begin), XSDDatatype.XSDnonNegativeInteger));
+            bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(s.end), XSDDatatype.XSDnonNegativeInteger));
+            bindingsForInsert.add("answer", ResourceFactory.createResource(s.link));
+            bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+            // get the template of the INSERT query
+            String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
+            logger.info("SPARQL query: {}", sparql);
             myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
+
         }
         return myQanaryMessage;
+    }
+
+    private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
     }
 
     class Selection {

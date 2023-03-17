@@ -6,13 +6,18 @@ import com.google.gson.JsonElement;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import io.swagger.v3.oas.annotations.Operation;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.query.QuerySolutionMap;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -36,6 +41,8 @@ public class OpenTapiocaNED extends QanaryComponent {
 
     private final String applicationName;
 
+    private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
+
     public OpenTapiocaNED(
             @Value("${spring.application.name}") final String applicationName,
             OpenTapiocaConfiguration openTapiocaConfiguration,
@@ -43,6 +50,10 @@ public class OpenTapiocaNED extends QanaryComponent {
         this.applicationName = applicationName;
         this.openTapiocaConfiguration = openTapiocaConfiguration;
         this.openTapiocaServiceFetcher = openTapiocaServiceFetcher;
+
+        // check if files exists and are not empty
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
+
     }
 
     /**
@@ -98,75 +109,28 @@ public class OpenTapiocaNED extends QanaryComponent {
         // entities are assumed to be relevant. Depending on the specific task of the component
         // the results could be filtered to only include specific entities.
 
-        String sparqlInsert = this.createSparqlInsertQuery(foundWikidataResources, myQanaryQuestion);
+        for (FoundWikidataResource found : foundWikidataResources) {
 
-        logger.info("store data in graph {} of Qanary triplestore endpoint {}", //
-                myQanaryMessage.getOutGraph(), //
-                myQanaryMessage.getEndpoint());
+            QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+            bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+            bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+            bindingsForInsert.add("start", ResourceFactory.createTypedLiteral(String.valueOf(found.getBegin()), XSDDatatype.XSDnonNegativeInteger));
+            bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(found.getEnd()), XSDDatatype.XSDnonNegativeInteger));
+            bindingsForInsert.add("answer", ResourceFactory.createResource(found.getResource().toString()));
+            bindingsForInsert.add("score", ResourceFactory.createTypedLiteral(String.valueOf(found.getScore()), XSDDatatype.XSDdecimal));
+            bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
-        // update the Qanary triplestore with the created insert query
-        myQanaryUtils.getQanaryTripleStoreConnector().update(sparqlInsert);
+            // get the template of the INSERT query
+            String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
+            logger.info("SPARQL query: {}", sparql);
+            myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
+        }
 
         return myQanaryMessage;
     }
 
-
-    /**
-     * create a SPARQL query for storing identified Wikidata entities in the Qanary Triplestore
-     *
-     * @param foundWikidataResources a list of resources retrieved from OpenTapiocaServiceFetcher
-     * @param myQanaryQuestion       the QanaryQuestion currently being processed
-     * @return sparql
-     */
-    @Operation(
-            summary = "Generate a SPARQL insert query", //
-            operationId = "createSparqlInsertQuery", //
-            description = "Creates a SPARQL query for storing identified Wikidata entities " //
-                    + "(the result of this component) in the Qanary Triplestore"
-    )
-    public String createSparqlInsertQuery(List<FoundWikidataResource> foundWikidataResources, QanaryQuestion myQanaryQuestion) throws Exception {
-        String sparql;
-        String sparqlbind;
-
-        sparql = "" //
-                + "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> " //
-                + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> " //
-                + "INSERT {";
-        sparqlbind = "";
-
-        // append to the SPARQL insert query for every identified entity
-        int i = 0;
-        for (FoundWikidataResource found : foundWikidataResources) {
-            sparql += "" //
-                    + "GRAPH <" + myQanaryQuestion.getOutGraph() + "> { " //
-                    + "  ?a" + i + " a qa:AnnotationOfInstance . " //
-                    + "  ?a" + i + " oa:hasTarget [ " //
-                    + "     a oa:SpecificResource; " //
-                    + "     oa:hasSource <" + myQanaryQuestion.getUri() + ">; " //
-                    + "     oa:hasSelector [ " //
-                    + "         a oa:TextPositionSelector ; " //
-                    + "         oa:start \"" + found.getBegin() + "\"^^xsd:nonNegativeInteger ; " //
-                    + "         oa:end \"" + found.getEnd() + "\"^^xsd:nonNegativeInteger ; " //
-                    + "    ] " //
-                    + "  ] . " //
-                    + "  ?a" + i + " oa:hasBody <" + found.getResource() + "> ;" // the identified entity
-                    + "     oa:annotatedBy <urn:qanary:component:" + this.applicationName + "> ;" //
-                    + "     oa:annotatedAt ?time ; " //
-                    + "     qa:score \"" + found.getScore() + "\"^^xsd:decimal ." //
-                    + "}"; // end: graph
-            sparqlbind += "  BIND (IRI(str(RAND())) AS ?a" + i + ") .";
-            i++;
-        }
-
-        sparql += "" //
-                + "} " //end: insert
-                + "WHERE { " //
-                + sparqlbind //
-                + "  BIND (now() as ?time) " //
-                + "}";
-
-        return sparql;
+    private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
     }
 }
 

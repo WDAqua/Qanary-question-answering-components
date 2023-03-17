@@ -12,6 +12,11 @@ import org.springframework.context.annotation.ComponentScan;
 
 import java.util.ArrayList;
 
+@Deprecated(forRemoval = true, since = "4.1.6")
+/**
+ *  API is not available anymore
+ */
+
 @SpringBootApplication
 @ComponentScan(basePackages = {"eu.wdaqua.qanary"})
 /**
