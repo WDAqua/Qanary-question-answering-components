@@ -19,6 +19,7 @@ import org.springframework.context.annotation.ComponentScan;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"eu.wdaqua.qanary"})
@@ -70,7 +71,7 @@ import java.util.ArrayList;
     public QanaryComponent qanaryComponent( //
                                             float threshold, //
                                             @Qualifier("platypus.langDefault") String langDefault, //
-                                            @Qualifier("platypus.endpoint.language.supported") ArrayList<String> supportedLang, //
+                                            @Qualifier("platypus.endpoint.language.supported") List<String> supportedLang, //
                                             @Qualifier("platypus.endpointUrl") URI endpoint, //
                                             @Value("${spring.application.name}") final String applicationName, //
                                             RestTemplateWithCaching restTemplate //
@@ -79,11 +80,12 @@ import java.util.ArrayList;
     }
 
     @Bean
-    public OpenAPI customOpenAPI(@Value("${springdoc.version}") String appVersion) {
+    public OpenAPI customOpenAPI(@Value("${springdoc.version}") String springdocVersion) {
         return new OpenAPI().info(new Info() //
                 .title("Platypus wrapper component") //
-                .version(appVersion) //
-                .description("This is a sample Foobar server created using springdocs - " + "a library for OpenAPI 3 with spring boot.").termsOfService("http://swagger.io/terms/") //
+                .version(springdocVersion) //
+                .description("This is a server created using springdocs " +  springdocVersion + " - a library for OpenAPI 3 with Spring Boot.") //
+                .termsOfService("http://swagger.io/terms/") //
                 .license(new License().name("Apache 2.0").url("http://springdoc.org")) //
         );
     }

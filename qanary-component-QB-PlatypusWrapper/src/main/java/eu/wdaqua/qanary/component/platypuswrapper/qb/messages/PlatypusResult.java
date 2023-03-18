@@ -41,7 +41,6 @@ public class PlatypusResult {
         logger.info("parsing platypus result...");
         JsonElement parsedJsonElement = jsonParser.parse(json.toJSONString());
         JsonObject jsonObject1 = parsedJsonElement.getAsJsonObject();
-        JsonArray parsedJsonArray = jsonObject1.getAsJsonArray("member");
 
         //JsonObject parsedJsonObject = jsonParser.parse(json.toJSONString()).getAsJsonObject().getAsJsonObject("member");
 
@@ -54,24 +53,42 @@ public class PlatypusResult {
         this.BOOLEANTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#boolean");
         this.STRINGTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#string");
 
-        initData(parsedJsonArray);
+        try {
+            JsonArray parsedJsonArray = jsonObject1.getAsJsonArray("member");
+            initData(parsedJsonArray);
+		} catch (Exception e) {
+            JsonObject parsedJsonObject = jsonObject1.getAsJsonObject("member");
+            initData(parsedJsonObject);
+		}
     }
 
     /**
-     * init the fields while parsing the JSON data
+     * init the fields while parsing the JSON data if the value was an array
      *
      * @param answers
      * @throws URISyntaxException
      */
     private void initData(JsonArray answersArray) throws URISyntaxException {
-        JsonObject answers = answersArray.get(0).getAsJsonObject();
-        logger.debug("responseQuestion: {}", answers);
+        JsonObject answer = answersArray.get(0).getAsJsonObject();
+        logger.debug("found an answer array, processing just the first result");
+        this.initData(answer);
+    }
+    
+    /**
+     * 
+     * init the fields while parsing the JSON data if the value was an object
+     * 
+     * @param answer
+     * @throws URISyntaxException
+     */
+    private void initData(JsonObject answer) throws URISyntaxException {
+        logger.debug("responseQuestion: {}", answer);
 
-        logger.debug("0. sparql: {}", answers.get("platypus:sparql").getAsString());
-        logger.debug("0. confidence: {}", answers.get("resultScore").getAsDouble());
+        logger.debug("sparql: {}", answer.get("platypus:sparql").getAsString());
+        logger.debug("confidence: {}", answer.get("resultScore").getAsDouble());
 
-        this.confidence = answers.get("resultScore").getAsDouble();
-        this.sparql = answers.get("platypus:sparql").getAsString();
+        this.confidence = answer.get("resultScore").getAsDouble();
+        this.sparql = answer.get("platypus:sparql").getAsString();    	
     }
 
     public JsonParser getJsonParser() {
