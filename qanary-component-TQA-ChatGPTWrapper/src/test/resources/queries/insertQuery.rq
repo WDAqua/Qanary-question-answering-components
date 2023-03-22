@@ -11,7 +11,7 @@ INSERT {
     ?newAnnotation oa:hasTarget <urn:qanary#endpoint> .
     ?newAnnotation oa:hasBody ?answer .
     ?newAnnotation oa:annotatedAt ?time .
-    ?newAnnotation oa:annotatedBy <urn:qanary:> .
+    ?newAnnotation oa:annotatedBy <urn:qanary:ChatGPTWrapperMockedTest> .
     ?answer rdf:type qa:ChatGptAnswerJson .
     ?answer rdf:value "{\"choices\":[{\"text\":\"\\n\\nThis is indeed a test\",\"index\":0,\"finish_reason\":\"length\"}]}" .
     qa:AnswerJson rdfs:subClassOf qa:Answer .

@@ -66,7 +66,7 @@ class ChatGPTWrapperMockedTest {
                 .andRespond(withSuccess(ChatGPTTestConfiguration.getStringFromFile("json_response/getModels.json"), MediaType.APPLICATION_JSON));
 
         this.chatGPTWrapper = new ChatGPTWrapper(
-                applicationContext.getApplicationName(),
+                "ChatGPTWrapperMockedTest",
                 "some-token",
                 false,
                 "text-davinci-003",
