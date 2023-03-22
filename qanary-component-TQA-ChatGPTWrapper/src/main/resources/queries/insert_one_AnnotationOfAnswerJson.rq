@@ -13,7 +13,7 @@ GRAPH ?graph  {
         ?newAnnotation oa:annotatedAt ?time .
         ?newAnnotation oa:annotatedBy ?application .
 
-        ?answer rdf:type qa:AnswerJson .
+        ?answer rdf:type qa:ChatGptAnswerJson .
         ?answer rdf:value ?jsonAnswer .
         qa:AnswerJson rdfs:subClassOf qa:Answer .
     }

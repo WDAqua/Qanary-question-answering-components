@@ -12,7 +12,7 @@ INSERT {
     ?newAnnotation oa:hasBody ?answer .
     ?newAnnotation oa:annotatedAt ?time .
     ?newAnnotation oa:annotatedBy <urn:qanary:> .
-    ?answer rdf:type qa:AnswerJson .
+    ?answer rdf:type qa:ChatGptAnswerJson .
     ?answer rdf:value "{\"choices\":[{\"text\":\"\\n\\nThis is indeed a test\",\"index\":0,\"finish_reason\":\"length\"}]}" .
     qa:AnswerJson rdfs:subClassOf qa:Answer .
   }
