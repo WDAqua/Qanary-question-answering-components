@@ -29,14 +29,10 @@ public class Application {
 	private static ApplicationContext applicationContext;
 	private CacheOfRestTemplateResponse myCacheOfResponses;
 
-	private boolean caching;
-
 	public Application(
-			@Autowired CacheOfRestTemplateResponse myCacheOfResponses,
-			@Value("${chatgpt.request.caching}") boolean caching
+			@Autowired CacheOfRestTemplateResponse myCacheOfResponses
 	) {
 		this.myCacheOfResponses = myCacheOfResponses;
-		this.caching = caching;
 	}
 
 	public static void main(String[] args) {
@@ -55,14 +51,8 @@ public class Application {
 			@Value("${chatgpt.key}") String token,
 			@Value("${chatgpt.api.live.test}") boolean doApiIsAliveCheck,
 			@Value("${chatgpt.model}") String model,
-			RestTemplateWithCaching restTemplateWithCaching,
-			RestTemplate restTemplate
+			RestTemplateWithCaching restTemplateWithCaching
 	) throws MissingTokenException, URISyntaxException, OpenApiUnreachableException {
-
-		if(caching == false) {
-			return new ChatGPTWrapper(applicationName, token, doApiIsAliveCheck, model, restTemplate, myCacheOfResponses);
-		}
-
 		return new ChatGPTWrapper(applicationName, token, doApiIsAliveCheck, model, restTemplateWithCaching, myCacheOfResponses);
 	}
 
