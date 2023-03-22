@@ -138,7 +138,7 @@ public class ChatGPTWrapper extends QanaryComponent {
         bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
         // get the template of the INSERT query
-        return QanaryTripleStoreConnector.insertAnnotationOfAnswerJson(bindings);
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap("/queries/insert_one_AnnotationOfAnswerJson.rq", bindings);
     }
 
 }
