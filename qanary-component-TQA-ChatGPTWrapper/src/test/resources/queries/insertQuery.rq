@@ -8,7 +8,7 @@ PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 INSERT {
   GRAPH <urn:qanary#outGraph> {
     ?newAnnotation rdf:type qa:AnnotationOfTextAnswerJson .
-    ?newAnnotation oa:hasTarget <urn:qanary#endpoint> .
+    ?newAnnotation oa:hasTarget <http://localhost:8080/question/stored-question__text_b4b3f3eb-f691-497c-9379-a02128c0a912> .
     ?newAnnotation oa:hasBody ?answer .
     ?newAnnotation oa:annotatedAt ?time .
     ?newAnnotation oa:annotatedBy <urn:qanary:ChatGPTWrapperMockedTest> .
