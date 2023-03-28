@@ -47,7 +47,7 @@ public class ChatGPTWrapper extends QanaryComponent {
 
     public ChatGPTWrapper(
             @Value("${spring.application.name}") String applicationName,
-            @Value("${chatgpt.key}") String token,
+            @Value("${tqa.chatgptwrapper.api.key}") String token,
             @Value("${chatgpt.api.live.test}") boolean doApiIsAliveCheck,
             @Value("${chatgpt.model}") String model,
             RestTemplate restTemplate,

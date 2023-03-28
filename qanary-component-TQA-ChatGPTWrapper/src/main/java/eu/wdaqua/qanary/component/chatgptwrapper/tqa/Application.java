@@ -15,7 +15,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.web.client.RestTemplate;
 
 import java.net.URISyntaxException;
 
@@ -48,7 +47,7 @@ public class Application {
 	@Bean
 	public QanaryComponent qanaryComponent(
 			@Value("${spring.application.name}") String applicationName,
-			@Value("${chatgpt.key}") String token,
+			@Value("${tqa.chatgptwrapper.api.key}") String token,
 			@Value("${chatgpt.api.live.test}") boolean doApiIsAliveCheck,
 			@Value("${chatgpt.model}") String model,
 			RestTemplateWithCaching restTemplateWithCaching

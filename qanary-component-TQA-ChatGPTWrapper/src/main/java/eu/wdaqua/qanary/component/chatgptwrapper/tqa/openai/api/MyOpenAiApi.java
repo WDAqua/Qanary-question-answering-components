@@ -28,7 +28,7 @@ public class MyOpenAiApi {
     private final String token;
 
     public MyOpenAiApi(
-            @Value("${chatgpt.key}") String token,
+            @Value("${tqa.chatgptwrapper.api.key}") String token,
             @Value("${chatgpt.api.live.test}") boolean doApiIsAliveCheck
     ) throws MissingTokenException, URISyntaxException, OpenApiUnreachableException {
         if (token == null || token.isEmpty()) {
