@@ -418,7 +418,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
                 + " 		qa:score        ?score . \n" //
                 //
                 + "  ?answerType a          qa:AnswerType ; \n" //
-                + " 		rdf:value       ?answerDataType ; \n" //
+                + " 		rdf:value       ?answerDataType . \n" //
                 // JSON answer (GERBIL)
                 + "  ?annotationAnswerJson a qa:AnnotationOfAnswerJson ; \n" //
                 + " 		oa:hasTarget    ?question ; \n" //
@@ -450,7 +450,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
                 + "  BIND (<" + myQanaryQuestion.getUri().toASCIIString() + "> AS ?question) . \n" //
                 + "  BIND (\"" + result.getConfidence() + "\"^^xsd:double AS ?score) . \n" //
                 + "  BIND (<urn:qanary:" + this.applicationName + "> AS ?service ) . \n" //
-                + "  BIND (\"" + createdAnswerSparqlQuery + "\"^^xsd:string AS ?sparqlQueryString ) . \n" //
+                + "  BIND (\"" + createdAnswerSparqlQuery.replace("\"", "\\\"") + "\"^^xsd:string AS ?sparqlQueryString ) . \n" //
                 + "  BIND (\"" + improvedQuestion + "\"^^xsd:string  AS ?improvedQuestionText ) . \n" //
                 + "  BIND ( <" + result.getDatatype() + "> AS ?answerDataType) . \n" //
                 + "  BIND ( <" + knowledgeGraphEndpoints.get(usedKnowledgeGraph) + "> AS ?knowledgeGraph) . \n" //
