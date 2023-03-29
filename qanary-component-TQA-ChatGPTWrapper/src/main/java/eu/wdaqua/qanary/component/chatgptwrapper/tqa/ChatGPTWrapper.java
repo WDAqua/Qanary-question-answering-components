@@ -38,6 +38,7 @@ import java.net.URISyntaxException;
  */
 public class ChatGPTWrapper extends QanaryComponent {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatGPTWrapper.class);
+    private final String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_AnnotationOfAnswerJson.rq";
     private final String applicationName;
     private final RestTemplate myRestTemplate;
     private final CacheOfRestTemplateResponse myCacheOfResponses;
@@ -53,6 +54,10 @@ public class ChatGPTWrapper extends QanaryComponent {
             RestTemplate restTemplate,
             CacheOfRestTemplateResponse myCacheOfResponses
     ) throws MissingTokenException, URISyntaxException, OpenApiUnreachableException {
+
+        // check if files exists and are not empty
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
+
         this.applicationName = applicationName;
         this.myRestTemplate = restTemplate;
         this.myCacheOfResponses = myCacheOfResponses;
@@ -138,7 +143,7 @@ public class ChatGPTWrapper extends QanaryComponent {
         bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
         // get the template of the INSERT query
-        return QanaryTripleStoreConnector.readFileFromResourcesWithMap("/queries/insert_one_AnnotationOfAnswerJson.rq", bindings);
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(FILENAME_INSERT_ANNOTATION, bindings);
     }
 
 }
