@@ -32,7 +32,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
-@EnabledIf("${dandelion.ned.api.live.test.active:true}")
 @WebAppConfiguration
 class DandelionLiveTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(DandelionLiveTest.class);

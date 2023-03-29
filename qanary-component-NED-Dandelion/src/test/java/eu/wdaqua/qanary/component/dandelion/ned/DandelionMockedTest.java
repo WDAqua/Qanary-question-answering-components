@@ -6,8 +6,6 @@ import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.dandelion.ned.exception.ApiLiveTestFaildException;
-import eu.wdaqua.qanary.component.dandelion.ned.exception.ApiTokenIsNullOrEmptyException;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -35,7 +32,6 @@ import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
-@EnabledIf("${dandelion.ned.api.live.test.active:true}")
 @WebAppConfiguration
 class DandelionMockedTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(DandelionMockedTest.class);
@@ -56,7 +52,7 @@ class DandelionMockedTest {
     private QanaryQuestion mockedQanaryQuestion;
 
     @BeforeEach
-    public void init() throws ApiLiveTestFaildException, ApiTokenIsNullOrEmptyException, URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed {
+    public void init() throws URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed {
         this.mockedDandelionNED = Mockito.mock(DandelionNED.class);
         ReflectionTestUtils.setField(this.mockedDandelionNED, "applicationName", this.applicationName);
         ReflectionTestUtils.setField(this.mockedDandelionNED, "myRestTemplate", myRestTemplate);
@@ -154,62 +150,3 @@ class DandelionMockedTest {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    @Test
-//    void testQuestion1() throws Exception {
-//        QanaryMessage mockedQanaryMessage = Mockito.mock(QanaryMessage.class);
-//        Mockito.when(mockedQanaryMessage.getEndpoint()).thenReturn(new URI(endpointKey));
-//        Mockito.when(mockedQanaryMessage.getInGraph()).thenReturn(new URI(inGraphKey));
-//        Mockito.when(mockedQanaryMessage.getOutGraph()).thenReturn(new URI(outGraphKey));
-//
-//        QanaryQuestion mockedQanaryQuestion = Mockito.mock(QanaryQuestion.class);
-//        Mockito.when(mockedQanaryQuestion.getTextualRepresentation()).thenReturn(env.getProperty("question1"));
-//        Mockito.when(mockedQanaryQuestion.getOutGraph()).thenReturn(new URI(endpointKey));
-//        Mockito.when(mockedQanaryQuestion.getUri()).thenReturn(new URI("targetquestion"));
-//
-//        QanaryTripleStoreConnector mockedQanaryTripleStoreConnector = Mockito.mock(QanaryTripleStoreConnector.class);
-//
-//        QanaryUtils mockedQanaryUtils = Mockito.mock(QanaryUtils.class);
-//        Mockito.when(mockedQanaryUtils.getEndpoint()).thenReturn(new URI(endpointKey));
-//        Mockito.when(mockedQanaryUtils.getInGraph()).thenReturn(new URI(inGraphKey));
-//        Mockito.when(mockedQanaryUtils.getOutGraph()).thenReturn(new URI(outGraphKey));
-//        Mockito.when(mockedQanaryUtils.getQanaryTripleStoreConnector()).thenReturn(mockedQanaryTripleStoreConnector);
-//
-//        DandelionNED mockedDandelion = Mockito.mock(DandelionNED.class);
-//        ReflectionTestUtils.setField(mockedDandelion, "applicationName", env.getProperty("spring.application.name"));
-////        ReflectionTestUtils.setField(mockedDandelion, "apiToken", env.getProperty("dandelion.ned.api.token"));
-//        ReflectionTestUtils.setField(mockedDandelion, "FILENAME_INSERT_ANNOTATION", "/queries/insert_one_annotation.rq");
-//        Mockito.when(mockedDandelion.getQanaryQuestion(mockedQanaryMessage)).thenReturn(mockedQanaryQuestion);
-//        Mockito.when(mockedDandelion.getUtils(mockedQanaryMessage)).thenReturn(mockedQanaryUtils);
-//        Mockito.when(mockedDandelion.process(mockedQanaryMessage)).thenCallRealMethod();
-//
-//        assertThrows(Exception.class, () -> {
-//            mockedDandelion.process(mockedQanaryMessage);
-//        });
-//
-//
-//    }
-//
-//    @Test
-//    void testQuestion2() {
-//        env.getProperty("question2");
-//    }
-//
-//    @Test
-//    void testQuestion3() {
-//        env.getProperty("question3");
-//    }
-//
-//}
