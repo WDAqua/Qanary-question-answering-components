@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @WebAppConfiguration
 class ChatGPTCacheTest {
     // time span for caching, tests wait this time span during the test runs
-    protected final static int MAX_TIME_SPAN_SECONDS = 20;
+    protected final static int MAX_TIME_SPAN_SECONDS = 30;
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatGPTCacheTest.class);
     @Autowired
     private RestTemplateWithCaching restTemplate;
