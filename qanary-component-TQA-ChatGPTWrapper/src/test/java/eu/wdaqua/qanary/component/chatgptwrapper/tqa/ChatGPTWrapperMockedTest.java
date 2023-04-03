@@ -164,7 +164,7 @@ class ChatGPTWrapperMockedTest {
         Mockito.when(myQanaryQuestion.getEndpoint()).thenReturn(new URI(endpointKey));
         Mockito.when(myQanaryQuestion.getInGraph()).thenReturn(new URI(inGraphKey));
         Mockito.when(myQanaryQuestion.getOutGraph()).thenReturn(new URI(outGraphKey));
-        Mockito.when(myQanaryQuestion.getUri()).thenReturn(new URI("http://localhost:8080/question/stored-question__text_b4b3f3eb-f691-497c-9379-a02128c0a912"));
+        Mockito.when(myQanaryQuestion.getUri()).thenReturn(new URI("urn:qanary#qestion"));
 
         String query = chatGPTWrapper.createInsertQuery(myQanaryQuestion, completionResult);
 
