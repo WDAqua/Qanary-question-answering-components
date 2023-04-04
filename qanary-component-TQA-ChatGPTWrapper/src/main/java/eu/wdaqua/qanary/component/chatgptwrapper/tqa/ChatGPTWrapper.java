@@ -85,12 +85,12 @@ public class ChatGPTWrapper extends QanaryComponent {
         // STEP 2: enriching of query and fetching data from the ChatGPT API
 
         MyCompletionRequest completionRequest = new MyCompletionRequest();
-        completionRequest.setModel(model);
+        completionRequest.setModel(this.model);
         completionRequest.setPrompt(myQuestion);
 
-        CompletionResult completionResult = openAiApi.createCompletion(
-                myRestTemplate,
-                myCacheOfResponses,
+        CompletionResult completionResult = this.openAiApi.createCompletion(
+                this.myRestTemplate,
+                this.myCacheOfResponses,
                 completionRequest
         );
 
