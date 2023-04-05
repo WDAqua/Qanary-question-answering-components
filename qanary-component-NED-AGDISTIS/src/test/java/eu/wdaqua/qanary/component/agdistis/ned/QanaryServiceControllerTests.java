@@ -26,8 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-class QanaryServiceControllerTest {
-    private static final Logger logger = LoggerFactory.getLogger(QanaryServiceControllerTest.class);
+class QanaryServiceControllerTests {
+    private static final Logger logger = LoggerFactory.getLogger(QanaryServiceControllerTests.class);
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext applicationContext;
