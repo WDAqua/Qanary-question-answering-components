@@ -56,8 +56,8 @@ public class DandelionNED extends QanaryComponent {
     public DandelionNED(@Value("${spring.application.name}") final String applicationName, //
                         @Autowired RestTemplateWithCaching myRestTemplate, //
                         @Autowired CacheOfRestTemplateResponse myCacheOfResponses, //
-                        @Value("${dandelion.ned.api.live.test.active}") final boolean apiLiveTestActive, //
-                        @Value("${dandelion.ned.api.token}") final String apiToken //
+                        @Value("${ned.dandelion.api.live.test.active}") final boolean apiLiveTestActive, //
+                        @Value("${ned.dandelion.api.token}") final String apiToken //
     ) throws ApiTokenIsNullOrEmptyException, ApiLiveTestFaildException {
         if (apiToken == null || apiToken.isEmpty()) {
             throw new ApiTokenIsNullOrEmptyException();

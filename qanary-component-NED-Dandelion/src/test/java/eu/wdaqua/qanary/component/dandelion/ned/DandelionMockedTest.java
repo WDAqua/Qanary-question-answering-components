@@ -38,7 +38,7 @@ class DandelionMockedTest {
 
     @Value("${spring.application.name}")
     private String applicationName;
-    @Value("${dandelion.ned.api.token}")
+    @Value("${ned.dandelion.api.token}")
     private String apiToken;
 
     @Autowired
