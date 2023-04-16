@@ -11,6 +11,8 @@ import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.MyCompletionRequ
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.MyOpenAiApi;
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.exception.MissingTokenException;
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.exception.OpenApiUnreachableException;
+
+import org.apache.commons.cli.MissingArgumentException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,34 +54,40 @@ class MyOpenAiApiMockedTest {
      */
     @BeforeEach
     public void setUp() throws IOException {
-        assertNotNull(env.getProperty("chatGPT.base.url"), "chatGPT.base.url cannot be empty");
+        assertNotNull(env.getProperty("chatgpt.base.url"), "chatgpt.base.url cannot be empty");
+        assertNotEquals("", env.getProperty("chatgpt.base.url").trim(), "chatgpt.base.url cannot be an empty string");
         assertNotNull(env.getProperty("chatGPT.getModels.url"), "chatGPT.getModels.url cannot be empty");
+        assertNotEquals("", env.getProperty("chatGPT.getModels.url").trim(), "chatGPT.getModels.url cannot be an empty string");
         assertNotNull(env.getProperty("chatGPT.getModelById.url"), "chatGPT.getModelById.url cannot be empty");
+        assertNotNull(env.getProperty("chatgpt.model"), "chatgpt.model cannot be empty");
         assertNotNull(env.getProperty("chatGPT.createCompletions.url"), "chatGPT.createCompletions.url cannot be empty");
+                
         assertNotNull(this.restTemplate, "restTemplate cannot be null");
 
         this.mockServer = MockRestServiceServer.createServer(this.restTemplate);
+        
+        LOGGER.info("used model: {}", env.getProperty("chatgpt.model"));
     }
 
     @Test
     void missingTokenTest() {
         assertThrows(MissingTokenException.class, () -> {
-            new MyOpenAiApi("", false);
+            new MyOpenAiApi("", false, env.getProperty("chatgpt.model"));
         });
 
         assertThrows(MissingTokenException.class, () -> {
-            new MyOpenAiApi(null, false);
+            new MyOpenAiApi(null, false, env.getProperty("chatgpt.model"));
         });
     }
 
     @Test
-    void getModelsTest() throws MissingTokenException, URISyntaxException, IOException, OpenApiUnreachableException {
+    void getModelsTest() throws MissingTokenException, URISyntaxException, IOException, OpenApiUnreachableException, MissingArgumentException {
         // mock the response of the OpenAI API /v1/models
-        this.mockServer.expect(requestTo(env.getProperty("chatGPT.base.url") + env.getProperty("chatGPT.getModels.url")))
+        this.mockServer.expect(requestTo(env.getProperty("chatgpt.base.url") + env.getProperty("chatGPT.getModels.url")))
                 .andExpect(method(org.springframework.http.HttpMethod.GET))
                 .andRespond(withSuccess(ChatGPTTestConfiguration.getStringFromFile("json_response/getModels.json"), MediaType.APPLICATION_JSON));
 
-        MyOpenAiApi myOpenAiApi = new MyOpenAiApi("some-token", false);
+        MyOpenAiApi myOpenAiApi = new MyOpenAiApi("some-token", false, env.getProperty("chatgpt.base.url"));
 
         List<Model> response = myOpenAiApi.getModels(restTemplate, myCacheOfResponse);
 
@@ -90,13 +98,17 @@ class MyOpenAiApiMockedTest {
     }
 
     @Test
-    void getModelByIdTest() throws MissingTokenException, URISyntaxException, IOException, OpenApiUnreachableException {
+    void getModelByIdTest() throws MissingTokenException, URISyntaxException, IOException, OpenApiUnreachableException, MissingArgumentException {
+    	assertNotNull(env.getProperty("chatgpt.base.url"));
+    	assertNotNull(env.getProperty("chatGPT.getModelById.url"));
+
         // mock the response of the OpenAI API /v1/models/text-davinci-003
-        this.mockServer.expect(requestTo(env.getProperty("chatGPT.base.url") + env.getProperty("chatGPT.getModelById.url") + "text-davinci-003"))
+    	LOGGER.info("getModelByIdTest URL: {}", env.getProperty("chatgpt.base.url") + env.getProperty("chatGPT.getModelById.url") + "text-davinci-003");
+        this.mockServer.expect(requestTo(env.getProperty("chatgpt.base.url") + env.getProperty("chatGPT.getModelById.url") + "text-davinci-003"))
                 .andExpect(method(org.springframework.http.HttpMethod.GET))
                 .andRespond(withSuccess(ChatGPTTestConfiguration.getStringFromFile("json_response/getModelsById.json"), MediaType.APPLICATION_JSON));
 
-        MyOpenAiApi myOpenAiApi = new MyOpenAiApi("some-token", false);
+        MyOpenAiApi myOpenAiApi = new MyOpenAiApi("some-token", false, env.getProperty("chatgpt.base.url"));
 
         Model response = myOpenAiApi.getModelById(restTemplate, myCacheOfResponse, "text-davinci-003");
 
@@ -106,13 +118,16 @@ class MyOpenAiApiMockedTest {
     }
 
     @Test
-    void createCompletionsTest() throws MissingTokenException, URISyntaxException, IOException, OpenApiUnreachableException {
+    void createCompletionsTest() throws MissingTokenException, URISyntaxException, IOException, OpenApiUnreachableException, MissingArgumentException {
+    	LOGGER.info("chatgpt.base.url: ", env.getProperty("chatgpt.base.url"));
+    	LOGGER.info("chatGPT.createCompletions.url: ", env.getProperty("chatGPT.createCompletions.url"));
+    	
         // mock the response of the OpenAI API /v1/completions
-        this.mockServer.expect(requestTo(env.getProperty("chatGPT.base.url") + env.getProperty("chatGPT.createCompletions.url")))
+        this.mockServer.expect(requestTo(env.getProperty("chatgpt.base.url") + env.getProperty("chatGPT.createCompletions.url")))
                 .andExpect(method(org.springframework.http.HttpMethod.POST))
                 .andRespond(withSuccess(ChatGPTTestConfiguration.getStringFromFile("json_response/createCompletions.json"), MediaType.APPLICATION_JSON));
 
-        MyOpenAiApi myOpenAiApi = new MyOpenAiApi("some-token", false);
+        MyOpenAiApi myOpenAiApi = new MyOpenAiApi("some-token", false, env.getProperty("chatgpt.base.url"));
         MyCompletionRequest completionRequest = new MyCompletionRequest();
         completionRequest.setModel("text-davinci-003");
         completionRequest.setPrompt("some question?");

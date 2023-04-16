@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-TQA-ChatGPTWrapper</artifactId>
-    <version>0.1.13</version>
+    <version>0.1.14</version>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -17,7 +17,7 @@
         <docker.image.prefix>qanary</docker.image.prefix>
         <docker.image.name>qanary-component-tqa-chatgptwrapper</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-        <springdoc.version>1.6.12</springdoc.version>
+        <springdoc.version>1.7.0</springdoc.version>
     </properties>
 
     <dependencies>
@@ -33,11 +33,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

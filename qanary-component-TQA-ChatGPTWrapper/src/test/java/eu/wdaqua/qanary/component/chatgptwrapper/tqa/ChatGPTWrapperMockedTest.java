@@ -12,6 +12,8 @@ import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.exception.MissingTokenException;
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.exception.OpenApiUnreachableException;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
+
+import org.apache.commons.cli.MissingArgumentException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,28 +58,29 @@ class ChatGPTWrapperMockedTest {
 
     /**
      * initialize local controller enabled for tests
+     * @throws MissingArgumentException 
      */
     @BeforeEach
-    public void setUp() throws MissingTokenException, URISyntaxException, IOException, OpenApiUnreachableException {
+    public void setUp() throws MissingTokenException, URISyntaxException, IOException, OpenApiUnreachableException, MissingArgumentException {
         this.mockServer = MockRestServiceServer.createServer(this.restTemplate);
         // mock the response of the OpenAI API /v1/models
-        this.mockServer.expect(requestTo(env.getProperty("chatGPT.base.url") + env.getProperty("chatGPT.getModels.url")))
+        this.mockServer.expect(requestTo(env.getProperty("chatgpt.base.url") + env.getProperty("chatGPT.getModels.url")))
                 .andExpect(method(org.springframework.http.HttpMethod.GET))
                 .andRespond(withSuccess(ChatGPTTestConfiguration.getStringFromFile("json_response/getModels.json"), MediaType.APPLICATION_JSON));
 
-        this.chatGPTWrapper = new ChatGPTWrapper(
-                "ChatGPTWrapperMockedTest",
-                "some-token",
-                false,
-                "text-davinci-003",
-                restTemplate,
-                myCacheOfResponse
+        this.chatGPTWrapper = new ChatGPTWrapper( //  
+                "ChatGPTWrapperMockedTest", // 
+                "some-token", // 
+                false, // 
+                env.getProperty("chatgpt.model"), //
+                env.getProperty("chatgpt.base.url"), //
+                restTemplate, // 
+                myCacheOfResponse // 
         );
     }
 
-
     @Test
-    void creatJsonAnswerTest() {
+    void createJsonAnswerTest() {
         CompletionResult completionResult = new CompletionResult();
 
         ArrayList<CompletionChoice> choices = new ArrayList<>();

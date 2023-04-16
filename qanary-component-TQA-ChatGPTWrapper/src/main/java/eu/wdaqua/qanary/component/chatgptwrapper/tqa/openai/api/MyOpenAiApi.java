@@ -7,6 +7,8 @@ import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.exception.Missin
 
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.exception.OpenApiUnreachableException;
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.messages.OpenAiResponseModel;
+
+import org.apache.commons.cli.MissingArgumentException;
 import org.apache.shiro.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,17 +22,28 @@ import java.util.List;
 
 public class MyOpenAiApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(MyOpenAiApi.class);
-    private static final String BASE_URL = "https://api.openai.com";
-    private static final String GET_MODELS_URL = BASE_URL + "/v1/models";
-    private static final String GET_MODELS_BY_ID_URL = BASE_URL + "/v1/models/";
-    private static final String CREATE_COMPLETION_URL = BASE_URL + "/v1/completions";
+    private static String BASE_URL; 
+    private static String GET_MODELS_URL;
+    private static String GET_MODELS_BY_ID_URL;
+    private static String CREATE_COMPLETION_URL;
 
     private final String token;
 
-    public MyOpenAiApi(
-            @Value("${tqa.chatgptwrapper.api.key}") String token,
-            @Value("${chatgpt.api.live.test}") boolean doApiIsAliveCheck
-    ) throws MissingTokenException, URISyntaxException, OpenApiUnreachableException {
+    public MyOpenAiApi( // 
+            @Value("${tqa.chatgptwrapper.api.key}") String token, // 
+            @Value("${chatgpt.api.live.test}") boolean doApiIsAliveCheck, // 
+            @Value("${chatgpt.base.url}") String baseUrl //  
+    ) throws MissingTokenException, URISyntaxException, OpenApiUnreachableException, MissingArgumentException {
+    	BASE_URL = baseUrl; 
+        GET_MODELS_URL = BASE_URL + "/v1/models";
+        GET_MODELS_BY_ID_URL = BASE_URL + "/v1/models/";
+        CREATE_COMPLETION_URL = BASE_URL + "/v1/completions";
+        
+        
+        if (baseUrl == null || baseUrl.isEmpty()) {
+            throw new MissingArgumentException("OpenAI base URL is not set");
+        }
+    	
         if (token == null || token.isEmpty()) {
             throw new MissingTokenException("OpenAI API key is not set");
         }

@@ -10,7 +10,8 @@ import java.nio.file.Paths;
 public class ChatGPTTestConfiguration {
     // define here the current CaffeineCacheManager configuration
     static {
-        System.setProperty("chatGPT.base.url", "https://api.openai.com");
+    	
+        System.setProperty("chatgpt.base.url", "https://api.openai.com");
         System.setProperty("chatGPT.getModels.url", "/v1/models");
         System.setProperty("chatGPT.getModelById.url", "/v1/models/");
         System.setProperty("chatGPT.createCompletions.url", "/v1/completions");

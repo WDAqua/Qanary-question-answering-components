@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,7 +18,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -29,9 +32,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class MyCompletionRequestTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(QanaryServiceControllerTest.class);
     private MockMvc mockMvc;
+    private static final String PROMPT = "prompt";
+    private static final String MODEL = "model";
     @Autowired
     private WebApplicationContext applicationContext;
 
+    @Autowired
+    private Environment env;
     /**
      * initialize local controller enabled for tests
      */
@@ -43,34 +50,20 @@ class MyCompletionRequestTest {
     @Test
     void multiTest() {
         MyCompletionRequest request = new MyCompletionRequest();
-        request.setModel("text-davinci-003");
+        request.setModel(env.getProperty("chatgpt.model"));
         request.setPrompt("Say this is a test");
         request.setMaxTokens(7);
         request.setTemperature(0d);
 
         JsonObject jsonObject = request.getAsJsonObject();
+        String[] propertiesWithValues = {MODEL, PROMPT, "max_tokens", "temperature"};
+        checkPropertiesOfMessage(jsonObject, propertiesWithValues);
 
-        assertNotNull(jsonObject);
-        assertNotNull(jsonObject.get("model"));
-        assertNotNull(jsonObject.get("prompt"));
-        assertNotNull(jsonObject.get("max_tokens"));
-        assertNotNull(jsonObject.get("temperature"));
-        assertEquals("text-davinci-003", jsonObject.get("model").getAsString());
-        assertEquals("Say this is a test", jsonObject.get("prompt").getAsString());
+        assertEquals(env.getProperty("chatgpt.model"), jsonObject.get(MODEL).getAsString());
+        assertEquals("Say this is a test", jsonObject.get(PROMPT).getAsString());
         assertEquals(7, jsonObject.get("max_tokens").getAsInt());
         assertEquals(0d, jsonObject.get("temperature").getAsDouble());
 
-        assertNull(jsonObject.get("suffix"));
-        assertNull(jsonObject.get("top_p"));
-        assertNull(jsonObject.get("n"));
-        assertNull(jsonObject.get("stream"));
-        assertNull(jsonObject.get("logprobs"));
-        assertNull(jsonObject.get("echo"));
-        assertNull(jsonObject.get("stop"));
-        assertNull(jsonObject.get("presence_penalty"));
-        assertNull(jsonObject.get("frequency_penalty"));
-        assertNull(jsonObject.get("logit_bias"));
-        assertNull(jsonObject.get("user"));
     }
 
     @Test
@@ -79,52 +72,21 @@ class MyCompletionRequestTest {
         request.setModel("some-model");
 
         JsonObject jsonObject = request.getAsJsonObject();
+        checkPropertiesOfMessage(jsonObject, MODEL);
 
-        assertNotNull(jsonObject);
-        assertNotNull(jsonObject.get("model"));
-        assertEquals("some-model", jsonObject.get("model").getAsString());
-
-        assertNull(jsonObject.get("prompt"));
-        assertNull(jsonObject.get("suffix"));
-        assertNull(jsonObject.get("max_tokens"));
-        assertNull(jsonObject.get("temperature"));
-        assertNull(jsonObject.get("top_p"));
-        assertNull(jsonObject.get("n"));
-        assertNull(jsonObject.get("stream"));
-        assertNull(jsonObject.get("logprobs"));
-        assertNull(jsonObject.get("echo"));
-        assertNull(jsonObject.get("stop"));
-        assertNull(jsonObject.get("presence_penalty"));
-        assertNull(jsonObject.get("frequency_penalty"));
-        assertNull(jsonObject.get("logit_bias"));
-        assertNull(jsonObject.get("user"));
+        assertEquals("some-model", jsonObject.get(MODEL).getAsString());
     }
 
     @Test
     void promptTest() {
+    	String myValue = "some-pormpt";
         MyCompletionRequest request = new MyCompletionRequest();
-        request.setPrompt("some-pormpt");
+        request.setPrompt(myValue);
 
         JsonObject jsonObject = request.getAsJsonObject();
+        checkPropertiesOfMessage(jsonObject, PROMPT);
 
-        assertNotNull(jsonObject);
-        assertNotNull(jsonObject.get("prompt"));
-        assertEquals("some-pormpt", jsonObject.get("prompt").getAsString());
-
-        assertNull(jsonObject.get("model"));
-        assertNull(jsonObject.get("suffix"));
-        assertNull(jsonObject.get("max_tokens"));
-        assertNull(jsonObject.get("temperature"));
-        assertNull(jsonObject.get("top_p"));
-        assertNull(jsonObject.get("n"));
-        assertNull(jsonObject.get("stream"));
-        assertNull(jsonObject.get("logprobs"));
-        assertNull(jsonObject.get("echo"));
-        assertNull(jsonObject.get("stop"));
-        assertNull(jsonObject.get("presence_penalty"));
-        assertNull(jsonObject.get("frequency_penalty"));
-        assertNull(jsonObject.get("logit_bias"));
-        assertNull(jsonObject.get("user"));
+        assertEquals(myValue, jsonObject.get(PROMPT).getAsString());
     }
 
     @Test
@@ -133,25 +95,9 @@ class MyCompletionRequestTest {
         request.setSuffix("some-suffix");
 
         JsonObject jsonObject = request.getAsJsonObject();
+        checkPropertiesOfMessage(jsonObject, "suffix");
 
-        assertNotNull(jsonObject);
-        assertNotNull(jsonObject.get("suffix"));
         assertEquals("some-suffix", jsonObject.get("suffix").getAsString());
-
-        assertNull(jsonObject.get("model"));
-        assertNull(jsonObject.get("prompt"));
-        assertNull(jsonObject.get("max_tokens"));
-        assertNull(jsonObject.get("temperature"));
-        assertNull(jsonObject.get("top_p"));
-        assertNull(jsonObject.get("n"));
-        assertNull(jsonObject.get("stream"));
-        assertNull(jsonObject.get("logprobs"));
-        assertNull(jsonObject.get("echo"));
-        assertNull(jsonObject.get("stop"));
-        assertNull(jsonObject.get("presence_penalty"));
-        assertNull(jsonObject.get("frequency_penalty"));
-        assertNull(jsonObject.get("logit_bias"));
-        assertNull(jsonObject.get("user"));
     }
 
     @Test
@@ -160,25 +106,9 @@ class MyCompletionRequestTest {
         request.setMaxTokens(10);
 
         JsonObject jsonObject = request.getAsJsonObject();
+        checkPropertiesOfMessage(jsonObject, "max_tokens");
 
-        assertNotNull(jsonObject);
-        assertNotNull(jsonObject.get("max_tokens"));
         assertEquals(10, jsonObject.get("max_tokens").getAsInt());
-
-        assertNull(jsonObject.get("model"));
-        assertNull(jsonObject.get("prompt"));
-        assertNull(jsonObject.get("suffix"));
-        assertNull(jsonObject.get("temperature"));
-        assertNull(jsonObject.get("top_p"));
-        assertNull(jsonObject.get("n"));
-        assertNull(jsonObject.get("stream"));
-        assertNull(jsonObject.get("logprobs"));
-        assertNull(jsonObject.get("echo"));
-        assertNull(jsonObject.get("stop"));
-        assertNull(jsonObject.get("presence_penalty"));
-        assertNull(jsonObject.get("frequency_penalty"));
-        assertNull(jsonObject.get("logit_bias"));
-        assertNull(jsonObject.get("user"));
     }
 
     @Test
@@ -187,25 +117,10 @@ class MyCompletionRequestTest {
         request.setTemperature(12.50);
 
         JsonObject jsonObject = request.getAsJsonObject();
-
-        assertNotNull(jsonObject);
-        assertNotNull(jsonObject.get("temperature"));
+        checkPropertiesOfMessage(jsonObject, "temperature");
+        
         assertEquals(12.50, jsonObject.get("temperature").getAsDouble());
 
-        assertNull(jsonObject.get("model"));
-        assertNull(jsonObject.get("prompt"));
-        assertNull(jsonObject.get("suffix"));
-        assertNull(jsonObject.get("max_tokens"));
-        assertNull(jsonObject.get("top_p"));
-        assertNull(jsonObject.get("n"));
-        assertNull(jsonObject.get("stream"));
-        assertNull(jsonObject.get("logprobs"));
-        assertNull(jsonObject.get("echo"));
-        assertNull(jsonObject.get("stop"));
-        assertNull(jsonObject.get("presence_penalty"));
-        assertNull(jsonObject.get("frequency_penalty"));
-        assertNull(jsonObject.get("logit_bias"));
-        assertNull(jsonObject.get("user"));
     }
 
     @Test
@@ -214,25 +129,9 @@ class MyCompletionRequestTest {
         request.setTopP(15.30);
 
         JsonObject jsonObject = request.getAsJsonObject();
+        checkPropertiesOfMessage(jsonObject, "top_p");
 
-        assertNotNull(jsonObject);
-        assertNotNull(jsonObject.get("top_p"));
         assertEquals(15.30, jsonObject.get("top_p").getAsDouble());
-
-        assertNull(jsonObject.get("model"));
-        assertNull(jsonObject.get("prompt"));
-        assertNull(jsonObject.get("suffix"));
-        assertNull(jsonObject.get("max_tokens"));
-        assertNull(jsonObject.get("temperature"));
-        assertNull(jsonObject.get("n"));
-        assertNull(jsonObject.get("stream"));
-        assertNull(jsonObject.get("logprobs"));
-        assertNull(jsonObject.get("echo"));
-        assertNull(jsonObject.get("stop"));
-        assertNull(jsonObject.get("presence_penalty"));
-        assertNull(jsonObject.get("frequency_penalty"));
-        assertNull(jsonObject.get("logit_bias"));
-        assertNull(jsonObject.get("user"));
     }
 
     @Test
@@ -241,25 +140,9 @@ class MyCompletionRequestTest {
         request.setN(20);
 
         JsonObject jsonObject = request.getAsJsonObject();
+        checkPropertiesOfMessage(jsonObject, "n");
 
-        assertNotNull(jsonObject);
-        assertNotNull(jsonObject.get("n"));
         assertEquals(20, jsonObject.get("n").getAsInt());
-
-        assertNull(jsonObject.get("model"));
-        assertNull(jsonObject.get("prompt"));
-        assertNull(jsonObject.get("suffix"));
-        assertNull(jsonObject.get("max_tokens"));
-        assertNull(jsonObject.get("temperature"));
-        assertNull(jsonObject.get("top_p"));
-        assertNull(jsonObject.get("stream"));
-        assertNull(jsonObject.get("logprobs"));
-        assertNull(jsonObject.get("echo"));
-        assertNull(jsonObject.get("stop"));
-        assertNull(jsonObject.get("presence_penalty"));
-        assertNull(jsonObject.get("frequency_penalty"));
-        assertNull(jsonObject.get("logit_bias"));
-        assertNull(jsonObject.get("user"));
     }
 
     @Test
@@ -268,25 +151,9 @@ class MyCompletionRequestTest {
         request.setStream(true);
 
         JsonObject jsonObject = request.getAsJsonObject();
+        checkPropertiesOfMessage(jsonObject, "stream");
 
-        assertNotNull(jsonObject);
-        assertNotNull(jsonObject.get("stream"));
         assertEquals(true, jsonObject.get("stream").getAsBoolean());
-
-        assertNull(jsonObject.get("model"));
-        assertNull(jsonObject.get("prompt"));
-        assertNull(jsonObject.get("suffix"));
-        assertNull(jsonObject.get("max_tokens"));
-        assertNull(jsonObject.get("temperature"));
-        assertNull(jsonObject.get("top_p"));
-        assertNull(jsonObject.get("n"));
-        assertNull(jsonObject.get("logprobs"));
-        assertNull(jsonObject.get("echo"));
-        assertNull(jsonObject.get("stop"));
-        assertNull(jsonObject.get("presence_penalty"));
-        assertNull(jsonObject.get("frequency_penalty"));
-        assertNull(jsonObject.get("logit_bias"));
-        assertNull(jsonObject.get("user"));
     }
 
     @Test
@@ -295,25 +162,9 @@ class MyCompletionRequestTest {
         request.setLogprobs(23);
 
         JsonObject jsonObject = request.getAsJsonObject();
+        checkPropertiesOfMessage(jsonObject, "logprobs");
 
-        assertNotNull(jsonObject);
-        assertNotNull(jsonObject.get("logprobs"));
         assertEquals(23, jsonObject.get("logprobs").getAsInt());
-
-        assertNull(jsonObject.get("model"));
-        assertNull(jsonObject.get("prompt"));
-        assertNull(jsonObject.get("suffix"));
-        assertNull(jsonObject.get("max_tokens"));
-        assertNull(jsonObject.get("temperature"));
-        assertNull(jsonObject.get("top_p"));
-        assertNull(jsonObject.get("n"));
-        assertNull(jsonObject.get("stream"));
-        assertNull(jsonObject.get("echo"));
-        assertNull(jsonObject.get("stop"));
-        assertNull(jsonObject.get("presence_penalty"));
-        assertNull(jsonObject.get("frequency_penalty"));
-        assertNull(jsonObject.get("logit_bias"));
-        assertNull(jsonObject.get("user"));
     }
 
     @Test
@@ -322,25 +173,9 @@ class MyCompletionRequestTest {
         request.setEcho(true);
 
         JsonObject jsonObject = request.getAsJsonObject();
+        checkPropertiesOfMessage(jsonObject, "echo");
 
-        assertNotNull(jsonObject);
-        assertNotNull(jsonObject.get("echo"));
         assertEquals(true, jsonObject.get("echo").getAsBoolean());
-
-        assertNull(jsonObject.get("model"));
-        assertNull(jsonObject.get("prompt"));
-        assertNull(jsonObject.get("suffix"));
-        assertNull(jsonObject.get("max_tokens"));
-        assertNull(jsonObject.get("temperature"));
-        assertNull(jsonObject.get("top_p"));
-        assertNull(jsonObject.get("n"));
-        assertNull(jsonObject.get("stream"));
-        assertNull(jsonObject.get("logprobs"));
-        assertNull(jsonObject.get("stop"));
-        assertNull(jsonObject.get("presence_penalty"));
-        assertNull(jsonObject.get("frequency_penalty"));
-        assertNull(jsonObject.get("logit_bias"));
-        assertNull(jsonObject.get("user"));
     }
 
     @Test
@@ -354,9 +189,7 @@ class MyCompletionRequestTest {
 
         request.setStop(someList);
         JsonObject jsonObject = request.getAsJsonObject();
-
-        assertNotNull(jsonObject);
-        assertNotNull(jsonObject.get("stop"));
+        checkPropertiesOfMessage(jsonObject, "stop");
 
         JsonArray jsonArray = jsonObject.get("stop").getAsJsonArray();
         assertNotNull(jsonArray);
@@ -365,21 +198,6 @@ class MyCompletionRequestTest {
         assertEquals("of", jsonArray.get(1).getAsString());
         assertEquals("strings", jsonArray.get(2).getAsString());
 
-
-        assertNull(jsonObject.get("model"));
-        assertNull(jsonObject.get("prompt"));
-        assertNull(jsonObject.get("suffix"));
-        assertNull(jsonObject.get("max_tokens"));
-        assertNull(jsonObject.get("temperature"));
-        assertNull(jsonObject.get("top_p"));
-        assertNull(jsonObject.get("n"));
-        assertNull(jsonObject.get("stream"));
-        assertNull(jsonObject.get("logprobs"));
-        assertNull(jsonObject.get("echo"));
-        assertNull(jsonObject.get("presence_penalty"));
-        assertNull(jsonObject.get("frequency_penalty"));
-        assertNull(jsonObject.get("logit_bias"));
-        assertNull(jsonObject.get("user"));
     }
 
     @Test
@@ -388,25 +206,9 @@ class MyCompletionRequestTest {
         request.setPresencePenalty(26.60);
 
         JsonObject jsonObject = request.getAsJsonObject();
+        checkPropertiesOfMessage(jsonObject, "presence_penalty");
 
-        assertNotNull(jsonObject);
-        assertNotNull(jsonObject.get("presence_penalty"));
         assertEquals(26.60, jsonObject.get("presence_penalty").getAsDouble());
-
-        assertNull(jsonObject.get("model"));
-        assertNull(jsonObject.get("prompt"));
-        assertNull(jsonObject.get("suffix"));
-        assertNull(jsonObject.get("max_tokens"));
-        assertNull(jsonObject.get("temperature"));
-        assertNull(jsonObject.get("top_p"));
-        assertNull(jsonObject.get("n"));
-        assertNull(jsonObject.get("stream"));
-        assertNull(jsonObject.get("logprobs"));
-        assertNull(jsonObject.get("echo"));
-        assertNull(jsonObject.get("stop"));
-        assertNull(jsonObject.get("frequency_penalty"));
-        assertNull(jsonObject.get("logit_bias"));
-        assertNull(jsonObject.get("user"));
     }
 
     @Test
@@ -415,25 +217,9 @@ class MyCompletionRequestTest {
         request.setFrequencyPenalty(28.60);
 
         JsonObject jsonObject = request.getAsJsonObject();
+        checkPropertiesOfMessage(jsonObject, "frequency_penalty");
 
-        assertNotNull(jsonObject);
-        assertNotNull(jsonObject.get("frequency_penalty"));
         assertEquals(28.60, jsonObject.get("frequency_penalty").getAsDouble());
-
-        assertNull(jsonObject.get("model"));
-        assertNull(jsonObject.get("prompt"));
-        assertNull(jsonObject.get("suffix"));
-        assertNull(jsonObject.get("max_tokens"));
-        assertNull(jsonObject.get("temperature"));
-        assertNull(jsonObject.get("top_p"));
-        assertNull(jsonObject.get("n"));
-        assertNull(jsonObject.get("stream"));
-        assertNull(jsonObject.get("logprobs"));
-        assertNull(jsonObject.get("echo"));
-        assertNull(jsonObject.get("stop"));
-        assertNull(jsonObject.get("presence_penalty"));
-        assertNull(jsonObject.get("logit_bias"));
-        assertNull(jsonObject.get("user"));
     }
 
     @Test
@@ -446,29 +232,12 @@ class MyCompletionRequestTest {
         request.setLogitBias(logitBias);
 
         JsonObject jsonObject = request.getAsJsonObject();
-
-        assertNotNull(jsonObject);
-        assertNotNull(jsonObject.get("logit_bias"));
+        checkPropertiesOfMessage(jsonObject, "logit_bias");
 
         JsonObject logitBiasObject = jsonObject.get("logit_bias").getAsJsonObject();
         assertNotNull(logitBiasObject);
         assertEquals(1, logitBiasObject.get("test").getAsInt());
         assertEquals(2, logitBiasObject.get("a-other-test").getAsInt());
-
-        assertNull(jsonObject.get("model"));
-        assertNull(jsonObject.get("prompt"));
-        assertNull(jsonObject.get("suffix"));
-        assertNull(jsonObject.get("max_tokens"));
-        assertNull(jsonObject.get("temperature"));
-        assertNull(jsonObject.get("top_p"));
-        assertNull(jsonObject.get("n"));
-        assertNull(jsonObject.get("stream"));
-        assertNull(jsonObject.get("logprobs"));
-        assertNull(jsonObject.get("echo"));
-        assertNull(jsonObject.get("stop"));
-        assertNull(jsonObject.get("presence_penalty"));
-        assertNull(jsonObject.get("frequency_penalty"));
-        assertNull(jsonObject.get("user"));
     }
 
     @Test
@@ -477,24 +246,40 @@ class MyCompletionRequestTest {
         request.setUser("some-user");
 
         JsonObject jsonObject = request.getAsJsonObject();
+        checkPropertiesOfMessage(jsonObject, "user");
 
-        assertNotNull(jsonObject);
-        assertNotNull(jsonObject.get("user"));
         assertEquals("some-user", jsonObject.get("user").getAsString());
-
-        assertNull(jsonObject.get("model"));
-        assertNull(jsonObject.get("prompt"));
-        assertNull(jsonObject.get("suffix"));
-        assertNull(jsonObject.get("max_tokens"));
-        assertNull(jsonObject.get("temperature"));
-        assertNull(jsonObject.get("top_p"));
-        assertNull(jsonObject.get("n"));
-        assertNull(jsonObject.get("stream"));
-        assertNull(jsonObject.get("logprobs"));
-        assertNull(jsonObject.get("echo"));
-        assertNull(jsonObject.get("stop"));
-        assertNull(jsonObject.get("presence_penalty"));
-        assertNull(jsonObject.get("frequency_penalty"));
-        assertNull(jsonObject.get("logit_bias"));
     }
+    
+	/**
+	 * check all property for holding NULL values, but the one provided should be
+	 * NOT NULL
+	 * 
+	 * @param jsonObject
+	 * @param propertyExpectedToBeNotNull
+	 */
+	private void checkPropertiesOfMessage(JsonObject jsonObject, String propertyExpectedToBeNotNull) {
+		String[] propertiesExpectedToBeNotNull = {propertyExpectedToBeNotNull};
+	
+		
+	}
+
+	private void checkPropertiesOfMessage(JsonObject jsonObject, String[] propertiesExpectedToBeNotNull) {
+		String[] properties = { MODEL, PROMPT, "suffix", "max_tokens", "temperature", "top_p", "user", "n", "stream",
+				"logprobs", "echo", "stop", "presence_penalty", "frequency_penalty", "logit_bias" };
+		List<String> propertiesExpectedToBeNotNullValues = Arrays.asList(propertiesExpectedToBeNotNull);
+
+		assertNotNull(jsonObject);
+
+		for (int i = 0; i < properties.length; i++) {
+			String property = properties[i];
+
+			if (propertiesExpectedToBeNotNullValues.contains(property)) {
+				assertNotNull(jsonObject.get(property), "Property '" + property + "' should have been NOT NULL.");
+			} else {
+				assertNull(jsonObject.get(property),
+						"Property '" + property + "' should have been NULL, but was: " + jsonObject.get(property));
+			}
+		}
+	}
 }
