@@ -5,10 +5,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.component.dbpediaspotlight.ner.exceptions.DBpediaSpotlightJsonParsingNotPossible;;
+import net.minidev.json.JSONObject;
 import org.apache.shiro.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -16,6 +20,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -70,7 +75,7 @@ public class DBpediaSpotlightServiceFetcher {
             URI uri //
     ) {
         long requestBefore = myCacheOfResponses.getNumberOfExecutedRequests();
-        HttpEntity<String> response = restTemplate.getForEntity(uri, String.class);
+        HttpEntity<JSONObject> response = restTemplate.getForEntity(uri, JSONObject.class);
 
         // show caching status of current request
         if (myCacheOfResponses.getNumberOfExecutedRequests() - requestBefore == 0) {
@@ -82,7 +87,7 @@ public class DBpediaSpotlightServiceFetcher {
         Assert.notNull(response);
         Assert.notNull(response.getBody());
 
-        JsonObject responseJson = JsonParser.parseString(response.getBody()).getAsJsonObject();
+        JsonObject responseJson = JsonParser.parseString(response.getBody().toJSONString()).getAsJsonObject();
 
         return responseJson;
     }
