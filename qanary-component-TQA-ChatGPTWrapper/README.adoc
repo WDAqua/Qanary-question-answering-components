@@ -6,6 +6,28 @@ This component is a wrapper for the https://platform.openai.com/overview[OpenAI 
 It sends the given question to the https://platform.openai.com/docs/api-reference/completions[completions API]
 and store all returned choices in the graph.
 
+== Configuration
+
+This component requires the following environment variables to be set:
+----
+tqa.chatgptwrapper.api.key=
+----
+
+**tqa.chatgptwrapper.api.key**: The API key for the OpenAI API.
+
+You can change the default values for the following parameters in the application.properties file:
+----
+question_controller.corss.origin=*
+chatgpt.base.url=https://api.openai.com
+chatgpt.model=text-davinci-003
+chatgpt.api.live.test=true
+----
+
+**question_controller.corss.origin**: The CORS origin for the question controller.
+**chatgpt.base.url**: The base URL for the OpenAI API.
+**chatgpt.model**: The model to use for the completion. A complete list of the supported models can be found https://platform.openai.com/docs/models[here]
+**chatgpt.api.live.test**: If true, the component will run a live test on start up.
+
 == Input specification
 
 This component takes as input the question.
