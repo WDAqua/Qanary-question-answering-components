@@ -22,9 +22,9 @@ public class Application {
     CacheOfRestTemplateResponse myCacheOfResponses;
     RestTemplateWithCaching myRestTemplate;
 
-    public Application( //
-                        @Autowired RestTemplateWithCaching myRestTemplate, //
-                        @Autowired CacheOfRestTemplateResponse myCacheOfResponses //
+    public Application(
+            @Autowired RestTemplateWithCaching myRestTemplate, //
+            @Autowired CacheOfRestTemplateResponse myCacheOfResponses //
     ) {
         this.myRestTemplate = myRestTemplate;
         this.myCacheOfResponses = myCacheOfResponses;
@@ -37,10 +37,10 @@ public class Application {
      * @return
      */
     @Bean
-    public QanaryComponent qanaryComponent( //
-                                            @Value("${spring.application.name}") final String applicationName, //
-                                            @Value("${ned.dandelion.api.live.test.active}") final boolean apiLiveTestActive, //
-                                            @Value("${ned.dandelion.api.token}") final String apiToken //
+    public QanaryComponent qanaryComponent(
+            @Value("${spring.application.name}") final String applicationName, //
+            @Value("${dandelion.api.live.test.active}") final boolean apiLiveTestActive, //
+            @Value("${dandelion.api.key}") final String apiToken //
     ) throws ApiTokenIsNullOrEmptyException, ApiLiveTestFaildException {
         return new DandelionNED(applicationName, myRestTemplate, myCacheOfResponses, apiLiveTestActive, apiToken);
     }

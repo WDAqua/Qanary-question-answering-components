@@ -8,6 +8,7 @@ import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -26,7 +27,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
-import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.*;
+import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.endpointKey;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -36,20 +37,28 @@ import static org.mockito.ArgumentMatchers.any;
 class DandelionMockedTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(DandelionMockedTest.class);
 
-    @Value("${spring.application.name}")
-    private String applicationName;
-    @Value("${ned.dandelion.api.token}")
-    private String apiToken;
-
-    @Autowired
-    private RestTemplateWithCaching myRestTemplate;
-    @Autowired
-    private CacheOfRestTemplateResponse myCacheOfResponses;
-    @Autowired
-    private Environment env;
+    private final String applicationName;
+    private final String apiKey;
+    private final RestTemplateWithCaching myRestTemplate;
+    private final CacheOfRestTemplateResponse myCacheOfResponses;
+    private final Environment env;
 
     private DandelionNED mockedDandelionNED;
     private QanaryQuestion mockedQanaryQuestion;
+
+    DandelionMockedTest(
+            @Value("${spring.application.name}") String applicationName, //
+            @Value("${dandelion.api.key}") String apiKey, //
+            @Autowired RestTemplateWithCaching myRestTemplate, //
+            @Autowired CacheOfRestTemplateResponse myCacheOfResponses, //
+            @Autowired Environment env //
+    ) {
+        this.applicationName = applicationName;
+        this.apiKey = apiKey;
+        this.myRestTemplate = myRestTemplate;
+        this.myCacheOfResponses = myCacheOfResponses;
+        this.env = env;
+    }
 
     @BeforeEach
     public void init() throws URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed {
@@ -57,7 +66,7 @@ class DandelionMockedTest {
         ReflectionTestUtils.setField(this.mockedDandelionNED, "applicationName", this.applicationName);
         ReflectionTestUtils.setField(this.mockedDandelionNED, "myRestTemplate", myRestTemplate);
         ReflectionTestUtils.setField(this.mockedDandelionNED, "myCacheOfResponses", myCacheOfResponses);
-        ReflectionTestUtils.setField(this.mockedDandelionNED, "apiToken", apiToken);
+        ReflectionTestUtils.setField(this.mockedDandelionNED, "apiKey", apiKey);
         ReflectionTestUtils.setField(this.mockedDandelionNED, "FILENAME_INSERT_ANNOTATION", "/queries/insert_one_annotation.rq");
 
         this.mockedQanaryQuestion = Mockito.mock(QanaryQuestion.class);
@@ -93,33 +102,34 @@ class DandelionMockedTest {
         }
     }
 
-//    @Test
-//    void testQuestion2()
-//            throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, IOException, SparqlQueryFailed {
-//        JsonObject mockedResponseJsonObject = JsonParser.parseString(DandelionTestConfiguration.getStringFromFile("response/api_response_qestion_2.json")).getAsJsonObject();
-//
-//        Mockito.when(this.mockedDandelionNED.sendRequestToDandelionAPI(any(String.class))).thenReturn(mockedResponseJsonObject);
-//        Mockito.when(this.mockedDandelionNED.getLinksFromAnnotation(any(JsonObject.class))).thenCallRealMethod();
-//        Mockito.when(this.mockedDandelionNED.getSparqlInsertQuery(any(DandelionNED.Link.class), any(QanaryQuestion.class))).thenCallRealMethod();
-//
-//
-//        JsonObject response = this.mockedDandelionNED.sendRequestToDandelionAPI(this.env.getProperty("question2"));
-//        assertNotNull(response);
-//        assertTrue(response.has("annotations"));
-//        assertNotEquals(0, response.get("annotations").getAsJsonArray().size());
-//
-//        assertTrue(response.get("annotations").getAsJsonArray().toString().contains("Germany"));
-//
-//        ArrayList<DandelionNED.Link> links = this.mockedDandelionNED.getLinksFromAnnotation(response);
-//        assertNotNull(links);
-//        assertNotEquals(0, links.size());
-//
-//        for (DandelionNED.Link l : links) {
-//            String sparql = this.mockedDandelionNED.getSparqlInsertQuery(l, this.mockedQanaryQuestion);
-//            assertNotNull(sparql);
-//            assertNotEquals(0, sparql.length());
-//        }
-//    }
+    @Test
+    @Disabled("Unsupported question")
+    void testQuestion2()
+            throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, IOException, SparqlQueryFailed {
+        JsonObject mockedResponseJsonObject = JsonParser.parseString(DandelionTestConfiguration.getStringFromFile("response/api_response_qestion_2.json")).getAsJsonObject();
+
+        Mockito.when(this.mockedDandelionNED.sendRequestToDandelionAPI(any(String.class))).thenReturn(mockedResponseJsonObject);
+        Mockito.when(this.mockedDandelionNED.getLinksFromAnnotation(any(JsonObject.class))).thenCallRealMethod();
+        Mockito.when(this.mockedDandelionNED.getSparqlInsertQuery(any(DandelionNED.Link.class), any(QanaryQuestion.class))).thenCallRealMethod();
+
+
+        JsonObject response = this.mockedDandelionNED.sendRequestToDandelionAPI(this.env.getProperty("question2"));
+        assertNotNull(response);
+        assertTrue(response.has("annotations"));
+        assertNotEquals(0, response.get("annotations").getAsJsonArray().size());
+
+        assertTrue(response.get("annotations").getAsJsonArray().toString().contains("Germany"));
+
+        ArrayList<DandelionNED.Link> links = this.mockedDandelionNED.getLinksFromAnnotation(response);
+        assertNotNull(links);
+        assertNotEquals(0, links.size());
+
+        for (DandelionNED.Link l : links) {
+            String sparql = this.mockedDandelionNED.getSparqlInsertQuery(l, this.mockedQanaryQuestion);
+            assertNotNull(sparql);
+            assertNotEquals(0, sparql.length());
+        }
+    }
 
     @Test
     void testQuestion3()

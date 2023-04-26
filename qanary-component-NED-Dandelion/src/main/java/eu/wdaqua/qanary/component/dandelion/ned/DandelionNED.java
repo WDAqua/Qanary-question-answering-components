@@ -46,27 +46,28 @@ public class DandelionNED extends QanaryComponent {
     private static final Logger LOGGER = LoggerFactory.getLogger(DandelionNED.class);
 
     private final String applicationName;
-    private final String apiToken;
+    private final String apiKey;
 
     private RestTemplateWithCaching myRestTemplate;
     private CacheOfRestTemplateResponse myCacheOfResponses;
 
     private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
 
-    public DandelionNED(@Value("${spring.application.name}") final String applicationName, //
-                        @Autowired RestTemplateWithCaching myRestTemplate, //
-                        @Autowired CacheOfRestTemplateResponse myCacheOfResponses, //
-                        @Value("${ned.dandelion.api.live.test.active}") final boolean apiLiveTestActive, //
-                        @Value("${ned.dandelion.api.token}") final String apiToken //
+    public DandelionNED(
+            @Value("${spring.application.name}") final String applicationName, //
+            @Autowired RestTemplateWithCaching myRestTemplate, //
+            @Autowired CacheOfRestTemplateResponse myCacheOfResponses, //
+            @Value("${dandelion.api.live.test.active}") final boolean apiLiveTestActive, //
+            @Value("${dandelion.api.key}") final String apiKey //
     ) throws ApiTokenIsNullOrEmptyException, ApiLiveTestFaildException {
-        if (apiToken == null || apiToken.isEmpty()) {
+        if (apiKey == null || apiKey.isEmpty()) {
             throw new ApiTokenIsNullOrEmptyException();
         }
 
         this.applicationName = applicationName;
         this.myRestTemplate = myRestTemplate;
         this.myCacheOfResponses = myCacheOfResponses;
-        this.apiToken = apiToken;
+        this.apiKey = apiKey;
 
         // check if files exists and are not empty
         QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
@@ -90,29 +91,14 @@ public class DandelionNED extends QanaryComponent {
         }
     }
 
-    private void testFunctionality() throws Exception {
-        String myQuestion = "What is a test?";
-        ArrayList<Link> links = new ArrayList<Link>();
+    private void testFunctionality() throws UnsupportedEncodingException, URISyntaxException, ApiLiveTestFaildException {
+        String myQuestion = "What is the birthplace of Albert Einstein?";
 
         JsonObject jsonObject = this.sendRequestToDandelionAPI(myQuestion);
+        ArrayList<Link> links = this.getLinksFromAnnotation(jsonObject);
 
-        if (jsonObject.has("annotations")) {
-            JsonArray jsonArray = jsonObject.get("annotations").getAsJsonArray();
-            if (jsonArray.size() != 0) {
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    JsonObject explrObject = jsonArray.get(i).getAsJsonObject();
-                    int begin = explrObject.get("start").getAsInt();
-                    int end = explrObject.get("end").getAsInt();
-                    String uri = explrObject.get("uri").getAsString();
-                    String finalUri = "http://dbpedia.org/resource" + uri.substring(28);
-
-                    Link l = new Link();
-                    l.begin = begin;
-                    l.end = end + 1;
-                    l.link = finalUri;
-                    links.add(l);
-                }
-            }
+        if (links.isEmpty()) {
+            throw new ApiLiveTestFaildException("No links found");
         }
     }
 
@@ -150,7 +136,7 @@ public class DandelionNED extends QanaryComponent {
         uriBuilder.append("https://api.dandelion.eu/datatxt/nex/v1/?text=");
         uriBuilder.append(URLEncoder.encode(myQuestion, "UTF-8"));
         uriBuilder.append("&include=types%2Cabstract%2Ccategories&token=");
-        uriBuilder.append(apiToken);
+        uriBuilder.append(apiKey);
 
         URI uri = new URI(uriBuilder.toString());
 

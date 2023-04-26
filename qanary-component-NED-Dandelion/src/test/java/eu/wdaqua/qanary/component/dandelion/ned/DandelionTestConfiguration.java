@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 
 @TestConfiguration
 public class DandelionTestConfiguration {
-    // define here the current CaffeineCacheManager configuration
     static {
         System.setProperty("question1", "What is the birthplace of Albert Einstein?");
         System.setProperty("question2", "What is the capital of Germany?");

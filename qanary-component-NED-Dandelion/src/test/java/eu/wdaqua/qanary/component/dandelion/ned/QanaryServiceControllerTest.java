@@ -28,9 +28,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 class QanaryServiceControllerTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(QanaryServiceControllerTest.class);
+
+    private final WebApplicationContext applicationContext;
+
     private MockMvc mockMvc;
-    @Autowired
-    private WebApplicationContext applicationContext;
+
+    QanaryServiceControllerTest(
+            @Autowired WebApplicationContext applicationContext //
+    ) {
+        this.applicationContext = applicationContext;
+    }
 
     /**
      * initialize local controller enabled for tests
