@@ -1,0 +1,93 @@
+{
+  "entity_list": [
+    {
+      "form": "Germany",
+      "id": "1864d0b4d1",
+      "official_form": "Federal Republic of Germany",
+      "relevance": "100",
+      "sementity": {
+        "class": "instance",
+        "fiction": "nonfiction",
+        "id": "ODENTITY_COUNTRY",
+        "type": "Top>Location>GeoPoliticalEntity>Country"
+      },
+      "semgeo_list": [
+        {
+          "continent": {
+            "form": "Europe",
+            "id": "0404ea4d6c"
+          }
+        }
+      ],
+      "semld_list": [
+        "http://en.wikipedia.org/wiki/Germany",
+        "http://ar.wikipedia.org/wiki/ألمانيا",
+        "http://ca.wikipedia.org/wiki/Alemanya",
+        "http://cs.wikipedia.org/wiki/Německo",
+        "http://da.wikipedia.org/wiki/Tyskland",
+        "http://de.wikipedia.org/wiki/Deutschland",
+        "http://es.wikipedia.org/wiki/Alemania",
+        "http://fi.wikipedia.org/wiki/Saksa",
+        "http://fr.wikipedia.org/wiki/Allemagne",
+        "http://he.wikipedia.org/wiki/גרמניה",
+        "http://hi.wikipedia.org/wiki/जर्मनी",
+        "http://id.wikipedia.org/wiki/Jerman",
+        "http://it.wikipedia.org/wiki/Germania",
+        "http://ja.wikipedia.org/wiki/ドイツ",
+        "http://ko.wikipedia.org/wiki/독일",
+        "http://nl.wikipedia.org/wiki/Duitsland",
+        "http://no.wikipedia.org/wiki/Tyskland",
+        "http://pl.wikipedia.org/wiki/Niemcy",
+        "http://pt.wikipedia.org/wiki/Alemanha",
+        "http://ro.wikipedia.org/wiki/Germania",
+        "http://ru.wikipedia.org/wiki/Германия",
+        "http://sv.wikipedia.org/wiki/Tyskland",
+        "http://th.wikipedia.org/wiki/ประเทศเยอรมนี",
+        "http://tr.wikipedia.org/wiki/Almanya",
+        "http://zh.wikipedia.org/wiki/德国",
+        "http://d-nb.info/gnd/4011882-4",
+        "http://www4.wiwiss.fu-berlin.de/eurostat/resource/countries/Deutschland",
+        "http://www4.wiwiss.fu-berlin.de/eurostat/resource/regions/Deutschland",
+        "http://www4.wiwiss.fu-berlin.de/factbook/resource/Germany",
+        "http://ghodata/r6-c71",
+        "http://linkedgeodata.org/triplify/node424310500",
+        "http://linked-web-apis.fit.cvut.cz/resource/germany_country",
+        "http://data.nytimes.com/55761554936313344161",
+        "http://sw.cyc.com/concept/Mx4rvVj4PJwpEbGdrcN5Y29ycA",
+        "http://openei.org/resources/Germany",
+        "http://rdfdata.eionet.europa.eu/ramon/nuts/DE",
+        "http://transparency.270a.info/classification/country/DE",
+        "http://worldbank.270a.info/classification/country/DE",
+        "@alemaniaturismo",
+        "@AllemagneDiplo",
+        "@EmbaMexAle",
+        "@germania_online",
+        "https://www.facebook.com/pages/Germany/108100019211318",
+        "sumo:Nation"
+      ],
+      "standard_list": [
+        {
+          "id": "ISO3166-1-a2",
+          "value": "DE"
+        },
+        {
+          "id": "ISO3166-1-a3",
+          "value": "DEU"
+        }
+      ],
+      "variant_list": [
+        {
+          "endp": "29",
+          "form": "Germany",
+          "inip": "23"
+        }
+      ]
+    }
+  ],
+  "status": {
+    "code": "0",
+    "msg": "OK",
+    "credits": "1",
+    "remaining_credits": "39999"
+  }
+}
