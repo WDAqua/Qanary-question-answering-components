@@ -8,7 +8,6 @@ import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.exception.OpenAp
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
-
 import org.apache.commons.cli.MissingArgumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,15 +45,15 @@ public class Application {
 	 * the QanaryServiceController in the qanary_component-template
 	 *
 	 * @return
-	 * @throws MissingArgumentException 
+	 * @throws MissingArgumentException
 	 */
 	@Bean
 	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") String applicationName, //
-			@Value("${tqa.chatgptwrapper.api.key}") String token, //
-			@Value("${chatgpt.api.live.test}") boolean doApiIsAliveCheck, //
-			@Value("${chatgpt.model}") String model, //
-			@Value("${chatgpt.base.url}") String baseUrl, //
-			RestTemplateWithCaching restTemplateWithCaching)
+										   @Value("${chatgpt.api.key}") String token, //
+										   @Value("${chatgpt.api.live.test.active}") boolean doApiIsAliveCheck, //
+										   @Value("${chatgpt.model}") String model, //
+										   @Value("${chatgpt.base.url}") String baseUrl, //
+										   RestTemplateWithCaching restTemplateWithCaching)
 			throws MissingTokenException, URISyntaxException, OpenApiUnreachableException, MissingArgumentException {
 		return new ChatGPTWrapper(applicationName, token, doApiIsAliveCheck, model, baseUrl, restTemplateWithCaching,
 				myCacheOfResponses);
@@ -69,7 +68,7 @@ public class Application {
 						"OpenAPI 3 with Spring Boot provided this API documentation. It uses the current component's settings:<ul>" //
 								+ "  <li>chatgpt.model: " + env.getProperty("chatgpt.model") + "</li>" //
 								+ "  <li>chatgpt.base.url: " + env.getProperty("chatgpt.base.url") + "</li>" //
-								+ "</ul>") // 
+								+ "</ul>") //
 				.termsOfService("http://swagger.io/terms/") //
 				.license(new License().name("Apache 2.0").url("http://springdoc.org")) //
 		);

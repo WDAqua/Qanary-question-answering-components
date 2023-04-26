@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-class ControllerTest {
+class ChatGPTRestControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
@@ -41,6 +42,10 @@ class ControllerTest {
     }
 
     @Test
+    @EnabledIf(
+            expression = "#{environment['chatgpt.api.live.test.active'] == 'true'}", //
+            loadContext = true
+    )
     void testPostResponse() throws Exception {
         this.mockMvc.perform(post("/question")
                         .contentType(MediaType.APPLICATION_JSON)

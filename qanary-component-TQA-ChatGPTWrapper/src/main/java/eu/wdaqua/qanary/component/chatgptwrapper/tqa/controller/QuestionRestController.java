@@ -9,7 +9,6 @@ import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.MyCompletionRequ
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.MyOpenAiApi;
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.exception.MissingTokenException;
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.exception.OpenApiUnreachableException;
-
 import org.apache.commons.cli.MissingArgumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +34,8 @@ public class QuestionRestController {
     private MyOpenAiApi openAiApi;
     private String model;
     public QuestionRestController(
-            @Value("${tqa.chatgptwrapper.api.key}") String token, // 
-            @Value("${chatgpt.api.live.test}") boolean doApiIsAliveCheck, // 
+            @Value("${chatgpt.api.key}") String token, //
+            @Value("${chatgpt.api.live.test.active}") boolean doApiIsAliveCheck, //
             @Value("${chatgpt.model}") String model, //
             @Value("${chatgpt.base.url}") String endpointUrl, //              
             @Autowired RestTemplate restTemplate, // 

@@ -16,7 +16,6 @@ import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.MyOpenAiApi;
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.exception.MissingTokenException;
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.exception.OpenApiUnreachableException;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-
 import org.apache.commons.cli.MissingArgumentException;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -48,13 +47,13 @@ public class ChatGPTWrapper extends QanaryComponent {
 	private String model;
 
 	public ChatGPTWrapper( //
-			@Value("${spring.application.name}") String applicationName, //
-			@Value("${tqa.chatgptwrapper.api.key}") String token, //
-			@Value("${chatgpt.api.live.test}") boolean doApiIsAliveCheck, //
-			@Value("${chatgpt.model}") String model, //
-            @Value("${chatgpt.base.url}") String baseUrl, //  
-			RestTemplate restTemplate, //
-			CacheOfRestTemplateResponse myCacheOfResponses //
+						   @Value("${spring.application.name}") String applicationName, //
+						   @Value("${chatgpt.api.key}") String token, //
+						   @Value("${chatgpt.api.live.test.active}") boolean doApiIsAliveCheck, //
+						   @Value("${chatgpt.model}") String model, //
+						   @Value("${chatgpt.base.url}") String baseUrl, //
+						   RestTemplate restTemplate, //
+						   CacheOfRestTemplateResponse myCacheOfResponses //
 	) throws MissingTokenException, URISyntaxException, OpenApiUnreachableException, MissingArgumentException {
 
 		// check if files exists and are not empty
@@ -135,8 +134,8 @@ public class ChatGPTWrapper extends QanaryComponent {
 	}
 
 	public String createInsertQuery( //
-			QanaryQuestion<String> myQanaryQuestion, //
-			CompletionResult completionResult //
+									 QanaryQuestion<String> myQanaryQuestion, //
+									 CompletionResult completionResult //
 	) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
 		QuerySolutionMap bindings = new QuerySolutionMap();
 		// use here the variable names defined in method insertAnnotationOfAnswerSPARQL

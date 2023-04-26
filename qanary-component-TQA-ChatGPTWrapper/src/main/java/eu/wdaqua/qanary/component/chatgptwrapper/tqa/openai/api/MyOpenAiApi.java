@@ -1,13 +1,11 @@
 package eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api;
 
-import com.theokanning.openai.model.Model;
 import com.theokanning.openai.completion.CompletionResult;
+import com.theokanning.openai.model.Model;
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.exception.MissingTokenException;
-
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.exception.OpenApiUnreachableException;
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.messages.OpenAiResponseModel;
-
 import org.apache.commons.cli.MissingArgumentException;
 import org.apache.shiro.util.Assert;
 import org.slf4j.Logger;
@@ -30,11 +28,11 @@ public class MyOpenAiApi {
     private final String token;
 
     public MyOpenAiApi( // 
-            @Value("${tqa.chatgptwrapper.api.key}") String token, // 
-            @Value("${chatgpt.api.live.test}") boolean doApiIsAliveCheck, // 
-            @Value("${chatgpt.base.url}") String baseUrl //  
+                        @Value("${chatgpt.api.key}") String token, //
+                        @Value("${chatgpt.api.live.test.active}") boolean doApiIsAliveCheck, //
+                        @Value("${chatgpt.base.url}") String baseUrl //
     ) throws MissingTokenException, URISyntaxException, OpenApiUnreachableException, MissingArgumentException {
-    	BASE_URL = baseUrl; 
+        BASE_URL = baseUrl;
         GET_MODELS_URL = BASE_URL + "/v1/models";
         GET_MODELS_BY_ID_URL = BASE_URL + "/v1/models/";
         CREATE_COMPLETION_URL = BASE_URL + "/v1/completions";
@@ -43,7 +41,7 @@ public class MyOpenAiApi {
         if (baseUrl == null || baseUrl.isEmpty()) {
             throw new MissingArgumentException("OpenAI base URL is not set");
         }
-    	
+
         if (token == null || token.isEmpty()) {
             throw new MissingTokenException("OpenAI API key is not set");
         }
@@ -133,6 +131,8 @@ public class MyOpenAiApi {
     }
 
     private void doLiveCheck() throws URISyntaxException, OpenApiUnreachableException {
+        LOGGER.info("Live test is activated");
+
         URI uri = new URI(GET_MODELS_URL);
         RestTemplate myRestTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -144,10 +144,12 @@ public class MyOpenAiApi {
         Assert.notNull(response);
         Assert.notNull(response.getBody());
 
-        if(200 != response.getStatusCodeValue()) {
+        if (200 != response.getStatusCodeValue()) {
             LOGGER.error("OpenAI API is not alive. Status code: {}", response.getStatusCodeValue());
             throw new OpenApiUnreachableException("OpenAI API is not alive. Status code: " + response.getStatusCodeValue());
         }
+
+        LOGGER.info("Live test was successful");
     }
 
 }

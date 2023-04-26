@@ -10,23 +10,24 @@ and store all returned choices in the graph.
 
 This component requires the following environment variables to be set:
 ----
-tqa.chatgptwrapper.api.key=
+chatgpt.api.key=
 ----
 
-**tqa.chatgptwrapper.api.key**: The API key for the OpenAI API.
+**chatgpt.api.key**: The API key for the OpenAI API.
 
 You can change the default values for the following parameters in the application.properties file:
 ----
 question_controller.corss.origin=*
 chatgpt.base.url=https://api.openai.com
 chatgpt.model=text-davinci-003
-chatgpt.api.live.test=true
+chatgpt.api.live.test.active.test=true
 ----
 
 **question_controller.corss.origin**: The CORS origin for the question controller.
 **chatgpt.base.url**: The base URL for the OpenAI API.
-**chatgpt.model**: The model to use for the completion. A complete list of the supported models can be found https://platform.openai.com/docs/models[here]
-**chatgpt.api.live.test**: If true, the component will run a live test on start up.
+**chatgpt.model**: The model to use for the completion.
+A complete list of the supported models can be found https://platform.openai.com/docs/models[here]
+**chatgpt.api.live.test.active**: If true, the component will run a live test on start up.
 
 == Input specification
 
