@@ -26,6 +26,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -58,11 +59,13 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
     private RestTemplate myRestTemplate;
     private String langDefault;
     private String knowledgeBaseDefault;
+    private String userDefault;
 
     public QAnswerQueryBuilderAndExecutor( //
                                            float threshold, //
                                            @Qualifier("langDefault") String langDefault, //
                                            @Qualifier("knowledgeBaseDefault") String knowledgeBaseDefault, //
+                                           @Qualifier("userDefault") String userDefault, //
                                            @Qualifier("endpointUrl") URI qanswerEndpoint, //
                                            @Value("${spring.application.name}") final String applicationName, //
                                            RestTemplateWithCaching restTemplate //
@@ -78,11 +81,14 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
                         + langDefault.length() + ")";
         assert !(knowledgeBaseDefault == null || knowledgeBaseDefault.trim().isEmpty()) : //
                 "knowledgeBaseDefault cannot be null or empty: " + knowledgeBaseDefault;
+        assert !(userDefault == null || userDefault.trim().isEmpty()) : //
+                "userDefault cannot be null or empty: " + userDefault;
 
         this.threshold = threshold;
         this.qanswerEndpoint = qanswerEndpoint;
         this.langDefault = langDefault;
         this.knowledgeBaseDefault = knowledgeBaseDefault;
+        this.userDefault = userDefault;
         this.myRestTemplate = restTemplate;
         this.applicationName = applicationName;
 
@@ -116,6 +122,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
 
         String lang = null;
         String knowledgeBaseId = null;
+        String user = null;
 
         if (lang == null) {
             lang = langDefault;
@@ -123,6 +130,10 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
 
         if (knowledgeBaseId == null) {
             knowledgeBaseId = knowledgeBaseDefault;
+        }
+
+        if (user == null) {
+            user = userDefault;
         }
 
         // STEP 1: get the required data from the Qanary triplestore (the global process
@@ -135,7 +146,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
         // STEP 2: enriching of query and fetching data from the QAnswer API
         String questionStringWithResources = computeQuestionStringWithReplacedResources(questionString,
                 retrievedNamedEntities, threshold);
-        QAnswerResult result = requestQAnswerWebService(this.getQanswerEndpoint(), questionStringWithResources, lang, knowledgeBaseId);
+        QAnswerResult result = requestQAnswerWebService(this.getQanswerEndpoint(), questionStringWithResources, lang, knowledgeBaseId, user);
 
         // STEP 3: add information to Qanary triplestore
         String sparql = getSparqlInsertQuery(myQanaryQuestion, result, knowledgeBaseId);
@@ -145,13 +156,13 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
     }
 
     public QAnswerResult requestQAnswerWebService(@RequestBody QAnswerRequest request)
-            throws URISyntaxException, NoLiteralFieldFoundException {
+            throws URISyntaxException, MalformedURLException, NoLiteralFieldFoundException {
         return requestQAnswerWebService(request.getQanswerEndpointUrl(), request.getQuestion(), request.getLanguage(),
-                request.getKnowledgeBaseId());
+                request.getKnowledgeBaseId(), request.getUser());
     }
 
     protected QAnswerResult requestQAnswerWebService(URI uri, String questionString, String lang,
-                                                     String knowledgeBaseId) throws URISyntaxException, NoLiteralFieldFoundException {
+                                                     String knowledgeBaseId, String user) throws URISyntaxException, MalformedURLException, NoLiteralFieldFoundException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.set("User-Agent", "Qanary/" + this.getClass().getName());
@@ -160,15 +171,34 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
         parameters.add("query", questionString);
         parameters.add("lang", lang);
         parameters.add("kb", knowledgeBaseId);
+        parameters.add("user", user);
+
+        String urlTemplate = UriComponentsBuilder.fromHttpUrl(
+                this.qanswerEndpoint.toURL().toURI().toASCIIString()) //
+                .queryParam("query", "{query}") //
+                .queryParam("lang", "{lang}") //
+                .queryParam("kb", "{kb}") //
+                .queryParam("user", "{user}")
+                .encode().toUriString();
+
+        logger.info("Created URL template: {}", urlTemplate);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(parameters, headers);
         logger.warn("request to {} with data {}", uri, request.getBody());
 
-        HttpEntity<JSONObject> response = myRestTemplate.postForEntity(uri, request, JSONObject.class);
-        logger.info("QAnswer JSON result for question '{}': {}", questionString,
-                response.getBody().getAsString("questions"));
+        HttpEntity<JSONObject> response; 
+        try {
+            response = myRestTemplate.postForEntity(uri, request, JSONObject.class);
+            logger.info("QAnswer JSON result for question '{}': {}", questionString,
+                    response.getBody().getAsString("questions"));
 
-        return new QAnswerResult(response.getBody(), questionString, uri, lang, knowledgeBaseId);
+            logger.info("got response: {}", response.getBody().toString());
+        } catch (Exception e) {
+            response = null;
+            logger.info("post to endpoint not successful: {}", e);
+        }
+
+        return new QAnswerResult(response.getBody(), questionString, uri, lang, knowledgeBaseId, user);
     }
 
     /**
@@ -388,7 +418,16 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
                 + " 		qa:score        ?score . \n" //
                 //
                 + "  ?answerType a          qa:AnswerType ; \n" //
-                + " 		rdf:value       ?answerDataType ; \n" //
+                + " 		rdf:value       ?answerDataType . \n" //
+                // JSON answer (GERBIL)
+                + "  ?annotationAnswerJson a qa:AnnotationOfAnswerJson ; \n" //
+                + " 		oa:hasTarget    ?question ; \n" //
+                + "         oa:hasBody      ?answerJson ; \n " //
+                + " 		oa:annotatedBy  ?service ; \n" //
+                + " 		oa:annotatedAt  ?time ; \n" //
+                + " 		qa:score        ?score . \n" //
+                //
+                + "  ?answerJson rdf:value  ?json . \n " //
                 + "	}\n" // end: graph
                 + "}\n" // end: insert
                 + "WHERE { \n" //
@@ -401,6 +440,9 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
                 + "  BIND (IRI(str(RAND())) AS ?annotationAnswer) . \n" //
                 + "  BIND (IRI(str(RAND())) AS ?answer) . \n" //
                 //
+                + "  BIND (IRI(str(RAND())) AS ?annotationAnswerJson) . \n" //
+                + "  BIND (IRI(str(RAND())) AS ?answerJson) . \n" //
+                //
                 + "  BIND (IRI(str(RAND())) AS ?annotationImprovedQuestion) . \n" //
                 + "  BIND (IRI(str(RAND())) AS ?improvedQuestion) . \n" //
                 //
@@ -408,12 +450,12 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
                 + "  BIND (<" + myQanaryQuestion.getUri().toASCIIString() + "> AS ?question) . \n" //
                 + "  BIND (\"" + result.getConfidence() + "\"^^xsd:double AS ?score) . \n" //
                 + "  BIND (<urn:qanary:" + this.applicationName + "> AS ?service ) . \n" //
-                + "  BIND (\"" + createdAnswerSparqlQuery + "\"^^xsd:string AS ?sparqlQueryString ) . \n" //
+                + "  BIND (\"" + createdAnswerSparqlQuery.replace("\"", "\\\"") + "\"^^xsd:string AS ?sparqlQueryString ) . \n" //
                 + "  BIND (\"" + improvedQuestion + "\"^^xsd:string  AS ?improvedQuestionText ) . \n" //
                 + "  BIND ( <" + result.getDatatype() + "> AS ?answerDataType) . \n" //
                 + "  BIND ( <" + knowledgeGraphEndpoints.get(usedKnowledgeGraph) + "> AS ?knowledgeGraph) . \n" //
+                + "  BIND (\"" + result.getJsonString().replace("\"", "\\\"").replace("\\\\", "\\\\\\").replace("\\n", "").replace("\\t", "").replace("\\/", "/") + "\"^^xsd:string AS ?json ). \n "  //
                 + "}\n";
-
 
         logger.info("SPARQL INSERT for adding data to the Qanary triplestore: ", sparql);
         return sparql;
