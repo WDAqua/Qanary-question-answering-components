@@ -14,7 +14,7 @@
     <properties>
         <java.version>11</java.version>
         <qanary.version>[3.1.2,4.0.0)</qanary.version>
-        <spring-boot-admin.version>2.5.2</spring-boot-admin.version>
+        <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
         <docker.image.prefix>qanary</docker.image.prefix>
         <docker.image.name>qanary-component-qb-qanswer</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
