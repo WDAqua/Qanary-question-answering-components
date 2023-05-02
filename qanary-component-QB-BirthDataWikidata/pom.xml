@@ -19,7 +19,7 @@
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<docker.image.name>qanary-component-qb-birthdata-wikidata</docker.image.name>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-		<springdoc-openapi-version>1.6.12</springdoc-openapi-version>
+		<springdoc-openapi-version>1.7.0</springdoc-openapi-version>
 	</properties>
 
 	<dependencies>
