@@ -9,10 +9,10 @@ import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
+import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.MyCompletionRequest;
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.exception.MissingTokenException;
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.exception.OpenApiUnreachableException;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-
 import org.apache.commons.cli.MissingArgumentException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,13 +52,16 @@ class ChatGPTWrapperMockedTest {
     private RestTemplateWithCaching restTemplate = new RestTemplateWithCaching(this.myCacheOfResponse);
 
     @Autowired
+    private MyCompletionRequest completionRequest;
+    @Autowired
     private WebApplicationContext applicationContext;
     @Autowired
     private Environment env;
 
     /**
      * initialize local controller enabled for tests
-     * @throws MissingArgumentException 
+     *
+     * @throws MissingArgumentException
      */
     @BeforeEach
     public void setUp() throws MissingTokenException, URISyntaxException, IOException, OpenApiUnreachableException, MissingArgumentException {
@@ -71,9 +74,9 @@ class ChatGPTWrapperMockedTest {
         this.chatGPTWrapper = new ChatGPTWrapper( //  
                 "ChatGPTWrapperMockedTest", // 
                 "some-token", // 
-                false, // 
-                env.getProperty("chatgpt.model"), //
+                false, //
                 env.getProperty("chatgpt.base.url"), //
+                completionRequest, //
                 restTemplate, // 
                 myCacheOfResponse // 
         );

@@ -20,14 +20,42 @@ You can change the default values for the following parameters in the applicatio
 question_controller.corss.origin=*
 chatgpt.base.url=https://api.openai.com
 chatgpt.model=text-davinci-003
+chatgpt.suffix=null
+chatgpt.maxTokens=16
+chatgpt.temperature=1.0
+chatgpt.topP=1.0
+chatgpt.n=1
+chatgpt.stream=false
+chatgpt.echo=false
+chatgpt.stop=null
+chatgpt.presencePenalty=0.0
+chatgpt.frequencyPenalty=0.0
+chatgpt.bestOf=1
+chatgpt.user=null
 chatgpt.api.live.test.active.test=true
 ----
 
-**question_controller.corss.origin**: The CORS origin for the question controller.
-**chatgpt.base.url**: The base URL for the OpenAI API.
-**chatgpt.model**: The model to use for the completion.
-A complete list of the supported models can be found https://platform.openai.com/docs/models[here]
+- **question_controller.corss.origin**: The CORS origin for the question controller.
+- **chatgpt.base.url**: The base URL for the OpenAI API.
 **chatgpt.api.live.test.active**: If true, the component will run a live test on start up.
+
+- **chatgpt.model**: The model to use for the completion.
+A complete list of the supported models can be found https://platform.openai.com/docs/models[here]
+
+All Information for the following properties can be found https://platform.openai.com/docs/api-reference/completions/create[here]
+
+- chatgpt.suffix
+- chatgpt.maxTokens
+- chatgpt.temperature
+- chatgpt.topP
+- chatgpt.n
+- chatgpt.stream
+- chatgpt.echo
+- chatgpt.stop
+- chatgpt.presencePenalty
+- chatgpt.frequencyPenalty
+- chatgpt.bestOf
+- chatgpt.user
 
 == Input specification
 
@@ -35,7 +63,7 @@ This component takes as input the question.
 
 == Output specification
 
-[source, ttl]
+[source,ttl]
 ----
 PREFIX  qa:   <http://www.wdaqua.eu/qa#>
 PREFIX  oa:   <http://www.w3.org/ns/openannotation/core/>

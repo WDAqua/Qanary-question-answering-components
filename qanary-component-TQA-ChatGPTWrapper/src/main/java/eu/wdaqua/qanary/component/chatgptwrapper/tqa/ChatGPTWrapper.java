@@ -32,120 +32,120 @@ import java.net.URISyntaxException;
 /**
  * This Qanary component is requesting an answer from the ChatGPT API and stores
  * it into the Qanary triplestore
- * 
+ *
  * This component connected automatically to the Qanary pipeline. The Qanary
  * pipeline endpoint defined in application.properties (spring.boot.admin.url)
  */
 public class ChatGPTWrapper extends QanaryComponent {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ChatGPTWrapper.class);
-	private static final String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_AnnotationOfAnswerJson.rq";
-	private final String applicationName;
-	private final RestTemplate myRestTemplate;
-	private final CacheOfRestTemplateResponse myCacheOfResponses;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChatGPTWrapper.class);
+    private static final String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_AnnotationOfAnswerJson.rq";
+    private final String applicationName;
+    private final RestTemplate myRestTemplate;
+    private final CacheOfRestTemplateResponse myCacheOfResponses;
 
-	private MyOpenAiApi openAiApi;
-	private String model;
+    private MyOpenAiApi openAiApi;
+    private MyCompletionRequest myCompletionRequest;
 
-	public ChatGPTWrapper( //
-						   @Value("${spring.application.name}") String applicationName, //
-						   @Value("${chatgpt.api.key}") String token, //
-						   @Value("${chatgpt.api.live.test.active}") boolean doApiIsAliveCheck, //
-						   @Value("${chatgpt.model}") String model, //
-						   @Value("${chatgpt.base.url}") String baseUrl, //
-						   RestTemplate restTemplate, //
-						   CacheOfRestTemplateResponse myCacheOfResponses //
-	) throws MissingTokenException, URISyntaxException, OpenApiUnreachableException, MissingArgumentException {
 
-		// check if files exists and are not empty
-		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
+    public ChatGPTWrapper(
+            @Value("${spring.application.name}") String applicationName, //
+            @Value("${chatgpt.api.key}") String token, //
+            @Value("${chatgpt.api.live.test.active}") boolean doApiIsAliveCheck, //
+            @Value("${chatgpt.base.url}") String baseUrl, //
+            MyCompletionRequest myCompletionRequest, //
+            RestTemplate restTemplate, //
+            CacheOfRestTemplateResponse myCacheOfResponses //
+    ) throws MissingTokenException, URISyntaxException, OpenApiUnreachableException, MissingArgumentException {
 
-		this.applicationName = applicationName;
-		this.myRestTemplate = restTemplate;
-		this.myCacheOfResponses = myCacheOfResponses;
+        // check if files exists and are not empty
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
 
-		this.openAiApi = new MyOpenAiApi(token, doApiIsAliveCheck, baseUrl);
-		this.model = model;
-	}
+        this.applicationName = applicationName;
+        this.myCompletionRequest = myCompletionRequest;
+        this.myRestTemplate = restTemplate;
+        this.myCacheOfResponses = myCacheOfResponses;
 
-	/**
-	 * implement this method encapsulating the functionality of your Qanary
-	 * component
-	 *
-	 * @throws Exception
-	 */
-	@Override
-	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
+        this.openAiApi = new MyOpenAiApi(token, doApiIsAliveCheck, baseUrl);
+    }
 
-		// STEP 1: get the required data from the Qanary triplestore (the global process
-		// memory)
-		LOGGER.info("process: {}", myQanaryMessage);
-		QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
-		QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
-		String myQuestion = myQanaryQuestion.getTextualRepresentation();
-		LOGGER.info("Question: {}", myQuestion);
+    /**
+     * implement this method encapsulating the functionality of your Qanary
+     * component
+     *
+     * @throws Exception
+     */
+    @Override
+    public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 
-		// STEP 2: enriching of query and fetching data from the ChatGPT API
+        // STEP 1: get the required data from the Qanary triplestore (the global process
+        // memory)
+        LOGGER.info("process: {}", myQanaryMessage);
+        QanaryUtils myQanaryUtils = this.getUtils(myQanaryMessage);
+        QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
+        String myQuestion = myQanaryQuestion.getTextualRepresentation();
+        LOGGER.info("Question: {}", myQuestion);
 
-		MyCompletionRequest completionRequest = new MyCompletionRequest();
-		completionRequest.setModel(this.model);
-		completionRequest.setPrompt(myQuestion);
+        // STEP 2: enriching of query and fetching data from the ChatGPT API
 
-		CompletionResult completionResult = this.openAiApi.createCompletion( //
-				this.myRestTemplate, //
-				this.myCacheOfResponses, //
-				completionRequest //
-		);
+        myCompletionRequest.setPrompt(myQuestion);
 
-		// STEP 3: Push the SPARQL query to the triplestore
 
-		String sparql = createInsertQuery(myQanaryQuestion, completionResult);
-		LOGGER.info("SPARQL insert for adding data to Qanary triplestore: {}", sparql);
-		myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
+        CompletionResult completionResult = this.openAiApi.createCompletion( //
+                this.myRestTemplate, //
+                this.myCacheOfResponses, //
+                myCompletionRequest //
+        );
 
-		return myQanaryMessage;
-	}
+        // STEP 3: Push the SPARQL query to the triplestore
 
-	public JsonObject creatJsonAnswer(CompletionResult completionResult) {
-		JsonObject jsonAnswer = new JsonObject();
-		JsonArray choices = new JsonArray();
+        String sparql = createInsertQuery(myQanaryQuestion, completionResult);
+        LOGGER.info("SPARQL insert for adding data to Qanary triplestore: {}", sparql);
+        myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 
-		for (CompletionChoice choice : completionResult.getChoices()) {
-			JsonObject choiceJson = new JsonObject();
+        return myQanaryMessage;
+    }
 
-			if (choice.getText() != null) {
-				choiceJson.addProperty("text", choice.getText());
-			}
-			if (choice.getIndex() != null) {
-				choiceJson.addProperty("index", choice.getIndex());
-			}
-			if (choice.getLogprobs() != null) {
-				choiceJson.addProperty("logprobs", choice.getLogprobs().toString());
-			}
-			if (choice.getFinish_reason() != null) {
-				choiceJson.addProperty("finish_reason", choice.getFinish_reason());
-			}
+    public JsonObject creatJsonAnswer(CompletionResult completionResult) {
+        JsonObject jsonAnswer = new JsonObject();
+        JsonArray choices = new JsonArray();
 
-			choices.add(choiceJson);
-		}
+        for (CompletionChoice choice : completionResult.getChoices()) {
+            JsonObject choiceJson = new JsonObject();
 
-		jsonAnswer.add("choices", choices);
+            if (choice.getText() != null) {
+                choiceJson.addProperty("text", choice.getText());
+            }
+            if (choice.getIndex() != null) {
+                choiceJson.addProperty("index", choice.getIndex());
+            }
+            if (choice.getLogprobs() != null) {
+                choiceJson.addProperty("logprobs", choice.getLogprobs().toString());
+            }
+            if (choice.getFinish_reason() != null) {
+                choiceJson.addProperty("finish_reason", choice.getFinish_reason());
+            }
 
-		return jsonAnswer;
-	}
+            choices.add(choiceJson);
+        }
 
-	public String createInsertQuery( //
-									 QanaryQuestion<String> myQanaryQuestion, //
-									 CompletionResult completionResult //
-	) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
-		QuerySolutionMap bindings = new QuerySolutionMap();
-		// use here the variable names defined in method insertAnnotationOfAnswerSPARQL
-		bindings.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
-		bindings.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
-		bindings.add("jsonAnswer", ResourceFactory.createStringLiteral(creatJsonAnswer(completionResult).toString()));
-		bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+        jsonAnswer.add("choices", choices);
 
-		// get the template of the INSERT query
-		return QanaryTripleStoreConnector.readFileFromResourcesWithMap(FILENAME_INSERT_ANNOTATION, bindings);
-	}
+        return jsonAnswer;
+    }
+
+    public String createInsertQuery( //
+                                     QanaryQuestion<String> myQanaryQuestion, //
+                                     CompletionResult completionResult //
+    ) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
+        QuerySolutionMap bindings = new QuerySolutionMap();
+        // use here the variable names defined in method insertAnnotationOfAnswerSPARQL
+        bindings.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+        bindings.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+        bindings.add("jsonAnswer", ResourceFactory.createStringLiteral(creatJsonAnswer(completionResult).toString()));
+        bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+        // get the template of the INSERT query
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(FILENAME_INSERT_ANNOTATION, bindings);
+    }
 
 }
