@@ -14,6 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import eu.wdaqua.qanary.component.chatgptwrapper.tqa.controller.QuestionRestController;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,16 +49,16 @@ class ChatGPTRestControllerTest {
             loadContext = true
     )
     void testPostResponse() throws Exception {
-        this.mockMvc.perform(post("/question")
+        this.mockMvc.perform(post(QuestionRestController.ENDPOINT)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"question\":\"this is a test\"}"))
+                        .content("{\"prompt\":\"this is a test\"}"))
                 .andExpect(status().isOk());
 
     }
 
     @Test
     void testPostResponseWithoutQuestion() throws Exception {
-        this.mockMvc.perform(post("/question")
+        this.mockMvc.perform(post(QuestionRestController.ENDPOINT)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isBadRequest());
@@ -64,13 +66,13 @@ class ChatGPTRestControllerTest {
 
     @Test
     void testPutResponse() throws Exception {
-        mockMvc.perform(put("/"))
+        mockMvc.perform(put(QuestionRestController.ENDPOINT))
                 .andExpect(status().isMethodNotAllowed());
     }
 
     @Test
     void testDeleteResponse() throws Exception {
-        mockMvc.perform(delete("/"))
+        mockMvc.perform(delete(QuestionRestController.ENDPOINT))
                 .andExpect(status().isMethodNotAllowed());
     }
 }

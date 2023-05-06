@@ -83,12 +83,12 @@ public class QuestionRestController {
                             examples = {
                                     @ExampleObject(
                                             name = "Minimal example",
-                                            description = "Thies is an example of a minimal request body.",
+                                            description = "This is an example of a minimal request body.",
                                             value = "{\"prompt\":\"some question\"}"
                                     ),
                                     @ExampleObject(
                                             name = "Complete example",
-                                            description = "Thies is an example of a complete request body, with all possible properties. More information about the properties can be found at https://platform.openai.com/docs/api-reference/completions",
+                                            description = "This is an example of a complete request body, with all possible properties. More information about the properties can be found at https://platform.openai.com/docs/api-reference/completions",
                                             value = "{\"model\":\"text-davinci-003\",\"prompt\":\"some question\",\"suffix\":\"some sufix\",\"maxTokens\":16,\"temperature\":1.0,\"topP\":1.0,\"n\":1,\"stream\":false,\"logprobs\":5,\"echo\":false,\"stop\":[\"stop1\",\"stop2\"],\"presencePenalty\":0.0,\"frequencyPenalty\":0.0,\"bestOf\":1,\"logitBias\":{\"50256\":-100},\"user\":\"WSE\"}"
                                     )
                             }

@@ -111,14 +111,19 @@ public class Application {
     }
 
     @Bean
-    public OpenAPI customOpenAPI(@Value("${springdoc.version}") String appVersion) {
+    public OpenAPI customOpenAPI( //
+    		@Value("${springdoc.version}") String appVersion, //
+    		@Value("${spring.application.name}") String appName // 
+    ) {
         return new OpenAPI().info(new Info() //
-                .title("Qanary ChatGPT wrapper component") //
+                .title(appName) //
                 .version(appVersion) //
                 .description(
                         "OpenAPI 3 with Spring Boot provided this API documentation. It uses the current component's settings:<ul>" //
                                 + "  <li>chatgpt.model: " + env.getProperty("chatgpt.model") + "</li>" //
                                 + "  <li>chatgpt.base.url: " + env.getProperty("chatgpt.base.url") + "</li>" //
+                                + "  <li>chatgpt.maxTokens: " + env.getProperty("chatgpt.maxTokens") + "</li>" //
+                                + "  <li>qanary.webservicecalls.cache.specs: " + env.getProperty("qanary.webservicecalls.cache.specs") + "</li>" //
                                 + "</ul>") //
                 .termsOfService("http://swagger.io/terms/") //
                 .license(new License().name("Apache 2.0").url("http://springdoc.org")) //
