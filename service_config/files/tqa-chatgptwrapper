@@ -1,0 +1,5 @@
+SERVER_HOST=http://demos.swe.htwk-leipzig.de
+SERVER_PORT=40164
+SPRING_BOOT_ADMIN_URL=http://demos.swe.htwk-leipzig.de:40111/
+SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE-BASE-URL=http://demos.swe.htwk-leipzig.de:40164
+CHATGPT_API_KEY=${{ CHATGPT_API_KEY }}

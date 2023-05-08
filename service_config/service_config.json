@@ -107,7 +107,16 @@
       "files": {
         ".env": "qe-wikidata"
       }
-    }
+    },
+    {
+      "mode": "dockerfile",
+      "port": "40164:40164",
+      "image": "qanary/qanary-component-tqa-chatgptwrapper",
+      "tag": "latest",
+      "files": {
+        ".env": "tqa-chatgptwrapper"
+      }
+  }
   ],
   "ids": {
     "0": "qanary-qanary-component-ld-shuyo",
@@ -121,6 +130,7 @@
     "8": "qanary-qanary-component-qbe-qanswer",
     "9": "qanary-qanary-component-qb-simplerealnameofsuperhero",
     "10": "qanary-qanary-component-qe-sparqlexecuter",
-    "11": "qanary-qanary-component-qe-wikidata"
+    "11": "qanary-qanary-component-qe-wikidata",
+    "12": "qanary-qanary-component-tqa-chatgptwrapper"
   }
 }
