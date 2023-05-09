@@ -50,14 +50,14 @@ public class Dandelion extends QanaryComponent {
 
     private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
 
-    @Value("${ner.dandelion.api.token}")
+    @Value("${dandelion.api.key}")
     private String dandelionToken;
 
     public Dandelion(@Value("${spring.application.name}") final String applicationName, //
                      @Autowired RestTemplateWithCaching myRestTemplate, //
                      @Autowired CacheOfRestTemplateResponse myCacheOfResponses, //
-                     @Value("${ner.dandelion.api.live.test.active}") final boolean apiLiveTestActive, //
-                     @Value("${ner.dandelion.api.token}") final String apiToken //
+                     @Value("${dandelion.api.live.test.active}") final boolean apiLiveTestActive, //
+                     @Value("${dandelion.api.key}") final String apiToken //
     ) throws ApiTokenIsNullOrEmptyException, ApiLiveTestFaildException {
         if (apiToken == null || apiToken.isEmpty()) {
             throw new ApiTokenIsNullOrEmptyException();

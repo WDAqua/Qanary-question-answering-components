@@ -39,7 +39,7 @@ class DandelionLiveTest {
 
     @Value("${spring.application.name}")
     private String applicationName;
-    @Value("${ner.dandelion.api.token}")
+    @Value("${dandelion.api.key}")
     private String apiToken;
 
     @Autowired
@@ -69,7 +69,7 @@ class DandelionLiveTest {
 
     @Test
     @EnabledIf(
-            expression = "#{environment['ner.dandelion.api.live.test.active'] == 'true'}", //
+            expression = "#{environment['dandelion.api.live.test.active'] == 'true'}", //
             loadContext = true
     )
     void testQuestion1()
@@ -96,7 +96,7 @@ class DandelionLiveTest {
     @Disabled("Question is not supportet.")
     @Test
     @EnabledIf(
-            expression = "#{environment['ner.dandelion.api.live.test.active'] == 'true'}", //
+            expression = "#{environment['dandelion.api.live.test.active'] == 'true'}", //
             loadContext = true
     )
     void testQuestion2()
@@ -121,7 +121,7 @@ class DandelionLiveTest {
 
     @Test
     @EnabledIf(
-            expression = "#{environment['ner.dandelion.api.live.test.active'] == 'true'}", //
+            expression = "#{environment['dandelion.api.live.test.active'] == 'true'}", //
             loadContext = true
     )
     void testQuestion3()

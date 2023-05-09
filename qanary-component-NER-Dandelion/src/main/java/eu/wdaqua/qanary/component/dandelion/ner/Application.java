@@ -43,8 +43,8 @@ public class Application {
     @Bean
     public QanaryComponent qanaryComponent(
             @Value("${spring.application.name}") final String applicationName, //
-            @Value("${ner.dandelion.api.live.test.active}") final boolean apiLiveTestActive, //
-            @Value("${ner.dandelion.api.token}") final String apiToken //
+            @Value("${dandelion.api.live.test.active}") final boolean apiLiveTestActive, //
+            @Value("${dandelion.api.key}") final String apiToken //
     ) throws ApiTokenIsNullOrEmptyException, ApiLiveTestFaildException {
         return new Dandelion(applicationName, myRestTemplate, myCacheOfResponses, apiLiveTestActive, apiToken);
     }
