@@ -34,8 +34,8 @@ public class Application {
     public QanaryComponent qanaryComponent(
             @Autowired BabelfyServiceFetcher babelfyServiceFetcher, //
             @Value("${spring.application.name}") String applicationName, //
-            @Value("${ned.babelfy.api.live.test.active}") boolean apiLiveTestActive, //
-            @Value("${ned.babelfy.api.live.test.question}") String testQuestion //
+            @Value("${babelfy.api.live.test.active}") boolean apiLiveTestActive, //
+            @Value("${babelfy.api.live.test.question}") String testQuestion //
     ) throws ApiLiveTestFaildException {
         if (apiLiveTestActive) {
             // check functionality with live API

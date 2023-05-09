@@ -35,10 +35,10 @@ public class BabelfyServiceFetcher {
     public BabelfyServiceFetcher(
             @Autowired RestTemplateWithCaching myRestTemplate, //
             @Autowired CacheOfRestTemplateResponse myCacheOfResponses, //
-            @Value("${ned.babelfy.api.url}") String apiUrl, //
-            @Value("${ned.babelfy.api.key}") String apiToken, //
-            @Value("${ned.babelfy.api.parameters}") String params, //
-            @Value("${ned.babelfy.score.threshold}") String scoreThreshold
+            @Value("${babelfy.api.url}") String apiUrl, //
+            @Value("${babelfy.api.key}") String apiToken, //
+            @Value("${babelfy.api.parameters}") String params, //
+            @Value("${babelfy.score.threshold}") String scoreThreshold
     ) throws ApiTokenIsNullOrEmptyException {
         if (apiToken == null || apiToken.isEmpty()) {
             throw new ApiTokenIsNullOrEmptyException();
@@ -52,7 +52,7 @@ public class BabelfyServiceFetcher {
         this.scoreThreshold = Float.parseFloat(scoreThreshold);
     }
 
-    public JsonArray sendRequestToApi(String myQuestion ) throws URISyntaxException, UnsupportedEncodingException {
+    public JsonArray sendRequestToApi(String myQuestion) throws URISyntaxException, UnsupportedEncodingException {
         StringBuilder uriBuilder = new StringBuilder();
         uriBuilder.append(this.apiUrl);
         uriBuilder.append("?text=").append(URLEncoder.encode(myQuestion, "UTF-8"));

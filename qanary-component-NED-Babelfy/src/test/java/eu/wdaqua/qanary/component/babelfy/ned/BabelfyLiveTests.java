@@ -3,8 +3,6 @@ package eu.wdaqua.qanary.component.babelfy.ned;
 import com.google.gson.JsonArray;
 import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
-import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -63,7 +61,7 @@ class BabelfyLiveTests {
 
     @Test
     @EnabledIf(
-            expression = "#{environment['ned.babelfy.api.live.test.active'] == 'true'}", //
+            expression = "#{environment['babelfy.api.live.test.active'] == 'true'}", //
             loadContext = true
     )
     void testQuestion1() throws IOException, URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed {
@@ -83,7 +81,7 @@ class BabelfyLiveTests {
 
     @Test
     @EnabledIf(
-            expression = "#{environment['ned.babelfy.api.live.test.active'] == 'true'}", //
+            expression = "#{environment['babelfy.api.live.test.active'] == 'true'}", //
             loadContext = true
     )
     void testQuestion2() throws IOException, URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed {
@@ -104,7 +102,7 @@ class BabelfyLiveTests {
     @Disabled("Question is not supported by the API.")
     @Test
     @EnabledIf(
-            expression = "#{environment['ned.babelfy.api.live.test.active'] == 'true'}", //
+            expression = "#{environment['babelfy.api.live.test.active'] == 'true'}", //
             loadContext = true
     )
     void testQuestion3() throws IOException, URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed {
