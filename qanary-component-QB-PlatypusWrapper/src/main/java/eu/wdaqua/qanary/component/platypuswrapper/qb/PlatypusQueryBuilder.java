@@ -138,8 +138,13 @@ import java.util.List;
         }
 
         // STEP 3: add information to Qanary triplestore
-        String sparql = getSparqlInsertQuery(myQanaryQuestion, result);
-        myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
+        //String sparql = getSparqlInsertQuery(myQanaryQuestion, result);
+        //myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
+        QuerySolutionMap bindings = populateBindings(myQanaryQuestion, result);
+        String insertAnswerSPARQL = getSparqlInsertQueryForAnswerSPARQL(bindings);
+        String insertTypedLiteral = getSparqlInsertQueryForTypedLiteral(bindings);
+        myQanaryUtils.getQanaryTripleStoreConnector().update(insertAnswerSPARQL);
+        myQanaryUtils.getQanaryTripleStoreConnector().update(insertTypedLiteral);
 
         return myQanaryMessage;
     }
@@ -182,6 +187,7 @@ import java.util.List;
     }
 
     /**
+     * TODO: update 
      * creates the SPARQL query for inserting the data into Qanary triplestore
      * <p>
      * the data can be retrieved via SPARQL 1.1 from the Qanary triplestore using
@@ -197,7 +203,44 @@ import java.util.List;
      * @throws SparqlQueryFailed
      * @throws IOException
      */
-    protected String getSparqlInsertQuery(QanaryQuestion<String> myQanaryQuestion, PlatypusResult result) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
+    protected String getSparqlInsertQueryForAnswerSPARQL(QuerySolutionMap bindings) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
+
+        // get the template of the INSERT query for AnnotationOfAnswerSPARQL
+        String sparql = QanaryTripleStoreConnector.insertAnnotationOfAnswerSPARQL(bindings);
+
+        logger.info("SPARQL insert for adding data to Qanary triplestore: {}", sparql);
+
+        return sparql;
+    }
+
+    /**
+     * TODO: update 
+     * creates the SPARQL query for inserting the data into Qanary triplestore
+     * <p>
+     * the data can be retrieved via SPARQL 1.1 from the Qanary triplestore using
+     * QanaryTripleStoreConnector.insertAnnotationOfTypedLiteral from qanary.commons
+     * which is providing a predefined query template, s.t., the created data is
+     * conform with the expectations of other Qanary components
+     *
+     * @param myQanaryQuestion
+     * @param result
+     * @return
+     * @throws QanaryExceptionNoOrMultipleQuestions
+     * @throws URISyntaxException
+     * @throws SparqlQueryFailed
+     * @throws IOException
+     */
+    protected String getSparqlInsertQueryForTypedLiteral(QuerySolutionMap bindings) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
+
+        // get the template of the INSERT query for AnnotationOfAnswerSPARQL
+        String sparql = QanaryTripleStoreConnector.insertAnnotationOfTypedLiteral(bindings);
+
+        logger.info("SPARQL insert for adding data to Qanary triplestore: {}", sparql);
+
+        return sparql;
+    }
+
+    protected QuerySolutionMap populateBindings(QanaryQuestion<String> myQanaryQuestion, PlatypusResult result) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed {
 
         String answerSparql = cleanStringForSparqlQuery(result.getSparql());
 
@@ -209,11 +252,30 @@ import java.util.List;
         bindings.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createStringLiteral(answerSparql));
         bindings.add("confidence", ResourceFactory.createTypedLiteral(result.getConfidence()));
         bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+        // TODO: add result value with correct datatype
+        // TODO: how does this handle a *list* of values? 
+        // in its current implementation, result.getValues can only return a list of length 1
+        // how should multiple results be handled
+        // TODO: (add to desc)
+        //  generate ALL bindings, then pass to differnet methods
+        //  each method will only use the bindings it needs (determined by used query template)
 
-        // get the template of the INSERT query
-        String sparql = QanaryTripleStoreConnector.insertAnnotationOfAnswerSPARQL(bindings);
-        logger.info("SPARQL insert for adding data to Qanary triplestore: {}", sparql);
+        // the actual result 
+        //bindings.add("answerValue", ResourceFactory.createPlainLiteral(result.getValues().get(0)));
+        // TODO: perpexlingly, this does not equate to "value"xsd:string
+        bindings.add("answerValue", ResourceFactory.createTypedLiteral(result.getValues().get(0)));
+        // the result data type 
+        // TODO: this is not correct!
+        bindings.add("answerDataType", ResourceFactory.createResource(result.getDatatype().toString()));
 
-        return sparql;
+        logger.debug("created bindings: {}", bindings.toString());
+
+        return bindings;
     }
+
+    // TODO: refactor bindings to external method, then pass as param
+    // TODO: create two `get*SparqlInsertQuery()` methods:
+    //          one for AnswerSPARQL
+    //          one for typed literal (Answer + AnswerType)
+    // TODO: execute *both* queries in main process
 }

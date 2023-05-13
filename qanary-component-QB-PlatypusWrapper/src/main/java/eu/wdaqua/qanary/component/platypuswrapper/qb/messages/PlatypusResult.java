@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 
 public class PlatypusResult {
@@ -89,6 +90,17 @@ public class PlatypusResult {
 
         this.confidence = answer.get("resultScore").getAsDouble();
         this.sparql = answer.get("platypus:sparql").getAsString();    	
+
+        JsonObject result = answer.getAsJsonObject("result");
+        JsonObject value = result.get("rdf:value").getAsJsonObject();
+        String valueLiteral = value.get("@value").getAsString();
+        logger.debug("result value: {}", valueLiteral);
+
+        // TODO: verify 
+        this.values = Arrays.asList(valueLiteral);
+        // TODO: this is an arbitrary datatype for testing purposes
+        this.datatype = new URI("http://www.w3.org/2001/XMLSchema#date");
+
     }
 
     public JsonParser getJsonParser() {
