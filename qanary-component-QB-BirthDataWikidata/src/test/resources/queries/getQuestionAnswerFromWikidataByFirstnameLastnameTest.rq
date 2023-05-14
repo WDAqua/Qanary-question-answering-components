@@ -1,0 +1,34 @@
+PREFIX  p:    <http://www.wikidata.org/prop/>
+PREFIX  pq:   <http://www.wikidata.org/prop/qualifier/>
+PREFIX  bd:   <http://www.bigdata.com/rdf#>
+PREFIX  ps:   <http://www.wikidata.org/prop/statement/>
+PREFIX  wdt:  <http://www.wikidata.org/prop/direct/>
+PREFIX  wikibase: <http://wikiba.se/ontology#>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  wd:   <http://www.wikidata.org/entity/>
+
+SELECT DISTINCT  ?person ?personLabel ?birthplace ?birthplaceLabel ?birthdate
+WHERE
+  { VALUES ?allowedPropPlace { pq:P17 }
+    ?person   wdt:P31     wd:Q5 ;
+              wdt:P735    ?firstname ;
+              wdt:P734    ?lastname .
+    ?firstname  rdfs:label  "FIRST_NAME"@en .
+    ?lastname  rdfs:label  "LAST_NAME"@en
+    OPTIONAL
+      { ?person  wdt:P569  ?birthdate }
+    OPTIONAL
+      {   { ?person  wdt:P19  ?birthplace }
+        UNION
+          { ?person  wdt:P19            ?specificBirthPlace ;
+                     p:P19              _:b0 .
+            _:b0     ps:P19             ?specificBirthPlace ;
+                     ?allowedPropPlace  ?birthplace
+          }
+      }
+    SERVICE wikibase:label
+      { bd:serviceParam
+                  wikibase:language  "en"
+      }
+  }
+ORDER BY ?personLabel
