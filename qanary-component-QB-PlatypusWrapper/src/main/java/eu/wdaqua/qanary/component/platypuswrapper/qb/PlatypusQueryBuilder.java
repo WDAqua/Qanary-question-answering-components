@@ -7,6 +7,7 @@ import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.DataNotProcessableException;
 import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.PlatypusRequest;
 import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.PlatypusResult;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
@@ -159,7 +160,7 @@ import java.util.List;
         return false;
     }
 
-    protected PlatypusResult requestPlatypusWebService(URI uri, String questionString, String lang) throws URISyntaxException {
+    protected PlatypusResult requestPlatypusWebService(URI uri, String questionString, String lang) throws URISyntaxException, DataNotProcessableException {
         PlatypusRequest platypusRequest = new PlatypusRequest(uri, questionString, lang);
         long requestBefore = myCacheOfResponses.getNumberOfExecutedRequests();
 
@@ -265,7 +266,6 @@ import java.util.List;
         // TODO: perpexlingly, this does not equate to "value"xsd:string
         bindings.add("answerValue", ResourceFactory.createTypedLiteral(result.getValues().get(0)));
         // the result data type 
-        // TODO: this is not correct!
         bindings.add("answerDataType", ResourceFactory.createResource(result.getDatatype().toString()));
 
         logger.debug("created bindings: {}", bindings.toString());

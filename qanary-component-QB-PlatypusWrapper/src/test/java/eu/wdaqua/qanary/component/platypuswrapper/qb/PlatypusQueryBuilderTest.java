@@ -2,6 +2,7 @@ package eu.wdaqua.qanary.component.platypuswrapper.qb;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
+import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.DataNotProcessableException;
 import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.PlatypusResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -102,11 +103,12 @@ class PlatypusQueryBuilderTest {
 
     /**
      * @throws URISyntaxException
+     * @throws DataNotProcessableException
      */
     @Test
     @Disabled
 //  TODO add live URL
-    void liveTest() throws URISyntaxException {
+    void liveTest() throws URISyntaxException, DataNotProcessableException {
         float threshold = 0.5f;
         String langDefault = "en";
         ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en", "fr", "es"));
@@ -162,8 +164,9 @@ class PlatypusQueryBuilderTest {
      * @param lang
      * @return
      * @throws URISyntaxException
+     * @throws DataNotProcessableException
      */
-    private PlatypusResult testWebService(PlatypusQueryBuilder myApp, String question, String lang) throws URISyntaxException {
+    private PlatypusResult testWebService(PlatypusQueryBuilder myApp, String question, String lang) throws URISyntaxException, DataNotProcessableException {
         PlatypusResult result = myApp.requestPlatypusWebService(this.endpoint, question, lang);
         assertFalse(result.getSparql().isEmpty());
         return result;

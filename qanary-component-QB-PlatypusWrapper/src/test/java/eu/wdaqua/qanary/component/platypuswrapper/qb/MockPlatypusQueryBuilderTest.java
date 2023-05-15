@@ -2,6 +2,7 @@ package eu.wdaqua.qanary.component.platypuswrapper.qb;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
+import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.DataNotProcessableException;
 import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.PlatypusResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -83,8 +84,9 @@ class MockPlatypusQueryBuilderTest {
      * @param lang
      * @return
      * @throws URISyntaxException
+     * @throws DataNotProcessableException
      */
-    private PlatypusResult testWebService(PlatypusQueryBuilder myApp, String question, String lang) throws URISyntaxException {
+    private PlatypusResult testWebService(PlatypusQueryBuilder myApp, String question, String lang) throws URISyntaxException, DataNotProcessableException {
         PlatypusResult result = myApp.requestPlatypusWebService(this.endpoint, question, lang);
         assertFalse(result.getSparql().isEmpty());
         return result;
