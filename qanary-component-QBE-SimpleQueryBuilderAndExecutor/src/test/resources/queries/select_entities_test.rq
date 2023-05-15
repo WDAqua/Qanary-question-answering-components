@@ -1,0 +1,18 @@
+PREFIX  qa:   <http://www.wdaqua.eu/qa#>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  oa:   <http://www.w3.org/ns/openannotation/core/>
+
+SELECT  ?start ?end ?uri
+FROM <urn:graph>
+WHERE
+  { ?a    a               qa:AnnotationOfInstance ;
+          oa:hasTarget    _:b0 .
+    _:b0  a               oa:SpecificResource ;
+          oa:hasSource    ?q ;
+          oa:hasSelector  _:b1 .
+    _:b1  a               oa:TextPositionSelector ;
+          oa:start        ?start ;
+          oa:end          ?end .
+    ?a    oa:hasBody      ?uri
+  }
+ORDER BY ?start
