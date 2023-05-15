@@ -1,0 +1,15 @@
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  dbp:  <http://dbpedia.org/property/>
+PREFIX  dct:  <http://purl.org/dc/terms/>
+PREFIX  dbr:  <http://dbpedia.org/resource/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT  *
+WHERE
+  { ?resource  dbp:alterEgo  ?answer ;
+              rdfs:label    ?label ;
+              dct:subject   dbr:Category:Superheroes_with_alter_egos
+    FILTER ( lang(?label) = "en" )
+    FILTER ( ! strstarts(lcase(?label), lcase(?answer)) )
+    FILTER contains(str(?label), "some name")
+  }
