@@ -27,7 +27,7 @@ public class PlatypusResult {
 
     private String sparql;
     private List<String> values;
-    private String type;
+//    private String type;
     private URI datatype;
     private double confidence;
 
@@ -43,6 +43,8 @@ public class PlatypusResult {
     public final URI FLOATTYPEURI;
     @Hidden
     public final URI INTEGERTYPEURI;
+    @Hidden
+    public final String wikidataResourceUrl;
 
     public PlatypusResult(JSONObject json, String question, URI endpoint, String language) throws URISyntaxException, DataNotProcessableException {
         jsonParser = new JsonParser();
@@ -58,11 +60,12 @@ public class PlatypusResult {
         this.language = language;
         this.endpoint = endpoint;
 
+        this.wikidataResourceUrl = "http://www.wikidata.org/entity/";
+
         this.RESOURCETYPEURI = new URI("http://www.w3.org/2001/XMLSchema#anyURI");
         this.BOOLEANTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#boolean");
         // literal type URIs
         this.STRINGTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#string");
-        // TODO: verify  
         this.DATETYPEURI = new URI("http://www.w3.org/2001/XMLSchema#date");
         this.FLOATTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#float");
         this.INTEGERTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#integer");
@@ -126,16 +129,20 @@ public class PlatypusResult {
         return new ProcessedResult(value, typeUri);
     }
 
-    private ProcessedResult getDataResource(JsonObject answer) {
-        // TODO: find working example and implement
-        logger.debug("NOT IMPLEMENTED");
-        throw new RuntimeException("method 'getDataResource' is not implemented.");
+    private ProcessedResult getDataResource(JsonObject answer) throws URISyntaxException {
+        JsonObject result = answer.getAsJsonObject("result");
+        String resourceString = result.get("@id").getAsString();
+        String resourceUrl = resourceString.replace("wd:", wikidataResourceUrl);
+
+        logger.debug("found result value: {} ({})", resourceUrl, RESOURCETYPEURI);
+
+        return new ProcessedResult(resourceString, RESOURCETYPEURI);
     }
 
     private ProcessedResult getDataBoolean(JsonObject answer) {
         // TODO: find working example and implement
         logger.debug("NOT IMPLEMENTED");
-        throw new RuntimeException("method 'getDataResource' is not implemented.");
+        throw new RuntimeException("method 'getDataBoolean' is not implemented.");
     }
 
     private URI getLiteralTypeResource(String type) throws NoLiteralTypeResourceFoundException {
@@ -188,7 +195,6 @@ public class PlatypusResult {
         // because of method signature it is assumed that no other values are added
         this.values = Arrays.asList(result.getValue());
         this.datatype = result.getDataType();
-        logger.debug("datatype: {}", result.getDataType());
     }
 
     public JsonParser getJsonParser() {
@@ -215,9 +221,9 @@ public class PlatypusResult {
         return values;
     }
 
-    public String getType() {
-        return type;
-    }
+//    public String getType() {
+//        return type;
+//    }
 
     public URI getDatatype() {
         return datatype;
