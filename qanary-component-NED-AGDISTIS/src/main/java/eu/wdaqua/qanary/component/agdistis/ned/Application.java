@@ -3,6 +3,7 @@ package eu.wdaqua.qanary.component.agdistis.ned;
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
 import eu.wdaqua.qanary.component.QanaryComponent;
+import eu.wdaqua.qanary.component.agdistis.ned.exception.ApiLiveTestFaildException;
 import eu.wdaqua.qanary.component.agdistis.ned.exception.ApiUrlIsNullOrEmptyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,9 +39,10 @@ public class Application {
     @Bean
     public QanaryComponent qanaryComponent(
             @Value("${spring.application.name}") final String applicationName, //
-            @Value("${ned.agdistis.api.url}") final String apiUrl //
-    ) throws ApiUrlIsNullOrEmptyException {
-        return new Agdistis(applicationName, myRestTemplate, myCacheOfResponses, apiUrl);
+            @Value("${agdistis.api.live.test.active}") final boolean apiLiveTestActive, //
+            @Value("${agdistis.api.url}") final String apiUrl //
+    ) throws ApiUrlIsNullOrEmptyException, ApiLiveTestFaildException {
+        return new Agdistis(applicationName, myRestTemplate, myCacheOfResponses, apiLiveTestActive, apiUrl);
     }
 
 
