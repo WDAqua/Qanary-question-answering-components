@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.net.URI;
@@ -134,7 +135,7 @@ import java.util.List;
         PlatypusResult result = requestPlatypusWebService(endpoint, questionString, lang);
 
         if (result == null) {
-            logger.error("No result from RuBQ API");
+            logger.error("No result from Platypus API");
             return myQanaryMessage;
         }
 
@@ -158,6 +159,13 @@ import java.util.List;
         }
 
         return false;
+    }
+
+    public PlatypusResult requestPlatypusWebService(@RequestBody PlatypusRequest request) throws URISyntaxException, DataNotProcessableException {
+        return requestPlatypusWebService(
+                request.getPlatypusEndpointUrl(),
+                request.getQuestion(),
+                request.getLanguage());
     }
 
     protected PlatypusResult requestPlatypusWebService(URI uri, String questionString, String lang) throws URISyntaxException, DataNotProcessableException {
