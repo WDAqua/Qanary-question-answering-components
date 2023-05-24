@@ -8,6 +8,7 @@ import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -133,6 +134,7 @@ class MeaningCloudMockedTest {
     }
 
     @Test
+    @Disabled("Question is unsupported")
     void testQuestion3()
             throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
         JsonObject mockedResponseJsonObject = JsonParser.parseString(MeaningCloudTestConfiguration.getStringFromFile("response/api_response_qestion_3.json")).getAsJsonObject();

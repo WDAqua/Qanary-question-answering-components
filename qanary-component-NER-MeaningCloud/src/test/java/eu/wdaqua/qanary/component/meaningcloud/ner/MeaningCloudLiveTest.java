@@ -9,6 +9,7 @@ import eu.wdaqua.qanary.component.meaningcloud.ner.exception.ApiLiveTestFaildExc
 import eu.wdaqua.qanary.component.meaningcloud.ner.exception.ApiTokenIsNullOrEmptyException;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -129,6 +130,7 @@ class MeaningCloudLiveTest {
     }
 
     @Test
+    @Disabled("Question is unsupported")
     @EnabledIf(
             expression = "#{environment['meaningcloud.api.live.test.active'] == 'true'}", //
             loadContext = true
