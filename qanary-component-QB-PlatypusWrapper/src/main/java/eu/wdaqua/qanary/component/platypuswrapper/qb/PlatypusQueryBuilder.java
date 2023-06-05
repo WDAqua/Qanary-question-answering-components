@@ -114,21 +114,29 @@ import java.util.List;
         logger.info("process: {}", myQanaryMessage);
 
         myQanaryUtils = this.getUtils(myQanaryMessage);
-        // TODO retrieve language from Qanary triplestore via commons method
-        String lang = null;
+        QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
 
-        if (lang == null) {
+        // retrieve language from Qanary triplestore via commons method
+        String lang = null;
+        try {
+            lang = myQanaryQuestion.getLanguage();
+            if (lang == null) {
+                logger.warn("no language found. Using default ({})", langDefault);
+                lang = langDefault;
+            }
+        } catch (Exception e) {
+            logger.warn("no language annotation detected. Using default ({})", langDefault);
             lang = langDefault;
         }
 
-        if (isLangSuppoerted(lang) == false) {
+        if (isLangSupported(lang) == false) {
             logger.warn("lang ({}) is not supported", lang);
             return myQanaryMessage;
-        }
+        } 
+        logger.debug("proceeding with lang: {}", lang);
 
         // STEP 1: get the required data from the Qanary triplestore (the global process
         // memory)
-        QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
         String questionString = myQanaryQuestion.getTextualRepresentation();
 
         // STEP 2: enriching of query and fetching data from the Platypus API
@@ -151,7 +159,7 @@ import java.util.List;
         return myQanaryMessage;
     }
 
-    protected boolean isLangSuppoerted(String lang) {
+    protected boolean isLangSupported(String lang) {
         for (int i = 0; i < supportedLang.size(); i++) {
             if (supportedLang.get(i).equals(lang)) {
                 return true;

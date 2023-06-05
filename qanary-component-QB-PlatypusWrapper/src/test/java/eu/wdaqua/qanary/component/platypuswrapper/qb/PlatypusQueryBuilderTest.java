@@ -82,13 +82,13 @@ class PlatypusQueryBuilderTest {
 
         PlatypusQueryBuilder platypusQueryBuilder = new PlatypusQueryBuilder(threshold, langDefault, supportedLang, this.endpoint, this.applicationName, this.restTemplate, this.myCacheOfResponse);
 
-        assertTrue(platypusQueryBuilder.isLangSuppoerted("en"));
-        assertTrue(platypusQueryBuilder.isLangSuppoerted("fr"));
-        assertTrue(platypusQueryBuilder.isLangSuppoerted("es"));
+        assertTrue(platypusQueryBuilder.isLangSupported("en"));
+        assertTrue(platypusQueryBuilder.isLangSupported("fr"));
+        assertTrue(platypusQueryBuilder.isLangSupported("es"));
 
-        assertFalse(platypusQueryBuilder.isLangSuppoerted("ne"));
-        assertFalse(platypusQueryBuilder.isLangSuppoerted("de"));
-        assertFalse(platypusQueryBuilder.isLangSuppoerted("se"));
+        assertFalse(platypusQueryBuilder.isLangSupported("ne"));
+        assertFalse(platypusQueryBuilder.isLangSupported("de"));
+        assertFalse(platypusQueryBuilder.isLangSupported("se"));
     }
 
     /**
