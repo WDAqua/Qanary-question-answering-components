@@ -1,3 +1,25 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix qa: <https://w3id.org/wdaqua/qanary#> .
+@prefix ISO6391: <http://id.loc.gov/vocabulary/iso639-1/> .
 
-<urn:qanary:component:DBpedia-Spotlight-NED> rdfs:label "Platypus Wrapper QB" .
+qa:Platypus
+  a                       qa:QanaryComponentQB ;
+  rdfs:label              "Qanary component: Platypus Query Builder"@en ;
+  qa:hasInputAnnotations  [ 
+                            a qa:AnnotationQuestion ;
+                            qa:supportedLanguages ISO6391:en, ISO6391:fr, ISO6391:es
+                          ] ;
+  qa:hasOutputAnnotations [ 
+                            a qa:AnnotationOfAnswerSPARQL ;
+                            qa:supportedKnowledgeGraphs <http://wikidata.org>
+                          ] ;
+  qa:hasOutputAnnotations [ 
+                            a qa:AnnotationOfAnswerType ;
+                            qa:supportedKnowledgeGraphs <http://wikidata.org>
+                          ] ;
+  qa:hasOutputAnnotations [ 
+                            a qa:AnnotationAnswer ;
+                            qa:supportedKnowledgeGraphs <http://wikidata.org>
+                          ] .
+
+
