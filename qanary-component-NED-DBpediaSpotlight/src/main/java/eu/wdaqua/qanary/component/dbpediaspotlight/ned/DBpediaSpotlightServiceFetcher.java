@@ -1,17 +1,5 @@
 package eu.wdaqua.qanary.component.dbpediaspotlight.ned;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
-import eu.wdaqua.qanary.component.dbpediaspotlight.ned.exceptions.DBpediaSpotlightJsonParsingNotPossible;
-import net.minidev.json.JSONObject;
-import org.apache.shiro.util.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.web.client.RestTemplate;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -21,14 +9,51 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.http.client.ClientProtocolException;
+import org.apache.shiro.util.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
+import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
+import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
+import eu.wdaqua.qanary.component.dbpediaspotlight.ned.exceptions.DBpediaSpotlightJsonParsingNotPossible;
+import net.minidev.json.JSONObject;
+
+@Component
 public class DBpediaSpotlightServiceFetcher {
 	private static final Logger logger = LoggerFactory.getLogger(DBpediaSpotlightServiceFetcher.class);
+
+	private final String endpoint;
+	private final float minimumConfidence;
+
+	private RestTemplateWithCaching restTemplate;
+	private CacheOfRestTemplateResponse myCacheOfResponses;
+
+	public DBpediaSpotlightServiceFetcher(
+			@Autowired RestTemplateWithCaching myRestTemplate,
+			@Autowired CacheOfRestTemplateResponse myCacheOfResponses,
+			@Value("${dbpediaspotlight.endpoint}") String endpoint,
+			@Value("${dbpediaspotlight.confidence.minimum}") float minimumConfidence
+			) {
+
+		this.restTemplate = myRestTemplate;
+		this.myCacheOfResponses = myCacheOfResponses;
+		this.endpoint = endpoint;
+		this.minimumConfidence = minimumConfidence;
+	}
 
 	/**
 	 * fetch data from the configured DBpedia Spotlight endpoint
 	 *
-	 * @param myQanaryQuestion
-	 * @param myQanaryUtils
 	 * @param myQuestion
 	 * @param endpoint
 	 * @param minimumConfidence
@@ -37,11 +62,10 @@ public class DBpediaSpotlightServiceFetcher {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public JsonArray getJsonFromService(String myQuestion, String endpoint, float minimumConfidence,
-			RestTemplate restTemplate, CacheOfRestTemplateResponse myCacheOfResponses) throws Exception {
+	public JsonArray getJsonFromService(String myQuestion) throws Exception {
 
-		URI uri = createRequestUriWithParameters(myQuestion, endpoint, minimumConfidence);
-		HttpEntity<JSONObject> response = fetchNamedEntitiesFromWebService(restTemplate, myCacheOfResponses, uri);
+		URI uri = createRequestUriWithParameters(myQuestion, this.endpoint, this.minimumConfidence);
+		HttpEntity<JSONObject> response = fetchNamedEntitiesFromWebService(this.restTemplate, this.myCacheOfResponses, uri);
 		JsonArray resources = getResourcesOfResponse(response, myQuestion);
 
 		return resources;

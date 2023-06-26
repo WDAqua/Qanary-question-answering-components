@@ -14,9 +14,11 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -29,12 +31,18 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
+import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
 import eu.wdaqua.qanary.component.dbpediaspotlight.ned.exceptions.DBpediaSpotlightJsonParsingNotPossible;
+import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+
+import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.endpointKey;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
@@ -49,6 +57,12 @@ class DBpediaSpotlightServiceFetcherTest {
     @Autowired
     private CacheOfRestTemplateResponse myCacheOfResponse;
 
+    @Value("${spring.application.name}")
+    private String applicationName;
+
+    private DBpediaSpotlightServiceFetcher mockedDBpediaSpotlightServiceFetcher;
+    private QanaryQuestion mockedQanaryQuestion;
+
     static {
     	// deactivate the live test of the real-world webservice
         System.setProperty("dbpediaspotlight.perform-live-check-on-component-start", "false");
@@ -56,8 +70,15 @@ class DBpediaSpotlightServiceFetcherTest {
     }
     
     @BeforeEach
-    public void init() throws URISyntaxException {
+    public void init() throws URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed, DBpediaSpotlightJsonParsingNotPossible {
         assert this.restTemplate != null : "restTemplate cannot be null";
+        
+        this.mockedQanaryQuestion = Mockito.mock(QanaryQuestion.class);
+        Mockito.when(this.mockedQanaryQuestion.getOutGraph()).thenReturn(new URI(endpointKey));
+        Mockito.when(this.mockedQanaryQuestion.getUri()).thenReturn(new URI("targetquestion"));
+
+        this.mockedDBpediaSpotlightServiceFetcher = Mockito.mock(DBpediaSpotlightServiceFetcher.class, Mockito.RETURNS_DEEP_STUBS);
+
     }
 
     /**
@@ -86,7 +107,6 @@ class DBpediaSpotlightServiceFetcherTest {
         callRestTemplateWithCaching(loginForm1, Cache.CACHED); // cache hit
 
         assertEquals(initialNumberOfRequests + 3, myCacheOfResponse.getNumberOfExecutedRequests());
-
     }
 
     /**
@@ -159,12 +179,16 @@ class DBpediaSpotlightServiceFetcherTest {
     
     @Test
     void testParsingOfJsonResponseOffline() throws ParseException, DBpediaSpotlightJsonParsingNotPossible {
-    	DBpediaSpotlightServiceFetcher myFetcher = new DBpediaSpotlightServiceFetcher();
+    	//DBpediaSpotlightServiceFetcher myFetcher = new DBpediaSpotlightServiceFetcher();
+      Mockito.when(this.mockedDBpediaSpotlightServiceFetcher.getResourcesOfResponse(any(HttpEntity.class), any(String.class))).thenCallRealMethod();
+      Mockito.when(this.mockedDBpediaSpotlightServiceFetcher.parseJsonBodyOfResponse(any(HttpEntity.class))).thenCallRealMethod();
     	JSONParser parser = new JSONParser();
     	
     	JSONObject body = (JSONObject) parser.parse(knownValidResponseBody);
 		HttpEntity<JSONObject> response = new HttpEntity<JSONObject>(body);
-		JsonArray resources = myFetcher.getResourcesOfResponse(response, knownValidResponseBody);
+    logger.info(response.toString());
+		JsonArray resources = this.mockedDBpediaSpotlightServiceFetcher.getResourcesOfResponse(response, knownValidResponseBody);
+    logger.info(resources.toString());
 		
 		assertEquals(4, resources.size());
 		
@@ -176,13 +200,13 @@ class DBpediaSpotlightServiceFetcherTest {
     
     @Test
     void testFoundResources() throws ParseException, DBpediaSpotlightJsonParsingNotPossible, URISyntaxException {
-    	DBpediaSpotlightServiceFetcher myFetcher = new DBpediaSpotlightServiceFetcher();
+    	//DBpediaSpotlightServiceFetcher myFetcher = new DBpediaSpotlightServiceFetcher();
     	JSONParser parser = new JSONParser();
 
     	JSONObject body = (JSONObject) parser.parse(knownValidResponseBody);
 		HttpEntity<JSONObject> response = new HttpEntity<JSONObject>(body);
-		JsonArray resources = myFetcher.getResourcesOfResponse(response, knownValidResponseBody);
-		List<FoundDBpediaResource> foundDBpediaResources = myFetcher.getListOfResources(resources);
+		JsonArray resources = this.mockedDBpediaSpotlightServiceFetcher.getResourcesOfResponse(response, knownValidResponseBody);
+		List<FoundDBpediaResource> foundDBpediaResources = this.mockedDBpediaSpotlightServiceFetcher.getListOfResources(resources);
 		for (FoundDBpediaResource foundDBpediaResource : foundDBpediaResources) {
 			assertNotEquals(null, foundDBpediaResource);
 			assertTrue(foundDBpediaResource.getBegin() >= 0);
@@ -193,5 +217,4 @@ class DBpediaSpotlightServiceFetcherTest {
 			assertNotEquals(null, foundDBpediaResource.getResource());
 		}
     }
-
 }
