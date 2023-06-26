@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -62,6 +63,7 @@ class DBpediaSpotlightServiceFetcherTest {
 
     private DBpediaSpotlightServiceFetcher mockedDBpediaSpotlightServiceFetcher;
     private QanaryQuestion mockedQanaryQuestion;
+    private DBpediaSpotlightNED mockedDBpediaSpotlightNED;
 
     static {
     	// deactivate the live test of the real-world webservice
@@ -70,7 +72,7 @@ class DBpediaSpotlightServiceFetcherTest {
     }
     
     @BeforeEach
-    public void init() throws URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed, DBpediaSpotlightJsonParsingNotPossible {
+    public void init() throws URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed, DBpediaSpotlightJsonParsingNotPossible, IOException {
         assert this.restTemplate != null : "restTemplate cannot be null";
         
         this.mockedQanaryQuestion = Mockito.mock(QanaryQuestion.class);
@@ -79,6 +81,8 @@ class DBpediaSpotlightServiceFetcherTest {
 
         this.mockedDBpediaSpotlightServiceFetcher = Mockito.mock(DBpediaSpotlightServiceFetcher.class, Mockito.RETURNS_DEEP_STUBS);
 
+        this.mockedDBpediaSpotlightNED = Mockito.mock(DBpediaSpotlightNED.class);
+        Mockito.when(this.mockedDBpediaSpotlightNED.getSparqlInsertQuery(any(FoundDBpediaResource.class), any(QanaryQuestion.class))).thenCallRealMethod();
     }
 
     /**
@@ -199,8 +203,7 @@ class DBpediaSpotlightServiceFetcherTest {
     }
     
     @Test
-    void testFoundResources() throws ParseException, DBpediaSpotlightJsonParsingNotPossible, URISyntaxException {
-    	//DBpediaSpotlightServiceFetcher myFetcher = new DBpediaSpotlightServiceFetcher();
+    void testFoundResources() throws ParseException, DBpediaSpotlightJsonParsingNotPossible, URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed, IOException {
     	JSONParser parser = new JSONParser();
 
     	JSONObject body = (JSONObject) parser.parse(knownValidResponseBody);
@@ -215,6 +218,10 @@ class DBpediaSpotlightServiceFetcherTest {
 			assertTrue(foundDBpediaResource.getSimilarityScore() > 0);
 			assertTrue(foundDBpediaResource.getSupport() >= 0);
 			assertNotEquals(null, foundDBpediaResource.getResource());
+
+      String sparql = this.mockedDBpediaSpotlightNED.getSparqlInsertQuery(foundDBpediaResource, this.mockedQanaryQuestion);
+      assertNotNull(sparql);
+      assertNotEquals(0, sparql.length());
 		}
     }
 }
