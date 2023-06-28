@@ -204,24 +204,34 @@ class DBpediaSpotlightServiceFetcherTest {
     
     @Test
     void testFoundResources() throws ParseException, DBpediaSpotlightJsonParsingNotPossible, URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed, IOException {
-    	JSONParser parser = new JSONParser();
+        JSONParser parser = new JSONParser();
+        JSONObject body = (JSONObject) parser.parse(knownValidResponseBody);
+        HttpEntity<JSONObject> response = new HttpEntity<JSONObject>(body);
+        JsonArray resources = this.mockedDBpediaSpotlightServiceFetcher.getResourcesOfResponse(response, knownValidResponseBody);
 
-    	JSONObject body = (JSONObject) parser.parse(knownValidResponseBody);
-		HttpEntity<JSONObject> response = new HttpEntity<JSONObject>(body);
-		JsonArray resources = this.mockedDBpediaSpotlightServiceFetcher.getResourcesOfResponse(response, knownValidResponseBody);
-		List<FoundDBpediaResource> foundDBpediaResources = this.mockedDBpediaSpotlightServiceFetcher.getListOfResources(resources);
-		for (FoundDBpediaResource foundDBpediaResource : foundDBpediaResources) {
-			assertNotEquals(null, foundDBpediaResource);
-			assertTrue(foundDBpediaResource.getBegin() >= 0);
-			assertTrue(foundDBpediaResource.getEnd() >= 0);
-			assertTrue(foundDBpediaResource.getEnd() >= foundDBpediaResource.getBegin());
-			assertTrue(foundDBpediaResource.getSimilarityScore() > 0);
-			assertTrue(foundDBpediaResource.getSupport() >= 0);
-			assertNotEquals(null, foundDBpediaResource.getResource());
-
-      String sparql = this.mockedDBpediaSpotlightNED.getSparqlInsertQuery(foundDBpediaResource, this.mockedQanaryQuestion);
-      assertNotNull(sparql);
-      assertNotEquals(0, sparql.length());
-		}
+        List<FoundDBpediaResource> foundDBpediaResources = this.mockedDBpediaSpotlightServiceFetcher.getListOfResources(resources);
+        for (FoundDBpediaResource foundDBpediaResource : foundDBpediaResources) {
+          assertNotEquals(null, foundDBpediaResource);
+          assertTrue(foundDBpediaResource.getBegin() >= 0);
+          assertTrue(foundDBpediaResource.getEnd() >= 0);
+          assertTrue(foundDBpediaResource.getEnd() >= foundDBpediaResource.getBegin());
+          assertTrue(foundDBpediaResource.getSimilarityScore() > 0);
+          assertTrue(foundDBpediaResource.getSupport() >= 0);
+          assertNotEquals(null, foundDBpediaResource.getResource());
+        }
+    }
+    
+    @Test
+    void testGetSparqlInsertQuery() throws ParseException, DBpediaSpotlightJsonParsingNotPossible, URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed, IOException {
+        JSONParser parser = new JSONParser();
+        JSONObject body = (JSONObject) parser.parse(knownValidResponseBody);
+        HttpEntity<JSONObject> response = new HttpEntity<JSONObject>(body);
+        JsonArray resources = this.mockedDBpediaSpotlightServiceFetcher.getResourcesOfResponse(response, knownValidResponseBody);
+        List<FoundDBpediaResource> foundDBpediaResources = this.mockedDBpediaSpotlightServiceFetcher.getListOfResources(resources);
+        for (FoundDBpediaResource foundDBpediaResource : foundDBpediaResources) {
+            String sparql = this.mockedDBpediaSpotlightNED.getSparqlInsertQuery(foundDBpediaResource, this.mockedQanaryQuestion);
+            assertNotNull(sparql);
+            assertNotEquals(0, sparql.length());
+        }
     }
 }
