@@ -42,10 +42,10 @@ public class Application {
 		for (int i = 0; i < 10; i++) {
 			try {
 				this.testFunctionality(endpoint, testQuetsion, parameters);
-				logger.info("Functionality works as expectted");
+				logger.info("Functionality works as expected");
 				break;
 			} catch (Exception e) {
-				logger.warn("Functionality does not work as expected on attempt no. {}:{}", i, e.toString());
+				logger.warn("Functionality does not work as expected on attempt no. {}: {}", i, e.toString());
 			}
 			if (i > 8) {
 				logger.error("Functionality does not work after maximum tries. Exiting...");

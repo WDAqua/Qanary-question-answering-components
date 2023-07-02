@@ -1,5 +1,10 @@
 package eu.wdaqua.qanary.component.babelfy.ned;
 
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -12,11 +17,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
-
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 
 public class BabelfyServiceFetcher {
 
@@ -31,7 +31,9 @@ public class BabelfyServiceFetcher {
 		logger.info("Path {}", thePath);
 
 		HttpClient httpclient = HttpClients.createDefault();
-		HttpGet httpget = new HttpGet(endpoint + thePath + params);
+		String specific_url = endpoint + thePath + params;
+		logger.info("fetch (GET): {}", specific_url);
+		HttpGet httpget = new HttpGet(specific_url );
 		HttpResponse response = httpclient.execute(httpget);
 		try {
 			HttpEntity entity = response.getEntity();
@@ -42,8 +44,8 @@ public class BabelfyServiceFetcher {
 				JSONArray jsonArray = new JSONArray(text);
 				for (int i = 0; i < jsonArray.length(); i++) {
 					JSONObject explrObject = jsonArray.getJSONObject(i);
-					logger.info("JSON {}", explrObject);
-					double score = (double) explrObject.get("score");
+					logger.info("JSON {}", explrObject);					
+					double score =  Double.parseDouble(explrObject.get("score").toString());  				
 					if (score >= 0.5) {
 						JSONObject char_array = explrObject.getJSONObject("charFragment");
 						int begin = (int) char_array.get("start");
