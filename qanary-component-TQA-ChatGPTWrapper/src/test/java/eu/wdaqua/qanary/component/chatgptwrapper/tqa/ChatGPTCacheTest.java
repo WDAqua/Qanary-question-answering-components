@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.net.URI;
@@ -22,6 +23,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestPropertySource(properties = { //
+		"CHATGPT.API.KEY=DUMMY-KEY-TO-ALLOW-COMPONENT-TO-START-AND-MOCK-TEST-TO-BE-EXECUTED", //
+		"CHATGPT.API.LIVE.TEST.ACTIVE=false" //
+})
 class ChatGPTCacheTest {
     // time span for caching, tests wait this time span during the test runs
     protected final static int MAX_TIME_SPAN_SECONDS = 5;

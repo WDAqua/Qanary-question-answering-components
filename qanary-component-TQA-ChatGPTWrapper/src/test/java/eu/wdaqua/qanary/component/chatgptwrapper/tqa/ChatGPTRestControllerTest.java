@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -22,6 +23,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
+@TestPropertySource(properties = { //
+		"CHATGPT.API.KEY=DUMMY-KEY-TO-ALLOW-COMPONENT-TO-START-AND-MOCK-TEST-TO-BE-EXECUTED", //
+		"CHATGPT.API.LIVE.TEST.ACTIVE=false" //
+})
 class ChatGPTRestControllerTest {
     private MockMvc mockMvc;
 
