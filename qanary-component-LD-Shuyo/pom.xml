@@ -114,10 +114,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
 			<!-- https://github.com/spotify/dockerfile-maven -->
 			<!-- build Docker image: mvn dockerfile:build  -->
 			<plugin>
