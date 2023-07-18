@@ -1,6 +1,6 @@
 package eu.wdaqua.qanary.component.copyvaluesofpriorgraph;
 
-import java.net.URI;
+import java.io.IOException;
 
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.QuerySolutionMap;
@@ -85,43 +85,12 @@ public class CopyValuesOfPriorGraph extends QanaryComponent {
 			// create an update query to copy values
 			addDataToCurrentGraph(priorGraph, myQanaryQuestion, myQanaryUtils);
 		}
-		logger.info("no more data to be copied!");
-
-		// --------------------------------------------------------------------
-		// STEP 2: compute new knowledge about the given question
-		// --------------------------------------------------------------------
-		// TODO: implement the custom code for your component
-		//
-		// TODO: if so: copy information to the new graph; see https://www.w3.org/TR/sparql11-update/#graphManagement
-		// TODO: else: do nothing
-		// return
-
-
-		// --------------------------------------------------------------------
-		// STEP 3: store computed knowledge about the given question into the Qanary triplestore 
-		// (the global process memory)
-		// --------------------------------------------------------------------
-
-//		logger.info("store data in graph {} of Qanary triplestore endpoint {}", //
-//				myQanaryMessage.getValues().get(myQanaryMessage.getOutGraph()), //
-//				myQanaryMessage.getValues().get(myQanaryMessage.getEndpoint()));
-//
-//		// push the new data to the Qanary triplestore
-//
-//		// TODO: define the SPARQL query fetch the data that your component requires
-//        QuerySolutionMap bindingsForUpdate = new QuerySolutionMap();
-//        // at least the variable GRAPH needs to be replaced by the outgraph as each query needs to be specific for the current process 
-//        bindingsForUpdate.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
-//
-//        // TODO: define your SPARQL UPDATE query in the mentioned file
-//		String sparqlUpdateQuery = QanaryTripleStoreConnector.readFileFromResourcesWithMap(FILENAME_STORE_COMPUTED_ANNOTATIONS, bindingsForUpdate);
-//		logger.info("generated SPARQL UPDATE query: {}", sparqlUpdateQuery);
-//		connectorToQanaryTriplestore.update(sparqlUpdateQuery);
+		logger.info("no more data to copy!");
 
 		return myQanaryMessage;
 	}
 
-	protected void addDataToCurrentGraph(String priorGraph, QanaryQuestion myQanaryQuestion, QanaryUtils myQanaryUtils) throws Exception {
+	protected void addDataToCurrentGraph(String priorGraph, QanaryQuestion myQanaryQuestion, QanaryUtils myQanaryUtils) throws IOException, SparqlQueryFailed {
 		QuerySolutionMap bindsForAdd = new QuerySolutionMap();
 		bindsForAdd.add("currentGraph", 
 				ResourceFactory.createResource(myQanaryQuestion.getInGraph().toString()));
