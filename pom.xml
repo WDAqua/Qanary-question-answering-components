@@ -67,6 +67,7 @@
                 <module>qanary-component-QB-GAnswerWrapper</module>
                 <module>qanary-component-QB-RuBQWrapper</module>
                 <module>qanary-component-QB-TeBaQaWrapper</module>
+                <module>qanary-component-CopyValuesOfPriorGraph</module>
             </modules>
         </profile>
         <profile>
