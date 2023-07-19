@@ -1,6 +1,8 @@
 package eu.wdaqua.qanary.component.copyvaluesofpriorgraph;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.QuerySolutionMap;
@@ -9,7 +11,13 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
@@ -17,6 +25,7 @@ import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
+import net.minidev.json.JSONObject;
 
 
 @Component
@@ -28,15 +37,22 @@ import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 public class CopyValuesOfPriorGraph extends QanaryComponent {
 
 	private static final String FILENAME_FETCH_REQUIRED_ANNOTATIONS = "/queries/fetchRequiredAnnotations.rq";
-	private static final String FILENAME_ADD_DATA_TO_CURRENT_GRAPH = "/queries/addDataToCurrentGraph.rq";
+	private static final String FILENAME_ADD_DATA_TO_GRAPH = "/queries/addDataToGraph.rq";
 	private static final String FILENAME_STORE_COMPUTED_ANNOTATIONS = "/queries/storeComputedAnnotations.rq";
 	
 	private static final Logger logger = LoggerFactory.getLogger(CopyValuesOfPriorGraph.class);
 
 	private final String applicationName;
+	private final String adminUrl;
+  private RestTemplate myRestTemplate; // TODO: we need this apprently 
 
-	public CopyValuesOfPriorGraph(@Value("${spring.application.name}") final String applicationName) {
+	public CopyValuesOfPriorGraph(
+			@Value("${spring.application.name}") final String applicationName,
+			@Value("${spring.boot.admin.url}") final String adminUrl,
+			RestTemplate restTemplate) {
 		this.applicationName = applicationName;
+		this.adminUrl = adminUrl;
+		this.myRestTemplate = restTemplate;
 
 		// here if the files are available and do contain content
         QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_FETCH_REQUIRED_ANNOTATIONS);
@@ -53,7 +69,6 @@ public class CopyValuesOfPriorGraph extends QanaryComponent {
 	public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
 		logger.info("process: {}", myQanaryMessage);
 
-		// typical helpers 		
 		QanaryUtils myQanaryUtils = this.getUtils();
 		QanaryTripleStoreConnector connectorToQanaryTriplestore = myQanaryUtils.getQanaryTripleStoreConnector();
 		
@@ -73,7 +88,7 @@ public class CopyValuesOfPriorGraph extends QanaryComponent {
 			QuerySolution tuple = resultset.next();
 			String priorGraph = tuple.get("priorGraph").asResource().getURI(); 
 			// create an update query to copy values
-			addDataToCurrentGraph(priorGraph, myQanaryQuestion, myQanaryUtils);
+			addDataToGraph(priorGraph, myQanaryQuestion.getInGraph().toString());
 			logger.info("Copied data from prior graph {}", priorGraph);
 			p++;
 		}
@@ -86,16 +101,40 @@ public class CopyValuesOfPriorGraph extends QanaryComponent {
 		return myQanaryMessage;
 	}
 
-	protected void addDataToCurrentGraph(String priorGraph, QanaryQuestion myQanaryQuestion, QanaryUtils myQanaryUtils) throws IOException, SparqlQueryFailed {
+	protected void addDataToGraph(String sourceGraph, String targetGraph) throws SparqlQueryFailed, IOException, URISyntaxException {
 		QuerySolutionMap bindsForAdd = new QuerySolutionMap();
-		bindsForAdd.add("currentGraph", 
-				ResourceFactory.createResource(myQanaryQuestion.getInGraph().toString()));
-		bindsForAdd.add("priorGraph",
-				ResourceFactory.createResource(priorGraph));
+		bindsForAdd.add("sourceGraph",
+				ResourceFactory.createResource(sourceGraph));
+		bindsForAdd.add("targetGraph", 
+				ResourceFactory.createResource(targetGraph));
 		String sparqlAddQuery = QanaryTripleStoreConnector.readFileFromResourcesWithMap(
-				FILENAME_ADD_DATA_TO_CURRENT_GRAPH, bindsForAdd);
+				FILENAME_ADD_DATA_TO_GRAPH, bindsForAdd);
 		logger.info("generated SPARQL ADD query: {}", sparqlAddQuery);
-		QanaryTripleStoreConnector connectorToQanaryTriplestore = myQanaryUtils.getQanaryTripleStoreConnector();
-		connectorToQanaryTriplestore.update(sparqlAddQuery);
+
+		// TODO: call sparql endpoint of pipeline instead of triplestore connector
+		String adminSparqlEndpoint = this.adminUrl + "/sparql";
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		headers.set("User-Agent", "Qanary/" + this.getClass().getName());
+
+		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+		parameters.add("update", sparqlAddQuery);
+    HttpEntity<MultiValueMap<String,String>> request = new HttpEntity<>(parameters, headers);
+
+		try {
+			URI uri = new URI(adminSparqlEndpoint);
+			URI response = myRestTemplate.postForLocation(uri, request);
+			logger.info("got response: {}", response);
+		} catch (Exception e) {
+			//	response = null;
+				logger.info("post to endpoint not successful: {}", e);
+		}
+
+		// deprecated
+		// QanaryTripleStoreConnector connectorToQanaryTriplestore = this.getUtils().getQanaryTripleStoreConnector();
+		// connectorToQanaryTriplestore.update(sparqlAddQuery);
+
 	}
+
 }

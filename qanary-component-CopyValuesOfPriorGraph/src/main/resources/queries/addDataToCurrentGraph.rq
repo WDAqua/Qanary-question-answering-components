@@ -1,1 +1,0 @@
-ADD SILENT GRAPH ?priorGraph TO  GRAPH  ?currentGraph 

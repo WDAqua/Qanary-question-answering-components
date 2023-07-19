@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.web.client.RestTemplate;
 
 import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
 import eu.wdaqua.qanary.component.QanaryComponent;
@@ -28,8 +29,10 @@ public class Application {
 	*/
 	@Bean
 	public QanaryComponent qanaryComponent(
-			@Value("${spring.application.name}") final String applicationName) {
-		return new CopyValuesOfPriorGraph(applicationName);
+			@Value("${spring.application.name}") final String applicationName,
+			@Value("${spring.boot.admin.url}") final String adminUrl,
+			RestTemplate restTemplate) {
+		return new CopyValuesOfPriorGraph(applicationName, adminUrl, restTemplate);
 	}
 
 	@Autowired
