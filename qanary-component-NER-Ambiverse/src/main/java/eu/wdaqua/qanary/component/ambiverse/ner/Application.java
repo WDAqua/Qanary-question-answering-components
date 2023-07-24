@@ -1,4 +1,4 @@
-package eu.wdaqa.qanary.component.ambiverse.ner;
+package eu.wdaqua.qanary.component.ambiverse.ner;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
