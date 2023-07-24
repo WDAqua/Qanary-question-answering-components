@@ -1,4 +1,4 @@
-package eu.wdaqa.qanary.component.watson.ned;
+package eu.wdaqua.qanary.component.watson.ned;
 
 public class NamedEntity {
     private String uri;

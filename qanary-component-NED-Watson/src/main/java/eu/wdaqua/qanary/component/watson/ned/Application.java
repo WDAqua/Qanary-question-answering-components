@@ -1,4 +1,4 @@
-package eu.wdaqa.qanary.component.watson.ned;
+package eu.wdaqua.qanary.component.watson.ned;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;

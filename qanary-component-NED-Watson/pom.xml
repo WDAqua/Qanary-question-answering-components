@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-NED-Watson</artifactId>
-    <version>3.1.6</version>
+    <version>3.1.7</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -81,7 +81,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>eu.wdaqa.qanary.component.watson.ned.Application</mainClass>
+                    <mainClass>eu.wdaqua.qanary.component.watson.ned.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>
