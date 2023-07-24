@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.component.babelfy.ned;
+package eu.wdaqua.qanary.component.dbpediaspotlight.ned;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
@@ -22,16 +22,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class BabelfyCacheTests {
+class CacheTests {
     // time span for caching, tests wait this time span during the test runs
     protected final static int MAX_TIME_SPAN_SECONDS = 5;
-    private static final Logger LOGGER = LoggerFactory.getLogger(BabelfyCacheTests.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CacheTests.class);
 
     private final int testPort;
     private final RestTemplateWithCaching myRestTemplate;
     private final CacheOfRestTemplateResponse myCacheOfResponse;
 
-    BabelfyCacheTests(
+    CacheTests(
             @Value(value = "${local.server.port}") int testPort, //
             @Autowired RestTemplateWithCaching myRestTemplate, //
             @Autowired CacheOfRestTemplateResponse myCacheOfResponse //
