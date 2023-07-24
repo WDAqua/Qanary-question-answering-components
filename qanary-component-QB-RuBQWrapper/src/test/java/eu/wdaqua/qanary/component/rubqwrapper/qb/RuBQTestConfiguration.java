@@ -11,7 +11,7 @@ public class RuBQTestConfiguration {
     static {
         System.setProperty("rubq.endpoint.url", "http://some-rubq-endpoint-url.com/endpoint");
         System.setProperty("rubq.mock.endpoint.url", "http://some-rubq-endpoint-url.com/endpoint");
-        System.setProperty("qanary.webservicecalls.cache.specs", "maximumSize=1000,expireAfterAccess=" + RuBQQueryBuilderTest.MAX_TIME_SPAN_SECONDS + "s");
+        System.setProperty("qanary.webservicecalls.cache.specs", "maximumSize=1000,expireAfterAccess=" + CacheTests.MAX_TIME_SPAN_SECONDS + "s");
     }
 
     /**
