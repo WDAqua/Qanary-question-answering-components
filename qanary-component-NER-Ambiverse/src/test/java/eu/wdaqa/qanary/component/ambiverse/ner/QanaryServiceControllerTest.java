@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.component.ambiverse.ner;
+package eu.wdaqa.qanary.component.ambiverse.ner;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
