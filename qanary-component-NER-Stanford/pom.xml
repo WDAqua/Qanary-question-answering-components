@@ -4,11 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-NER-Stanford</artifactId>
-    <version>3.1.5</version>
+    <version>3.1.6</version>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.6.7</version>
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <properties>
         <qanary.version>[3.7.1,4.0.0)</qanary.version>
@@ -100,7 +102,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>eu.wdaqua.qanary.StanfordNER.Application</mainClass>
+                    <mainClass>eu.wdaqua.qanary.component.stanford.ner.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>
@@ -109,10 +111,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <!-- https://github.com/spotify/dockerfile-maven -->
             <!-- build Docker image: mvn dockerfile:build  -->
