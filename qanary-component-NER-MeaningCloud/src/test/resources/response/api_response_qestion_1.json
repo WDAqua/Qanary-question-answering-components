@@ -1,0 +1,181 @@
+{
+  "entity_list": [
+    {
+      "form": "Hans Albert Einstein",
+      "id": "0ac8413cb5",
+      "relevance": "100",
+      "sementity": {
+        "class": "instance",
+        "fiction": "nonfiction",
+        "id": "ODENTITY_FULL_NAME",
+        "type": "Top>Person>FullName"
+      },
+      "semgeo_list": [
+        {
+          "continent": {
+            "form": "Europe",
+            "id": "0404ea4d6c"
+          },
+          "country": {
+            "form": "Switzerland",
+            "id": "ad3d620bb9",
+            "standard_list": [
+              {
+                "id": "ISO3166-1-a2",
+                "value": "CH"
+              },
+              {
+                "id": "ISO3166-1-a3",
+                "value": "CHE"
+              }
+            ]
+          }
+        },
+        {
+          "continent": {
+            "form": "America",
+            "id": "33fc13e6dd"
+          },
+          "country": {
+            "form": "United States",
+            "id": "beac1b545b",
+            "standard_list": [
+              {
+                "id": "ISO3166-1-a2",
+                "value": "US"
+              },
+              {
+                "id": "ISO3166-1-a3",
+                "value": "USA"
+              }
+            ]
+          }
+        }
+      ],
+      "semld_list": [
+        "http://en.wikipedia.org/wiki/Hans_Albert_Einstein",
+        "http://ar.wikipedia.org/wiki/هانز_ألبرت_أينشتاين",
+        "http://ca.wikipedia.org/wiki/Hans_Albert_Einstein",
+        "http://cs.wikipedia.org/wiki/Hans_Albert_Einstein",
+        "http://de.wikipedia.org/wiki/Hans_Albert_Einstein",
+        "http://es.wikipedia.org/wiki/Hans_Albert_Einstein",
+        "http://fi.wikipedia.org/wiki/Hans_Albert_Einstein",
+        "http://fr.wikipedia.org/wiki/Hans_Albert_Einstein",
+        "http://hi.wikipedia.org/wiki/हैंश_अल्बर्ट_आइंस्टीन",
+        "http://id.wikipedia.org/wiki/Hans_Albert_Einstein",
+        "http://it.wikipedia.org/wiki/Hans_Albert_Einstein",
+        "http://ja.wikipedia.org/wiki/ハンス・アルベルト・アインシュタイン",
+        "http://ko.wikipedia.org/wiki/한스_알베르트_아인슈타인",
+        "http://nl.wikipedia.org/wiki/Hans_Albert_Einstein",
+        "http://pt.wikipedia.org/wiki/Hans_Albert_Einstein",
+        "http://tr.wikipedia.org/wiki/Hans_Albert_Einstein",
+        "http://zh.wikipedia.org/wiki/汉斯·爱因斯坦",
+        "http://d-nb.info/gnd/143075845",
+        "http://viaf.org/viaf/67420636",
+        "https://www.facebook.com/AlbertEinstein.ES",
+        "sumo:Human"
+      ],
+      "semtheme_list": [
+        {
+          "id": "ODTHEME_TECHNOLOGY",
+          "type": "Top>Technology"
+        }
+      ],
+      "variant_list": [
+        {
+          "endp": "40",
+          "form": "Albert Einstein",
+          "inip": "26"
+        }
+      ]
+    },
+    {
+      "form": "Albert Einstein",
+      "id": "9e99ccd354",
+      "relevance": "100",
+      "sementity": {
+        "class": "instance",
+        "fiction": "nonfiction",
+        "id": "ODENTITY_FULL_NAME",
+        "type": "Top>Person>FullName"
+      },
+      "semgeo_list": [
+        {
+          "continent": {
+            "form": "Europe",
+            "id": "0404ea4d6c"
+          },
+          "country": {
+            "form": "Germany",
+            "id": "1864d0b4d1",
+            "standard_list": [
+              {
+                "id": "ISO3166-1-a2",
+                "value": "DE"
+              },
+              {
+                "id": "ISO3166-1-a3",
+                "value": "DEU"
+              }
+            ]
+          }
+        }
+      ],
+      "semld_list": [
+        "http://en.wikipedia.org/wiki/Albert_Einstein",
+        "http://ar.wikipedia.org/wiki/ألبرت_أينشتاين",
+        "http://ca.wikipedia.org/wiki/Albert_Einstein",
+        "http://cs.wikipedia.org/wiki/Albert_Einstein",
+        "http://da.wikipedia.org/wiki/Albert_Einstein",
+        "http://de.wikipedia.org/wiki/Albert_Einstein",
+        "http://es.wikipedia.org/wiki/Albert_Einstein",
+        "http://fi.wikipedia.org/wiki/Albert_Einstein",
+        "http://fr.wikipedia.org/wiki/Albert_Einstein",
+        "http://he.wikipedia.org/wiki/אלברט_איינשטיין",
+        "http://hi.wikipedia.org/wiki/अल्बर्ट_आइंस्टीन",
+        "http://id.wikipedia.org/wiki/Albert_Einstein",
+        "http://it.wikipedia.org/wiki/Albert_Einstein",
+        "http://ja.wikipedia.org/wiki/アルベルト・アインシュタイン",
+        "http://ko.wikipedia.org/wiki/알베르트_아인슈타인",
+        "http://nl.wikipedia.org/wiki/Albert_Einstein",
+        "http://no.wikipedia.org/wiki/Albert_Einstein",
+        "http://pl.wikipedia.org/wiki/Albert_Einstein",
+        "http://pt.wikipedia.org/wiki/Albert_Einstein",
+        "http://ro.wikipedia.org/wiki/Albert_Einstein",
+        "http://ru.wikipedia.org/wiki/Эйнштейн,_Альберт",
+        "http://sv.wikipedia.org/wiki/Albert_Einstein",
+        "http://th.wikipedia.org/wiki/อัลเบิร์ต_ไอน์สไตน์",
+        "http://tr.wikipedia.org/wiki/Albert_Einstein",
+        "http://zh.wikipedia.org/wiki/阿尔伯特·爱因斯坦",
+        "http://d-nb.info/gnd/118529579",
+        "http://www4.wiwiss.fu-berlin.de/gutendata/resource/people/Einstein_Albert_1879-1955",
+        "http://data.europa.eu/euodp/jrc-names/Albert_Einstein",
+        "http://data.nytimes.com/49783928729941204213",
+        "http://sw.cyc.com/concept/Mx4rvlF-vZwpEbGdrcN5Y29ycA",
+        "http://www.bbc.co.uk/things/4cca21c2-6416-4207-922c-b32de7400474#id",
+        "http://www.w3.org/2006/03/wn/wn20/instances/synset-scientist-noun-1",
+        "https://www.facebook.com/AlbertEinstein.ES",
+        "sumo:Human"
+      ],
+      "semtheme_list": [
+        {
+          "id": "ODTHEME_PHYSICS",
+          "type": "Top>BasicSciences>Physics"
+        }
+      ],
+      "variant_list": [
+        {
+          "endp": "40",
+          "form": "Albert Einstein",
+          "inip": "26"
+        }
+      ]
+    }
+  ],
+  "status": {
+    "code": "0",
+    "msg": "OK",
+    "credits": "1",
+    "remaining_credits": "39999"
+  }
+}

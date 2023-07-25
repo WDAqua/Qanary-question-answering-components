@@ -1,0 +1,70 @@
+[
+  {
+    "tokenFragment": {
+      "start": 1,
+      "end": 1
+    },
+    "charFragment": {
+      "start": 5,
+      "end": 6
+    },
+    "babelSynsetID": "bn:00083187v",
+    "DBpediaURL": "",
+    "BabelNetURL": "http://babelnet.org/rdf/s00083187v",
+    "score": 0.0,
+    "coherenceScore": 0.0,
+    "globalScore": 0.0,
+    "source": "MCS"
+  },
+  {
+    "tokenFragment": {
+      "start": 3,
+      "end": 3
+    },
+    "charFragment": {
+      "start": 12,
+      "end": 18
+    },
+    "babelSynsetID": "bn:00015498n",
+    "DBpediaURL": "http://dbpedia.org/resource/Capital_city",
+    "BabelNetURL": "http://babelnet.org/rdf/s00015498n",
+    "score": 0.0,
+    "coherenceScore": 0.0,
+    "globalScore": 0.0,
+    "source": "MCS"
+  },
+  {
+    "tokenFragment": {
+      "start": 3,
+      "end": 5
+    },
+    "charFragment": {
+      "start": 12,
+      "end": 29
+    },
+    "babelSynsetID": "bn:00933290n",
+    "DBpediaURL": "http://dbpedia.org/resource/Capital_of_Germany",
+    "BabelNetURL": "http://babelnet.org/rdf/s00933290n",
+    "score": 1.0,
+    "coherenceScore": 0.3333333333333333,
+    "globalScore": 0.02040816326530612,
+    "source": "BABELFY"
+  },
+  {
+    "tokenFragment": {
+      "start": 5,
+      "end": 5
+    },
+    "charFragment": {
+      "start": 23,
+      "end": 29
+    },
+    "babelSynsetID": "bn:00026684n",
+    "DBpediaURL": "http://dbpedia.org/resource/Germany",
+    "BabelNetURL": "http://babelnet.org/rdf/s00026684n",
+    "score": 0.7846153846153846,
+    "coherenceScore": 0.6666666666666666,
+    "globalScore": 0.5204081632653061,
+    "source": "BABELFY"
+  }
+]

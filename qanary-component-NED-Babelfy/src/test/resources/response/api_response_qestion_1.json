@@ -1,0 +1,53 @@
+[
+  {
+    "tokenFragment": {
+      "start": 1,
+      "end": 1
+    },
+    "charFragment": {
+      "start": 5,
+      "end": 6
+    },
+    "babelSynsetID": "bn:00083187v",
+    "DBpediaURL": "",
+    "BabelNetURL": "http://babelnet.org/rdf/s00083187v",
+    "score": 0.0,
+    "coherenceScore": 0.0,
+    "globalScore": 0.0,
+    "source": "MCS"
+  },
+  {
+    "tokenFragment": {
+      "start": 3,
+      "end": 3
+    },
+    "charFragment": {
+      "start": 12,
+      "end": 21
+    },
+    "babelSynsetID": "bn:00010686n",
+    "DBpediaURL": "http://dbpedia.org/resource/Place_of_birth",
+    "BabelNetURL": "http://babelnet.org/rdf/s00010686n",
+    "score": 0.0,
+    "coherenceScore": 0.0,
+    "globalScore": 0.0,
+    "source": "MCS"
+  },
+  {
+    "tokenFragment": {
+      "start": 6,
+      "end": 6
+    },
+    "charFragment": {
+      "start": 33,
+      "end": 40
+    },
+    "babelSynsetID": "bn:00002460n",
+    "DBpediaURL": "http://dbpedia.org/resource/Albert_Einstein",
+    "BabelNetURL": "http://babelnet.org/rdf/s00002460n",
+    "score": 1.0,
+    "coherenceScore": 1.0,
+    "globalScore": 0.3448275862068966,
+    "source": "BABELFY"
+  }
+]

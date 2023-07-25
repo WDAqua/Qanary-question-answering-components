@@ -1,0 +1,18 @@
+PREFIX  qa:   <http://www.wdaqua.eu/qa#>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  oa:   <http://www.w3.org/ns/openannotation/core/>
+
+INSERT {
+  GRAPH <urn:graph> {
+    <urn:answer> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> qa:Answer .
+    ?b <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> qa:AnnotationOfAnswerJSON .
+    ?b oa:hasTarget <urn:answer> .
+    ?b oa:hasBody "json" .
+    ?b oa:annotatedBy <urn:qanary:applicationName> .
+    ?b oa:annotatedAt ?time .
+  }
+}
+WHERE
+  { BIND(iri(str(rand())) AS ?b)
+    BIND(now() AS ?time)
+  }

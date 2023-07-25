@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -66,6 +67,9 @@ class QanaryCustomControllerTest {
     }
 
     @Test
+    @EnabledIf(
+            expression = "#{environment['test.live.endpoints'] == 'true'}", //
+            loadContext = true)    
     void testDemoEndpoint() throws MalformedURLException, URISyntaxException {
         String question = "What is the capital of Spain";
         String lang = "en";

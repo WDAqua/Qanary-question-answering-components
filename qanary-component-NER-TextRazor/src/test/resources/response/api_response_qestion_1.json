@@ -1,0 +1,57 @@
+{
+  "response": {
+    "language": "eng",
+    "languageIsReliable": true,
+    "entities": [
+      {
+        "id": 0,
+        "type": [
+          "Agent",
+          "Person",
+          "Scientist"
+        ],
+        "matchingTokens": [
+          5,
+          6
+        ],
+        "entityId": "Albert Einstein",
+        "freebaseTypes": [
+          "/astronomy/astronomer",
+          "/award/award_winner",
+          "/film/person_or_entity_appearing_in_film",
+          "/music/group_member",
+          "/education/academic",
+          "/organization/organization_founder",
+          "/business/board_member",
+          "/organization/organization_member",
+          "/people/family_member",
+          "/symbols/name_source",
+          "/book/book_subject",
+          "/award/hall_of_fame_inductee",
+          "/food/diet_follower",
+          "/book/author",
+          "/people/deceased_person",
+          "/fictional_universe/person_in_fiction",
+          "/visual_art/art_subject",
+          "/music/artist",
+          "/influence/influence_node",
+          "/people/person",
+          "/law/inventor",
+          "/award/ranked_item",
+          "/film/film_subject"
+        ],
+        "confidenceScore": 2.793,
+        "wikiLink": "http://en.wikipedia.org/wiki/Albert_Einstein",
+        "matchedText": "Albert Einstein",
+        "freebaseId": "/m/0jcx",
+        "relevanceScore": 0,
+        "entityEnglishId": "Albert Einstein",
+        "startingPos": 26,
+        "endingPos": 41,
+        "wikidataId": "Q937"
+      }
+    ]
+  },
+  "time": 0.00496,
+  "ok": true
+}

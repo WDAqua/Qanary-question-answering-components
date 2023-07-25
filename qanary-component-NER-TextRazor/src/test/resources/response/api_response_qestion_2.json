@@ -1,0 +1,65 @@
+{
+  "response": {
+    "language": "eng",
+    "languageIsReliable": true,
+    "entities": [
+      {
+        "id": 0,
+        "type": [
+          "Place",
+          "PopulatedPlace",
+          "Country"
+        ],
+        "matchingTokens": [
+          5
+        ],
+        "entityId": "Germany",
+        "freebaseTypes": [
+          "/periodicals/newspaper_circulation_area",
+          "/film/film_location",
+          "/organization/organization_member",
+          "/business/business_location",
+          "/symbols/name_source",
+          "/location/dated_location",
+          "/military/military_combatant",
+          "/religion/religious_leadership_jurisdiction",
+          "/military/military_post",
+          "/organization/organization_scope",
+          "/organization/contact_category",
+          "/symbols/flag_referent",
+          "/government/governmental_jurisdiction",
+          "/organization/organization_founder",
+          "/travel/travel_destination",
+          "/location/administrative_division",
+          "/cvg/computer_game_region",
+          "/fictional_universe/fictional_setting",
+          "/location/country",
+          "/food/beer_country_region",
+          "/government/political_district",
+          "/media_common/netflix_genre",
+          "/sports/sport_country",
+          "/location/statistical_region",
+          "/exhibitions/exhibition_venue",
+          "/sports/sports_team_location",
+          "/broadcast/tv_station_owner",
+          "/olympics/olympic_participating_country",
+          "/biology/breed_origin",
+          "/business/employer",
+          "/book/book_subject",
+          "/location/location"
+        ],
+        "confidenceScore": 1.761,
+        "wikiLink": "http://en.wikipedia.org/wiki/Germany",
+        "matchedText": "Germany",
+        "freebaseId": "/m/0345h",
+        "relevanceScore": 0.02526,
+        "entityEnglishId": "Germany",
+        "startingPos": 23,
+        "endingPos": 30,
+        "wikidataId": "Q183"
+      }
+    ]
+  },
+  "time": 0.006409,
+  "ok": true
+}

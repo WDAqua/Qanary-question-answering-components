@@ -42,7 +42,7 @@ public class Babelfy extends QanaryComponent {
 
     private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
 
-    @Value("${babelfy.key}")
+    @Value("${babelfy.api.key}")
     private String key;
 
     public Babelfy(@Value("${spring.application.name}") final String applicationName) {
