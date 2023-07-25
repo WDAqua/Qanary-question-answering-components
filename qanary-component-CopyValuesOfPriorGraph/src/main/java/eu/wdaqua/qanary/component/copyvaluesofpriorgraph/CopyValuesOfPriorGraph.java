@@ -25,7 +25,6 @@ import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-import net.minidev.json.JSONObject;
 
 
 @Component
@@ -44,7 +43,7 @@ public class CopyValuesOfPriorGraph extends QanaryComponent {
 
 	private final String applicationName;
 	private final String adminUrl;
-  private RestTemplate myRestTemplate; // TODO: we need this apprently 
+  private RestTemplate myRestTemplate; 
 
 	public CopyValuesOfPriorGraph(
 			@Value("${spring.application.name}") final String applicationName,
@@ -55,8 +54,8 @@ public class CopyValuesOfPriorGraph extends QanaryComponent {
 		this.myRestTemplate = restTemplate;
 
 		// here if the files are available and do contain content
-        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_FETCH_REQUIRED_ANNOTATIONS);
-        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_STORE_COMPUTED_ANNOTATIONS);
+    QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_FETCH_REQUIRED_ANNOTATIONS);
+    QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_STORE_COMPUTED_ANNOTATIONS);
 	}
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
@@ -76,12 +75,15 @@ public class CopyValuesOfPriorGraph extends QanaryComponent {
 		// STEP 1: get the required data from the Qanary triplestore (the global process memory)
 		// --------------------------------------------------------------------
 		QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion();
-		// check if a prior conversation was annotated
+		// look for annotated prior conversation
 		QuerySolutionMap bindingsForSelect = new QuerySolutionMap();
 		bindingsForSelect.add("graph", ResourceFactory.createResource(myQanaryQuestion.getInGraph().toASCIIString()));
 		String sparqlSelectQuery = QanaryTripleStoreConnector.readFileFromResourcesWithMap(FILENAME_FETCH_REQUIRED_ANNOTATIONS, bindingsForSelect);		
 		logger.info("generated SPARQL INSERT query: {}", sparqlSelectQuery);
         ResultSet resultset = connectorToQanaryTriplestore.select(sparqlSelectQuery);
+		// --------------------------------------------------------------------
+		// STEP 2: add data from the previous graph to the current graph
+		// --------------------------------------------------------------------
 		int p = 0;
 		while (resultset.hasNext()) {
 			// update the current graph with information from prior graph
@@ -101,7 +103,7 @@ public class CopyValuesOfPriorGraph extends QanaryComponent {
 		return myQanaryMessage;
 	}
 
-	protected void addDataToGraph(String sourceGraph, String targetGraph) throws SparqlQueryFailed, IOException, URISyntaxException {
+	protected void addDataToGraph(String sourceGraph, String targetGraph) throws Exception {
 		QuerySolutionMap bindsForAdd = new QuerySolutionMap();
 		bindsForAdd.add("sourceGraph",
 				ResourceFactory.createResource(sourceGraph));
@@ -111,9 +113,12 @@ public class CopyValuesOfPriorGraph extends QanaryComponent {
 				FILENAME_ADD_DATA_TO_GRAPH, bindsForAdd);
 		logger.info("generated SPARQL ADD query: {}", sparqlAddQuery);
 
-		// TODO: call sparql endpoint of pipeline instead of triplestore connector
-		String adminSparqlEndpoint = this.adminUrl + "/sparql";
+		// call sparql endpoint of pipeline 
+		//
+		// done instead of using triplestore connector, because utils are not available outside
+		// of pipeline context!
 
+		String adminSparqlEndpoint = this.adminUrl + "/sparql";
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		headers.set("User-Agent", "Qanary/" + this.getClass().getName());
@@ -125,16 +130,11 @@ public class CopyValuesOfPriorGraph extends QanaryComponent {
 		try {
 			URI uri = new URI(adminSparqlEndpoint);
 			URI response = myRestTemplate.postForLocation(uri, request);
-			logger.info("got response: {}", response);
-		} catch (Exception e) {
-			//	response = null;
-				logger.info("post to endpoint not successful: {}", e);
+		} catch (Exception e) { 
+			logger.debug("post to endpoint not successful: {}", e);
+			throw new Exception("Data could not be added!"
+					+ "\nsource graph: " + sourceGraph 
+					+ "\ntarget graph: " + targetGraph);
 		}
-
-		// deprecated
-		// QanaryTripleStoreConnector connectorToQanaryTriplestore = this.getUtils().getQanaryTripleStoreConnector();
-		// connectorToQanaryTriplestore.update(sparqlAddQuery);
-
 	}
-
 }
