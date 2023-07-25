@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebCl
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
+import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
@@ -141,6 +142,9 @@ class QAnswerQueryBuilderAndSpaqlResultFetcherTest {
      * @throws MalformedURLException
      */
     @Test
+    @EnabledIf(
+            expression = "#{environment['test.live.endpoints'] == 'true'}", //
+            loadContext = true)    
     void testWebServiceWhatIsTheCapitalOfGermanyResultOneResource() throws URISyntaxException, ParseException, MalformedURLException {
         float threshold = 0.4f;
         String lang = "en";
@@ -179,6 +183,9 @@ class QAnswerQueryBuilderAndSpaqlResultFetcherTest {
      * @throws MalformedURLException
      */
     @Test
+    @EnabledIf(
+            expression = "#{environment['test.live.endpoints'] == 'true'}", //
+            loadContext = true)
     void testWebServicePersonBornInFranceResultManyResources() throws URISyntaxException, ParseException, MalformedURLException {
         float threshold = 0.4f;
         String lang = "en";
@@ -226,6 +233,9 @@ class QAnswerQueryBuilderAndSpaqlResultFetcherTest {
      * @throws MalformedURLException
      */
     @Test
+    @EnabledIf(
+            expression = "#{environment['test.live.endpoints'] == 'true'}", //
+            loadContext = true)
     void testWebServiceIsBerlinTheCapitalOfGermanyResultBoolean() throws URISyntaxException, ParseException, MalformedURLException {
         float threshold = 0.4f;
         String lang = "en";
@@ -268,6 +278,9 @@ class QAnswerQueryBuilderAndSpaqlResultFetcherTest {
      * @throws MalformedURLException
      */
     @Test
+    @EnabledIf(
+            expression = "#{environment['test.live.endpoints'] == 'true'}", //
+            loadContext = true)
     void testWebServicePopulationOfFranceResultNumber() throws URISyntaxException, ParseException, MalformedURLException {
         float threshold = 0.4f;
         String lang = "en";
@@ -306,6 +319,9 @@ class QAnswerQueryBuilderAndSpaqlResultFetcherTest {
      * @throws MalformedURLException
      */
     @Test
+    @EnabledIf(
+            expression = "#{environment['test.live.endpoints'] == 'true'}", //
+            loadContext = true)
     void testWebServiceWhatIsTheNicknameOfRomeResultString() throws URISyntaxException, ParseException, MalformedURLException {
 
         float threshold = 0.4f;
