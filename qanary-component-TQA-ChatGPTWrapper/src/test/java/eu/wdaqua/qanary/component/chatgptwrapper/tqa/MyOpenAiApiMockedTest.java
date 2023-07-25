@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -38,6 +39,10 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
+@TestPropertySource(properties = { //
+		"CHATGPT.API.KEY=DUMMY-KEY-TO-ALLOW-COMPONENT-TO-START-AND-MOCK-TEST-TO-BE-EXECUTED", //
+		"CHATGPT.API.LIVE.TEST.ACTIVE=false" //
+})
 class MyOpenAiApiMockedTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(MyOpenAiApiMockedTest.class);
     MockRestServiceServer mockServer;

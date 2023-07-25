@@ -20,7 +20,6 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -259,9 +258,7 @@ class MyCompletionRequestTest {
 	 * @param propertyExpectedToBeNotNull
 	 */
 	private void checkPropertiesOfMessage(JsonObject jsonObject, String propertyExpectedToBeNotNull) {
-		String[] propertiesExpectedToBeNotNull = {propertyExpectedToBeNotNull};
-	
-		
+		String[] propertiesExpectedToBeNotNull = {propertyExpectedToBeNotNull};		
 	}
 
 	private void checkPropertiesOfMessage(JsonObject jsonObject, String[] propertiesExpectedToBeNotNull) {
