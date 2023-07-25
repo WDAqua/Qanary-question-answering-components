@@ -147,3 +147,6 @@ dmypy.json
 .pyre/
 
 .factorypath
+
+# LOCAL APPLEICATION PROPERTIES
+application-local.properties
