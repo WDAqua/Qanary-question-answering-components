@@ -1,22 +1,31 @@
 package eu.wdaqua.qanary.component.dbpediaspotlight.ner;
 
-import com.google.gson.JsonArray;
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryUtils;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+
+import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
-import eu.wdaqua.qanary.component.QanaryComponent;
+
+import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import com.google.gson.JsonArray;
+
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
+import eu.wdaqua.qanary.component.QanaryComponent;
 
 /**
  * represents a wrapper of the DBpedia Spotlight tool used here as a spotter
@@ -24,22 +33,33 @@ import java.util.List;
 
 @Component
 public class DBpediaSpotlightNER extends QanaryComponent {
-    private static final Logger logger = LoggerFactory.getLogger(DBpediaSpotlightNER.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DBpediaSpotlightNER.class);
+
+
+    private CacheOfRestTemplateResponse myCacheOfResponses;
+    private RestTemplate myRestTemplate;
+
+    private DBpediaSpotlightConfiguration myDBpediaSpotlightConfiguration;
+    private DBpediaSpotlightServiceFetcher myDBpediaSpotlightServiceFetcher;
+    private boolean ignoreSslCertificate;
 
     private final String applicationName;
     private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
-    private final DBpediaSpotlightConfiguration dBpediaSpotlightConfiguration;
-    private final DBpediaSpotlightServiceFetcher dBpediaSpotlightServiceFetcher;
 
-    public DBpediaSpotlightNER( //
-                                @Value("${spring.application.name}") final String applicationName, //
-                                DBpediaSpotlightConfiguration dBpediaSpotlightConfiguration, //
-                                DBpediaSpotlightServiceFetcher dBpediaSpotlightServiceFetcher //
+    public DBpediaSpotlightNER(
+            @Value("${spring.application.name}") final String applicationName, //
+            @Autowired DBpediaSpotlightConfiguration myDBpediaSpotlightConfiguration, //
+            @Autowired DBpediaSpotlightServiceFetcher myDBpediaSpotlightServiceFetcher, //
+            @Autowired RestTemplate myRestTemplate, //
+            @Autowired CacheOfRestTemplateResponse myCacheOfResponses //
     ) {
         this.applicationName = applicationName;
-        this.dBpediaSpotlightConfiguration = dBpediaSpotlightConfiguration;
-        this.dBpediaSpotlightServiceFetcher = dBpediaSpotlightServiceFetcher;
-        logger.debug("endpoint: {}", this.dBpediaSpotlightConfiguration.getEndpoint());
+        this.myDBpediaSpotlightConfiguration = myDBpediaSpotlightConfiguration;
+        this.myDBpediaSpotlightServiceFetcher = myDBpediaSpotlightServiceFetcher;
+        this.myRestTemplate = myRestTemplate;
+        this.myCacheOfResponses = myCacheOfResponses;
+
+        LOGGER.debug("endpoint: {}", this.myDBpediaSpotlightConfiguration.getEndpoint());
 
         // check if files exists and are not empty
         QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
@@ -53,7 +73,7 @@ public class DBpediaSpotlightNER extends QanaryComponent {
     public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
         long startTime = System.currentTimeMillis();
         org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
-        logger.info("Qanary Message: {}", myQanaryMessage);
+        LOGGER.info("Qanary Message: {}", myQanaryMessage);
 
         // STEP1: Retrieve the named graph and the endpoint
 
@@ -63,49 +83,59 @@ public class DBpediaSpotlightNER extends QanaryComponent {
 
         // question string is required as input for the service call
         String myQuestion = myQanaryQuestion.getTextualRepresentation();
-        logger.info("process question \"{}\" with DBpedia Spotlight at {} and minimum confidence: {}", myQuestion,
-                dBpediaSpotlightConfiguration.getEndpoint(), dBpediaSpotlightConfiguration.getConfidenceMinimum());
+        LOGGER.info("process question \"{}\" with DBpedia Spotlight at {} and minimum confidence: {}", myQuestion,
+                this.myDBpediaSpotlightConfiguration.getEndpoint(),
+                this.myDBpediaSpotlightConfiguration.getConfidenceMinimum());
+
 
         // STEP2: Call the DBpedia service
         JsonArray resources;
-        resources = dBpediaSpotlightServiceFetcher.getJsonFromService(myQuestion, //
-                dBpediaSpotlightConfiguration.getEndpoint(), //
-                dBpediaSpotlightConfiguration.getConfidenceMinimum() //
+        resources = this.myDBpediaSpotlightServiceFetcher.getJsonFromService(
+                myQuestion, //
+                this.myDBpediaSpotlightConfiguration.getEndpoint(), //
+                this.myDBpediaSpotlightConfiguration.getConfidenceMinimum(), //
+                this.myRestTemplate, //
+                this.myCacheOfResponses
         );
 
         // get all found DBpedia entities
-        List<FoundDBpediaResource> foundDBpediaResources = new LinkedList<>();
-        for (int i = 0; i < resources.size(); i++) {
-            foundDBpediaResources.add(new FoundDBpediaResource(resources.get(i)));
-            logger.debug("found entity ({} of {}): at ({},{})", //
-                    i, resources.size() - 1, //
-                    foundDBpediaResources.get(i).getBegin(), //
-                    foundDBpediaResources.get(i).getEnd() //
-            );
-        }
+        List<FoundDBpediaResource> foundDBpediaResources = this.myDBpediaSpotlightServiceFetcher.getListOfResources(resources);
+
 
         // STEP3: Pass the information to the component and execute it
-
-        // create one larger SPARQL INSERT query that adds all discovered named entities
-        // at once
-
-        for (FoundDBpediaResource found : foundDBpediaResources) {
-
-            QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
-            bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
-            bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
-            bindingsForInsert.add("start", ResourceFactory.createTypedLiteral(String.valueOf(found.getBegin()), XSDDatatype.XSDnonNegativeInteger));
-            bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(found.getEnd()), XSDDatatype.XSDnonNegativeInteger));
-            bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
-
-            // get the template of the INSERT query
-            String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
-            logger.info("SPARQL query: {}", sparql);
-            myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
-
-        }
+        this.updateTriplestore(foundDBpediaResources, myQanaryQuestion, myQanaryUtils);
 
         return myQanaryMessage;
+    }
+
+    public String getSparqlInsertQuery(
+            FoundDBpediaResource foundDBpediaResource, //
+            QanaryQuestion<String> myQanaryQuestion //
+    ) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
+        QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+        bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+        bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+        bindingsForInsert.add("start", ResourceFactory.createTypedLiteral(String.valueOf(foundDBpediaResource.getBegin()), XSDDatatype.XSDnonNegativeInteger));
+        bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(foundDBpediaResource.getEnd()), XSDDatatype.XSDnonNegativeInteger));
+        bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+        // get the template of the INSERT query
+        String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
+        LOGGER.info("SPARQL query: {}", sparql);
+
+        return sparql;
+    }
+
+    private void updateTriplestore(
+            List<FoundDBpediaResource> foundDBpediaResources, //
+            QanaryQuestion<String> myQanaryQuestion, //
+            QanaryUtils myQanaryUtils //
+    ) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
+        for (FoundDBpediaResource found : foundDBpediaResources) {
+            String sparql = this.getSparqlInsertQuery(found, myQanaryQuestion);
+
+            myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
+        }
     }
 
     private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {
