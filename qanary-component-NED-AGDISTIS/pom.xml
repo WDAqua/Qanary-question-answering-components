@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>qanary-component-NED-AGDISTIS</artifactId>
     <groupId>eu.wdaqua.qanary.component</groupId>
-    <version>4.2.1</version>
+    <version>4.3.1</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -71,6 +71,11 @@
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path-assert</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
     </dependencies>
     <build>
