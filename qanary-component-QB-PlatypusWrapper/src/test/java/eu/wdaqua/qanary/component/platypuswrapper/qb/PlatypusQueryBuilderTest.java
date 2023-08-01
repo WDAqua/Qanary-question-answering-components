@@ -29,6 +29,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
@@ -104,6 +105,7 @@ class PlatypusQueryBuilderTest {
      * @throws URISyntaxException
      */
     @Test
+    @EnabledIf(expression = "#{environment['platypus.api.live.test.active'] == 'true'}", loadContext = true)
     void givenRestTemplate_whenRequested_thenLogAndModifyResponse() throws InterruptedException, URISyntaxException {
 
         assertNotNull(restTemplate);
@@ -129,35 +131,12 @@ class PlatypusQueryBuilderTest {
     }
 
     /**
-     * @throws URISyntaxException
-     * @throws DataNotProcessableException
-     */
-    @Test
-    @Disabled
-//  TODO add live URL
-    void liveTest() throws URISyntaxException, DataNotProcessableException {
-        float threshold = 0.5f;
-        String langDefault = "en";
-        ArrayList<String> supportedLang = new ArrayList<String>(Arrays.asList("en", "fr", "es"));
-
-        PlatypusQueryBuilder platypusQueryBuilder = new PlatypusQueryBuilder(threshold, langDefault, supportedLang, this.endpoint, this.applicationName, this.restTemplate, myCacheOfResponse);
-
-//      TODO add question text
-        String question = "";
-        PlatypusResult result0 = testWebService(platypusQueryBuilder, question, langDefault);
-
-//      TODO add expected result
-        String expectedSparql = "";
-
-        assertEquals(result0.getSparql(), expectedSparql);
-    }
-
-    /**
      * Test answer with date literal 
      * @throws URISyntaxException
      * @throws DataNotProcessableException
      */
     @Test
+    @EnabledIf(expression = "#{environment['platypus.api.live.test.active'] == 'true'}", loadContext = true)
     void testWebServiceWhenWasAngelaMerkelBornResultOneDate() throws URISyntaxException, DataNotProcessableException {
         float threshold = 0.5f;
         String langDefault = "en";
@@ -194,6 +173,7 @@ class PlatypusQueryBuilderTest {
      * @throws DataNotProcessableException
      */
     @Test
+    @EnabledIf(expression = "#{environment['platypus.api.live.test.active'] == 'true'}", loadContext = true)
     void testWebServiceWhatIsTheCapitalOfGermanyResultAtLeastOneResource() throws URISyntaxException, DataNotProcessableException {
         float threshold = 0.5f;
         String langDefault = "en";
