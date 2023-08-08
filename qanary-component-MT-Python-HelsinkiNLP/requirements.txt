@@ -5,3 +5,4 @@ qanary-helpers
 SPARQLWrapper
 Flask
 langid
+pytest
