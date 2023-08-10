@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary-component-QE-SparqlExecuter</artifactId>
-	<version>3.1.7</version>
+	<version>3.2.0</version>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
@@ -14,7 +14,6 @@
 	<properties>
 		<java.version>17</java.version>
 		<qanary.version>[3.7.0,4.0.0)</qanary.version>
-		<jena.version>4.5.0</jena.version><!-- latest working version -->
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<docker.image.name>qanary-component-qe-sparqlexecuter</docker.image.name>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
@@ -88,23 +87,6 @@
 			<artifactId>json-path-assert</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.jena/apache-jena-libs -->
-		<!--
-		<dependency>
-			<groupId>org.apache.jena</groupId>
-			<artifactId>apache-jena-libs</artifactId>
-			<type>pom</type>
-			<version>${jena.version}</version>
-		</dependency>
-		-->
-		<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-core -->
-		<!--
-		<dependency>
-			<groupId>org.apache.jena</groupId>
-			<artifactId>jena-core</artifactId>
-			<version>${jena.version}</version>
-		</dependency>
-		-->
 	</dependencies>
 	<build>
 		<plugins>
