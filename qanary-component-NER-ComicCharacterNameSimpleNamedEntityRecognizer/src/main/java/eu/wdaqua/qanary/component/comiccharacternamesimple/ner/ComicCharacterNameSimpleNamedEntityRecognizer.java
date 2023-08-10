@@ -51,15 +51,15 @@ public class ComicCharacterNameSimpleNamedEntityRecognizer extends QanaryCompone
      *
      * @throws Exception
      */
-    private SuperheroNamedEntityFound getAllSuperheroNamesFromDBpediaMatchingPositions(String question) throws IOException {
+    public SuperheroNamedEntityFound getAllSuperheroNamesFromDBpediaMatchingPositions(String question) throws IOException {
 
         // query DBpedia for all superhero film characters
         String serviceUrl = "http://dbpedia.org/sparql";
 
         QuerySolutionMap bindingsForSelect = new QuerySolutionMap();
 
-        // get the template of the INSERT query
-        String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForSelect);
+        // get the template of the query
+        String sparql = this.loadQueryFromFile(FILENAME_SELECT_HEROS, bindingsForSelect);
 
         logger.info("searching for character names on DBpedia ...\nDBpedia query: \n{}", sparql);
 
@@ -145,16 +145,7 @@ public class ComicCharacterNameSimpleNamedEntityRecognizer extends QanaryCompone
             logger.info("inserting annotation with start: {}, end: {}", //
                     foundSuperhero.getBeginIndex(), foundSuperhero.getEndIndex());
 
-            QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
-            bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
-            bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
-            bindingsForInsert.add("start", ResourceFactory.createTypedLiteral(String.valueOf(foundSuperhero.getBeginIndex()), XSDDatatype.XSDnonNegativeInteger));
-            bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(foundSuperhero.getEndIndex()), XSDDatatype.XSDnonNegativeInteger));
-            bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
-
-            // get the template of the INSERT query
-            String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
-            logger.info("SPARQL query: {}", sparql);
+            String sparql = this.getSparqlInsertQuery(foundSuperhero, myQanaryQuestion);
             myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 
         } catch (SparqlQueryFailed e) {
@@ -178,6 +169,21 @@ public class ComicCharacterNameSimpleNamedEntityRecognizer extends QanaryCompone
         logger.info("Component processing finished successfully. Annotation of {} inserted into Qanary triplestore {}.",
                 foundSuperhero.getSuperheroLabel(), triplestore);
         return myQanaryMessage;
+    }
+
+    public String getSparqlInsertQuery(SuperheroNamedEntityFound foundSuperhero, QanaryQuestion<String> myQanaryQuestion) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
+        QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+        bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+        bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+        bindingsForInsert.add("start", ResourceFactory.createTypedLiteral(String.valueOf(foundSuperhero.getBeginIndex()), XSDDatatype.XSDnonNegativeInteger));
+        bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(foundSuperhero.getEndIndex()), XSDDatatype.XSDnonNegativeInteger));
+        bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+        // get the template of the INSERT query
+        String sparql = this.loadQueryFromFile(FILENAME_INSERT_ANNOTATION, bindingsForInsert);
+        logger.info("SPARQL query: {}", sparql);
+
+        return sparql;
     }
 
     private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException {

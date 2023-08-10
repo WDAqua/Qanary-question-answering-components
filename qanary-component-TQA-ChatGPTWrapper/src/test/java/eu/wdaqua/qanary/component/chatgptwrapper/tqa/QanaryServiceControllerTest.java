@@ -1,4 +1,4 @@
-package eu.wdaqua.qanary.component.agdistis.ned;
+package eu.wdaqua.qanary.component.chatgptwrapper.tqa;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,8 +27,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
+@TestPropertySource(properties = { //
+		"CHATGPT.API.KEY=DUMMY-KEY-TO-ALLOW-COMPONENT-TO-START-AND-MOCK-TEST-TO-BE-EXECUTED", //
+		"CHATGPT.API.LIVE.TEST.ACTIVE=false" //
+})
 class QanaryServiceControllerTest {
-    private static final Logger logger = LoggerFactory.getLogger(QanaryServiceControllerTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(QanaryServiceControllerTest.class);
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext applicationContext;

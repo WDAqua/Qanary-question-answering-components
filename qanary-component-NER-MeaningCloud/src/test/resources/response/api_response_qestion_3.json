@@ -1,0 +1,61 @@
+{
+  "entity_list": [
+    {
+      "form": "Batman",
+      "id": "5525f4000f",
+      "relevance": "100",
+      "sementity": {
+        "class": "instance",
+        "fiction": "nonfiction",
+        "id": "ODENTITY_FULL_NAME",
+        "type": "Top>Person>FullName"
+      },
+      "semld_list": [
+        "http://en.wikipedia.org/wiki/Batman",
+        "http://ar.wikipedia.org/wiki/باتمان",
+        "http://ca.wikipedia.org/wiki/Batman",
+        "http://cs.wikipedia.org/wiki/Batman",
+        "http://de.wikipedia.org/wiki/Batman",
+        "http://es.wikipedia.org/wiki/Batman",
+        "http://fi.wikipedia.org/wiki/Batman",
+        "http://fr.wikipedia.org/wiki/Batman",
+        "http://he.wikipedia.org/wiki/באטמן",
+        "http://hi.wikipedia.org/wiki/बैटमैन",
+        "http://id.wikipedia.org/wiki/Batman",
+        "http://it.wikipedia.org/wiki/Batman",
+        "http://ja.wikipedia.org/wiki/バットマン",
+        "http://ko.wikipedia.org/wiki/배트맨",
+        "http://nl.wikipedia.org/wiki/Batman_(personage)",
+        "http://no.wikipedia.org/wiki/Batman",
+        "http://pl.wikipedia.org/wiki/Batman",
+        "http://pt.wikipedia.org/wiki/Batman",
+        "http://ro.wikipedia.org/wiki/Batman",
+        "http://ru.wikipedia.org/wiki/Бэтмен",
+        "http://sv.wikipedia.org/wiki/Batman",
+        "http://tr.wikipedia.org/wiki/Batman_(karakter)",
+        "http://zh.wikipedia.org/wiki/蝙蝠俠",
+        "http://d-nb.info/gnd/119086611",
+        "sumo:Human"
+      ],
+      "semtheme_list": [
+        {
+          "id": "ODTHEME_CINEMA",
+          "type": "Top>Arts>Cinema"
+        }
+      ],
+      "variant_list": [
+        {
+          "endp": "30",
+          "form": "Batman",
+          "inip": "25"
+        }
+      ]
+    }
+  ],
+  "status": {
+    "code": "0",
+    "msg": "OK",
+    "credits": "1",
+    "remaining_credits": "39999"
+  }
+}

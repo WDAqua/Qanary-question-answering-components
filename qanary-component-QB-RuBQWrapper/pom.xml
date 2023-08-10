@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-QB-RuBQWrapper</artifactId>
-    <version>3.1.5</version>
+    <version>3.1.6</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -22,7 +22,7 @@
             a artifactId not following the naming conventions, (c.f., https://maven.apache.org/guides/mini/guide-naming-conventions.html) -->
         <docker.image.name>qanary-component-qb-rubqwrapper</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-        <springdoc.version>1.6.15</springdoc.version>
+        <springdoc.version>1.7.0</springdoc.version>
     </properties>
 
     <dependencies>

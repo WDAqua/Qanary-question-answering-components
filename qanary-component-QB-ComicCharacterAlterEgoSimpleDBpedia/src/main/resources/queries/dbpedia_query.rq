@@ -9,7 +9,7 @@ SELECT * WHERE {
     ?resource rdfs:label ?label .
     ?resource dct:subject dbr:Category:Superheroes_with_alter_egos . # only superheros
 
-    FILTER(LANG(?label) = \"en\") .
+    FILTER(LANG(?label) = "en") .
     FILTER(! strStarts(LCASE(?label), LCASE(?answer))) . # filter starting with the same name
     FILTER(CONTAINS(STR(?label), ?name)) .
 }
