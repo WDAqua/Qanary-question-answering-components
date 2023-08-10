@@ -1,10 +1,16 @@
 package eu.wdaqua.qanary.component.platypuswrapper.qb;
 
-import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
-import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.PlatypusResult;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,23 +22,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.client.MockRestServiceServer;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
+import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
+import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.DataNotProcessableException;
+import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.PlatypusResult;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 class MockPlatypusQueryBuilderTest {
     private static final Logger logger = LoggerFactory.getLogger(MockPlatypusQueryBuilderTest.class);
-    private final String applicationName = "PlatypusQueryBuilder";
     // name of query file
     private final String testQueryFilename = "/queries/test_query_of_platypus_api.rq";
     MockRestServiceServer mockServer;
@@ -83,8 +82,9 @@ class MockPlatypusQueryBuilderTest {
      * @param lang
      * @return
      * @throws URISyntaxException
+     * @throws DataNotProcessableException
      */
-    private PlatypusResult testWebService(PlatypusQueryBuilder myApp, String question, String lang) throws URISyntaxException {
+    private PlatypusResult testWebService(PlatypusQueryBuilder myApp, String question, String lang) throws URISyntaxException, DataNotProcessableException {
         PlatypusResult result = myApp.requestPlatypusWebService(this.endpoint, question, lang);
         assertFalse(result.getSparql().isEmpty());
         return result;
