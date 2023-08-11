@@ -22,7 +22,7 @@
 			a artifactId not following the naming conventions, (c.f., https://maven.apache.org/guides/mini/guide-naming-conventions.html) -->
 		<docker.image.name>qanary-component-qb-tebaqawrapper</docker.image.name>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-		<springdoc.version>1.6.14</springdoc.version>
+		<springdoc.version>1.7.0</springdoc.version>
 	</properties>
 
 	<dependencies>
