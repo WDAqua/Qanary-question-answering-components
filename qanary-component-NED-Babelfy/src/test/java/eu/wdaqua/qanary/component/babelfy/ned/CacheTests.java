@@ -1,6 +1,5 @@
 package eu.wdaqua.qanary.component.babelfy.ned;
 
-import eu.wdaqua.qanary.commons.config.CacheConfig;
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import qa.commons.QanaryCacheTest;
 
 import java.net.URISyntaxException;
 
@@ -49,13 +49,15 @@ class CacheTests {
      */
     @Test
     void givenRestTemplate_whenRequested_thenLogAndModifyResponse() {
+        QanaryCacheTest qanaryCacheTest = new QanaryCacheTest(
+                testPort,
+                MAX_TIME_SPAN_SECONDS,
+                myRestTemplate,
+                myCacheOfResponse
+        );
 
-        assertDoesNotThrow(() -> CacheConfig.testCache(
-                        myRestTemplate,
-                        myCacheOfResponse,
-                        testPort,
-                        MAX_TIME_SPAN_SECONDS
-                )
+        assertDoesNotThrow(
+                qanaryCacheTest::givenRestTemplate_whenRequested_thenLogAndModifyResponse
         );
     }
 
