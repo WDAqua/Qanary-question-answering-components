@@ -14,7 +14,7 @@ public class TextRazorTestConfiguration {
         System.setProperty("question2", "What is the capital of Germany?");
         System.setProperty("question3", "What is the real name of Batman?");
 
-        System.setProperty("qanary.webservicecalls.cache.specs", "maximumSize=1000,expireAfterAccess=" + TextRazorCacheTest.MAX_TIME_SPAN_SECONDS + "s");
+        System.setProperty("qanary.webservicecalls.cache.specs", "maximumSize=1000,expireAfterAccess=" + CacheTests.MAX_TIME_SPAN_SECONDS + "s");
     }
 
     /**
