@@ -206,7 +206,7 @@ public class WatsonNED extends QanaryComponent {
                                 int end = locationsArray.getInt(1) - 1;
 
                                 // get the confidence assigned by Watson
-                                double confidence = (double) responseEntity.get("confidence");
+                                double confidence = Double.parseDouble(responseEntity.get("confidence").toString());
 
                                 // get the disambiguated DBpedia URI
                                 String uri = (String) responseEntity.getJSONObject("disambiguation").get("dbpedia_resource");

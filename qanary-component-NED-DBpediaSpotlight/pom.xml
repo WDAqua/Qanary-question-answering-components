@@ -18,6 +18,7 @@
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<docker.image.name>qanary-component-ned-dbpediaspotlight</docker.image.name>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
+		<springdoc.version>1.6.15</springdoc.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -38,13 +39,13 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-data-rest</artifactId>
-			<version>1.6.12</version>
+			<version>${springdoc.version}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
-			<version>1.6.12</version>
+			<version>${springdoc.version}</version>
 		</dependency>		
 		<dependency>
 			<groupId>org.hamcrest</groupId>
