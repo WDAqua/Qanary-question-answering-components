@@ -1,15 +1,9 @@
 package eu.wdaqua.qanary.component.platypuswrapper.qb;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
+import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
+import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.DataNotProcessableException;
+import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.PlatypusResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -22,10 +16,15 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.client.MockRestServiceServer;
 
-import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
-import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.DataNotProcessableException;
-import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.PlatypusResult;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
@@ -36,6 +35,7 @@ class MockPlatypusQueryBuilderTest {
     private final String testQueryFilename = "/queries/test_query_of_platypus_api.rq";
     MockRestServiceServer mockServer;
     private URI endpoint;
+    private final String applicationName = "PlatypusQueryBuilder";
     @Autowired
     private Environment env;
     private CacheOfRestTemplateResponse myCacheOfResponse = new CacheOfRestTemplateResponse();
