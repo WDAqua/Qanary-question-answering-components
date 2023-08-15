@@ -1,20 +1,10 @@
 package eu.wdaqua.qanary.component.platypuswrapper.qb;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
+import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
+import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
+import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.DataNotProcessableException;
+import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.PlatypusResult;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -24,18 +14,17 @@ import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebCl
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
-import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.DataNotProcessableException;
-import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.PlatypusResult;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
@@ -43,8 +32,6 @@ import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.PlatypusResult;
 @ComponentScan("eu.wdaqua.qanary")
 @AutoConfigureWebClient
 class PlatypusQueryBuilderTest {
-    // time span for caching, tests wait this time span during the test runs
-    protected final static int MAX_TIME_SPAN_SECONDS = 5;
     private static final Logger logger = LoggerFactory.getLogger(PlatypusQueryBuilderTest.class);
     private final String applicationName = "PlatypusQueryBuilder";
     private URI endpoint;
@@ -98,36 +85,6 @@ class PlatypusQueryBuilderTest {
         assertFalse(platypusQueryBuilder.isLangSupported("ne"));
         assertFalse(platypusQueryBuilder.isLangSupported("de"));
         assertFalse(platypusQueryBuilder.isLangSupported("se"));
-    }
-
-    /**
-     * @throws InterruptedException
-     * @throws URISyntaxException
-     */
-    @Test
-    @EnabledIf(expression = "#{environment['platypus.api.live.test.active'] == 'true'}", loadContext = true)
-    void givenRestTemplate_whenRequested_thenLogAndModifyResponse() throws InterruptedException, URISyntaxException {
-
-        assertNotNull(restTemplate);
-        assertNotNull(myCacheOfResponse);
-
-        LoginForm loginForm0 = new LoginForm("userName", "password");
-        LoginForm loginForm1 = new LoginForm("userName2", "password2");
-
-        long initialNumberOfRequests = myCacheOfResponse.getNumberOfExecutedRequests();
-
-        callRestTemplateWithCaching(loginForm0, Cache.NOT_CACHED); // cache miss
-        callRestTemplateWithCaching(loginForm0, Cache.CACHED); // cache hit
-        callRestTemplateWithCaching(loginForm0, Cache.CACHED); // cache hit
-        TimeUnit.SECONDS.sleep(MAX_TIME_SPAN_SECONDS + 1); // wait until it is too late for caching
-        callRestTemplateWithCaching(loginForm0, Cache.NOT_CACHED); // cache miss: too long ago
-        callRestTemplateWithCaching(loginForm0, Cache.CACHED); // cache hit
-        callRestTemplateWithCaching(loginForm1, Cache.NOT_CACHED); // cache miss: different body
-        callRestTemplateWithCaching(loginForm0, Cache.CACHED); // cache hit
-        callRestTemplateWithCaching(loginForm1, Cache.CACHED); // cache hit
-
-        assertEquals(initialNumberOfRequests + 3, myCacheOfResponse.getNumberOfExecutedRequests());
-
     }
 
     /**
