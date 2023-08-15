@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-NED-Babelfy</artifactId>
-    <version>3.3.0</version>
+    <version>3.3.1</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -90,6 +90,10 @@
                     <artifactId>log4j-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
     </dependencies>
     <build>

@@ -3,13 +3,13 @@
 == Description
 
 The main task of this component is to manage the communication between the Qanary pipeline and the Platypus API and to
-prepare the data. To do this, the component fetches the submitted question and sends the text and lang attribute to the
+prepare the data. To do this, the component fetches the submitted question and sends the `text` and `lang` attribute to the
 Platypus API. The result from the API is processed, stored in the triple store and is then available in the Qanary
 pipeline.
 
 == Configuration
 
-The component uses a cache to minimise the processing time.
+The component uses a cache to minimize the processing time.
 For the configuration you can change the following parameter as you need:
 
 ----
@@ -34,8 +34,8 @@ make sure that the API accepts requests with the parameter
 **platypus.endpoint.language.default**: The default language of the API.
 
 **platypus.endpoint.language.supported**: The list of supported languages of the API,
-e.g. `tebaqa.endpoint.language.supported=en,fr,ru`.
+e.g. `platypus.endpoint.language.supported=en,fr,ru`.
 
 == Further references
 
-- https://github.com/WDAqua/Qanary/wiki//How-to-start-a-standard-java-Qanary-component[How to start a standard java Qanary component]
+- https://github.com/WDAqua/Qanary/wiki//How-to-start-a-standard-java-Qanary-component[How to start a standard Java Qanary component]

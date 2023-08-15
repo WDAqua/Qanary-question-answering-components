@@ -1,9 +1,5 @@
 package eu.wdaqua.qanary.component.dbpediaspotlight.ned;
 
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +12,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.client.RestTemplate;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
-import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.dbpediaspotlight.ned.exceptions.DBpediaSpotlightServiceNotAvailable;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -46,6 +40,7 @@ public class Application {
 
 	@Bean
 	public DBpediaSpotlightConfiguration myDBpediaSpotlightConfiguration( //
+			@Autowired DBpediaSpotlightServiceFetcher myDBpediaSpotlightServiceFetcher, //
 			@Value("${dbpediaspotlight.test-question}") String testQuestion, //
 			@Value("${dbpediaspotlight.confidence.minimum}") float confidenceMinimum, //
 			@Value("${dbpediaspotlight.endpoint:https://api.dbpedia-spotlight.org/en/annotate}") String endpoint, //
@@ -53,13 +48,8 @@ public class Application {
 			@Value("${dbpediaspotlight.endpoint.ssl.certificatevalidation.ignore:false}") final boolean ignore
 	) throws DBpediaSpotlightServiceNotAvailable {
 		this.checkSpotlightServiceAvailability(testQuestion, endpoint, confidenceMinimum,
-				myDBpediaSpotlightServiceFetcher(), performLiveCheckOnComponentStart, ignore);
+				myDBpediaSpotlightServiceFetcher, performLiveCheckOnComponentStart, ignore);
 		return new DBpediaSpotlightConfiguration(confidenceMinimum, endpoint);
-	}
-
-	@Bean
-	public DBpediaSpotlightServiceFetcher myDBpediaSpotlightServiceFetcher() {
-		return new DBpediaSpotlightServiceFetcher();
 	}
 
 	private void checkSpotlightServiceAvailability(String testQuestion, String endpoint, float confidenceMinimum,
@@ -79,8 +69,7 @@ public class Application {
 					restTemplate.setRequestFactory(DBpediaSpotlightNED.getRequestFactoryForSslVerficationDeactivation());
 					logger.warn("SSL certificate validation deactivated.");
 				}
-				dBpediaSpotlightServiceFetcher.getJsonFromService(testQuestion, endpoint, confidenceMinimum,
-						restTemplate, myCacheOfResponses);
+				dBpediaSpotlightServiceFetcher.getJsonFromService(testQuestion);
 				return;
 			} catch (Exception e) {
 				err = e.toString() + " " + e.getLocalizedMessage();

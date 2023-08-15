@@ -20,7 +20,7 @@
         <docker.image.prefix>qanary</docker.image.prefix>
         <docker.image.name>qanary-component-qe-wikidata</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-        <springdoc.version>1.6.14</springdoc.version>
+        <springdoc.version>1.7.0</springdoc.version>
     </properties>
 
     <dependencies>

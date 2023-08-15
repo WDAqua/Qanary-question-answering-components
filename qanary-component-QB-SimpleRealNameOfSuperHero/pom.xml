@@ -19,7 +19,7 @@
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<docker.image.name>qanary-component-qb-simplerealnameofsuperhero</docker.image.name>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-		<spingdoc.version>1.6.14</spingdoc.version>
+		<spingdoc.version>1.7.0</spingdoc.version>
 	</properties>
 
 	<dependencies>
