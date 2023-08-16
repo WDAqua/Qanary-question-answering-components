@@ -16,7 +16,7 @@ public class ChatGPTTestConfiguration {
         System.setProperty("chatGPT.getModelById.url", "/v1/models/");
         System.setProperty("chatGPT.createCompletions.url", "/v1/completions");
 
-        System.setProperty("qanary.webservicecalls.cache.specs", "maximumSize=1000,expireAfterAccess=" + ChatGPTCacheTest.MAX_TIME_SPAN_SECONDS + "s");
+        System.setProperty("qanary.webservicecalls.cache.specs", "maximumSize=1000,expireAfterAccess=" + CacheTests.MAX_TIME_SPAN_SECONDS + "s");
     }
 
     /**
