@@ -93,7 +93,7 @@ mvn package
 ```
 or (excludes the buidling of a corresponding Docker container):
 ```
-mvn package -DskipDockerBuild
+mvn package -Ddockerfile.skip
 ```
 ### Run
 To run the built JAR-file execute
