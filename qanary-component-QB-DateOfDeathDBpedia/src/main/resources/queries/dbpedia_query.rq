@@ -7,8 +7,8 @@ PREFIX dbo: <http://dbpedia.org/ontology/>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT * WHERE {
-  ?resource dbo:deathDate ?answer .# real name of superhero
-  ?resource rdfs:label ?label .# get the character name of the superhero
+  ?resource dbo:deathDate ?answer .# date of death
+  ?resource rdfs:label ?label .# get the persons name
   FILTER(LANG(?label) = "en") .# only English names
   VALUES ?resource { ?dbpediaResource } .# only for this specific resource
 }

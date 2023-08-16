@@ -1,1 +1,103 @@
+# QB DateOfDeathDBpedia component
 
+## Description
+This component is intended to create and store a SPARQL query which can be executed on dbpedia to receive the date of death for a given person.
+
+## Input specification
+[source, ttl]
+----
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+
+<urn:qanary:input> oa:hasBody <dbr:Resource> ;
+  qa:score "0.5"^^xsd:decimal ;
+  oa:hasTarget [
+    a    oa:SpecificResource;
+    oa:hasSource    <urn:qanary:myQanaryQuestion> ;
+    oa:hasSelector  [
+        a oa:TextPositionSelector ;
+        oa:start "0"^^xsd:nonNegativeInteger ;
+        oa:end  "5"^^xsd:nonNegativeInteger
+   ]
+] .
+----
+
+## Output specification
+[source, ttl]
+----
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+
+<urn:qanary:output> a qa:AnnotationOfAnswerSPARQL ;
+    oa:hasTarget <urn:qanary:myQanaryQuestion> ;
+    oa:hasBody "sparql query" ;
+    qa:score "1.0"^^xsd:float ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
+    oa:annotatedBy <urn:qanary:applicationName > .
+----
+
+## Created SPARQL query
+[source, sparql]
+----
+PREFIX dbr: <http://dbpedia.org/resource/>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT * WHERE {
+  ?resource dbo:deathDate ?answer .# date of death
+  ?resource rdfs:label ?label .# get the persons name
+  FILTER(LANG(?label) = "en") .# only English names
+  VALUES ?resource { ?dbpediaResource } .# only for this specific resource
+}
+ORDER BY ?resource
+----
+### Explanation
+- This component expects an annotation of named entities within the Qanary triplestore. Hence, previously another component capable of recognizing and disambiguating (NER/NED) DBpedia named entities needs to be executed.
+- e.g., the NED component using https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-DBpedia-Spotlight[Qanary DBpedia Spotlight component]
+
+## Example
+
+### Question:
+```
+What is the date of death of Stephen Hawking?
+```
+### Created SPARQL-Query (stored in triplestore)
+
+[source,sparql]
+----
+PREFIX dbr: <http://dbpedia.org/resource/>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT * WHERE {
+  ?resource dbo:deathDate ?answer .# date of death
+  ?resource rdfs:label ?label .# get the persons name
+  FILTER(LANG(?label) = "en") .# only English names
+  VALUES ?resource { <http://dbpedia.org/resource/Stephen_Hawking> } .# only for this specific resource
+}
+ORDER BY ?resource
+----
+
+## Build and Run
+### Build with Maven
+```
+mvn package
+```
+or (excludes the buidling of a corresponding Docker container):
+```
+mvn package -DskipDockerBuild
+```
+### Run
+To run the built JAR-file execute
+```
+java -jar target/qanary-component-QB-DateOfDeathDBpedia-X.Y.Z.jar
+```
+where X, Y and Z represent the current version of the component.
