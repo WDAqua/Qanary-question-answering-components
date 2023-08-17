@@ -8,6 +8,7 @@ import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.irix.IRIs;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
@@ -38,6 +39,13 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
     // you might use this parameterizable file to store the query that should be
     // executed for storing the annotations computed for this component from the
     // Qanary triplestore
+
+    /*
+    * Step 1: Fetching required annotations;
+    * Step 2: Compute new informations;
+    * Step 3: Store new informations in triplestore;
+     */
+
     private static final String QUERY_FILE_FETCH_REQUIRED_ANNOTATIONS = "/queries/fetch_required_annotations.rq";
     private static final String QUERY_FILE_DBPEDIA_QUERY = "/queries/dbpedia_query.rq";
     private static final String QUERY_FILE_STORE_COMPUTED_ANNOTATIONS = "/queries/insert_one_annotation.rq";
@@ -82,13 +90,21 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
         String sparqlQuery = QanaryTripleStoreConnector.readFileFromResourcesWithMap(QUERY_FILE_FETCH_REQUIRED_ANNOTATIONS, bindingsForSelect);
         ResultSet resultSet = connectorToQanaryTriplestore.select(sparqlQuery);
 
+        // represents step 2 and returns the createed queries which are to be stored
         queries = fetchEntitiesAndCreateQueries(myQanaryMessage, myQanaryQuestion, resultSet);
 
+        // represents step 3 and stores new information in triplestore
         updateTriplestore(queries, connectorToQanaryTriplestore);
 
         return myQanaryMessage;
     }
 
+    /**
+     * Represents Step 3: Updating and store the triplestore with the new computed informations
+     * @param queriesToBeInserted Query which contains an Insert-Statement which updates the triplestore
+     * @param connectorToQanaryTriplestore
+     * @throws Exception
+     */
     public void updateTriplestore(List<String> queriesToBeInserted, QanaryTripleStoreConnector connectorToQanaryTriplestore) throws Exception {
         for (String query : queriesToBeInserted
         ) {
@@ -96,13 +112,24 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
         }
     }
 
+    /**
+     * Represents Step 2
+     * First extract information, secondly create the SPARQL query, third create queries which will be executed to store built SPARQL queries
+     * @param myQanaryMessage
+     * @param qanaryQuestion
+     * @param resultSet - contains the fetch triples
+     * @return queries which will be executed to store the new computed information
+     * @throws Exception
+     */
     public List<String> fetchEntitiesAndCreateQueries(QanaryMessage myQanaryMessage, QanaryQuestion qanaryQuestion, ResultSet resultSet) throws Exception {
 
+        // storing the list of created queries
         List<String> queries = new ArrayList<String>();
 
+        // extract information from ResultSet and create queries
         try {
             do {
-                logger.info("There is a next result (t/f): " + resultSet.hasNext());
+                logger.info("There is a next result (t/f): {}", resultSet.hasNext());
                 QuerySolution tuple = resultSet.next();
                 int start = tuple.getLiteral("start").getInt();
                 int end = tuple.getLiteral("end").getInt();
@@ -122,6 +149,14 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
         return queries;
     }
 
+    /**
+     * Creates the queries which will be executed to store the new computed information
+     * @param myQanaryMessage
+     * @param qanaryQuestion
+     * @param queries - the SPARQL queries which has been computed in 'getDbpediaQuery()'
+     * @return queries which will be executed to store the new computed information
+     * @throws Exception
+     */
     public List<String> createQueries(QanaryMessage myQanaryMessage, QanaryQuestion qanaryQuestion, List<String> queries) throws Exception {
         List<String> createdQueries = new ArrayList<>();
         for (String entity : queries
@@ -131,6 +166,12 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
         return createdQueries;
     }
 
+    /**
+     *
+     * @param myQanaryQuestion
+     * @return query which will be executed to fetch required information
+     * @throws Exception
+     */
     public QuerySolutionMap getBindingsForSparqlQuery(QanaryQuestion myQanaryQuestion) throws Exception {
         QuerySolutionMap querySolutionMap = new QuerySolutionMap();
         querySolutionMap.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));// Set the GraphID
@@ -141,12 +182,21 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
     }
 
 
+    /**
+     * Creates the query by replacing the 'dbpediaResource' with the actual fetched dbpediaResource from the triple in the prior step
+     * @param dbpediaResource Resource to be inserted
+     * @return the concrete SPARQL query which will be stored to the triplestore later
+     * @throws IOException
+     */
     public String getDbpediaQuery(String dbpediaResource) throws IOException {
+        if(IRIs.check(dbpediaResource)) {
+            QuerySolutionMap bindingsForDbpediaQuery = new QuerySolutionMap();
+            bindingsForDbpediaQuery.add("dbpediaResource", ResourceFactory.createResource(dbpediaResource));
 
-        QuerySolutionMap bindingsForDbpediaQuery = new QuerySolutionMap();
-        bindingsForDbpediaQuery.add("dbpediaResource", ResourceFactory.createResource(dbpediaResource));
-
-        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(QUERY_FILE_DBPEDIA_QUERY, bindingsForDbpediaQuery);
+            return QanaryTripleStoreConnector.readFileFromResourcesWithMap(QUERY_FILE_DBPEDIA_QUERY, bindingsForDbpediaQuery);
+        }
+        else
+            return null;
     }
 
     public String getInsertQuery(QanaryMessage myQanaryMessage, QanaryQuestion<String> myQanaryQuestion, String createdDbpediaQuery)

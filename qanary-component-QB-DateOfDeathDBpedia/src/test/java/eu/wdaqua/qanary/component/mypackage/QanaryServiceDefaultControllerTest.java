@@ -45,9 +45,9 @@ import static org.mockito.ArgumentMatchers.any;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class QanaryServiceControllerTest {
+public class QanaryServiceDefaultControllerTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(QanaryServiceControllerTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(QanaryServiceDefaultControllerTest.class);
     private final static String SUPPORTED_PREFIX = "What is the date of death of ";
     private final static String EXAMPLE_QUESTION = "exampleQuestion";
     private final static String ENDPOINT = "endpoint";
@@ -201,13 +201,6 @@ public class QanaryServiceControllerTest {
                     }
             );
         }
-
-        //TODO:
-        @Test
-        public void createQueriesWhenNull() {
-            assertEquals(true, true);
-        }
-
     }
 
     /**
@@ -227,9 +220,9 @@ public class QanaryServiceControllerTest {
 
             // test data
             tupleTestObjects = new ArrayList<>();
-            tupleTestObjects.add(new TupleTestObject(1, 2, "abc"));
-            tupleTestObjects.add(new TupleTestObject(5, 2, "ääöü.-!"));
-            tupleTestObjects.add(new TupleTestObject(89, 221, "3411#s+231"));
+            tupleTestObjects.add(new TupleTestObject(1, 2, "https://dbpedia.org/page/Stephen_Hawking"));
+            tupleTestObjects.add(new TupleTestObject(5, 2, "https://dbpedia.org/page/Albert_Einstein"));
+            tupleTestObjects.add(new TupleTestObject(89, 221, "https://dbpedia.org/page/Edsger_Dijkstra"));
 
             // set up resultSet for example-question for qanarytriplestore
             ResultSet resultSetQuestion = createResultSet(addQuerySolutionMapForQuestion(EXAMPLE_QUESTION));
@@ -254,16 +247,9 @@ public class QanaryServiceControllerTest {
                         for (int i = 0; i < queries.size(); i++) {
                             assertTrue(queries.get(i).contains(tupleTestObjects.get(i).getdbpediaResource()));
                         }
-                    }//,
-                    // further tests on the created queries
+                    }
             );
 
-        }
-
-        // TODO:
-        @Test
-        void fetchEntitiesAndCreateQueriesWhenNull() {
-            assertEquals(true, true);
         }
     }
 
@@ -291,12 +277,6 @@ public class QanaryServiceControllerTest {
                     () -> assertEquals(solutionsAsMap.get("startValue").asLiteral(),
                             ResourceFactory.createTypedLiteral(String.valueOf(SUPPORTED_PREFIX.length()), XSDDatatype.XSDnonNegativeInteger))
             );
-        }
-
-        // TODO:
-        @Test
-        void getBindingForSparqlQueryWhenNull() {
-            assertEquals(true, true);
         }
     }
 
