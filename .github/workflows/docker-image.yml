@@ -7,6 +7,13 @@ on:
 jobs:
   build-java:
     runs-on: ubuntu-latest
+    env:
+      BABELFY_API_KEY: ${{ secrets.BABELFY_API_KEY }}
+      CHATGPT_API_KEY: ${{ secrets.CHATGPT_API_KEY }}
+      DANDELION_API_KEY: ${{ secrets.DANDELION_API_KEY }}
+      MEANINGCLOUD_API_KEY: ${{ secrets.MEANINGCLOUD_API_KEY }}
+      TAGME_API_KEY: ${{ secrets.TAGME_API_KEY }}
+      TEXTRAZOR_API_KEY: ${{ secrets.TEXTRAZOR_API_KEY }}
     steps:
       - name: Configure java
         uses: actions/setup-java@v3
