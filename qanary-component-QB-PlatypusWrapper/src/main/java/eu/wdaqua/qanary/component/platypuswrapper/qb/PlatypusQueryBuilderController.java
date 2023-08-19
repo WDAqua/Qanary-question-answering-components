@@ -1,8 +1,8 @@
 package eu.wdaqua.qanary.component.platypuswrapper.qb;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
+import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.DataNotProcessableException;
+import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.PlatypusRequest;
+import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.PlatypusResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,9 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.DataNotProcessableException;
-import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.PlatypusRequest;
-import eu.wdaqua.qanary.component.platypuswrapper.qb.messages.PlatypusResult;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @Controller
 public class PlatypusQueryBuilderController {

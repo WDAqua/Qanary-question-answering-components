@@ -1,4 +1,4 @@
-package eu.wdaqa.qanary.component.watson.ned;
+package eu.wdaqua.qanary.component.watson.ned;
 
 import com.google.gson.Gson;
 import eu.wdaqua.qanary.commons.QanaryMessage;

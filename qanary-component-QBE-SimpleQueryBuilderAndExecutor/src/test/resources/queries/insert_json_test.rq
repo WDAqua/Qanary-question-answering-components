@@ -13,6 +13,6 @@ INSERT {
   }
 }
 WHERE
-  { BIND(iri(str(rand())) AS ?b)
+  { BIND(IRI(str(rand())) AS ?b)
     BIND(now() AS ?time)
   }

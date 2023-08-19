@@ -11,6 +11,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.6.7</version>
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <properties>
         <java.version>17</java.version>
@@ -73,7 +74,6 @@
             <artifactId>json-path-assert</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -85,7 +85,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>eu.wdaqa.qanary.component.watson.ned.Application</mainClass>
+                    <mainClass>eu.wdaqua.qanary.component.watson.ned.Application</mainClass>
                 </configuration>
                 <executions>
                     <execution>
@@ -94,10 +94,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <!-- https://github.com/spotify/dockerfile-maven -->
             <!-- build Docker image: mvn dockerfile:build -->
