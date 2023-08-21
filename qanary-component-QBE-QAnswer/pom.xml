@@ -20,7 +20,7 @@
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<docker.image.name>qanary-component-qbe-qanswer</docker.image.name>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-		<springdoc.version>1.6.15</springdoc.version>
+		<springdoc.version>1.7.0</springdoc.version>
 	</properties>
 
 	<dependencies>
