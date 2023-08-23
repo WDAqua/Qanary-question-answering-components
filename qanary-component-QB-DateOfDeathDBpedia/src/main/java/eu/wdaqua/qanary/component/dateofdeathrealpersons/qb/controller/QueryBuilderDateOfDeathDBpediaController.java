@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.IOException;
 
 @Controller
-public class DefaultController {
+public class QueryBuilderDateOfDeathDBpediaController {
 
     @Autowired
     private QueryBuilderDateOfDeathDBpedia queryBuilderDateOfDeathDBpedia;
@@ -21,8 +21,8 @@ public class DefaultController {
         try {
             String result = queryBuilderDateOfDeathDBpedia.getDbpediaQuery(dbpediaResource);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch(Exception e) {
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
