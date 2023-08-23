@@ -18,11 +18,12 @@ public class DefaultController {
 
     @GetMapping("/getdbpediaquery")
     public ResponseEntity<?> getDbpediaQuery(@RequestParam String dbpediaResource) throws IOException {
-        String result = queryBuilderDateOfDeathDBpedia.getDbpediaQuery(dbpediaResource);
-        if(result != null)
+        try {
+            String result = queryBuilderDateOfDeathDBpedia.getDbpediaQuery(dbpediaResource);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        else
-            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch(Exception e) {
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
     }
 
 }
