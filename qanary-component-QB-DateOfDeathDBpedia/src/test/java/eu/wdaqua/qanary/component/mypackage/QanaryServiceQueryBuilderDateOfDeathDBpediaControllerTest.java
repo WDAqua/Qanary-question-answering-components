@@ -45,9 +45,9 @@ import static org.mockito.ArgumentMatchers.any;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
-public class QanaryServiceDefaultControllerTest {
+public class QanaryServiceQueryBuilderDateOfDeathDBpediaControllerTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(QanaryServiceDefaultControllerTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(QanaryServiceQueryBuilderDateOfDeathDBpediaControllerTest.class);
     private final static String SUPPORTED_PREFIX = "What is the date of death of ";
     private final static String EXAMPLE_QUESTION = "exampleQuestion";
     private final static String ENDPOINT = "endpoint";
@@ -78,7 +78,7 @@ public class QanaryServiceDefaultControllerTest {
     ResultSet createResultSet(List<QuerySolutionMap> querySolutionMapList) {
 
         return new ResultSet() {
-            List<QuerySolutionMap> querySolutionMaps = querySolutionMapList;
+            final List<QuerySolutionMap> querySolutionMaps = querySolutionMapList;
             int rowIndex = -1;
 
             @Override
@@ -129,14 +129,13 @@ public class QanaryServiceDefaultControllerTest {
     }
 
     /**
-     * @param question Specific Question
      * @return
      */
-    List<QuerySolutionMap> addQuerySolutionMapForQuestion(String question) {
+    List<QuerySolutionMap> addQuerySolutionMapForQuestion() {
         Model model = ModelFactory.createDefaultModel();
         List<QuerySolutionMap> querySolutionMapList = new ArrayList<>();
         QuerySolutionMap querySolutionMap = new QuerySolutionMap();
-        querySolutionMap.add("question", model.createResource(question));
+        querySolutionMap.add("question", model.createResource(QanaryServiceQueryBuilderDateOfDeathDBpediaControllerTest.EXAMPLE_QUESTION));
         querySolutionMapList.add(querySolutionMap);
         return querySolutionMapList;
     }
@@ -169,15 +168,13 @@ public class QanaryServiceDefaultControllerTest {
 
         /**
          * Testing the createQueries-Method
-         * INPUT: DBPedia-Queries or in this case entities which represent the created DBpedia-Queries
+         * INPUT: DBpedia-Queries or in this case entities which represent the created DBpedia-Queries
          * RETURN: Insert-Queries with entities (real: dbpediaQueries) inserted
-         *
-         * @throws URISyntaxException
          */
         @BeforeEach
         public void setup() throws URISyntaxException, SparqlQueryFailed {
             // create ResultSet for ExampleQuestion
-            ResultSet resultSetQuestion = createResultSet(addQuerySolutionMapForQuestion(EXAMPLE_QUESTION));
+            ResultSet resultSetQuestion = createResultSet(addQuerySolutionMapForQuestion());
             Mockito.when(qanaryTripleStoreConnector.select(any())).thenReturn(resultSetQuestion);
 
             qanaryMessage = new QanaryMessage(new URI(ENDPOINT), new URI(IN_GRAPH), new URI(OUT_GRAPH));
@@ -188,7 +185,7 @@ public class QanaryServiceDefaultControllerTest {
         public void createQueriesWithGivenEntities() throws Exception {
             List<String> givenEntities = List.of("testCase1", "testCase2", "TESTcASE3");
 
-            List<String> result = queryBuilderDateOfDeathDBpedia.createQueries(qanaryMessage, qanaryQuestion, givenEntities);
+            List<String> result = queryBuilderDateOfDeathDBpedia.createQueries(qanaryQuestion, givenEntities);
 
             assertEquals(3, result.size());
             assertAll("Result Queries contain given Entities",
@@ -196,7 +193,6 @@ public class QanaryServiceDefaultControllerTest {
                         for (int i = 0; i < result.size(); i++) {
                             assertTrue(result.get(i).contains(givenEntities.get(i)));
                             String queryTemplate = Files.readString(Paths.get("src/main/resources/queries/insert_one_annotation.rq"));
-                            // probably test with queryTemplate (?)
                         }
                     }
             );
@@ -207,7 +203,6 @@ public class QanaryServiceDefaultControllerTest {
      * Testing the "fetchEntitiesAndCreateQueries"-Method
      * INPUT: ResultSet w/ start::Int, end::Int, dbpediaResource::String
      * RETURN: DBpedia-Queries
-     * Test for: if encapsuled function -> how many times it was called;
      * getDbpediaQuery gets called => Problem with Mock or not Mock of QueryBuilderDateOfDeath-Class
      */
     @Nested
@@ -225,7 +220,7 @@ public class QanaryServiceDefaultControllerTest {
             tupleTestObjects.add(new TupleTestObject(89, 221, "https://dbpedia.org/page/Edsger_Dijkstra"));
 
             // set up resultSet for example-question for qanarytriplestore
-            ResultSet resultSetQuestion = createResultSet(addQuerySolutionMapForQuestion(EXAMPLE_QUESTION));
+            ResultSet resultSetQuestion = createResultSet(addQuerySolutionMapForQuestion());
             Mockito.when(qanaryTripleStoreConnector.select(any())).thenReturn(resultSetQuestion);
 
             // set up qanaryMessage abd qanaryQuestion
@@ -238,7 +233,7 @@ public class QanaryServiceDefaultControllerTest {
             List<QuerySolutionMap> querySolutionMaps = addQuerySolutionMapForTupleTestObject(tupleTestObjects);
             resultSet = createResultSet(querySolutionMaps);
 
-            List<String> queries = queryBuilderDateOfDeathDBpedia.fetchEntitiesAndCreateQueries(qanaryMessage, qanaryQuestion, resultSet);
+            List<String> queries = queryBuilderDateOfDeathDBpedia.fetchEntitiesAndCreateQueries(qanaryQuestion, resultSet);
 
             // Test for queries
             assertAll("Queries contain values from TupleObjects",
@@ -261,7 +256,7 @@ public class QanaryServiceDefaultControllerTest {
 
         @BeforeEach()
         void setup() throws URISyntaxException, SparqlQueryFailed {
-            resultSet = createResultSet(addQuerySolutionMapForQuestion(EXAMPLE_QUESTION));
+            resultSet = createResultSet(addQuerySolutionMapForQuestion());
             Mockito.when(qanaryTripleStoreConnector.select(any())).thenReturn(resultSet);
             qanaryMessage = new QanaryMessage(new URI(ENDPOINT), new URI(IN_GRAPH), new URI(OUT_GRAPH));
             qanaryQuestion = new QanaryQuestion<>(qanaryMessage, qanaryTripleStoreConnector);

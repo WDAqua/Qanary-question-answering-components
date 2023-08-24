@@ -41,13 +41,18 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
     /*  you might use this parameterizable files to store the queries that should be
         executed for fetching the annotations, create the SPARQL queries which will be saved or
         the final insert query  */
+
+    // query used to fetch required information from the graphURI
     private static final String QUERY_FILE_FETCH_REQUIRED_ANNOTATIONS = "/queries/fetch_required_annotations.rq";
 
+    // That's the later inserted query / new computed query
     private static final String QUERY_FILE_DBPEDIA_QUERY = "/queries/dbpedia_query.rq";
-    private static final String QUERY_FILE_STORE_COMPUTED_ANNOTATIONS = "/queries/insert_one_annotation.rq";
+
+    // used from the Qanary commons queries, query to create a new annotation and store the computed query
+    private static final String QUERY_FILE_STORE_COMPUTED_ANNOTATIONS = "/queries/insert_one_AnnotationOfAnswerSPARQL.rq";
     private static final Logger logger = LoggerFactory.getLogger(QueryBuilderDateOfDeathDBpedia.class);
-    private final String applicationName;
     private final String SUPPORTED_PREFIX = "What is the date of death of ";
+    private final String applicationName;
 
     public QueryBuilderDateOfDeathDBpedia(@Value("${spring.application.name}") final String applicationName) {
         this.applicationName = applicationName;
@@ -56,7 +61,6 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
         QanaryTripleStoreConnector.guardNonEmptyFileFromResources(QUERY_FILE_FETCH_REQUIRED_ANNOTATIONS);
         QanaryTripleStoreConnector.guardNonEmptyFileFromResources(QUERY_FILE_DBPEDIA_QUERY);
         QanaryTripleStoreConnector.guardNonEmptyFileFromResources(QUERY_FILE_STORE_COMPUTED_ANNOTATIONS);
-
     }
 
     /**
@@ -85,7 +89,7 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
 
         // represents step 2 and returns the created queries which are to be stored
         try {
-            queries = fetchEntitiesAndCreateQueries(myQanaryMessage, myQanaryQuestion, resultSet);
+            queries = fetchEntitiesAndCreateQueries(myQanaryQuestion, resultSet);
         } catch (Exception e) {
             logger.error("Exception while creating queries: ", e);
         }
@@ -115,7 +119,7 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
      * @param resultSet - contains the fetch triples
      * @return queries which will be executed to store the new computed information
      */
-    public List<String> fetchEntitiesAndCreateQueries(QanaryMessage myQanaryMessage, QanaryQuestion qanaryQuestion, ResultSet resultSet) throws Exception {
+    public List<String> fetchEntitiesAndCreateQueries(QanaryQuestion qanaryQuestion, ResultSet resultSet) throws Exception {
 
         // storing the list of created queries
         List<String> queries = new ArrayList<>();
@@ -138,7 +142,7 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
             logger.error("{}", e.getMessage());
         }
 
-        queries = createQueries(myQanaryMessage, qanaryQuestion, queries);
+        queries = createQueries(qanaryQuestion, queries);
 
         return queries;
     }
@@ -149,11 +153,11 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
      * @param queries - the SPARQL queries which has been computed in 'getDbpediaQuery()'
      * @return queries which will be executed to store the new computed information
      */
-    public List<String> createQueries(QanaryMessage myQanaryMessage, QanaryQuestion qanaryQuestion, List<String> queries) throws Exception {
+    public List<String> createQueries(QanaryQuestion qanaryQuestion, List<String> queries) throws Exception {
         List<String> createdQueries = new ArrayList<>();
         for (String entity : queries
         ) {
-            createdQueries.add(getInsertQuery(myQanaryMessage, qanaryQuestion, entity));
+            createdQueries.add(getInsertQuery(qanaryQuestion, entity));
         }
         return createdQueries;
     }
@@ -166,6 +170,7 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
         querySolutionMap.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));// Set the GraphID
         querySolutionMap.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
         querySolutionMap.add("startValue", ResourceFactory.createTypedLiteral(String.valueOf(SUPPORTED_PREFIX.length()), XSDDatatype.XSDnonNegativeInteger));
+        querySolutionMap.add("confidence", ResourceFactory.createTypedLiteral("1.0", XSDDatatype.XSDfloat));
 
         return querySolutionMap;
     }
@@ -190,14 +195,16 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
 
     }
 
-    public String getInsertQuery(QanaryMessage myQanaryMessage, QanaryQuestion<String> myQanaryQuestion, String createdDbpediaQuery)
+    // binds query variables with concrete values and returns the Insert-query
+    public String getInsertQuery(QanaryQuestion<String> myQanaryQuestion, String createdDbpediaQuery)
             throws SparqlQueryFailed, URISyntaxException, QanaryExceptionNoOrMultipleQuestions, IOException {
 
         QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
         bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
         bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
         bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
-        bindingsForInsert.add("body", ResourceFactory.createTypedLiteral(createdDbpediaQuery, XSDDatatype.XSDdate));
+        bindingsForInsert.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createTypedLiteral(createdDbpediaQuery, XSDDatatype.XSDdate));
+        bindingsForInsert.add("score", ResourceFactory.createTypedLiteral("1.0", XSDDatatype.XSDfloat));
 
         return QanaryTripleStoreConnector.readFileFromResourcesWithMap(QUERY_FILE_STORE_COMPUTED_ANNOTATIONS, bindingsForInsert);
     }
