@@ -28,6 +28,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -39,6 +40,8 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
@@ -52,6 +55,22 @@ public class QanaryServiceQueryBuilderDateOfDeathDBpediaControllerTest {
     private final static String ENDPOINT = "endpoint";
     private final static String IN_GRAPH = "inGraph";
     private final static String OUT_GRAPH = "outGraph";
+    private final String encodedQuery = "PREFIX  dbo:  <http://dbpedia.org/ontology/>\n" +
+            "PREFIX  dct:  <http://purl.org/dc/terms/>\n" +
+            "PREFIX  dbr:  <http://dbpedia.org/resource/>\n" +
+            "PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+            "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>\n" +
+            "PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+            "PREFIX  foaf: <http://xmlns.com/foaf/0.1/>\n" +
+            "\n" +
+            "SELECT  *\n" +
+            "WHERE\n" +
+            "  { ?resource  dbo:deathDate  ?answer ;\n" +
+            "              rdfs:label     ?label\n" +
+            "    FILTER ( lang(?label) = \"en\" )\n" +
+            "    VALUES ?resource { dbr:Stephen_Hawking }\n" +
+            "  }\n" +
+            "ORDER BY ?resource\n";
     QanaryMessage qanaryMessage;
     QanaryQuestion qanaryQuestion;
     ResultSet resultSet;
@@ -161,6 +180,18 @@ public class QanaryServiceQueryBuilderDateOfDeathDBpediaControllerTest {
             querySolutionMapList.add(querySolutionMap);
         }
         return querySolutionMapList;
+    }
+
+    @Test
+    public void testDecodingOfGetDbpediaQueryRequest() throws Exception {
+        String encodedURI = "http%3A%2F%2Fdbpedia.org%2Fresource%2FStephen_Hawking";
+
+        MvcResult mvcResult = mockMvc.perform(get("/getdbpediaquery/" + encodedURI))
+                .andExpect(status().isOk())
+                .andReturn();
+
+
+        assertEquals(encodedQuery, mvcResult.getResponse().getContentAsString());
     }
 
     /**

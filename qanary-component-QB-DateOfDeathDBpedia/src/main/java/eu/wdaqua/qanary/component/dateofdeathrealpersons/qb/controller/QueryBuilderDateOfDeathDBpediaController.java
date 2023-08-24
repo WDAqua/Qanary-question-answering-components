@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 @Controller
 public class QueryBuilderDateOfDeathDBpediaController {
@@ -25,9 +27,9 @@ public class QueryBuilderDateOfDeathDBpediaController {
                     + "Example: http://dbpedia.org/resource/Stephen_Hawking (http%3A%2F%2Fdbpedia.org%2Fresource%2FStephen_Hawking)"
     )
     public ResponseEntity<?> getDbpediaQuery(@PathVariable("dbpediaResource") String dbpediaResource) throws IOException {
-        System.out.println(dbpediaResource);
         try {
-            String result = queryBuilderDateOfDeathDBpedia.getDbpediaQuery(dbpediaResource);
+            String decodedResource = URLDecoder.decode(dbpediaResource, StandardCharsets.UTF_8);
+            String result = queryBuilderDateOfDeathDBpedia.getDbpediaQuery(decodedResource);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
