@@ -183,7 +183,6 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
      * @return the concrete SPARQL query which will be stored to the triplestore later
      */
     public String getDbpediaQuery(String dbpediaResource) throws Exception {
-
         try {
             QuerySolutionMap bindingsForDbpediaQuery = new QuerySolutionMap();
             bindingsForDbpediaQuery.add("dbpediaResource", ResourceFactory.createResource(dbpediaResource));

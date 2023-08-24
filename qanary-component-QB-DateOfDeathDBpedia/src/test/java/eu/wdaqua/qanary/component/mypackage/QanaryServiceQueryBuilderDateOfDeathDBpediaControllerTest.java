@@ -33,8 +33,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +46,7 @@ import static org.mockito.ArgumentMatchers.any;
 public class QanaryServiceQueryBuilderDateOfDeathDBpediaControllerTest {
 
     private static final Logger logger = LoggerFactory.getLogger(QanaryServiceQueryBuilderDateOfDeathDBpediaControllerTest.class);
+    private static final String QUERY_FILE_STORE_COMPUTED_ANNOTATIONS = "/queries/insert_one_AnnotationOfAnswerSPARQL.rq";
     private final static String SUPPORTED_PREFIX = "What is the date of death of ";
     private final static String EXAMPLE_QUESTION = "exampleQuestion";
     private final static String ENDPOINT = "endpoint";
@@ -63,6 +62,10 @@ public class QanaryServiceQueryBuilderDateOfDeathDBpediaControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext applicationContext;
+
+    public QanaryServiceQueryBuilderDateOfDeathDBpediaControllerTest() {
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(QUERY_FILE_STORE_COMPUTED_ANNOTATIONS);
+    }
 
     /**
      * initialize local controller enabled for tests
@@ -192,7 +195,7 @@ public class QanaryServiceQueryBuilderDateOfDeathDBpediaControllerTest {
                     () -> {
                         for (int i = 0; i < result.size(); i++) {
                             assertTrue(result.get(i).contains(givenEntities.get(i)));
-                            String queryTemplate = Files.readString(Paths.get("src/main/resources/queries/insert_one_annotation.rq"));
+                            String queryTemplate = QUERY_FILE_STORE_COMPUTED_ANNOTATIONS;
                         }
                     }
             );
