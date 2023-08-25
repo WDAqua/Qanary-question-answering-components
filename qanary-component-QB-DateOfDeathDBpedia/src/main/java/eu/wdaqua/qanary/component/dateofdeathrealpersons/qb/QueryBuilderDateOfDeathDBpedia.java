@@ -170,7 +170,6 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
         querySolutionMap.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));// Set the GraphID
         querySolutionMap.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
         querySolutionMap.add("startValue", ResourceFactory.createTypedLiteral(String.valueOf(SUPPORTED_PREFIX.length()), XSDDatatype.XSDnonNegativeInteger));
-        querySolutionMap.add("confidence", ResourceFactory.createTypedLiteral("1.0", XSDDatatype.XSDfloat));
 
         return querySolutionMap;
     }
@@ -202,8 +201,8 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
         bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
         bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
         bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
-        bindingsForInsert.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createTypedLiteral(createdDbpediaQuery, XSDDatatype.XSDdate));
-        bindingsForInsert.add("score", ResourceFactory.createTypedLiteral("1.0", XSDDatatype.XSDfloat));
+        bindingsForInsert.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createStringLiteral(createdDbpediaQuery));
+        bindingsForInsert.add("confidence", ResourceFactory.createTypedLiteral(String.valueOf(1.0), XSDDatatype.XSDfloat));
 
         return QanaryTripleStoreConnector.readFileFromResourcesWithMap(QUERY_FILE_STORE_COMPUTED_ANNOTATIONS, bindingsForInsert);
     }
