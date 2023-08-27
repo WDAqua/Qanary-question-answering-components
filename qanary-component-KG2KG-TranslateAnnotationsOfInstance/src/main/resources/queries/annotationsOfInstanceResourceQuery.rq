@@ -1,0 +1,9 @@
+prefix qa: <http://www.wdaqua.eu/qa#>
+prefix oa: <http://www.w3.org/ns/openannotation/core/>
+
+SELECT *
+FROM ?graphID
+WHERE {
+    ?annotationId a qa:AnnotationOfInstance .
+    ?annotationId oa:hasBody ?resource ;
+}
