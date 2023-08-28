@@ -1,21 +1,20 @@
 package eu.wdaqua.qanary.component;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
+import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdfconnection.RDFConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +31,8 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
     private Logger logger = LoggerFactory.getLogger(KG2KGTranslateAnnotationsOfInstance.class);
     private QanaryTripleStoreConnector qanaryTripleStoreConnector;
     private static final String ANNOTATIONSOFINSTANCE_RESOURCES_QUERY = "queries/annotationsOfInstanceResourceQuery.rq";
-    private static final String COUNTER_RESOURCE_REQUEST = "queries/counterResourceRequest.rq";
+    private static final String DBPEDIA_TO_WIKIDATA_QUERY = "queries/dbpediaToWikidata.rq";
+    private static final String WIKIDATA_TO_DBPEDIA_QUERY = "queries/wikidataToDbpedia.rq";
     private static final String WIKIDATA_PREFIX = "http://www.wikidata.org";
     private static final String DBPEDIA_PREFIX = "http://dbpedia.org";
     private static final String WIKIDATA_REQUEST_URI = "";
@@ -59,10 +59,18 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
         foundResources.forEach((k,v) -> {
             String originEntry = k.asLiteral().getString();
             if(originEntry.contains(DBPEDIA_PREFIX)) {
-                getCounterResource();
+                try {
+                    getCounterResource(WIKIDATA_TO_DBPEDIA_QUERY, k.toString());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
             else if(originEntry.contains(WIKIDATA_PREFIX)) {
-                getCounterResource();
+                try {
+                    getCounterResource(DBPEDIA_TO_WIKIDATA_QUERY, k.toString());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
@@ -94,8 +102,28 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
     - TODO: is it possible that more than one eq. resource is returned?
     -
      */
-    public void getCounterResource() {
+    public void getCounterResource(String query, String originResource) throws IOException {
 
+        String executableQuery = getResourceRequestQuery(query, originResource);
+
+        try {
+            RDFConnection conn = RDFConnection.connect("http://dbpedia.org/sparql");
+            QueryExecution queryExecution = conn.query(executableQuery);
+            ResultSet resultSet = queryExecution.execSelect();
+            while(resultSet.hasNext()) {
+                QuerySolution querySolution = resultSet.next();
+                logger.info(querySolution.get("resource").toString());
+            }
+        }catch(Exception e) {
+
+        }
+    }
+
+    public String getResourceRequestQuery(String query, String originResource) throws IOException {
+        QuerySolutionMap bindingsForQuery = new QuerySolutionMap();
+        bindingsForQuery.add("originResource", ResourceFactory.createResource("originResource"));
+
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(query, bindingsForQuery);
     }
 
 }
