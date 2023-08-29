@@ -39,10 +39,8 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
     private static final String INSERT_ANNOTATION_QUERY = "/queries/insert_one_annotation.rq";
     private static final String WIKIDATA_PREFIX = "http://www.wikidata.org";
     private static final String DBPEDIA_PREFIX = "http://dbpedia.org";
-    private static final String WIKIDATA_REQUEST_URI = "";
-    private static final String DBPEDIA_REQUEST_URI = "";
     private final String applicationName;
-    private Logger logger = LoggerFactory.getLogger(KG2KGTranslateAnnotationsOfInstance.class);
+    private final Logger logger = LoggerFactory.getLogger(KG2KGTranslateAnnotationsOfInstance.class);
     private QanaryTripleStoreConnector qanaryTripleStoreConnector;
 
     public KG2KGTranslateAnnotationsOfInstance(@Value("${spring.application.name}") final String applicationName) {
@@ -75,11 +73,11 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
             int end = entry.get("end").asLiteral().getInt();
             AnnotationOfInstancePojo tmp = new AnnotationOfInstancePojo(entryResource, targetQuestion, start, end, score);
             annotationOfInstanceObjects.add(tmp);
-            logger.info("Resource found: {}", tmp.toString());
+            logger.info("Resource found: {}", tmp);
         }
 
         // Compute new resources
-        annotationOfInstanceObjects = getEquivalentResources(annotationOfInstanceObjects);
+        annotationOfInstanceObjects = computeEquivalentResources(annotationOfInstanceObjects);
         logger.info("Computed new resources: {}", annotationOfInstanceObjects.toString());
 
 
@@ -112,16 +110,16 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
     /*
     - TODO: Mapping approach applicable?
     */
-    public List<AnnotationOfInstancePojo> getEquivalentResources(List<AnnotationOfInstancePojo> annotationOfInstanceObjects) throws Exception {
+    public List<AnnotationOfInstancePojo> computeEquivalentResources(List<AnnotationOfInstancePojo> annotationOfInstanceObjects) throws Exception {
         for (AnnotationOfInstancePojo obj : annotationOfInstanceObjects
         ) {
             String originResource = obj.getOriginResource();
-            obj.setNewResource(getEquivalentResource(originResource).toString());
+            obj.setNewResource(computeEquivalentResource(originResource).toString());
         }
         return annotationOfInstanceObjects;
     }
 
-    public RDFNode getEquivalentResource(String originResource) throws Exception {
+    public RDFNode computeEquivalentResource(String originResource) throws Exception {
         if (originResource.contains(DBPEDIA_PREFIX)) {
             return getEquivalentResource(DBPEDIA_TO_WIKIDATA_QUERY, originResource);
         } else if (originResource.contains(WIKIDATA_PREFIX)) {

@@ -22,7 +22,7 @@ public class Controller {
     @GetMapping("/equivalentresources/{resource}")
     public ResponseEntity<String> getCounterResource(@PathVariable("resource") String resource) throws Exception {
         String decodedResource = URLDecoder.decode(resource, StandardCharsets.ISO_8859_1);
-        return new ResponseEntity<>(kg2KGTranslateAnnotationsOfInstance.computeCounterResource(decodedResource).toString(), HttpStatus.OK);
+        return new ResponseEntity<>(kg2KGTranslateAnnotationsOfInstance.computeEquivalentResource(decodedResource).toString(), HttpStatus.OK);
     }
 
 
