@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -38,6 +39,12 @@ public class CopyValuesOfPriorGraphController {
 			@RequestParam String targetGraph
 	) throws Exception {
 		this.copyValuesOfPriorGraph.addDataToGraph(sourceGraph, targetGraph);
+	}
+
+	@GetMapping(value = "/copyvaluestograph")
+	public String copyValuesToGraph() {
+		// TODO: exception handling
+		return "copyvaluestograph";
 	}
 
 }
