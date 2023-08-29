@@ -1,9 +1,10 @@
 prefix qa: <http://www.wdaqua.eu/qa#>
 prefix oa: <http://www.w3.org/ns/openannotation/core/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-SELECT *
-FROM ?graphID
-WHERE {
+INSERT {
+GRAPH ?graph {
     ?a a qa:AnnotationOfInstance .
     ?a oa:hasTarget [
         a    oa:SpecificResource;
@@ -14,6 +15,12 @@ WHERE {
             oa:end  ?end
         ]
     ] .
-    ?a oa:hasBody ?resource ;
+    ?a oa:hasBody ?answer ;
+    oa:annotatedBy ?application ;
+    oa:annotatedAt ?time ;
     qa:score ?score .
+}}
+WHERE {
+    BIND (IRI(str(RAND())) AS ?a) .
+    BIND (now() as ?time)
 }
