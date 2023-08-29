@@ -1,7 +1,7 @@
-from app.mt_nllb import mt_nllb_bp
-from flask import Flask 
+from component.mt_nllb import mt_nllb_bp
+from flask import Flask
 
-version = "0.1.0"
+version = "0.1.1"
 
 # default config file
 configfile = "app.conf"

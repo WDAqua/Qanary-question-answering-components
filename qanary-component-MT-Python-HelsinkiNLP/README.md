@@ -91,3 +91,15 @@ GRAPH <uuid> {
     }
 }
 ```
+
+## How To Test This Component
+
+This component uses the [pytest](https://docs.pytest.org/). 
+The necessary environment variables have to be configured in `pytest.ini`.
+
+**Note**: The use of a virtual environment is encouraged for this.
+
+First, install the requirements with `pip install -r requirements.txt`.
+
+Then run the local tests with the command `pytest`.
+

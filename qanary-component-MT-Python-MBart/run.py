@@ -4,7 +4,7 @@ from datetime import datetime
 from qanary_helpers.registration import Registration
 from qanary_helpers.registrator import Registrator
 
-from app import app, healthendpoint, aboutendpoint
+from component import app, healthendpoint, aboutendpoint
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
@@ -47,5 +47,7 @@ registrator_thread.start()
 
 if __name__ == "__main__":
     # start the web service
-    app.run(debug=True, port=SERVICE_PORT)
-
+    if SERVICE_PORT == None:
+        raise RuntimeError("SERVICE_PORT must not be empty!")
+    else:
+        app.run(debug=True, port=SERVICE_PORT)

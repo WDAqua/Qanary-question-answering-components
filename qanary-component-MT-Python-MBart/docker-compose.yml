@@ -1,6 +1,6 @@
 version: '3'
 services: 
-  build:
+  component:
     # for building from source
     image: qanary-component-mt-python-mbart:latest
     build: 
@@ -9,3 +9,5 @@ services:
     network_mode: host
     env_file:
       - .env
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface/
