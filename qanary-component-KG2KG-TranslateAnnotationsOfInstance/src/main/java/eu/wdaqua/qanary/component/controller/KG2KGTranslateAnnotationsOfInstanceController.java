@@ -1,5 +1,6 @@
-package eu.wdaqua.qanary.component;
+package eu.wdaqua.qanary.component.controller;
 
+import eu.wdaqua.qanary.component.KG2KGTranslateAnnotationsOfInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +14,11 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
 @RestController
-public class Controller {
+public class KG2KGTranslateAnnotationsOfInstanceController {
 
     @Autowired
     private KG2KGTranslateAnnotationsOfInstance kg2KGTranslateAnnotationsOfInstance;
-    private Logger logger = LoggerFactory.getLogger(Controller.class);
+    private Logger logger = LoggerFactory.getLogger(KG2KGTranslateAnnotationsOfInstanceController.class);
 
     @GetMapping("/equivalentresources/{resource}")
     public ResponseEntity<String> getCounterResource(@PathVariable("resource") String resource) throws Exception {
