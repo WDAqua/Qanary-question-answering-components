@@ -1,5 +1,6 @@
 package eu.wdaqua.qanary.component.repositories;
 
+import org.apache.jena.query.Dataset;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
@@ -13,14 +14,19 @@ import org.springframework.stereotype.Repository;
 public class KG2KGTranslateAnnotationsOfInstanceRepository {
 
     private final Logger logger = LoggerFactory.getLogger(KG2KGTranslateAnnotationsOfInstanceRepository.class);
+    private String dbpediaSparqlEndpoint = "http://dbpedia.org/sparql";
+    private RDFConnection rdfConnection;
 
     public KG2KGTranslateAnnotationsOfInstanceRepository() {
+        this.rdfConnection = RDFConnection.connect(dbpediaSparqlEndpoint);
+    }
 
+    public void setRdfConnection(Dataset dataset) {
+        this.rdfConnection = RDFConnection.connect(dataset);
     }
 
     public RDFNode fetchEquivalentResource(String executableQuery) throws RuntimeException {
-        RDFConnection conn = RDFConnection.connect("http://dbpedia.org/sparql");
-        QueryExecution queryExecution = conn.query(executableQuery);
+        QueryExecution queryExecution = rdfConnection.query(executableQuery);
         ResultSet resultSet = queryExecution.execSelect();
         if (resultSet.hasNext()) {
             QuerySolution querySolution = resultSet.next();

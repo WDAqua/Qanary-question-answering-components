@@ -1,20 +1,18 @@
 package eu.wdaqua.qanary.component;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit test for simple Application.
  */
-public class ApplicationTest
-{
+public class ApplicationTest {
     /**
      * Rigorous Test :-)
      */
     @Test
-    public void shouldAnswerWithTrue()
-    {
-        assertTrue( true );
+    public void shouldAnswerWithTrue() {
+        assertTrue(true);
     }
 }

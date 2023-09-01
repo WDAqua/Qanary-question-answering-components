@@ -1,0 +1,6 @@
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+SELECT ?resource
+WHERE {
+  ?originResource owl:sameAs ?resource .
+  FILTER(REGEX(?resource, "wikidata.org", "i"))
+}

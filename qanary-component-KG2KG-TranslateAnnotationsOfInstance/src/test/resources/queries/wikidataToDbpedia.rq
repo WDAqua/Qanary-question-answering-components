@@ -1,0 +1,6 @@
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+SELECT ?resource
+WHERE {
+  ?resource owl:sameAs ?originResource .
+  FILTER(REGEX(?resource, "dbpedia.org", "i"))
+}

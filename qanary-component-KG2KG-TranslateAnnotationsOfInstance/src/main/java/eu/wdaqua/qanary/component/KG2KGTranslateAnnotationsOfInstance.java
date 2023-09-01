@@ -31,9 +31,6 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
     /*
     - given is a annotations with either a dbpedia resource or a wikidata resource
     - depending on what is given the other resource is returned
-
-    - 1. Step: Fetching all Annotations of type AnnotationsOfInstance
-    - 2. Step:
      */
 
     private static final String ANNOTATIONOFINSTANCE_RESOURCES_QUERY = "/queries/annotationsOfInstanceResourceQuery.rq";
@@ -48,7 +45,6 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
         put(true, DBPEDIA_TO_WIKIDATA_QUERY);
         put(false, WIKIDATA_TO_DBPEDIA_QUERY);
     }};
-    private QanaryTripleStoreConnector qanaryTripleStoreConnector;
     @Autowired
     private KG2KGTranslateAnnotationsOfInstanceRepository kg2KGTranslateAnnotationsOfInstanceRepository;
 
