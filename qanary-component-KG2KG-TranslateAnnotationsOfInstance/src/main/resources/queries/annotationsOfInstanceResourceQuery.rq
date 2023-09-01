@@ -4,8 +4,8 @@ prefix oa: <http://www.w3.org/ns/openannotation/core/>
 SELECT *
 FROM ?graphID
 WHERE {
-    ?a a qa:AnnotationOfInstance .
-    ?a oa:hasTarget [
+    ?annotationId a qa:AnnotationOfInstance .
+    ?annotationId oa:hasTarget [
         a    oa:SpecificResource;
         oa:hasSource    ?targetQuestion;
         oa:hasSelector  [
@@ -14,6 +14,6 @@ WHERE {
             oa:end  ?end
         ]
     ] .
-    ?a oa:hasBody ?resource ;
+    ?annotationId oa:hasBody ?resource ;
     qa:score ?score .
 }

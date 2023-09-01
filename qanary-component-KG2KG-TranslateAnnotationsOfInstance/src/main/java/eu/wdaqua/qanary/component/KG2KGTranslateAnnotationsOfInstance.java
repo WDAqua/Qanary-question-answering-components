@@ -4,23 +4,22 @@ import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.pojos.AnnotationOfInstancePojo;
+import eu.wdaqua.qanary.component.repositories.KG2KGTranslateAnnotationsOfInstanceRepository;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
-import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdfconnection.JenaConnectionException;
-import org.apache.jena.rdfconnection.RDFConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.rmi.server.ExportException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,11 +44,13 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
     private static final String DBPEDIA_PREFIX = "http://dbpedia.org";
     private final String applicationName;
     private final Logger logger = LoggerFactory.getLogger(KG2KGTranslateAnnotationsOfInstance.class);
-    private QanaryTripleStoreConnector qanaryTripleStoreConnector;
-    private Map<Boolean, String> containsDBpediaPrefix = new HashMap<Boolean, String>() {{
+    private final Map<Boolean, String> containsDBpediaPrefix = new HashMap<Boolean, String>() {{
         put(true, DBPEDIA_TO_WIKIDATA_QUERY);
         put(false, WIKIDATA_TO_DBPEDIA_QUERY);
     }};
+    private QanaryTripleStoreConnector qanaryTripleStoreConnector;
+    @Autowired
+    private KG2KGTranslateAnnotationsOfInstanceRepository kg2KGTranslateAnnotationsOfInstanceRepository;
 
     public KG2KGTranslateAnnotationsOfInstance(@Value("${spring.application.name}") final String applicationName) {
         this.applicationName = applicationName;
@@ -111,7 +112,8 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
             String targetQuestion = entry.get("targetQuestion").toString();
             int start = entry.get("start").asLiteral().getInt();
             int end = entry.get("end").asLiteral().getInt();
-            AnnotationOfInstancePojo tmp = new AnnotationOfInstancePojo(entryResource, targetQuestion, start, end, score);
+            String annotationId = entry.get("annotationId").toString();
+            AnnotationOfInstancePojo tmp = new AnnotationOfInstancePojo(annotationId, entryResource, targetQuestion, start, end, score);
             annotationOfInstanceObjects.add(tmp);
             logger.info("Resource found: {}", tmp);
         }
@@ -135,7 +137,7 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
             try {
                 RDFNode newResource = getEquivalentResource(containsDBpediaPrefix.get(originResource.contains(DBPEDIA_PREFIX)), originResource);
                 obj.setNewResource(newResource.toString());
-            } catch (ExportException e) {
+            } catch (RuntimeException e) {
                 // no equivalent resource found -> remove this obj since it doesn't provide any further use
                 temp.remove(obj);
             }
@@ -157,19 +159,10 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
      * @throws IOException             thrown when building request query for @param executableQuery
      * @throws JenaConnectionException thrown when connection problems occur
      */
-    public RDFNode getEquivalentResource(String query, String originResource) throws IOException, JenaConnectionException {
-
+    public RDFNode getEquivalentResource(String query, String originResource) throws IOException, RuntimeException {
         try {
             String executableQuery = getResourceRequestQuery(query, originResource);
-            RDFConnection conn = RDFConnection.connect("http://dbpedia.org/sparql");
-            QueryExecution queryExecution = conn.query(executableQuery);
-            ResultSet resultSet = queryExecution.execSelect();
-            if (resultSet.hasNext()) {
-                QuerySolution querySolution = resultSet.next();
-                logger.info(querySolution.get("resource").toString());
-                return querySolution.get("resource");
-            } else
-                throw new ExportException("Failure while fetching equivalent resource.");
+            return kg2KGTranslateAnnotationsOfInstanceRepository.fetchEquivalentResource(executableQuery);
         } catch (IOException ioException) {
             logger.error("Error while creating query for resource fetching. {}", ioException.getMessage());
             throw new IOException();
