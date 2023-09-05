@@ -25,7 +25,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build and push Java components
         run: bash -c ./service_config/build_images.sh
       - name: Init update
@@ -41,7 +41,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build and push Python components
         run: bash -c ./service_config/build_python_images.sh
       - name: Init update
