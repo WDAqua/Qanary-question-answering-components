@@ -4,7 +4,6 @@ package eu.wdaqua.qanary.component;
 import eu.wdaqua.qanary.component.repositories.KG2KGTranslateAnnotationsOfInstanceRepository;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
-import org.apache.jena.rdf.model.RDFNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -79,9 +78,13 @@ public class KG2KGTranslateAnnotationsOfInstanceTest {
 
             Dataset dataset = testDataProvider.getDataset();
             kg2KGTranslateAnnotationsOfInstanceRepository.setRdfConnection(dataset);
+            String[] wikidataResources = {
+                    "http://www.wikidata.org/entity/Q2079",
+                    "http://www.wikidata.org/entity/Q3677461",
+                    "http://www.wikidata.org/entity/Q113624612"
+            };
 
-            RDFNode rdfNode = kg2KGTranslateAnnotationsOfInstance.getEquivalentResource(DBPEDIA_TO_WIKIDATA_QUERY, originResource);
-            logger.info("RDFNODE = {}", rdfNode);
+            //  RDFNode rdfNode = kg2KGTranslateAnnotationsOfInstance.getEquivalentResource(DBPEDIA_TO_WIKIDATA_QUERY, originResource);
         }
 
         @Test

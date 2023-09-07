@@ -1,6 +1,9 @@
 package eu.wdaqua.qanary.component.pojos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.jena.rdf.model.RDFNode;
+
+import java.util.List;
 
 public class AnnotationOfInstancePojo {
 
@@ -11,7 +14,7 @@ public class AnnotationOfInstancePojo {
     private int end;
     private double score;
     private String originResource;
-    private String newResource;
+    private List<RDFNode> newResources;
 
     public AnnotationOfInstancePojo(String annotationId, String originResource, String targetQuestion, int start, int end, double score) {
         this.annotationId = annotationId;
@@ -62,12 +65,12 @@ public class AnnotationOfInstancePojo {
         this.targetQuestion = targetQuestion;
     }
 
-    public String getNewResource() {
-        return newResource;
+    public List<RDFNode> getNewResources() {
+        return newResources;
     }
 
-    public void setNewResource(String newResource) {
-        this.newResource = newResource;
+    public void setNewResources(List<RDFNode> newResources) {
+        this.newResources = newResources;
     }
 
     public String getOriginResource() {
@@ -86,7 +89,7 @@ public class AnnotationOfInstancePojo {
                 ", end=" + end +
                 ", score=" + score +
                 ", originResource='" + originResource + '\'' +
-                ", newResource='" + newResource + '\'' +
+                ", newResource='" + newResources.toString() + '\'' +
                 '}';
     }
 

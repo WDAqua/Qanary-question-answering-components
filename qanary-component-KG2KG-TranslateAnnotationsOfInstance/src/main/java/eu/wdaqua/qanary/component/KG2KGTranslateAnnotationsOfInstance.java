@@ -127,22 +127,23 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
      */
     public List<AnnotationOfInstancePojo> computeEquivalentResources(List<AnnotationOfInstancePojo> annotationOfInstanceObjects) throws IOException {
         List<AnnotationOfInstancePojo> temp = new ArrayList<>(annotationOfInstanceObjects);
-        for (AnnotationOfInstancePojo obj : annotationOfInstanceObjects
+        for (AnnotationOfInstancePojo annotationObject : annotationOfInstanceObjects
         ) {
-            String originResource = obj.getOriginResource();
+            String originResource = annotationObject.getOriginResource();
             try {
-                RDFNode newResource = getEquivalentResource(containsDBpediaPrefix.get(originResource.contains(DBPEDIA_PREFIX)), originResource);
-                obj.setNewResource(newResource.toString());
+                // RDFNode newResource = getEquivalentResource(containsDBpediaPrefix.get(originResource.contains(DBPEDIA_PREFIX)), originResource);
+                List<RDFNode> newResources = getEquivalentResource(containsDBpediaPrefix.get(originResource.contains(DBPEDIA_PREFIX)), originResource);
+                annotationObject.setNewResources(newResources);
             } catch (RuntimeException e) {
                 // no equivalent resource found -> remove this obj since it doesn't provide any further use
-                temp.remove(obj);
+                temp.remove(annotationObject);
             }
         }
         return temp;
     }
 
     // used for API-endpoint
-    public RDFNode computeEquivalentResource(String originResource) throws IOException {
+    public List<RDFNode> computeEquivalentResource(String originResource) throws IOException {
         try {
             return getEquivalentResource(containsDBpediaPrefix.get(originResource.contains(DBPEDIA_PREFIX)), originResource);
         } catch (RuntimeException e) {
@@ -160,7 +161,7 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
      * @throws IOException             thrown when building request query for @param executableQuery
      * @throws JenaConnectionException thrown when connection problems occur
      */
-    public RDFNode getEquivalentResource(String query, String originResource) throws IOException, RuntimeException {
+    public List<RDFNode> getEquivalentResource(String query, String originResource) throws IOException, RuntimeException {
         try {
             String executableQuery = getResourceRequestQuery(query, originResource);
             return kg2KGTranslateAnnotationsOfInstanceRepository.fetchEquivalentResource(executableQuery);
@@ -191,19 +192,22 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
     public void updateTriplestore(List<AnnotationOfInstancePojo> annotationOfInstanceObjects, String graphID, QanaryTripleStoreConnector qanaryTripleStoreConnector) throws IOException, SparqlQueryFailed {
         for (AnnotationOfInstancePojo obj : annotationOfInstanceObjects
         ) {
-            String query = createInsertQuery(obj, graphID);
-            qanaryTripleStoreConnector.update(query);
+            for (RDFNode objResource : obj.getNewResources()) {
+                String query = createInsertQuery(obj, objResource.toString(), graphID);
+                logger.info("Created Insert Query: {}", query);
+                qanaryTripleStoreConnector.update(query);
+            }
         }
     }
 
     // binds values for insert query and returns it
-    public String createInsertQuery(AnnotationOfInstancePojo annotationOfInstancePojo, String graphID) throws IOException {
+    public String createInsertQuery(AnnotationOfInstancePojo annotationOfInstancePojo, String newResource, String graphID) throws IOException {
         QuerySolutionMap bindingsForQuery = new QuerySolutionMap();
         bindingsForQuery.add("graph", ResourceFactory.createResource(graphID));
         bindingsForQuery.add("targetQuestion", ResourceFactory.createResource(annotationOfInstancePojo.getTargetQuestion()));
         bindingsForQuery.add("start", ResourceFactory.createPlainLiteral(String.valueOf(annotationOfInstancePojo.getStart())));
         bindingsForQuery.add("end", ResourceFactory.createPlainLiteral(String.valueOf(annotationOfInstancePojo.getEnd())));
-        bindingsForQuery.add("answer", ResourceFactory.createResource(annotationOfInstancePojo.getNewResource()));
+        bindingsForQuery.add("answer", ResourceFactory.createResource(newResource));
         bindingsForQuery.add("score", ResourceFactory.createTypedLiteral(String.valueOf(annotationOfInstancePojo.getScore()), XSDDatatype.XSDdouble));
         bindingsForQuery.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
         return QanaryTripleStoreConnector.readFileFromResourcesWithMap(INSERT_ANNOTATION_QUERY, bindingsForQuery);

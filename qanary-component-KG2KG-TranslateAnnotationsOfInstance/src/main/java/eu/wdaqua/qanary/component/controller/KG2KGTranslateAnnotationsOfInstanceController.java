@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Controller
 public class KG2KGTranslateAnnotationsOfInstanceController {
@@ -24,9 +25,9 @@ public class KG2KGTranslateAnnotationsOfInstanceController {
     @GetMapping("/equivalentresources/{resource}")
     public ResponseEntity<String> getCounterResource(@PathVariable("resource") String resource) throws Exception {
         String decodedResource = URLDecoder.decode(resource, StandardCharsets.ISO_8859_1);
-        RDFNode newResource = kg2KGTranslateAnnotationsOfInstance.computeEquivalentResource(decodedResource);
-        if (newResource != null) {
-            return new ResponseEntity<>(newResource.toString(), HttpStatus.OK);
+        List<RDFNode> newResources = kg2KGTranslateAnnotationsOfInstance.computeEquivalentResource(decodedResource);
+        if (newResources != null) {
+            return new ResponseEntity<>(newResources.toString(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>("There's no equivalent resource", HttpStatus.BAD_REQUEST);
         }

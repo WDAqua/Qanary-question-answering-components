@@ -10,6 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Repository
 public class KG2KGTranslateAnnotationsOfInstanceRepository {
 
@@ -25,14 +28,20 @@ public class KG2KGTranslateAnnotationsOfInstanceRepository {
         this.rdfConnection = RDFConnection.connect(dataset);
     }
 
-    public RDFNode fetchEquivalentResource(String executableQuery) throws RuntimeException {
+    public List<RDFNode> fetchEquivalentResource(String executableQuery) throws RuntimeException {
         QueryExecution queryExecution = rdfConnection.query(executableQuery);
+        List<RDFNode> equivalentResources = new ArrayList<>();
         ResultSet resultSet = queryExecution.execSelect();
-        if (resultSet.hasNext()) {
-            QuerySolution querySolution = resultSet.next();
-            logger.info(querySolution.get("resource").toString());
-            return querySolution.get("resource");
-        } else
+
+        if (!resultSet.hasNext()) {
             throw new RuntimeException("No resource found");
+        }
+        while (resultSet.hasNext()) {
+            QuerySolution querySolution = resultSet.next();
+            RDFNode newResource = querySolution.getResource("resource");
+            equivalentResources.add(newResource);
+        }
+        return equivalentResources;
     }
+
 }
