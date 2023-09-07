@@ -59,7 +59,7 @@ public class KG2KGTranslateAnnotationsOfInstanceTest {
 
         @BeforeEach
         public void setup() throws IOException {
-            query = kg2KGTranslateAnnotationsOfInstance.getResourceRequestQuery(DBPEDIA_TO_WIKIDATA_QUERY, originResource);
+            //  query = kg2KGTranslateAnnotationsOfInstance.getResourceRequestQuery(DBPEDIA_TO_WIKIDATA_QUERY, originResource);
             testDataProvider = new TestDataProvider();
         }
 
@@ -81,7 +81,7 @@ public class KG2KGTranslateAnnotationsOfInstanceTest {
             kg2KGTranslateAnnotationsOfInstanceRepository.setRdfConnection(dataset);
 
             RDFNode rdfNode = kg2KGTranslateAnnotationsOfInstance.getEquivalentResource(DBPEDIA_TO_WIKIDATA_QUERY, originResource);
-
+            logger.info("RDFNODE = {}", rdfNode);
         }
 
         @Test

@@ -13,8 +13,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class KG2KGTranslateAnnotationsOfInstanceRepository {
 
+    private final static String dbpediaSparqlEndpoint = "http://dbpedia.org/sparql";
     private final Logger logger = LoggerFactory.getLogger(KG2KGTranslateAnnotationsOfInstanceRepository.class);
-    private String dbpediaSparqlEndpoint = "http://dbpedia.org/sparql";
     private RDFConnection rdfConnection;
 
     public KG2KGTranslateAnnotationsOfInstanceRepository() {
@@ -33,6 +33,6 @@ public class KG2KGTranslateAnnotationsOfInstanceRepository {
             logger.info(querySolution.get("resource").toString());
             return querySolution.get("resource");
         } else
-            throw new RuntimeException();
+            throw new RuntimeException("No resource found");
     }
 }

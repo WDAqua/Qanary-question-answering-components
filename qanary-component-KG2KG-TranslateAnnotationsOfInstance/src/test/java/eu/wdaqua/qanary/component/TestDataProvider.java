@@ -1,11 +1,7 @@
 package eu.wdaqua.qanary.component;
 
 import org.apache.jena.query.Dataset;
-import org.apache.jena.query.DatasetFactory;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.vocabulary.OWL;
+import org.apache.jena.riot.RDFDataMgr;
 
 public class TestDataProvider {
 
@@ -20,17 +16,18 @@ public class TestDataProvider {
     }
 
     private void initializeDataset() {
-        Dataset dataset = DatasetFactory.create();
+
+        /*
+        Resource resourceA = ResourceFactory.createResource("http://dbpedia.org/resource/Leipzig");
+        Resource resourceB = ResourceFactory.createResource("http://wikidata.org/resource/Q123");
 
         Model model = ModelFactory.createDefaultModel();
-        model.setNsPrefix("owl", OWL.getURI());
-        model.createStatement(
-                ResourceFactory.createResource("http://dbpedia.org/resource/Leipzig"),
-                ResourceFactory.createProperty(OWL.getURI(), "sameAs"),
-                ResourceFactory.createResource("http://wikidata.org/resource/Q123")
-        );
+        //  model.setNsPrefix("owl", OWL.NS);
+        model.setNsPrefix("sameAs", OWL.getURI());
 
-        dataset.setDefaultModel(model);
-        this.dataset = dataset;
+        model.add(resourceA, model.createProperty("sameAs", OWL.getURI()), resourceB);
+        */
+
+        this.dataset = RDFDataMgr.loadDataset("testDataset.rdf");
     }
 }

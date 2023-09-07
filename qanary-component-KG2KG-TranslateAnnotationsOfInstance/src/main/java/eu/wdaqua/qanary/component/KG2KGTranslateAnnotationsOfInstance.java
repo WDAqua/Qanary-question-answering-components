@@ -143,7 +143,12 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
 
     // used for API-endpoint
     public RDFNode computeEquivalentResource(String originResource) throws IOException {
-        return getEquivalentResource(containsDBpediaPrefix.get(originResource.contains(DBPEDIA_PREFIX)), originResource);
+        try {
+            return getEquivalentResource(containsDBpediaPrefix.get(originResource.contains(DBPEDIA_PREFIX)), originResource);
+        } catch (RuntimeException e) {
+            logger.error("{}", e.getMessage());
+            return null;
+        }
     }
 
     /**

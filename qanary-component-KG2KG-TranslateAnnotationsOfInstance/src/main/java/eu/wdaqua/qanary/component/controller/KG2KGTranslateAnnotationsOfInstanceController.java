@@ -1,6 +1,7 @@
 package eu.wdaqua.qanary.component.controller;
 
 import eu.wdaqua.qanary.component.KG2KGTranslateAnnotationsOfInstance;
+import org.apache.jena.rdf.model.RDFNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,12 @@ public class KG2KGTranslateAnnotationsOfInstanceController {
     @GetMapping("/equivalentresources/{resource}")
     public ResponseEntity<String> getCounterResource(@PathVariable("resource") String resource) throws Exception {
         String decodedResource = URLDecoder.decode(resource, StandardCharsets.ISO_8859_1);
-        return new ResponseEntity<>(kg2KGTranslateAnnotationsOfInstance.computeEquivalentResource(decodedResource).toString(), HttpStatus.OK);
+        RDFNode newResource = kg2KGTranslateAnnotationsOfInstance.computeEquivalentResource(decodedResource);
+        if (newResource != null) {
+            return new ResponseEntity<>(newResource.toString(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("There's no equivalent resource", HttpStatus.BAD_REQUEST);
+        }
     }
 
 
