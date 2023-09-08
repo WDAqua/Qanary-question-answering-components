@@ -1,0 +1,57 @@
+# KG2KG Translation of AnnotationOfInstance
+
+## Description
+
+This component is intended to translate resources from DBpedia to Wikidata and vice versa for existing annotations of type `qa:AnnotationOfInstance`.
+
+It follows a 3-step process:
+
+--
+. Fetching all existing annotations of type `qa:AnnotationOfInstance` from the Qanary Triplestore
+. depending on whether a dbpedia or wikidata resource is used in the annotation dbpedia is asked for the relation owl:sameAs to wikidata or dbpedia
+. for each existing annotation of type `qa:AnnotationOfInstance` all equivalent resources are stored in the Qanary triplestore with only the resourceURI (from the original annotation) is replaced
+--
+
+## Input specification
+
+[source,ttl]
+----
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+
+<urn:qanary:output> a qa:AnnotationOfInstance .
+<urn:qanary:output> oa:hasTarget [
+    a   oa:SpecificResource;
+        oa:hasSource    <urn:qanary:myQanaryQuestion> ;
+        oa:hasSelector  [
+            a oa:TextPositionSelector ;
+            oa:start "0"^^xsd:nonNegativeInteger ;
+            oa:end  "5"^^xsd:nonNegativeInteger
+        ]
+    ] .
+<urn:qanary:output> oa:hasBody <urn:dbr:Resource> ;
+    oa:annotatedBy "qanaryComponent" ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
+----
+
+## Output specification
+
+[source,ttl]
+----
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+
+<urn:qanary:output> a qa:AnnotationOfInstance .
+<urn:qanary:output> oa:hasTarget [
+    a   oa:SpecificResource;
+        oa:hasSource    <urn:qanary:myQanaryQuestion> ;
+        oa:hasSelector  [
+            a oa:TextPositionSelector ;
+            oa:start "0"^^xsd:nonNegativeInteger ;
+            oa:end  "5"^^xsd:nonNegativeInteger
+        ]
+    ] .
+<urn:qanary:output> oa:hasBody <urn:dbr:Resource> ;
+    oa:annotatedBy <urn:qanary:KG2KGTranslateAnnotationsOfInstance> ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
+----
