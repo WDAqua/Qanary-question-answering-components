@@ -1,6 +1,7 @@
 package eu.wdaqua.qanary.component.controller;
 
 import eu.wdaqua.qanary.component.KG2KGTranslateAnnotationsOfInstance;
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.jena.rdf.model.RDFNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,14 @@ public class KG2KGTranslateAnnotationsOfInstanceController {
     private KG2KGTranslateAnnotationsOfInstance kg2KGTranslateAnnotationsOfInstance;
 
     @GetMapping("/equivalentresources/{resource}")
+    @Operation(
+            summary = "Request equivalent dbpedia or wikidata resource.",
+            description = """
+                    Pass a encoded resource as path variable to get the equivalent\s
+                    dbpedia or wikidata resource, depending on your input.
+                    For example: '/http%3A%2F%2Fdbpedia.org%2Fresource%2FLeipzig' should return 3 equivalent wikidata resources.
+                    """
+    )
     public ResponseEntity<String> getEquivalentResource(@PathVariable("resource") String resource) throws Exception {
         String decodedResource = URLDecoder.decode(resource, StandardCharsets.ISO_8859_1);
         List<RDFNode> newResources = kg2KGTranslateAnnotationsOfInstance.computeEquivalentResource(decodedResource);
