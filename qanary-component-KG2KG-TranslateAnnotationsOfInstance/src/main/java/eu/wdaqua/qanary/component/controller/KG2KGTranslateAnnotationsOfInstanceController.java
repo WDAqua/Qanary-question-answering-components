@@ -18,12 +18,12 @@ import java.util.List;
 @Controller
 public class KG2KGTranslateAnnotationsOfInstanceController {
 
+    private final Logger logger = LoggerFactory.getLogger(KG2KGTranslateAnnotationsOfInstanceController.class);
     @Autowired
     private KG2KGTranslateAnnotationsOfInstance kg2KGTranslateAnnotationsOfInstance;
-    private Logger logger = LoggerFactory.getLogger(KG2KGTranslateAnnotationsOfInstanceController.class);
 
     @GetMapping("/equivalentresources/{resource}")
-    public ResponseEntity<String> getCounterResource(@PathVariable("resource") String resource) throws Exception {
+    public ResponseEntity<String> getEquivalentResource(@PathVariable("resource") String resource) throws Exception {
         String decodedResource = URLDecoder.decode(resource, StandardCharsets.ISO_8859_1);
         List<RDFNode> newResources = kg2KGTranslateAnnotationsOfInstance.computeEquivalentResource(decodedResource);
         if (newResources != null) {

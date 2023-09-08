@@ -29,11 +29,11 @@ import java.util.Map;
 public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
 
     /*
-    - given is a annotations with either a dbpedia resource or a wikidata resource
+    - given is an annotations with either a dbpedia resource or a wikidata resource
     - depending on what is given the other resource is returned
      */
 
-    private static final String ANNOTATIONOFINSTANCE_RESOURCES_QUERY = "/queries/annotationsOfInstanceResourceQuery.rq";
+    private static final String ANNOTATION_OF_INSTANCE_RESOURCES_QUERY = "/queries/annotationsOfInstanceResourceQuery.rq";
     private static final String DBPEDIA_TO_WIKIDATA_QUERY = "/queries/dbpediaToWikidata.rq";
     private static final String WIKIDATA_TO_DBPEDIA_QUERY = "/queries/wikidataToDbpedia.rq";
     private static final String INSERT_ANNOTATION_QUERY = "/queries/insert_one_annotation.rq";
@@ -41,7 +41,7 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
     private static final String DBPEDIA_PREFIX = "http://dbpedia.org";
     private final String applicationName;
     private final Logger logger = LoggerFactory.getLogger(KG2KGTranslateAnnotationsOfInstance.class);
-    private final Map<Boolean, String> containsDBpediaPrefix = new HashMap<Boolean, String>() {{
+    private final Map<Boolean, String> containsDBpediaPrefix = new HashMap<>() {{
         put(true, DBPEDIA_TO_WIKIDATA_QUERY);
         put(false, WIKIDATA_TO_DBPEDIA_QUERY);
     }};
@@ -52,7 +52,7 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
         this.applicationName = applicationName;
 
         // here if the files are available and do contain content // do files exist?
-        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(ANNOTATIONOFINSTANCE_RESOURCES_QUERY);
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(ANNOTATION_OF_INSTANCE_RESOURCES_QUERY);
         QanaryTripleStoreConnector.guardNonEmptyFileFromResources(DBPEDIA_TO_WIKIDATA_QUERY);
         QanaryTripleStoreConnector.guardNonEmptyFileFromResources(WIKIDATA_TO_DBPEDIA_QUERY);
         QanaryTripleStoreConnector.guardNonEmptyFileFromResources(INSERT_ANNOTATION_QUERY);
@@ -95,7 +95,7 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
         QuerySolutionMap bindingsForQuery = new QuerySolutionMap();
         bindingsForQuery.add("graphID", ResourceFactory.createResource(graphID));
 
-        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(ANNOTATIONOFINSTANCE_RESOURCES_QUERY, bindingsForQuery);
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(ANNOTATION_OF_INSTANCE_RESOURCES_QUERY, bindingsForQuery);
     }
 
     public List<AnnotationOfInstancePojo> createAnnotationObjets(ResultSet resultSet) {
@@ -122,7 +122,7 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
      */
 
     /**
-     * @param annotationOfInstanceObjects Annotation objects with missing newResource value which is being added here
+     * @param annotationOfInstanceObjects Annotation objects with missing newResource value which is added here
      * @return List with Annotation objects containing newResource values
      */
     public List<AnnotationOfInstancePojo> computeEquivalentResources(List<AnnotationOfInstancePojo> annotationOfInstanceObjects) throws IOException {
@@ -131,11 +131,12 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
         ) {
             String originResource = annotationObject.getOriginResource();
             try {
-                // RDFNode newResource = getEquivalentResource(containsDBpediaPrefix.get(originResource.contains(DBPEDIA_PREFIX)), originResource);
                 List<RDFNode> newResources = getEquivalentResource(containsDBpediaPrefix.get(originResource.contains(DBPEDIA_PREFIX)), originResource);
+                logger.info("Resource(s) found for resource: {}", annotationObject.getOriginResource());
                 annotationObject.setNewResources(newResources);
             } catch (RuntimeException e) {
-                // no equivalent resource found -> remove this obj since it doesn't provide any further use
+                // no equivalent resource found -> remove this obj since it's not necessary anymore
+                logger.error("No resource found for resource: {}", annotationObject.getOriginResource());
                 temp.remove(annotationObject);
             }
         }
@@ -191,13 +192,17 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
      */
     public void updateTriplestore(List<AnnotationOfInstancePojo> annotationOfInstanceObjects, String graphID, QanaryTripleStoreConnector qanaryTripleStoreConnector) throws IOException, SparqlQueryFailed {
         for (AnnotationOfInstancePojo obj : annotationOfInstanceObjects
-        ) {
+        ) { // inner for-loop for originResources with more than one equivalent resource
             for (RDFNode objResource : obj.getNewResources()) {
                 String query = createInsertQuery(obj, objResource.toString(), graphID);
                 logger.info("Created Insert Query: {}", query);
-                qanaryTripleStoreConnector.update(query);
+                updateTriplestoreWithQuery(query, qanaryTripleStoreConnector);
             }
         }
+    }
+
+    public void updateTriplestoreWithQuery(String query, QanaryTripleStoreConnector qanaryTripleStoreConnector) throws SparqlQueryFailed {
+        qanaryTripleStoreConnector.update(query);
     }
 
     // binds values for insert query and returns it
@@ -212,6 +217,5 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
         bindingsForQuery.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
         return QanaryTripleStoreConnector.readFileFromResourcesWithMap(INSERT_ANNOTATION_QUERY, bindingsForQuery);
     }
-
 
 }
