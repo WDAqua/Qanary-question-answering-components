@@ -6,8 +6,7 @@ import java.nio.file.Paths;
 
 @org.springframework.boot.test.context.TestConfiguration
 public class TestConfiguration {
-    protected static final String FILENAME_ANNOTATIONS = "/queries/getAnnotation.rq";
-    protected static final String FILENAME_ANNOTATIONS_FILTERED = "/queries/getAnnotationFiltered.rq";
+    protected static final String FILENAME_ANNOTATIONS = "/queries/select_all_AnnotationOfInstance.rq";
     protected static final String FILENAME_WIKIDATA_BIRTHDATA_QUERY_PERSON = "/queries/getQuestionAnswerFromWikidataByPerson.rq";
     protected static final String FILENAME_WIKIDATA_BIRTHDATA_QUERY_FIRST_AND_LASTNAME = "/queries/getQuestionAnswerFromWikidataByFirstnameLastname.rq";
 

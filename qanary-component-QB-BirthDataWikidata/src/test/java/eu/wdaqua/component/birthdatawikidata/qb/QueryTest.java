@@ -37,18 +37,18 @@ class QueryTest {
         assertFalse(sparqlCheckFirstname.isEmpty());
         assertFalse(sparqlCheckFirstname.isBlank());
 
-        assertEquals(TestConfiguration.getTestQuery("queries/getAnnotationTest.rq"), sparqlCheckFirstname);
+        assertEquals(TestConfiguration.getTestQuery("queries/select_all_AnnotationOfInstance.rq"), sparqlCheckFirstname);
     }
 
     @Test
     void filenameAnnotationsFilteredQueryTest() throws IOException {
         QuerySolutionMap bindingsForAnnotation = new QuerySolutionMap();
         bindingsForAnnotation.add("graph", ResourceFactory.createResource("urn:graph"));
-        bindingsForAnnotation.add("source", ResourceFactory.createResource("urn:source"));
-        bindingsForAnnotation.add("filterStart", ResourceFactory.createTypedLiteral(String.valueOf(5), XSDDatatype.XSDint));
+        bindingsForAnnotation.add("hasSource", ResourceFactory.createResource("urn:source"));
+        bindingsForAnnotation.add("start", ResourceFactory.createTypedLiteral(String.valueOf(5), XSDDatatype.XSDint));
 
         String sparqlGetAnnotation = QanaryTripleStoreConnector.readFileFromResourcesWithMap(
-                TestConfiguration.FILENAME_ANNOTATIONS_FILTERED,
+                TestConfiguration.FILENAME_ANNOTATIONS,
                 bindingsForAnnotation
         );
 

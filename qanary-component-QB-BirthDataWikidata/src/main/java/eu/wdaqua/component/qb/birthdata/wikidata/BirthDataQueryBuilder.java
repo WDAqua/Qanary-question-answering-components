@@ -40,9 +40,7 @@ import java.util.regex.Pattern;
 public class BirthDataQueryBuilder extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(BirthDataQueryBuilder.class);
 
-    private static final String FILENAME_ANNOTATIONS = "/queries/getAnnotation.rq";
-    private static final String FILENAME_ANNOTATIONS_FILTERED = "/queries/getAnnotationFiltered.rq";
-
+    private static final String FILENAME_ANNOTATIONS = "/queries/select_all_AnnotationOfInstance.rq";
     private static final String FILENAME_WIKIDATA_BIRTHDATA_QUERY_PERSON = "/queries/getQuestionAnswerFromWikidataByPerson.rq";
     private static final String FILENAME_WIKIDATA_BIRTHDATA_QUERY_FIRST_AND_LASTNAME = "/queries/getQuestionAnswerFromWikidataByFirstnameLastname.rq";
 
@@ -50,7 +48,7 @@ public class BirthDataQueryBuilder extends QanaryComponent {
     private static final String LASTNAME_ANNOTATION = "LAST_NAME";
 
     private static final String GRAPH = "graph";
-    private static final String VALUE = "value";
+    private static final String VALUE = "hasBody";
 
     private final String applicationName;
 
@@ -70,7 +68,6 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         this.applicationName = applicationName;
 	// check if files exists and are not empty
         QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_ANNOTATIONS);
-        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_ANNOTATIONS_FILTERED);
         QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_WIKIDATA_BIRTHDATA_QUERY_PERSON);
         QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_WIKIDATA_BIRTHDATA_QUERY_FIRST_AND_LASTNAME);
     }
@@ -235,11 +232,11 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         // the currently used graph
         bindingsForAnnotation.add(GRAPH, ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
         // annotated for the current question
-        bindingsForAnnotation.add("source", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+        bindingsForAnnotation.add("hasSource", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
         // only for relevant annotations
-        bindingsForAnnotation.add("filterStart", ResourceFactory.createTypedLiteral(String.valueOf(filterStart), XSDDatatype.XSDint));
+        bindingsForAnnotation.add("start", ResourceFactory.createTypedLiteral(String.valueOf(filterStart), XSDDatatype.XSDint));
 
-        String sparqlGetAnnotation = this.loadQueryFromFile(FILENAME_ANNOTATIONS_FILTERED, bindingsForAnnotation);
+        String sparqlGetAnnotation = this.loadQueryFromFile(FILENAME_ANNOTATIONS, bindingsForAnnotation);
 
         // STEP 3: Compute SPARQL select queries that should produce the result for every identified entity
         //
@@ -252,7 +249,7 @@ public class BirthDataQueryBuilder extends QanaryComponent {
         ArrayList<String> queries = new ArrayList<>();
         while (resultset.hasNext()) {
             QuerySolution tupel = resultset.next();
-            RDFNode wikidataResource = tupel.get("wikidataResource");
+            RDFNode wikidataResource = tupel.get("hasBody");
             logger.info("creating query for resource: {}", wikidataResource);
             String createdWikiDataQuery = createWikidataSparqlQuery(wikidataResource);
             queries.add(createdWikiDataQuery);
