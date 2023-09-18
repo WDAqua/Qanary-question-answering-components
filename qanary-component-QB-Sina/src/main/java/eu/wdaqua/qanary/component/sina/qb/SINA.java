@@ -44,7 +44,7 @@ public class SINA extends QanaryComponent {
     @Value("${spring.application.name}")
     private String applicationName;
 
-    private String FILENAME_GET_ENTITIES = "/queries/get_entities.rq";
+    private String FILENAME_GET_ENTITIES = "/queries/select_all_AnnotationOfInstance.rq";
     private String FILENAME_GET_RELATIONS = "/queries/get_relations.rq";
     private String FILENAME_GET_CLASSES = "/queries/get_classes.rq";
     private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
@@ -121,7 +121,7 @@ public class SINA extends QanaryComponent {
         while (entitiesResultSet.hasNext()) {
             QuerySolution s = entitiesResultSet.next();
 
-            final Entity entity = new Entity(s.getResource("uri").getURI(), s.getLiteral("start").getInt(), s.getLiteral("end").getInt());
+            final Entity entity = new Entity(s.getResource("hasBody").getURI(), s.getLiteral("start").getInt(), s.getLiteral("end").getInt());
             argument.append(entity.uri + ", ");
 
             logger.info("uri:{} start:{} end:{}", entity.uri, entity.begin, entity.end);
