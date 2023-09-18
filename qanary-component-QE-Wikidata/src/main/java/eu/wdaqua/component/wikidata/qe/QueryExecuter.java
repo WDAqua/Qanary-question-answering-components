@@ -39,7 +39,7 @@ public class QueryExecuter extends QanaryComponent {
 	private final String applicationName;
 
 	private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
-	private String FILENAME_GET_ANNOTATION = "/queries/get_annotation.rq";
+	private String FILENAME_GET_ANNOTATION = "/queries/select_all_AnnotationOfAnswerSPARQL.rq";
 
 	public QueryExecuter(@Value("${spring.application.name}") final String applicationName) {
 		this.applicationName = applicationName;
@@ -156,7 +156,7 @@ public class QueryExecuter extends QanaryComponent {
 
 		QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
 		bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getInGraph().toASCIIString()));
-		bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+		bindingsForInsert.add("hasTarget", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
 
 		// get the template of the INSERT query
 		String sparqlSelectQuery = this.loadQueryFromFile(FILENAME_GET_ANNOTATION, bindingsForInsert);
