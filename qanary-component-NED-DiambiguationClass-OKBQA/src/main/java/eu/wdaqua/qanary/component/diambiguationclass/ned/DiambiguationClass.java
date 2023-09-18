@@ -51,7 +51,7 @@ public class DiambiguationClass extends QanaryComponent {
 
     private final String applicationName;
     private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
-    private String FILENAME_SELECT_ANNOTATED_LANGUAGES = "/queries/select_annotated_languages.rq";
+    private String FILENAME_SELECT_ANNOTATED_LANGUAGES = "/queries/select_all_AnnotationOfQuestionLanguage.rq";
 
     public DiambiguationClass(@Value("${spring.application.name}") final String applicationName) {
         this.applicationName = applicationName;
