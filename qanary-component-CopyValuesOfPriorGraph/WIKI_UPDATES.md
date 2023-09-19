@@ -1,4 +1,4 @@
-# How To Access Information On Existing Graphs
+# How To Use Information On Existing Graphs
 
 There are currently three methods supported to access information on an existing graph:
 * Re-use the existing graph
@@ -10,8 +10,8 @@ In the following, each Method is explained in more detail.
 
 ## Re-use an Existing Graph
 
-With this approach, the information for new questions is added to the existing graph. 
-This makes all data easily available in only one named graph. 
+With this straightforward approach, new information is added to 
+the existing graph. This makes all data easily available in only one named graph. 
 
 However, this also means that it may be more difficult to distinguish new data entries from
 existing data.
@@ -19,12 +19,15 @@ existing data.
 
 ### How to use this approach
 
-t.b.d
+Start the question answering process by making a POST request to the 
+`/questionanswering` endpoint provided by the Qanary pipeline template implementation. 
+Specify the parameter `graph` (together with other necessary parameters) to point to the 
+existing process graph. 
 
-make a post request to /questionanswering
-and specify the `graph` parameter (together with other params)
-but don't specify text question? 
-(link to swagger)
+Note, that in this case you cannot provide a new value for the `question` parameter, 
+as only the existing text question is used. 
+As such, this is only suitable for adding newly computed information to the existing graph, 
+not for following up with a new question. 
 
 
 ## Reference an Existing Graph
@@ -62,8 +65,8 @@ a resource that was only specifically mentioned in a prior question.
 
 However, note that copying *all* data over to the current graph 
 will result in *more than one* question actively being held in the 
-context of the current graph, which need to be properly distinguised in order to avoid
-processing erorrs.
+context of the current graph, which need to be properly distinguished in order to avoid
+processing errors.
 
 ### How to use this approach
 
