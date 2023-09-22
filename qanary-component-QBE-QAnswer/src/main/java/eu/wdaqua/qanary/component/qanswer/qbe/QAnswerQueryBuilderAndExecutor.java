@@ -16,6 +16,7 @@ import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -220,32 +221,9 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
         LinkedList<NamedEntity> namedEntities = new LinkedList<>();
 
         QuerySolutionMap bindingsForGetAnnotationOfNamedEntities = new QuerySolutionMap();
+        bindingsForGetAnnotationOfNamedEntities.add("graph", ResourceFactory.createResource(inGraph.toASCIIString()));
         String sparqlGetAnnotation = QanaryTripleStoreConnector.readFileFromResourcesWithMap(FILENAME_GET_ANNOTATION_OF_NAMED_ENTITIES, bindingsForGetAnnotationOfNamedEntities);
 
-    /*
-        // TODO: Move to qanary.commons and use template queries
-        String sparqlGetAnnotationOld = "" //
-                + "PREFIX dbr: <http://dbpedia.org/resource/> \n" //
-                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> \n" //
-                + "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
-                + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
-                + "SELECT ?entityResource ?annotationScore ?start ?end " //
-                + "FROM <" + inGraph.toString() + "> \n" //
-                + "WHERE { \n" //
-                + "    ?annotation    	oa:hasBody   	?entityResource .\n" //
-                + "    ?annotation 		oa:hasTarget 	?target .\n" //
-                + "    ?target 			oa:hasSource    <" + myQanaryQuestion.getUri().toString() + "> .\n" //
-                + "    ?target     		oa:hasSelector  ?textSelector .\n" //
-                + "    ?textSelector 	rdf:type    	oa:TextPositionSelector .\n" //
-                + "    ?textSelector  	oa:start    	?start .\n" //
-                + "    ?textSelector  	oa:end      	?end .\n" //
-                + "    OPTIONAL { \n" //
-                + "			?annotation qa:score	?annotationScore . \n" // we cannot be sure that a score is provided
-                + "	   }\n" //
-                + "}\n";
-
-
-     */
         boolean ignored = false;
         Float score;
         int start;
@@ -259,10 +237,10 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
             end = tupel.get("end").asLiteral().getInt();
             score = null;
 
-            if (tupel.contains("annotationScore")) {
-                score = tupel.get("annotationScore").asLiteral().getFloat();
+            if (tupel.contains("score")) {
+                score = tupel.get("score").asLiteral().getFloat();
             }
-            URI entityResource = new URI(tupel.get("entityResource").asResource().getURI());
+            URI entityResource = new URI(tupel.get("hasBody").asResource().getURI());
 
             if (score == null || score >= threshold) {
                 namedEntities.add(new NamedEntity(entityResource, start, end, score));
