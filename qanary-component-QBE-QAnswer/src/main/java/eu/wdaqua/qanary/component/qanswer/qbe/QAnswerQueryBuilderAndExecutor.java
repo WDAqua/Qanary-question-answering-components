@@ -12,7 +12,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +63,8 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
     private String knowledgeBaseDefault;
     private String userDefault;
 
+    private final String FILENAME_GET_ANNOTATION_OF_NAMED_ENTITIES = "/queries/select_all_AnnotationOfInstance.rq";
+
     public QAnswerQueryBuilderAndExecutor( //
                                            float threshold, //
                                            @Qualifier("langDefault") String langDefault, //
@@ -83,6 +87,8 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
                 "knowledgeBaseDefault cannot be null or empty: " + knowledgeBaseDefault;
         assert !(userDefault == null || userDefault.trim().isEmpty()) : //
                 "userDefault cannot be null or empty: " + userDefault;
+
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_GET_ANNOTATION_OF_NAMED_ENTITIES);
 
         this.threshold = threshold;
         this.qanswerEndpoint = qanswerEndpoint;
@@ -213,8 +219,12 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
             throws Exception {
         LinkedList<NamedEntity> namedEntities = new LinkedList<>();
 
+        QuerySolutionMap bindingsForGetAnnotationOfNamedEntities = new QuerySolutionMap();
+        String sparqlGetAnnotation = QanaryTripleStoreConnector.readFileFromResourcesWithMap(FILENAME_GET_ANNOTATION_OF_NAMED_ENTITIES, bindingsForGetAnnotationOfNamedEntities);
+
+    /*
         // TODO: Move to qanary.commons and use template queries
-        String sparqlGetAnnotation = "" //
+        String sparqlGetAnnotationOld = "" //
                 + "PREFIX dbr: <http://dbpedia.org/resource/> \n" //
                 + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> \n" //
                 + "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
@@ -234,6 +244,8 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
                 + "	   }\n" //
                 + "}\n";
 
+
+     */
         boolean ignored = false;
         Float score;
         int start;
