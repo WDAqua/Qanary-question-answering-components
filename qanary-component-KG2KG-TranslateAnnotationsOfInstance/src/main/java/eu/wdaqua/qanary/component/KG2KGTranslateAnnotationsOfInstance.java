@@ -29,7 +29,7 @@ import java.util.Map;
 public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
 
     /*
-    - given is an annotations with either a dbpedia resource or a wikidata resource
+    - given is an annotations with either a DBpedia resource or a Wikidata resource
     - depending on what is given the other resource is returned
      */
 
@@ -77,20 +77,24 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
         updateTriplestore(annotationOfInstanceObjects, graphID, qanaryTripleStoreConnector);
 
 
-        return null;
+        return myQanaryMessage;
     }
 
     /*
      * STEP 1: Fetch required data
      */
 
-    // Fetching all annotations of type qa:AnnotationsOfInstance
+    /**
+     * Fetching all annotations of type qa:AnnotationsOfInstance
+     */
     public ResultSet fetchAnnotations(String graphID, final QanaryUtils qanaryUtils) throws IOException, SparqlQueryFailed {
         String requestQuery = getRequestQuery(graphID);
         return qanaryUtils.getQanaryTripleStoreConnector().select(requestQuery);
     }
 
-    // binds values for request query and returns it
+    /**
+     * binds values for request query and returns it
+     */
     public String getRequestQuery(String graphID) throws IOException {
         QuerySolutionMap bindingsForQuery = new QuerySolutionMap();
         bindingsForQuery.add("graphID", ResourceFactory.createResource(graphID));
@@ -143,7 +147,9 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
         return temp;
     }
 
-    // used for API-endpoint
+    /**
+     * used for the API endpoint
+     */
     public List<RDFNode> computeEquivalentResource(String originResource) throws IOException {
         try {
             return getEquivalentResource(containsDBpediaPrefix.get(originResource.contains(DBPEDIA_PREFIX)), originResource);
@@ -154,10 +160,10 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
     }
 
     /**
-     * requests the dbpedia-sparql endpoint to fetch equivalent resource and returns it
+     * requests the DBpedia-SPARQL endpoint to fetch an equivalent resource and returns it
      *
      * @param query          used query - depending on the originResource
-     * @param originResource either wikidata oder dbpedia
+     * @param originResource either Wikidata or DBpedia
      * @return RDFNode containing a "resource"-key with the new resource in it
      * @throws IOException             thrown when building request query for @param executableQuery
      * @throws JenaConnectionException thrown when connection problems occur
@@ -172,7 +178,9 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
         }
     }
 
-    // binds values for request query and returns it
+    /**
+     * binds values for request query and returns it
+     */
     public String getResourceRequestQuery(String query, String originResource) throws IOException {
         logger.info("Query: {}", query);
         QuerySolutionMap bindingsForQuery = new QuerySolutionMap();
@@ -191,7 +199,7 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
      * @param annotationOfInstanceObjects Annotation objects containing origin and new resource
      */
     public void updateTriplestore(List<AnnotationOfInstancePojo> annotationOfInstanceObjects, String graphID, QanaryTripleStoreConnector qanaryTripleStoreConnector) throws IOException, SparqlQueryFailed {
-        for (AnnotationOfInstancePojo obj : annotationOfInstanceObjects
+        for (AnnotationOfInstancePojo obj: annotationOfInstanceObjects
         ) { // inner for-loop for originResources with more than one equivalent resource
             for (RDFNode objResource : obj.getNewResources()) {
                 String query = createInsertQuery(obj, objResource.toString(), graphID);
@@ -205,7 +213,9 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
         qanaryTripleStoreConnector.update(query);
     }
 
-    // binds values for insert query and returns it
+    /**
+     * binds values for insert query and returns it
+     */
     public String createInsertQuery(AnnotationOfInstancePojo annotationOfInstancePojo, String newResource, String graphID) throws IOException {
         QuerySolutionMap bindingsForQuery = new QuerySolutionMap();
         bindingsForQuery.add("graph", ResourceFactory.createResource(graphID));
