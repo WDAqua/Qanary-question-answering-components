@@ -119,7 +119,7 @@
   },
     {
       "mode": "dockerfile",
-      "port": "40160:40160",
+      "port": "40173:40173",
       "image": "qanary/qanary-component-qb-dateofdeathdpbedia",
       "tag": "latest",
       "files": {
