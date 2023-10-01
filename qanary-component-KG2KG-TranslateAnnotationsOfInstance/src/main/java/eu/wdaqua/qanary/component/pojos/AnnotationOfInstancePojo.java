@@ -83,13 +83,13 @@ public class AnnotationOfInstancePojo {
 
     @Override
     public String toString() {
-        return "AnnotationOfInstancePojo{" +
-                "targetQuestion='" + targetQuestion + '\'' +
-                ", start=" + start +
-                ", end=" + end +
-                ", score=" + score +
-                ", originResource='" + originResource + '\'' +
-                ", newResource='" + newResources.toString() + '\'' +
+        return "AnnotationOfInstancePojo{" + // 
+                "targetQuestion='" + targetQuestion + '\'' + // 
+                ", start=" + start + // 
+                ", end=" + end + // 
+                ", score=" + score + // 
+                ", originResource='" + originResource + '\'' + // 
+                ", newResource='" + newResources.toString() + '\'' + // 
                 '}';
     }
 
