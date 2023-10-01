@@ -25,11 +25,11 @@ public class KG2KGTranslateAnnotationsOfInstanceController {
 
     @GetMapping("/equivalentresources/{resource}")
     @Operation(
-            summary = "Request equivalent dbpedia or wikidata resource.",
+            summary = "Request equivalent DBpedia or Wikidata resource.",
             description = """
-                    Pass a encoded resource as path variable to get the equivalent\s
-                    dbpedia or wikidata resource, depending on your input.
-                    For example: '/http%3A%2F%2Fdbpedia.org%2Fresource%2FLeipzig' should return 3 equivalent wikidata resources.
+                    Pass an encoded resource as a path variable to get the equivalent\s
+                    DBpedia or Wikidata resource, depending on your input.
+                    For example, '/http%3A%2F%2Fdbpedia.org%2Fresource%2FLeipzig' should return 3 equivalent Wikidata resources.
                     """
     )
     public ResponseEntity<String> getEquivalentResource(@PathVariable("resource") String resource) throws Exception {
@@ -41,6 +41,5 @@ public class KG2KGTranslateAnnotationsOfInstanceController {
             return new ResponseEntity<>("There's no equivalent resource", HttpStatus.BAD_REQUEST);
         }
     }
-
-
+    
 }
