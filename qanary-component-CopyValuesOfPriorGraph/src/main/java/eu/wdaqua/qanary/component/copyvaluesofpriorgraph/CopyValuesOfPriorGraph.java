@@ -43,7 +43,7 @@ public class CopyValuesOfPriorGraph extends QanaryComponent {
 
 	private final String applicationName;
 	private final String adminUrl;
-  private RestTemplate myRestTemplate; 
+	private RestTemplate myRestTemplate; 
 
 	public CopyValuesOfPriorGraph(
 			@Value("${spring.application.name}") final String applicationName,
@@ -54,8 +54,8 @@ public class CopyValuesOfPriorGraph extends QanaryComponent {
 		this.myRestTemplate = restTemplate;
 
 		// here if the files are available and do contain content
-    QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_FETCH_REQUIRED_ANNOTATIONS);
-    QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_STORE_COMPUTED_ANNOTATIONS);
+		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_FETCH_REQUIRED_ANNOTATIONS);
+		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_STORE_COMPUTED_ANNOTATIONS);
 	}
 	/**
 	 * implement this method encapsulating the functionality of your Qanary
@@ -80,13 +80,13 @@ public class CopyValuesOfPriorGraph extends QanaryComponent {
 		bindingsForSelect.add("graph", ResourceFactory.createResource(myQanaryQuestion.getInGraph().toASCIIString()));
 		String sparqlSelectQuery = QanaryTripleStoreConnector.readFileFromResourcesWithMap(FILENAME_FETCH_REQUIRED_ANNOTATIONS, bindingsForSelect);		
 		logger.info("generated SPARQL INSERT query: {}", sparqlSelectQuery);
-        ResultSet resultset = connectorToQanaryTriplestore.select(sparqlSelectQuery);
+		ResultSet resultset = connectorToQanaryTriplestore.select(sparqlSelectQuery);
 		// --------------------------------------------------------------------
 		// STEP 2: add data from the previous graph to the current graph
 		// --------------------------------------------------------------------
 		int p = 0;
 		while (resultset.hasNext()) {
-			// update the current graph with information from prior graph
+			// update the current graph with information from the prior graph
 			QuerySolution tuple = resultset.next();
 			String priorGraph = tuple.get("priorGraph").asResource().getURI(); 
 			// create an update query to copy values
@@ -95,9 +95,11 @@ public class CopyValuesOfPriorGraph extends QanaryComponent {
 			p++;
 		}
 		if (p == 0) {
-			logger.warn("Component {} was called, but no prior graph could be found!", applicationName);
+			logger.warn("Component {} was called, but NO prior graph could be found!", applicationName);
+		} else if (p == 1) {
+			logger.warn("Component {}: Copied information from exactly ONE prior graph!", applicationName);
 		} else if (p > 1) {
-		logger.warn("Copied information from more than one prior graph! ({} total)", p);
+			logger.warn("Component {}: Copied information from MULTIPLE prior graphs ({} total)!", applicationName, p);
 		}
 
 		return myQanaryMessage;
@@ -113,10 +115,10 @@ public class CopyValuesOfPriorGraph extends QanaryComponent {
 				FILENAME_ADD_DATA_TO_GRAPH, bindsForAdd);
 		logger.info("generated SPARQL ADD query: {}", sparqlAddQuery);
 
-		// call sparql endpoint of pipeline 
+		// call SPARQL endpoint of pipeline 
 		//
 		// done instead of using triplestore connector, because utils are not available outside
-		// of pipeline context!
+		// of the Qanary pipeline context!
 
 		String adminSparqlEndpoint = this.adminUrl + "/sparql";
 		HttpHeaders headers = new HttpHeaders();
@@ -125,15 +127,15 @@ public class CopyValuesOfPriorGraph extends QanaryComponent {
 
 		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
 		parameters.add("update", sparqlAddQuery);
-    HttpEntity<MultiValueMap<String,String>> request = new HttpEntity<>(parameters, headers);
+		HttpEntity<MultiValueMap<String,String>> request = new HttpEntity<>(parameters, headers);
 
 		try {
 			URI uri = new URI(adminSparqlEndpoint);
 			URI response = myRestTemplate.postForLocation(uri, request);
 		} catch (Exception e) { 
 			logger.debug("post to endpoint not successful: {}", e);
-			throw new Exception("Data could not be added!"
-					+ "\nsource graph: " + sourceGraph 
+			throw new Exception("Data could not be added!" // 
+					+ "\nsource graph: " + sourceGraph //
 					+ "\ntarget graph: " + targetGraph);
 		}
 	}
