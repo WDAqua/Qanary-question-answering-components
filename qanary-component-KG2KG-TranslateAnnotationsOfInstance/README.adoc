@@ -1,16 +1,39 @@
+:toc:
+:toclevels: 5
+:toc-placement!:
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
 # KG2KG Translation of AnnotationOfInstance
 
-## Description
+This component is intended to translate resources from https://dbpedia.org/[DBpedia] to https://www.wikidata.org/[Wikidata] and vice versa for existing annotations of type `qa:AnnotationOfInstance`.
+For example, let's assume the resource http://dbpedia.org/resource/Albert_Einstein of the DBpedia knowledge graph is (was recognized by a component and hence) stored in the Qanary triplestore as part of an annotation of type `qa:AnnotationOfInstance`. 
+Then, this component will try to find the corresponding resource in the Wikidata knowledge graph (using the `owl:sameAs` property) and automatically replace the value with the mentioned annotation by the found resource URI (in our example, it would be http://www.wikidata.org/entity/Q937). 
+Obviously, the approach works the same way if a Wikidata resource is found in the original data.
 
-This component is intended to translate resources from DBpedia to Wikidata and vice versa for existing annotations of type `qa:AnnotationOfInstance`.
+---
 
-It follows a 3-step process:
+toc::[]
+
+---
+
+## Processing
+
+The component's process follows three steps:
 
 --
 . Fetching all existing annotations of type `qa:AnnotationOfInstance` from the Qanary Triplestore
-. depending on whether a dbpedia or wikidata resource is used in the annotation dbpedia is asked for the relation owl:sameAs to wikidata or dbpedia
-. for each existing annotation of type `qa:AnnotationOfInstance` all equivalent resources are stored in the Qanary triplestore with only the resourceURI (from the original annotation) is replaced
+. depending on whether a DBpedia or Wikidata resource is used in the annotation DBpedia is asked for the relation `owl:sameAs` to Wikidata or DBpedia
+. for each existing annotation of type `qa:AnnotationOfInstance` all equivalent resources are stored in the Qanary triplestore with only the resource URI (from the original annotation) is replaced
 --
+
+
 
 ## Input specification
 
