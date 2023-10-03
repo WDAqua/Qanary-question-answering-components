@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-QB-RuBQWrapper</artifactId>
-    <version>3.2.0</version>
+    <version>3.2.1</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -17,7 +17,7 @@
         <java.version>17</java.version>
         <qanary.component.version>[3.7.0,4.0.0)</qanary.component.version>
         <qanary.commons.version>[3.8.0,4.0.0)</qanary.commons.version>
-        <spring-boot-admin.version>2.6.7</spring-boot-admin.version>
+        <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
         <docker.image.prefix>qanary</docker.image.prefix>
         <!-- Replace the name of the docker image to be generated -->
         <!-- if there is an error demanding a lower-case name, then you picked
