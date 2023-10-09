@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-QB-QAnswer</artifactId>
-    <version>3.1.6</version>
+    <version>4.0.0</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -13,7 +13,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <qanary.version>[3.7.1,4.0.0)</qanary.version>
         <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
         <docker.image.prefix>qanary</docker.image.prefix>
