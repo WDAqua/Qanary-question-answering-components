@@ -22,7 +22,6 @@ public class QAnswerResult {
     public final URI BOOLEANTYPEURI;
     @Hidden
     public final URI STRINGTYPEURI;
-    private com.google.gson.JsonParser jsonParser;
     private URI endpoint;
     private String knowledgebaseId;
     private String user;
@@ -36,9 +35,7 @@ public class QAnswerResult {
     private String jsonString;
 
     public QAnswerResult(JSONObject json, String question, URI endpoint, String language, String knowledgebaseId, String user) throws URISyntaxException, NoLiteralFieldFoundException {
-        jsonParser = new JsonParser();
-        JsonArray parsedJsonArray = jsonParser.parse(json.toJSONString()).getAsJsonObject().getAsJsonArray("questions")
-                .getAsJsonArray();
+        JsonArray parsedJsonArray = JsonParser.parseString(json.toJSONString()).getAsJsonObject().getAsJsonArray("questions").getAsJsonArray();
 
         this.jsonString = json.toString();
         this.question = question;
@@ -120,7 +117,7 @@ public class QAnswerResult {
         JsonObject questionData = answers.get(0).getAsJsonObject().get("question").getAsJsonObject();
         logger.debug("responseQuestion: {}", questionData);
 
-        JsonObject concreteAnswers = jsonParser.parse(questionData.get("answers").getAsString()).getAsJsonObject();
+        JsonObject concreteAnswers = JsonParser.parseString(questionData.get("answers").getAsString()).getAsJsonObject();
         logger.debug("responseQuestion->answers: {}", concreteAnswers.toString());
 
         JsonObject results = concreteAnswers.get("results").getAsJsonObject();
@@ -184,7 +181,7 @@ public class QAnswerResult {
         JsonObject questionData = answers.get(0).getAsJsonObject().get("question").getAsJsonObject();
         logger.debug("responseQuestion: {}", questionData);
 
-        JsonObject concreteAnswers = jsonParser.parse(questionData.get("answers").getAsString()).getAsJsonObject();
+        JsonObject concreteAnswers = JsonParser.parseString(questionData.get("answers").getAsString()).getAsJsonObject();
         logger.debug("responseQuestion->answers: {}", concreteAnswers.toString());
 
         JsonObject results = concreteAnswers.get("results").getAsJsonObject();
@@ -238,11 +235,10 @@ public class QAnswerResult {
         JsonObject questionData = answers.get(0).getAsJsonObject().get("question").getAsJsonObject();
         logger.debug("questionData: {}", questionData);
 
-        com.google.gson.JsonParser jsonParser = new JsonParser();
-        JsonObject parsedAnswer = jsonParser.parse(questionData.toString()).getAsJsonObject();
+        JsonObject parsedAnswer = JsonParser.parseString(questionData.toString()).getAsJsonObject();
         logger.debug("parsedAnswer: {}", parsedAnswer);
 
-        JsonObject concreteAnswer = jsonParser.parse(parsedAnswer.get("answers").getAsString()).getAsJsonObject();
+        JsonObject concreteAnswer = JsonParser.parseString(parsedAnswer.get("answers").getAsString()).getAsJsonObject();
         logger.debug("concreteAnswer: {}", concreteAnswer);
 
         boolean result = concreteAnswer.get("boolean").getAsBoolean();
