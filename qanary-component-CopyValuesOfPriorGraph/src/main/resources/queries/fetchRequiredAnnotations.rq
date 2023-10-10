@@ -1,0 +1,8 @@
+PREFIX qa: <http://www.wdaqua.eu/qa#>
+
+SELECT ?priorGraph
+FROM ?graph
+WHERE {
+  ?question a qa:Question .
+  ?question qa:priorConversation ?priorGraph .
+}

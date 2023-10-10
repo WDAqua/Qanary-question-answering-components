@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>Qanary Helper: Copy values from an existing graph to a new graph</title> 
+    <!--meta th:replace="lib/header"/-->
+</head>
+<body>
+  <h1>Copy Graph Data</h1>
+  <form id="startForm" action="/copyvaluestograph" method="POST">
+    <div>
+      Source Graph: <input type="text" name="sourceGraph" id="sourceGraph">
+    </div>
+    <div>
+      Target Graph: <input type="text" name="targetGraph" id="targetGraph">
+    </div>
+    <button id="submit">Copy Values from source to target graph</button>
+  </form>
+</body>

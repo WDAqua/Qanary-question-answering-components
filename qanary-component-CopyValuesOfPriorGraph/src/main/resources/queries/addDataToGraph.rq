@@ -1,0 +1,1 @@
+ADD SILENT GRAPH ?sourceGraph TO  GRAPH  ?targetGraph 
