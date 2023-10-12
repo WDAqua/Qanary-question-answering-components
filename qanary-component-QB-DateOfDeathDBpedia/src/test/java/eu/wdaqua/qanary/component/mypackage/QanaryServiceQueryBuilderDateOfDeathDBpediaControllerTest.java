@@ -100,11 +100,6 @@ public class QanaryServiceQueryBuilderDateOfDeathDBpediaControllerTest {
             }
 
             @Override
-            public void forEachRemaining(Consumer<? super QuerySolution> consumer) {
-
-            }
-
-            @Override
             public QuerySolution nextSolution() {
                 return null;
             }
