@@ -78,8 +78,6 @@
                 <module>qanary-component-QB-RuBQWrapper</module>
                 <module>qanary-component-QB-TeBaQaWrapper</module>
                 <module>qanary-component-CopyValuesOfPriorGraph</module>
-                <module>qanary-component-KG2KG-TranslateAnnotationsOfInstance</module>
-                <module>qanary-component-QB-DateOfDeathDBpedia</module>
             </modules>
         </profile>
         <profile>
