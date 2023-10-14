@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary-component-QB-TeBaQAWrapper</artifactId>
-	<version>3.2.1</version>
+	<version>3.2.2</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
