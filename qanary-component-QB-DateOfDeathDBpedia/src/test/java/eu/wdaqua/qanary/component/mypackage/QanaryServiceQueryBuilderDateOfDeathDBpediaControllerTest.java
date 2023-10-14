@@ -37,6 +37,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -97,6 +98,11 @@ public class QanaryServiceQueryBuilderDateOfDeathDBpediaControllerTest {
             public QuerySolution next() {
                 rowIndex++;
                 return querySolutionMaps.get(rowIndex);
+            }
+
+            @Override
+            public void forEachRemaining(Consumer<? super QuerySolution> consumer) {
+
             }
 
             @Override
