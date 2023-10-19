@@ -7,6 +7,13 @@ on:
 jobs:
   build-java:
     runs-on: ubuntu-latest
+    env:
+      BABELFY_API_KEY: ${{ secrets.BABELFY_API_KEY }}
+      CHATGPT_API_KEY: ${{ secrets.CHATGPT_API_KEY }}
+      DANDELION_API_KEY: ${{ secrets.DANDELION_API_KEY }}
+      MEANINGCLOUD_API_KEY: ${{ secrets.MEANINGCLOUD_API_KEY }}
+      TAGME_API_KEY: ${{ secrets.TAGME_API_KEY }}
+      TEXTRAZOR_API_KEY: ${{ secrets.TEXTRAZOR_API_KEY }}
     steps:
       - name: Configure java
         uses: actions/setup-java@v3
@@ -14,11 +21,11 @@ jobs:
           distribution: 'corretto'
           java-version: '17'
       - name: Docker Login
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build and push Java components
         run: bash -c ./service_config/build_images.sh
       - name: Init update
@@ -30,11 +37,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Docker Login
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build and push Python components
         run: bash -c ./service_config/build_python_images.sh
       - name: Init update

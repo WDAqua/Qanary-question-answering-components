@@ -52,7 +52,7 @@ public class QAnswerQueryBuilderAndExecutorController {
      *
      * <pre>
      * {
-     * "qanswerEndpointUrl": "http://qanswer-core1.univ-st-etienne.fr/api/gerbil",
+     * "qanswerEndpointUrl": "https://qanswer-core1.univ-st-etienne.fr/api/gerbil",
      * "questionString": "What is the capital of Germany?",
      * "lang": "en",
      * "knowledgeBaseId": "wikidata"

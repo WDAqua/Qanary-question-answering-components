@@ -1,8 +1,10 @@
 package eu.wdaqua.qanary.component.qanswer.qb;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,14 +153,21 @@ public class QAnswerQueryBuilderAndSparqlResultFetcherController {
 					+ "\"Is Berlin the capital of Germany\" " //
 	)
 	public QAnswerQanaryWrapperResult requestDemoResultWebService(@RequestBody QAnswerRequest request)
-			throws URISyntaxException, MalformedURLException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed {
+			throws URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed, IOException {
 		logger.info("requestDemoResultWebService: {} ", request);
 		request.replaceNullValuesWithDefaultValues(this.getEndpoint(), this.getLangFallback(),
 				this.getKnowledgeBaseDefault(), this.getUserDefault());
 		QAnswerResult result = this.requestQAnswerWebService(request);
-		String sparqQuery = myQAnswerQueryBuilderAndExecutor.getSparqlInsertQuery(endpoint, result);
+
+		URI demoGraph = new URI("urn:demo:graph");
+		URI demoQuestionUri = new URI("urn:demo:question");
+
+		String sparqlImprovedQuestion = myQAnswerQueryBuilderAndExecutor.getSparqlInsertQueryForImprovedQuestion(demoGraph, demoQuestionUri, result);
+		List<String> sparqlQueryCandidates = myQAnswerQueryBuilderAndExecutor.getSparqlInsertQueriesForQueryCandidates(demoGraph, demoQuestionUri, result);
+
+		String sparqQuery = "this is a test query";
 		logger.info("received sparqQuery: {}", sparqQuery);
-		return new QAnswerQanaryWrapperResult(result, sparqQuery);
+		return new QAnswerQanaryWrapperResult(result, sparqlImprovedQuestion, sparqlQueryCandidates);
 	}
 	
 	

@@ -15,7 +15,7 @@ public class AgdistisTestConfiguration {
         System.setProperty("question2", "What is the capital of <entity>Germany</entity>?");
         System.setProperty("question3", "What is the real name of <entity>Batman</entity>?");
 
-        System.setProperty("qanary.webservicecalls.cache.specs", "maximumSize=1000,expireAfterAccess=" + AgdistisCacheTests.MAX_TIME_SPAN_SECONDS + "s");
+        System.setProperty("qanary.webservicecalls.cache.specs", "maximumSize=1000,expireAfterAccess=" + CacheTests.MAX_TIME_SPAN_SECONDS + "s");
     }
 
     /**

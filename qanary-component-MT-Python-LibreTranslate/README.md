@@ -111,3 +111,15 @@ GRAPH <uuid> {
 * `/health` -- (GET) the status of the connection to a LibreTranslate service
 * `/languages` -- (GET) a list of supported source languages with "en" as target language
 * `/annotatequestion` -- (POST) standard endpoint for Qanary components
+
+## How To Test This Component
+
+This component uses the [pytest](https://docs.pytest.org/). 
+The necessary environment variables have to be configured in `pytest.ini`.
+
+**Note**: The use of a virtual environment is encouraged for this.
+
+First, install the requirements with `pip install -r requirements.txt`.
+
+Then run the local tests with the command `pytest`.
+

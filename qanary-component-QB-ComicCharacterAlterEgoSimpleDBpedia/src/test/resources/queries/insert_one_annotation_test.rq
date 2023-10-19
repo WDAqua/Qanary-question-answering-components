@@ -17,6 +17,6 @@ INSERT {
   }
 }
 WHERE
-  { BIND(iri(str(rand())) AS ?newAnnotation)
+  { BIND(IRI(str(rand())) AS ?newAnnotation)
     BIND(now() AS ?time)
   }

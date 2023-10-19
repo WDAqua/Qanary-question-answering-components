@@ -9,3 +9,4 @@ sentencepiece==0.1.97
 torch==1.13.1
 gunicorn==20.1.0
 protobuf==3.20.*
+pytest

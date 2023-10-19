@@ -1,5 +1,5 @@
-from app.mt_libretranslate import *
-from app import app
+from component.mt_libretranslate import *
+from component import app
 from unittest.mock import patch
 import re
 from unittest import TestCase
@@ -20,12 +20,12 @@ class TestComponent(TestCase):
 
     request_data = '''{
         "values": {
-            "urn:qanary#endpoint": "urn:qanary#test-endpoint", 
-            "urn:qanary#inGraph": "urn:qanary#test-inGraph", 
+            "urn:qanary#endpoint": "urn:qanary#test-endpoint",
+            "urn:qanary#inGraph": "urn:qanary#test-inGraph",
             "urn:qanary#outGraph": "urn:qanary#test-outGraph"
         },
-        "endpoint": "urn:qanary#test-endpoint", 
-        "inGraph": "urn:qanary#test-inGraph", 
+        "endpoint": "urn:qanary#test-endpoint",
+        "inGraph": "urn:qanary#test-inGraph",
         "outGrpah": "urn:qanary#test-outGraph"
     }'''
 
@@ -37,9 +37,9 @@ class TestComponent(TestCase):
     def test_qanary_service(self):
 
         with app.test_client() as client, \
-                patch('app.mt_libretranslate.get_text_question_in_graph') as mocked_get_text_question_in_graph, \
-                patch('app.mt_libretranslate.insert_into_triplestore') as mocked_insert_into_triplestore, \
-                patch('app.mt_libretranslate.translate_input') as mocked_translate_input:
+                patch('component.mt_libretranslate.get_text_question_in_graph') as mocked_get_text_question_in_graph, \
+                patch('component.mt_libretranslate.insert_into_triplestore') as mocked_insert_into_triplestore, \
+                patch('component.mt_libretranslate.translate_input') as mocked_translate_input:
 
             # given a non-english question is present in the current graph
             mocked_get_text_question_in_graph.return_value = self.questions

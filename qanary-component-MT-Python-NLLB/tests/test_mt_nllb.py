@@ -1,7 +1,6 @@
-from app.mt_nllb import *
-from app import app
+from component.mt_nllb import *
+from component import app
 from unittest.mock import patch
-import mock 
 import re
 from unittest import TestCase
 
@@ -37,8 +36,8 @@ class TestComponent(TestCase):
     def test_qanary_service(self):
 
         with app.test_client() as client, \
-                patch('app.mt_nllb.get_text_question_in_graph') as mocked_get_text_question_in_graph, \
-                patch('app.mt_nllb.insert_into_triplestore') as mocked_insert_into_triplestore:
+                patch('component.mt_nllb.get_text_question_in_graph') as mocked_get_text_question_in_graph, \
+                patch('component.mt_nllb.insert_into_triplestore') as mocked_insert_into_triplestore:
 
             # given a non-english question is present in the current graph
             mocked_get_text_question_in_graph.return_value = self.questions

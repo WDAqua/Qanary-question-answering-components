@@ -19,62 +19,54 @@ import net.minidev.json.JSONObject;
 public class QAnswerResult {
     private static final Logger logger = LoggerFactory.getLogger(QAnswerResult.class);
     @Hidden
-    public final URI RESOURCETYPEURI;
-    @Hidden
-    public final URI BOOLEANTYPEURI;
-    @Hidden
-    public final URI STRINGTYPEURI;
-    @Hidden
     private com.google.gson.JsonParser jsonParser;
     private URI endpoint;
     private String knowledgebaseId;
     private String user;
     private String language;
     private String question;
-    private List<JsonObject> values;
+    private List<QAnswerQueryCandidate> queryCandidates;
 
     public QAnswerResult(JSONObject json, String question, URI endpoint, String language, String knowledgebaseId, String user)
             throws URISyntaxException {
-        jsonParser = new JsonParser();
 
         logger.debug("result: {}", json.toJSONString());
 
-        JsonArray parsedJsonArray = jsonParser.parse(json.toJSONString()).getAsJsonObject().getAsJsonArray("queries")
-                .getAsJsonArray();
+        JsonObject parsedJsonObject = JsonParser.parseString(json.toJSONString()).getAsJsonObject();
 
         this.question = question;
         this.language = language;
         this.knowledgebaseId = knowledgebaseId;
         this.user = user;
         this.endpoint = endpoint;
+        this.queryCandidates = new LinkedList<QAnswerQueryCandidate>();
 
-        this.RESOURCETYPEURI = new URI("http://www.w3.org/2001/XMLSchema#anyURI");
-        this.BOOLEANTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#boolean");
-        this.STRINGTYPEURI = new URI("http://www.w3.org/2001/XMLSchema#string");
-
-        initData(parsedJsonArray);
+        initData(parsedJsonObject);
     }
 
     /**
      * init the fields while parsing the JSON data
      *
-     * @param answers
+     * @param parsedJsonObject
      * @throws URISyntaxException
-     * @throws NoLiteralFieldFoundException
      */
-    private void initData(JsonArray answers) throws URISyntaxException {
+    private void initData(JsonObject parsedJsonObject) throws URISyntaxException {
 
-        this.values = new LinkedList<JsonObject>();
+        JsonArray queryCandidatesArray = parsedJsonObject.getAsJsonArray("queries").getAsJsonArray();
 
-        for (JsonElement json : answers) {
-            values.add(json.getAsJsonObject());
+        for (JsonElement queryCandidate : queryCandidatesArray) {
+            JsonObject queryCandidateObject = queryCandidate.getAsJsonObject(); 
+            String query = queryCandidateObject.get("query").getAsString();
+            float score = queryCandidateObject.get("confidence").getAsFloat();
+            QAnswerQueryCandidate candidate = new QAnswerQueryCandidate(query, score);
+            queryCandidates.add(candidate);
         }
 
-        logger.debug("fetched results: {}", this.values.size());
+        logger.debug("fetched {} query candidates", this.queryCandidates.size());
     }
 
-    public List<JsonObject> getValues() {
-        return values;
+    public List<QAnswerQueryCandidate> getQueryCandidates() {
+        return queryCandidates;
     }
 
     public String getKnowledgebaseId() {
@@ -95,6 +87,24 @@ public class QAnswerResult {
 
     public String getQuestion() {
         return question;
+    }
+
+    public class QAnswerQueryCandidate {
+        private String query;
+        private float score;
+
+        public QAnswerQueryCandidate(String query, float score) {
+            this.query = query;
+            this.score = score;
+        }
+
+        public String getQueryString() {
+            return this.query;
+        }
+
+        public float getScore() {
+            return this.score;
+        }
     }
 
 }

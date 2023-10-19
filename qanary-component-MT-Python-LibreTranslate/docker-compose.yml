@@ -1,12 +1,15 @@
 version: "3.5"
 services:
+
+  # local libretranslate server
   libretranslate:
     image: libretranslate/libretranslate:latest
     restart: unless-stopped
     ports:
       - "5000:5000"
     volumes:
-      - "./models:/path/to/your/local/cache"
+      - ~/.cache/huggingface:/root/.cache/huggingface/
+
   # component
   component:
     # for building from source

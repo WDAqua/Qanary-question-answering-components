@@ -5,17 +5,18 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary-component-QC-AnswerTypeClassifier</artifactId>
-	<version>3.1.1</version>
+	<version>3.1.2</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.6.7</version>
+		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<properties>
 		<java.version>11</java.version>
 		<qanary.version>[3.1.2,4.0.0)</qanary.version>
-		<spring-boot-admin.version>2.6.7</spring-boot-admin.version>
+		<spring-boot-admin.version>2.7.10</spring-boot-admin.version>
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<!-- Replace the name of the docker image to be generated -->
 		<!-- if there is an error demanding a lower-case name, then you picked 
@@ -107,10 +108,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 			<!-- https://github.com/spotify/dockerfile-maven -->
 			<!-- build Docker image: mvn dockerfile:build -->

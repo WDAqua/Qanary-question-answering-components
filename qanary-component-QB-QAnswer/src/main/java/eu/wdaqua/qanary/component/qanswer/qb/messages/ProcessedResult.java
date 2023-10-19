@@ -3,6 +3,7 @@ package eu.wdaqua.qanary.component.qanswer.qb.messages;
 import java.net.URI;
 import java.util.List;
 
+@Deprecated
 public class ProcessedResult {
 
 	private final String type;

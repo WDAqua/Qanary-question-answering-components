@@ -116,7 +116,26 @@
       "files": {
         ".env": "tqa-chatgptwrapper"
       }
-  }
+  },
+    {
+      "mode": "dockerfile",
+      "port": "40173:40173",
+      "image": "qanary/qanary-component-qb-dateofdeathdpbedia",
+      "tag": "latest",
+      "files": {
+        ".env": "qb-dateofdeathdbpedia"
+      }
+    },
+    {
+      "mode": "dockerfile",
+      "port": "40159:40159",
+      "image": "qanary/qanary-component-kg2kg-translateannotationsofinstance",
+      "tag": "latest",
+      "files": {
+        ".env": "kg2kg-translateannotationsofinstance"
+      }
+    }
+
   ],
   "ids": {
     "0": "qanary-qanary-component-ld-shuyo",
@@ -131,6 +150,8 @@
     "9": "qanary-qanary-component-qb-simplerealnameofsuperhero",
     "10": "qanary-qanary-component-qe-sparqlexecuter",
     "11": "qanary-qanary-component-qe-wikidata",
-    "12": "qanary-qanary-component-tqa-chatgptwrapper"
+    "12": "qanary-qanary-component-tqa-chatgptwrapper",
+    "13": "qanary-qanary-component-qb-dateofdeathdpbedia",
+    "14": "qanary-qanary-component-kg2kg-translateannotationsofinstance"
   }
 }
