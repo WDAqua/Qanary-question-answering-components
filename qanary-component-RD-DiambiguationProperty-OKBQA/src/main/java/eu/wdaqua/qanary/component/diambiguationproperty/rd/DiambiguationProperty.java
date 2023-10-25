@@ -238,7 +238,7 @@ public class DiambiguationProperty extends QanaryComponent {
                     Map<String, Double> urlsAndScore = new HashMap<String, Double>();
                     JSONObject tempObject = (JSONObject) iTypes.next();
                     String urls = (String) tempObject.get("value");
-                    double score = (double) tempObject.get("score");
+                    double score = tempObject.getNumber("score").doubleValue();
                     var = (String) tempObject.get("var");
                     if (allProperties.size() > 0 && allProperties.containsKey(var)) {
 
