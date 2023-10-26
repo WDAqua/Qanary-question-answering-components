@@ -2,10 +2,13 @@ package eu.wdaqua.qanary.component.diambiguationproperty.rd;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -39,9 +42,11 @@ public class DiambiguationProperty extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(DiambiguationProperty.class);
 
     private final String applicationName;
+    private final String QUERY_SELECT_ALL_QUESTION_LANGUAGE = "/queries/select_all_AnnotationOfQuestionLanguage.rq";
 
     public DiambiguationProperty(@Value("${spring.application.name}") final String applicationName) {
         this.applicationName = applicationName;
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(QUERY_SELECT_ALL_QUESTION_LANGUAGE);
     }
 
     public static String runCurlGetWithParam(String weburl, String data, String contentType)
@@ -159,14 +164,9 @@ public class DiambiguationProperty extends QanaryComponent {
 
         // the below mentioned SPARQL query to fetch annotation of language from
         // triplestore
-        String questionlang = "PREFIX qa: <http://www.wdaqua.eu/qa#> " //
-                + "SELECT ?lang " + "FROM <" + namedGraph + "> " //
-                + "WHERE {?q a qa:Question ." //
-                + " ?anno <http://www.w3.org/ns/openannotation/core/hasTarget> ?q ." //
-                + " ?anno <http://www.w3.org/ns/openannotation/core/hasBody> ?lang ." //
-                + " ?anno a qa:AnnotationOfQuestionLanguage  }";
-        // Now fetch the language, in our case it is "en".
-        ResultSet result1 = myQanaryUtils.selectFromTripleStore(questionlang, endpoint);
+        QuerySolutionMap bindingsForQuery = new QuerySolutionMap();
+        bindingsForQuery.add("graph", ResourceFactory.createResource(namedGraph));
+        ResultSet result1 = QanaryTripleStoreConnector.readFileFromResourcesWithMap(QUERY_SELECT_ALL_QUESTION_LANGUAGE, bindingsForQuery); // ResultSet currently not used
         String language1 = "en";
         logger.info("Language of the Question: {}", language1);
 
