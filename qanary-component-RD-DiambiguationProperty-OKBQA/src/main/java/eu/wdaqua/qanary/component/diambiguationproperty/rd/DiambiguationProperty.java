@@ -130,7 +130,7 @@ public class DiambiguationProperty extends QanaryComponent {
      * component
      */
     @Override
-    public QanaryMessage process(QanaryMessage myQanaryMessage) throws SparqlQueryFailed {
+    public QanaryMessage process(QanaryMessage myQanaryMessage) throws SparqlQueryFailed, IOException {
         long startTime = System.currentTimeMillis();
         //org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
         logger.info("process: {}", myQanaryMessage);
@@ -166,7 +166,8 @@ public class DiambiguationProperty extends QanaryComponent {
         // triplestore
         QuerySolutionMap bindingsForQuery = new QuerySolutionMap();
         bindingsForQuery.add("graph", ResourceFactory.createResource(namedGraph));
-        ResultSet result1 = QanaryTripleStoreConnector.readFileFromResourcesWithMap(QUERY_SELECT_ALL_QUESTION_LANGUAGE, bindingsForQuery); // ResultSet currently not used
+        String query = QanaryTripleStoreConnector.readFileFromResourcesWithMap(QUERY_SELECT_ALL_QUESTION_LANGUAGE, bindingsForQuery);
+        ResultSet result1 = myQanaryUtils.getQanaryTripleStoreConnector().select(query); // ResultSet currently not used
         String language1 = "en";
         logger.info("Language of the Question: {}", language1);
 
