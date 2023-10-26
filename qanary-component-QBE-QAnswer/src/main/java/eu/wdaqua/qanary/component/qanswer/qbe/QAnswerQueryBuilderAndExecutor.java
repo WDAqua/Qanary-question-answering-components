@@ -13,10 +13,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.vocabulary.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -64,7 +67,8 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
     private String knowledgeBaseDefault;
     private String userDefault;
 
-    private final String FILENAME_GET_ANNOTATION_OF_NAMED_ENTITIES = "/queries/select_all_AnnotationOfInstance.rq";
+    private final String SELECT_ALL_ANNOTATION_OF_INSTANCE = "/queries/select_all_AnnotationOfInstance.rq";
+    private final String INSERT_ONE_ANNOTATION_OF_ANSWER_SPARQL = "/queries/insert_one_AnnotationOfAnswerSPARQL.rq";
 
     public QAnswerQueryBuilderAndExecutor( //
                                            float threshold, //
@@ -89,7 +93,8 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
         assert !(userDefault == null || userDefault.trim().isEmpty()) : //
                 "userDefault cannot be null or empty: " + userDefault;
 
-        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_GET_ANNOTATION_OF_NAMED_ENTITIES);
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(SELECT_ALL_ANNOTATION_OF_INSTANCE);
+        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(INSERT_ONE_ANNOTATION_OF_ANSWER_SPARQL);
 
         this.threshold = threshold;
         this.qanswerEndpoint = qanswerEndpoint;
@@ -222,7 +227,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
 
         QuerySolutionMap bindingsForGetAnnotationOfNamedEntities = new QuerySolutionMap();
         bindingsForGetAnnotationOfNamedEntities.add("graph", ResourceFactory.createResource(inGraph.toASCIIString()));
-        String sparqlGetAnnotation = QanaryTripleStoreConnector.readFileFromResourcesWithMap(FILENAME_GET_ANNOTATION_OF_NAMED_ENTITIES, bindingsForGetAnnotationOfNamedEntities);
+        String sparqlGetAnnotation = QanaryTripleStoreConnector.readFileFromResourcesWithMap(SELECT_ALL_ANNOTATION_OF_INSTANCE, bindingsForGetAnnotationOfNamedEntities);
 
         boolean ignored = false;
         Float score;
@@ -359,6 +364,19 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
             }
             counter++;
         }
+
+        QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
+        bindingsForInsert.add("service", ResourceFactory.createResource(this.applicationName));
+        bindingsForInsert.add("question", ResourceFactory.createStringLiteral(myQanaryQuestion.getUri().toASCIIString()));
+        bindingsForInsert.add("score", ResourceFactory.createTypedLiteral(String.valueOf(result.getConfidence()), XSDDatatype.XSDdouble));
+        bindingsForInsert.add("improvedQuestionText", ResourceFactory.createStringLiteral(improvedQuestion));
+        bindingsForInsert.add("sparqlQueryString", ResourceFactory.createStringLiteral(createdAnswerSparqlQuery.replace("\"", "\\\"") + "\"") );
+        bindingsForInsert.add("answerDataType", ResourceFactory.createResource(String.valueOf(result.getDatatype())));
+        bindingsForInsert.add("knowledgeGraph", ResourceFactory.createResource(String.valueOf(knowledgeGraphEndpoints.get(usedKnowledgeGraph))));
+        bindingsForInsert.add("json", ResourceFactory.createStringLiteral(
+                result.getJsonString().replace("\"", "\\\"").replace("\\\\", "\\\\\\").replace("\\n", "").replace("\\t", "").replace("\\/", "/")
+        ));
+
 
         // TODO: Move to qanary.commons and use template queries
         String sparql = "" //
