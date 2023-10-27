@@ -13,7 +13,7 @@ GRAPH ?graph {
             oa:start ?start ;
             oa:end  ?end ;
             qa:score ?score
-        ] .
+        ]
     ] .
     ?a oa:hasBody ?answer ;
     oa:annotatedBy ?application ;
