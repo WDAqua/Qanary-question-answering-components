@@ -25,6 +25,11 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
+       		<dependency>
+            		<groupId>de.codecentric</groupId>
+            		<artifactId>spring-boot-admin-starter-client</artifactId>
+            		<version>2.4.1</version>
+        	</dependency>
         <dependency>
             <groupId>eu.wdaqua.qanary</groupId>
             <artifactId>qa.component</artifactId>
