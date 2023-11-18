@@ -1,12 +1,13 @@
 version: '3'
 services:
-  mt-helsinki-nlp: 
-    build: # for building from source
+  component:
+    # for building from source
+    image: qanary-component-mt-python-helsinki:latest
+    build: 
       context: .
       dockerfile: Dockerfile
-    # or use image: qanary/qanary-component-mt-python-opusmt:latest
-    network_mode: host # or use ports
+    network_mode: host
     env_file:
       - .env
     volumes:
-      - /path/to/huggingface-docker-cache:/root/.cache/huggingface/transformers # for caching huggingface models
+      - ~/.cache/huggingface:/root/.cache/huggingface/
