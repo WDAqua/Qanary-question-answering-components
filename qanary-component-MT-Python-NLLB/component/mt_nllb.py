@@ -43,8 +43,6 @@ def qanary_service():
                                               graph=triplestore_ingraph)[0]["uri"]
     logging.info(f"Question text: {text}")
 
-
-    # TODO: check for none or empty? 
     if SOURCE_LANG != None and len(SOURCE_LANG.strip()) > 0:
         lang = SOURCE_LANG
         logging.info("Using custom SOURCE_LANGUAGE")
