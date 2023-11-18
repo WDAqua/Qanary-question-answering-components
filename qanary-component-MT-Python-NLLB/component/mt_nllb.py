@@ -45,11 +45,12 @@ def qanary_service():
 
 
     # TODO: check for none or empty? 
-    if SOURCE_LANG == None:
-        logging.info("No SOURCE_LANGUAGE specified, using langdetect!")
-        lang = detect(text)
-    else:
+    if SOURCE_LANG != None and len(SOURCE_LANG.strip()) > 0:
         lang = SOURCE_LANG
+        logging.info("Using custom SOURCE_LANGUAGE")
+    else:
+        lang = detect(text)
+        logging.info("No SOURCE_LANGUAGE specified, using langdetect!")
     logging.info(f"source language: {lang}")
 
 
