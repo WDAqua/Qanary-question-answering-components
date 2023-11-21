@@ -112,9 +112,9 @@ public class Application {
 
     @Bean
     public OpenAPI customOpenAPI( //
-    		@Value("${springdoc.version}") String appVersion, //
     		@Value("${spring.application.name}") String appName // 
     ) {
+		    String appVersion = getClass().getPackage().getImplementationVersion();
         return new OpenAPI().info(new Info() //
                 .title(appName) //
                 .version(appVersion) //
