@@ -45,8 +45,7 @@ public class Application {
 	}
 
 	@Bean
-	public OpenAPI customOpenAPI() {
-		String appVersion = getClass().getPackage().getImplementationVersion();
+	public OpenAPI customOpenAPI(@Value("${springdoc.version}") String appVersion) {
 		return new OpenAPI().info(new Info() //
 				.title("Qanary Wikidata Birth Data Query Builder Component") //
 				.version(appVersion) //

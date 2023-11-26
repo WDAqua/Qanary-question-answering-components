@@ -79,8 +79,7 @@ import java.util.ArrayList;
     }
 
     @Bean
-    public OpenAPI customOpenAPI() {
-		    String appVersion = getClass().getPackage().getImplementationVersion();
+    public OpenAPI customOpenAPI(@Value("${springdoc.version}") String appVersion) {
         return new OpenAPI().info(new Info() //
                 .title("RuBQ wrapper component") //
                 .version(appVersion) //
