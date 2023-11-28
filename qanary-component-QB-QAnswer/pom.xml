@@ -20,6 +20,7 @@
         <docker.image.name>qanary-component-qb-qanswer</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
         <springdoc.version>1.7.0</springdoc.version>
+        <qanary.commons.version>[3.8.0,4.0.0)</qanary.commons.version>
     </properties>
 
 	<dependencies>
@@ -28,6 +29,11 @@
 			<artifactId>qa.component</artifactId>
 			<version>${qanary.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>eu.wdaqua.qanary</groupId>
+            <artifactId>qa.commons</artifactId>
+            <version>${qanary.commons.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
