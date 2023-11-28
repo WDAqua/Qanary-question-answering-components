@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-KG2KG-TranslateAnnotationsOfInstance</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <name>Qanary component KG2KG Translation of AnnotationOfInstance</name>
     <parent>
         <groupId>org.springframework.boot</groupId>
