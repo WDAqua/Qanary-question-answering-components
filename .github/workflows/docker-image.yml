@@ -16,7 +16,7 @@ jobs:
       TEXTRAZOR_API_KEY: ${{ secrets.TEXTRAZOR_API_KEY }}
     steps:
       - name: Configure java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'corretto'
           java-version: '17'
