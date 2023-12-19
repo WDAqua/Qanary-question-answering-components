@@ -80,7 +80,7 @@ import java.util.List;
     }
 
     @Bean
-    public OpenAPI customOpenAPI() {
+    public OpenAPI customOpenAPI(@Value("${springdoc.version:none}") final String springdocVersion) {
 		    String appVersion = getClass().getPackage().getImplementationVersion();
         return new OpenAPI().info(new Info() //
                 .title("Platypus wrapper component") //
