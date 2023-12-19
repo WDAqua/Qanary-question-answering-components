@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-QB-GAnswerWrapper</artifactId>
-    <version>3.2.0</version>
+    <version>3.2.1</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -15,13 +15,13 @@
     </parent>
     <properties>
         <java.version>17</java.version>
-        <qanary.component.version>[3.7.0,4.0.0)</qanary.component.version>
+        <qanary.component.version>[3.7.6,4.0.0)</qanary.component.version>
         <qanary.commons.version>[3.8.0,4.0.0)</qanary.commons.version>
         <spring-boot-admin.version>2.7.12</spring-boot-admin.version>
         <docker.image.prefix>qanary</docker.image.prefix>
         <!-- Replace the name of the docker image to be generated -->
         <!-- if there is an error demanding a lower-case name, then you picked
-            a artifactId not following the naming conventions, (c.f., https://maven.apache.org/guides/mini/guide-naming-conventions.html) -->
+            an artifactId not following the naming conventions, (c.f., https://maven.apache.org/guides/mini/guide-naming-conventions.html) -->
         <docker.image.name>qanary-component-qb-ganswerwrapper</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
     </properties>
