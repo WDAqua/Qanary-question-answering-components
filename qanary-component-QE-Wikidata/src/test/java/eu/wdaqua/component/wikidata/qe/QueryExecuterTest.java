@@ -79,7 +79,7 @@ class QueryExecuterTest {
 		for (; results.hasNext(); ) {
 			QuerySolution solution = results.nextSolution();
 			count = results.getRowNumber();
-			logger.debug("{}. solution: {}", results.getRowNumber(), solution.toString());
+			logger.info("{}. solution: {}", results.getRowNumber(), solution.toString());
 			// check if target of the annotation is the assumed question URI
 			assertEquals(question.toASCIIString(), solution.get("hasTarget").asResource().toString());
 		}
