@@ -14,6 +14,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,7 +29,7 @@ class QueryTest {
     void filenameAnnotationsQueryTest() throws IOException {
         QuerySolutionMap bindingsForFirstname = new QuerySolutionMap();
         bindingsForFirstname.add("graph", ResourceFactory.createResource("urn:graph"));
-        bindingsForFirstname.add("value", ResourceFactory.createStringLiteral("FIRST_NAME"));
+        bindingsForFirstname.add("hasBody", ResourceFactory.createStringLiteral("FIRST_NAME"));
 
         String sparqlCheckFirstname = QanaryTripleStoreConnector.readFileFromResourcesWithMap(
                 TestConfiguration.FILENAME_ANNOTATIONS, bindingsForFirstname
@@ -37,7 +39,7 @@ class QueryTest {
         assertFalse(sparqlCheckFirstname.isEmpty());
         assertFalse(sparqlCheckFirstname.isBlank());
 
-        assertEquals(TestConfiguration.getTestQuery("queries/select_all_AnnotationOfInstance.rq"), sparqlCheckFirstname);
+        assertEquals(TestConfiguration.getTestQuery("queries/getAnnotationTest.rq").concat("\n"),sparqlCheckFirstname);
     }
 
     @Test
@@ -56,7 +58,7 @@ class QueryTest {
         assertFalse(sparqlGetAnnotation.isEmpty());
         assertFalse(sparqlGetAnnotation.isBlank());
 
-        assertEquals(TestConfiguration.getTestQuery("queries/getAnnotationFilteredTest.rq"), sparqlGetAnnotation);
+        assertEquals(TestConfiguration.getTestQuery("queries/getAnnotationFilteredTest.rq").concat("\n"), sparqlGetAnnotation);
     }
 
     @Test
@@ -73,7 +75,7 @@ class QueryTest {
         assertFalse(sparql.isEmpty());
         assertFalse(sparql.isBlank());
 
-        assertEquals(TestConfiguration.getTestQuery("queries/getQuestionAnswerFromWikidataByPersonTest.rq"), sparql);
+        assertEquals(TestConfiguration.getTestQuery("queries/getQuestionAnswerFromWikidataByPersonTest.rq").concat("\n"), sparql);
     }
 
     @Test
@@ -90,7 +92,7 @@ class QueryTest {
         assertFalse(sparql.isEmpty());
         assertFalse(sparql.isBlank());
 
-        assertEquals(TestConfiguration.getTestQuery("queries/getQuestionAnswerFromWikidataByFirstnameLastnameTest.rq"), sparql);
+        assertEquals(TestConfiguration.getTestQuery("queries/getQuestionAnswerFromWikidataByFirstnameLastnameTest.rq").concat("\n"), sparql);
     }
 
 }

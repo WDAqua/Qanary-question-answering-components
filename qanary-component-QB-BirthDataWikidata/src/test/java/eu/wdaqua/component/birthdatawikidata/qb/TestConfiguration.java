@@ -1,8 +1,14 @@
 package eu.wdaqua.component.birthdatawikidata.qb;
 
-import java.io.IOException;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.ResourceUtils;
+
+import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Scanner;
+import java.util.stream.Collectors;
 
 @org.springframework.boot.test.context.TestConfiguration
 public class TestConfiguration {
@@ -17,9 +23,17 @@ public class TestConfiguration {
      * @throws IOException
      */
     protected static String getTestQuery(String testQueryFilename) throws IOException {
-        String path = TestConfiguration.class.getClassLoader().getResource(testQueryFilename).getPath();
+//        String path = TestConfiguration.class.getClassLoader().getResource(testQueryFilename).getPath();
+//        File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + testQueryFilename);
+//        return new String(Files.readAllBytes(file.toPath()));
 
-        return new String(Files.readAllBytes(Paths.get(path)));
+        try (InputStream inputStream = TestConfiguration.class.getClassLoader().getResourceAsStream(testQueryFilename)) {
+            if (inputStream != null) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                return reader.lines().collect(Collectors.joining("\n"));
+            } else {
+                throw new IOException("Resource not found: " + testQueryFilename);
+            }
+        }
     }
-
 }
