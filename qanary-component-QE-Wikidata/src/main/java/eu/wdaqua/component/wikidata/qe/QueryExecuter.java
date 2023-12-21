@@ -39,14 +39,16 @@ public class QueryExecuter extends QanaryComponent {
 	private final String applicationName;
 
 	private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
-	private String FILENAME_GET_ANNOTATION = "/queries/get_annotation.rq";
+	private String FILENAME_GET_ANNOTATION_TYPED_SPARQL_QUERY = "/queries/get_annotation_typed_sparql_query.rq";
+	private String FILENAME_GET_ANNOTATION_UNTYPED_SPARQL_QUERY = "/queries/get_annotation_untyped_sparql_query.rq";
 
 	public QueryExecuter(@Value("${spring.application.name}") final String applicationName) {
 		this.applicationName = applicationName;
 
 		// check if files exists and are not empty
 		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_INSERT_ANNOTATION);
-		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_GET_ANNOTATION);
+		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_GET_ANNOTATION_TYPED_SPARQL_QUERY);
+		QanaryTripleStoreConnector.guardNonEmptyFileFromResources(FILENAME_GET_ANNOTATION_UNTYPED_SPARQL_QUERY);
 	}
 
 	/**
@@ -154,23 +156,40 @@ public class QueryExecuter extends QanaryComponent {
 		// Here we fetch those annotations (AnnotationOfAnswerSPARQL) from the Qanary
 		// triplestore
 
-		QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
-		bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getInGraph().toASCIIString()));
-		bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+		QuerySolutionMap bindingsForSelectSparqlQuery = new QuerySolutionMap();
+		bindingsForSelectSparqlQuery.add("graph", ResourceFactory.createResource(myQanaryQuestion.getInGraph().toASCIIString()));
+		bindingsForSelectSparqlQuery.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
 
-		// get the template of the INSERT query
-		String sparqlSelectQuery = this.loadQueryFromFile(FILENAME_GET_ANNOTATION, bindingsForInsert);
+		// get the template of the SELECT query --> search for well-formed (typed) SPARQL queries first
+		String sparqlSelectQuery = this.loadQueryFromFile(FILENAME_GET_ANNOTATION_TYPED_SPARQL_QUERY, bindingsForSelectSparqlQuery);
+		logger.info("Query to fetch all available typed SPARQL queries in the current Qanary triplestore graph:\n{}", sparqlSelectQuery);
+		List<String> queries = new LinkedList<String>();
 
 		// fetch data from the triplestore
 		ResultSet resultset = myQanaryUtils.getQanaryTripleStoreConnector().select(sparqlSelectQuery);
-		List<String> queries = new LinkedList<String>();
-
 		while (resultset.hasNext()) {
 			QuerySolution tupel = resultset.next();
 
 			String wikidataQuery = tupel.get("wikidataQuery").toString();
 			logger.info("found query {}", wikidataQuery);
 			queries.add(wikidataQuery);
+		}
+		logger.info("found {} typed SPARQL queries in triplestore", queries.size());
+		
+		if( queries.size() == 0) {
+			// redo: search for untyped SPARQL queries, too
+			sparqlSelectQuery = this.loadQueryFromFile(FILENAME_GET_ANNOTATION_UNTYPED_SPARQL_QUERY, bindingsForSelectSparqlQuery);
+			logger.info("Query to fetch all available UNtyped SPARQL queries in the current Qanary triplestore graph:\n{}", sparqlSelectQuery);
+			// fetch data from the triplestore
+			resultset = myQanaryUtils.getQanaryTripleStoreConnector().select(sparqlSelectQuery);
+			while (resultset.hasNext()) {
+				QuerySolution tupel = resultset.next();
+
+				String wikidataQuery = tupel.get("wikidataQuery").toString();
+				logger.info("found query {}", wikidataQuery);
+				queries.add(wikidataQuery);
+			}
+			logger.info("found {} UNtyped SPARQL queries in triplestore", queries.size());
 		}
 
 		// STEP 2: compute new knowledge about the given question

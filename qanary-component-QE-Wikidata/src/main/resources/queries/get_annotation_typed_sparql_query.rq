@@ -1,15 +1,19 @@
-PREFIX dbr: <http://dbpedia.org/resource/>
-PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
-PREFIX qa: <http://www.wdaqua.eu/qa#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  qa:   <http://www.wdaqua.eu/qa#>
+PREFIX  oa:   <http://www.w3.org/ns/openannotation/core/>
+PREFIX  dbr:  <http://dbpedia.org/resource/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
-SELECT *
-FROM ?grph
+# select prepared SPARQL queries that are explicitly typed as qa:SparqlQuery 
+SELECT ?annotation ?wikidataQuery ?annotationScore
+FROM ?graph
 WHERE {
-	?annotation		a			qa:AnnotationOfAnswerSPARQL .
-    ?annotation     oa:hasBody   ?wikidataQueryData . #the entity in question
- 	?wikidataQueryData a		 qa:SparqlQuery . #a SPARQL query object
- 	?wikidataQueryData rdf:value ?wikidataQuery . #the SPARQL query string
-    ?annotation     qa:score     ?annotationScore .
-    ?annotation     oa:hasTarget ?targetQuestion .
+   			?annotation 
+    			rdf:type	qa:AnnotationOfAnswerSPARQL ;
+              	oa:hasBody	?wikidataQueryData .
+    		?wikidataQueryData
+				rdf:type	qa:SparqlQuery ;
+				rdf:value   ?wikidataQuery .
+    		?annotation  
+    			qa:score	?annotationScore ;
+              	oa:hasTarget ?targetQuestion
 }
