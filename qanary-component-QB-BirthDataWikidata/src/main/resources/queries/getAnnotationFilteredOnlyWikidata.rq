@@ -7,10 +7,12 @@ SELECT *
 FROM ?graph
 WHERE {
 		?annotation     oa:hasBody   ?wikidataResource .
+		# accept only Wikidata resources as it is a Wikidata Query Builder component 
+		FILTER( REGEX(?wikidataResource, "^http://www.wikidata.org/entity/", "i"))  
 		?annotation     qa:score     ?annotationScore .
 		?annotation     oa:hasTarget ?target .
-		?target     oa:hasSource    ?source .
-		?target     oa:hasSelector  ?textSelector .
+		?target     	oa:hasSource    ?source .
+		?target     	oa:hasSelector  ?textSelector .
 		?textSelector   rdf:type    oa:TextPositionSelector .
 		?textSelector   oa:start    ?start .
 		?textSelector   oa:end      ?end .
