@@ -1,0 +1,19 @@
+PREFIX dbr: <http://dbpedia.org/resource/>
+PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+PREFIX qa: <http://www.wdaqua.eu/qa#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT * 
+FROM ?graph
+WHERE {
+		?annotation     oa:hasBody   ?wikidataResource .
+		?annotation     qa:score     ?annotationScore .
+		?annotation     oa:hasTarget ?target .
+		?target     oa:hasSource    ?source .
+		?target     oa:hasSelector  ?textSelector .
+		?textSelector   rdf:type    oa:TextPositionSelector .
+		?textSelector   oa:start    ?start .
+		?textSelector   oa:end      ?end .
+		FILTER(?start = ?filterStart) .
+}
+ORDER BY DESC(?annotationScore) 
