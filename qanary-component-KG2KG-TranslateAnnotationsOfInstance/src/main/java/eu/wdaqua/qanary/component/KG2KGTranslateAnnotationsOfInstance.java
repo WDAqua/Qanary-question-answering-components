@@ -6,6 +6,8 @@ import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector
 import eu.wdaqua.qanary.component.pojos.AnnotationOfInstancePojo;
 import eu.wdaqua.qanary.component.repositories.KG2KGTranslateAnnotationsOfInstanceRepository;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
+
+import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.QuerySolutionMap;
@@ -220,8 +222,8 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
         QuerySolutionMap bindingsForQuery = new QuerySolutionMap();
         bindingsForQuery.add("graph", ResourceFactory.createResource(graphID));
         bindingsForQuery.add("targetQuestion", ResourceFactory.createResource(annotationOfInstancePojo.getTargetQuestion()));
-        bindingsForQuery.add("start", ResourceFactory.createPlainLiteral(String.valueOf(annotationOfInstancePojo.getStart())));
-        bindingsForQuery.add("end", ResourceFactory.createPlainLiteral(String.valueOf(annotationOfInstancePojo.getEnd())));
+        bindingsForQuery.add("start", ResourceFactory.createTypedLiteral(String.valueOf(annotationOfInstancePojo.getStart()), XSDDatatype.XSDinteger));
+        bindingsForQuery.add("end", ResourceFactory.createTypedLiteral(String.valueOf(annotationOfInstancePojo.getEnd()), XSDDatatype.XSDinteger));
         bindingsForQuery.add("answer", ResourceFactory.createResource(newResource));
         bindingsForQuery.add("score", ResourceFactory.createTypedLiteral(String.valueOf(annotationOfInstancePojo.getScore()), XSDDatatype.XSDdouble));
         bindingsForQuery.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
