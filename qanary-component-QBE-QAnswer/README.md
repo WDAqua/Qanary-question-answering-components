@@ -9,7 +9,6 @@ Consequently, your request to the QAnswer API might be more precise.
 ## Background
 
 [QAnswer](https://www.qanswer.eu/) is an API capable of retrieving data from different knowledge graphs.
-An example is available at [https://qanswer-frontend.univ-st-etienne.fr/](https://qanswer-frontend.univ-st-etienne.fr/).
 
 ## Input specification
 
@@ -144,7 +143,7 @@ The following attributes should be changed if required (typically in the file `a
 
 ```ini
 # define the API endpoint of the QAnswer API
-qanswer.endpoint.url=http://qanswer-core1.univ-st-etienne.fr/api/gerbil
+qanswer.endpoint.url=https://qanswer-core1.univ-st-etienne.fr/api/gerbil
 
 # define the minimum required confidence (property: `qa:score`) for named entities (otherwise they are ignored)
 qanswer.qbe.namedentities.threshold=0.5

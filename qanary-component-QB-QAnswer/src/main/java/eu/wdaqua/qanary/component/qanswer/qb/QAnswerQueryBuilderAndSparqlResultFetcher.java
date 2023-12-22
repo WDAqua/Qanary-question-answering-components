@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
@@ -23,11 +22,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import com.google.gson.JsonObject;
 
 import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -36,8 +32,8 @@ import eu.wdaqua.qanary.commons.QanaryUtils;
 import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
 import eu.wdaqua.qanary.component.QanaryComponent;
-import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerRequest;
 import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerResult;
+import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerResult.QAnswerQueryCandidate;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import net.minidev.json.JSONObject;
 
@@ -110,7 +106,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
     /**
      * starts the annotation process
      *
-     * @throws SparqlQueryFailed
+     * @throws Exception
      */
     @Override
     public QanaryMessage process(QanaryMessage myQanaryMessage) throws Exception {
@@ -143,17 +139,29 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
         List<NamedEntity> retrievedNamedEntities = getNamedEntitiesOfQuestion(myQanaryQuestion,
                 myQanaryQuestion.getInGraph());
 
-        // STEP 2: enriching of query and fetching SPARQL query candidates from the
-        // QAnswer API
-        String questionStringWithResources = computeQuestionStringWithReplacedResources(questionString,
-                retrievedNamedEntities, threshold);
+    
+        // STEP 2: compute new information about the question
+
+        // enriching of query, based on recognized resources
+        String questionStringWithResources = computeQuestionStringWithReplacedResources(
+                questionString, retrievedNamedEntities, threshold);
+        // fetching SPARQL query candidates from the QAnswer API
         QAnswerResult result = requestQAnswerWebService(endpoint, questionStringWithResources, lang, knowledgeBaseId, user);
 
-        // STEP 3: add new information to Qanary triplestore
-        String sparql = getSparqlInsertQuery(myQanaryQuestion.getOutGraph(), result);
-        logger.debug("created SPARQL query: {}", sparql);
-        QanaryTripleStoreConnector connector = myQanaryUtils.getQanaryTripleStoreConnector();
-        connector.update(sparql);
+        // STEP 3: add the new information to Qanary triplestore
+        
+        // get sparql insert for improved question
+        URI graph = myQanaryQuestion.getOutGraph();
+        URI questionUri = myQanaryQuestion.getUri();
+        String sparqlImprovedQuestion = getSparqlInsertQueryForImprovedQuestion(graph, questionUri, result);
+        logger.debug("created SPARQL query for improved question: {}", sparqlImprovedQuestion);
+        myQanaryUtils.getQanaryTripleStoreConnector().update(sparqlImprovedQuestion);
+
+        List<String> sparqlQueryCandidates = getSparqlInsertQueriesForQueryCandidates(graph, questionUri, result);
+        for (String sparql : sparqlQueryCandidates) {
+            logger.debug("created SPARQL query for query candidate: {}", sparql);
+            myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
+        }
 
         return myQanaryMessage;
     }
@@ -197,13 +205,13 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
         LinkedList<NamedEntity> namedEntities = new LinkedList<>();
 
         QuerySolutionMap bindingsForSelectAnnotations = new QuerySolutionMap();
-		bindingsForSelectAnnotations.add("GRAPH", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
-		bindingsForSelectAnnotations.add("QUESTION_URI", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+        bindingsForSelectAnnotations.add("GRAPH", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+        bindingsForSelectAnnotations.add("QUESTION_URI", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
 
-		// get the template of the SELECT query
-		String sparqlGetAnnotations = this.loadQueryFromFile(FILENAME_GET_ANNOTATED_ENTITIES, bindingsForSelectAnnotations);
-		logger.info("SPARQL query: {}", sparqlGetAnnotations);        
-        
+        // get the template of the SELECT query
+        String sparqlGetAnnotations = this.loadQueryFromFile(FILENAME_GET_ANNOTATED_ENTITIES, bindingsForSelectAnnotations);
+        logger.info("SPARQL query: {}", sparqlGetAnnotations);        
+            
         boolean ignored = false;
         Float score;
         int start;
@@ -245,9 +253,9 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
         return namedEntities;
     }
     
-	private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException  {
-		return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
-	}    
+    private String loadQueryFromFile(String filenameWithRelativePath, QuerySolutionMap bindings) throws IOException  {
+        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
+    }    
 
     /**
      * create a QAnswer-compatible format of the question
@@ -298,63 +306,37 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
         return myString.replaceAll("\"", "\\\"").replaceAll("\n", "");
     }
 
-    /**
-     * creates the SPARQL query for inserting the data into Qanary triplestore
-     * <p>
-     * data can be retrieved via SPARQL 1.1 from the Qanary triplestore using:
-     *
-     * <pre>
-     *
-     * SELECT * FROM <YOURGRAPHURI> WHERE {
-     * ?s ?p ?o ;
-     * a ?type.
-     * VALUES ?t {
-     * qa:AnnotationOfAnswerSPARQL qa:SparqlQuery
-     * qa:AnnotationOfImprovedQuestion qa:ImprovedQuestion
-     * qa:AnnotationAnswer qa:Answer
-     * qa:AnnotationOfAnswerType qa:AnswerType
-     * }
-     * }
-     * ORDER BY ?type
-     * </pre>
-     *
-     * @param outgraph
-     * @param result
-     * @return
-     * @throws QanaryExceptionNoOrMultipleQuestions
-     * @throws URISyntaxException
-     * @throws SparqlQueryFailed
-     */
-    String getSparqlInsertQuery(URI outgraph, QAnswerResult result)
-            throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed {
+    public List<String> getSparqlInsertQueriesForQueryCandidates(
+            URI graph, URI questionUri, QAnswerResult result) 
+            throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
+
+        List<String> insertQueries = new LinkedList<>();
+
+        for (QAnswerQueryCandidate queryCandidate : result.getQueryCandidates()) {
+            // define the parameters for the SPARQL INSERT query
+            QuerySolutionMap bindings = new QuerySolutionMap();
+            // use the variable names defined in method insertAnnotationOfAnswerSPARQL
+            bindings.add("graph", ResourceFactory.createResource(graph.toASCIIString()));
+            bindings.add("targetQuestion", ResourceFactory.createResource(questionUri.toASCIIString()));
+            bindings.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createStringLiteral(queryCandidate.getQueryString()));
+            bindings.add("confidence", ResourceFactory.createTypedLiteral(queryCandidate.getScore()));
+            bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+
+            // get the template of the INSERT query
+            String sparql = QanaryTripleStoreConnector.insertAnnotationOfAnswerSPARQL(bindings);
+            logger.info("SPARQL insert for adding data to Qanary triplestore: {}", sparql);
+
+            insertQueries.add(sparql);
+        }
+
+        return insertQueries;
+    }
+
+    public String getSparqlInsertQueryForImprovedQuestion(
+            URI graph, URI questionUri, QAnswerResult result) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed {
 
         // the computed answer's SPARQL query needs to be cleaned
         String improvedQuestion = cleanStringForSparqlQuery(result.getQuestion());
-
-        int counter = 0; // starts at 0
-        String annotationsToBeInserted = "";
-        String bindForInsert = "";
-        for (JsonObject answer : result.getValues()) {
-
-            logger.debug("{}. QAnswer query candidate: {}", counter, answer.toString());
-
-            annotationsToBeInserted += "" //
-                    + "\n" //
-                    + "  ?annotationSPARQL" + counter + " a 	qa:AnnotationOfAnswerSPARQL ; \n" //
-                    + " 		oa:hasTarget    ?question ; \n" //
-                    + " 		oa:hasBody      ?sparql" + counter + " ; \n" //
-                    + " 		oa:annotatedBy  ?service ; \n" //
-                    + " 		oa:annotatedAt  ?time ; \n" //
-                    + " 		qa:score        \"" + answer.get("confidence").getAsDouble() + "\"^^xsd:double . \n" //
-                    //
-                    + "  ?sparql" + counter + " a              qa:SparqlQuery ; \n" //
-                    + "         qa:hasPosition  \"" + counter + "\"^^xsd:nonNegativeInteger ; \n" //
-                    + "         rdf:value       \"\"\"" + answer.get("query").getAsString() + "\"\"\"^^xsd:string . \n"; //
-            bindForInsert += "  BIND (IRI(str(RAND())) AS ?annotationSPARQL" + counter + ") . \n" //
-                    + "  BIND (IRI(str(RAND())) AS ?sparql" + counter + ") . \n"; //
-
-            counter++;
-        }
 
         String sparql = "" //
                 + "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
@@ -362,9 +344,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
                 + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n" //
                 + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
                 + "INSERT { \n" //
-                + "GRAPH <" + outgraph.toASCIIString() + "> { \n" //
-                + annotationsToBeInserted //
-                //
+                + "GRAPH ?graph { \n" //
                 // improved question
                 + "  ?annotationImprovedQuestion  a 	qa:AnnotationOfImprovedQuestion ; \n" //
                 + " 		oa:hasTarget    ?question ; \n" //
@@ -378,19 +358,17 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
                 + "  }\n" // end: GRAPH
                 + "}\n" // end: insert
                 + "WHERE { \n" //
-                + bindForInsert //
-                //
                 + "  BIND (IRI(str(RAND())) AS ?annotationImprovedQuestion) . \n" //
                 + "  BIND (IRI(str(RAND())) AS ?improvedQuestion) . \n" //
                 //
                 + "  BIND (now() AS ?time) . \n" //
-                + "  BIND (<" + outgraph.toASCIIString() + "> AS ?question) . \n" //
+                + "  BIND (<" + graph.toASCIIString() + "> AS ?graph) . \n" //
+                + "  BIND (<" + questionUri.toASCIIString() + "> AS ?question) . \n" //
                 + "  BIND (<urn:qanary:" + this.applicationName + "> AS ?service ) . \n" //
                 + "  BIND (\"\"\"" + improvedQuestion + "\"\"\"^^xsd:string  AS ?improvedQuestionText ) . \n" //
                 //
                 + "} \n"; // end: where
 
-        logger.debug("SPARQL insert for adding data to Qanary triplestore:\n{}", sparql);
         return sparql;
     }
 

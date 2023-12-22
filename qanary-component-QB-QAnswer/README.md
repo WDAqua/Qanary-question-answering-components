@@ -13,7 +13,6 @@ Consequently, your request to the QAnswer API might be more precise.
 ## Background
 
 [QAnswer](https://www.qanswer.eu/) is an API capable of retrieving data from different knowledge graphs.
-An example is available at [https://qanswer-frontend.univ-st-etienne.fr/](https://qanswer-frontend.univ-st-etienne.fr/).
 
 ## Examples
 

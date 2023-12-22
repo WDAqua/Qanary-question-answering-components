@@ -1,7 +1,16 @@
 package eu.wdaqua.qanary.component.qanswer.qb;
 
-import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerRequest;
-import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerResult;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import javax.inject.Inject;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,15 +29,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import javax.inject.Inject;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerRequest;
+import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerResult;
 
 /**
  * test the custom endpoint of this component
@@ -77,8 +79,8 @@ class QanaryCustomControllerTest {
         String user = "open";
 
         QAnswerResult result0 = customController.requestQAnswerWebService(this.realEndpoint, question, lang, kb, user);
-        assertTrue(result0.getValues().size() > 0, "the number of fetched results should be > 0, but  was " + result0.getValues().size());
-        assertTrue(result0.getValues().size() <= 60, "the number of fetched results should be <= 60, but  was " + result0.getValues().size());
+        assertTrue(result0.getQueryCandidates().size() > 0, "the number of fetched results should be > 0, but  was " + result0.getQueryCandidates().size());
+        assertTrue(result0.getQueryCandidates().size() <= 60, "the number of fetched results should be <= 60, but  was " + result0.getQueryCandidates().size());
 
         QAnswerRequest requestMessage = new QAnswerRequest(question, lang, kb, user);
 
@@ -94,14 +96,13 @@ class QanaryCustomControllerTest {
                     .andExpect(MockMvcResultMatchers.jsonPath("$.result.knowledgebaseId").exists()) //
                     .andExpect(MockMvcResultMatchers.jsonPath("$.result.language").exists()) //
                     .andExpect(MockMvcResultMatchers.jsonPath("$.result.question").exists()) //
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.result.values").exists()) //
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.result.queryCandidates").exists()) //
                     .andReturn();
 
         } catch (Exception e) {
             fail(e.getMessage());
             return;
         }
-
 
         // TODO: check the content of the response fields being equal to the previous result
         try {
@@ -114,14 +115,12 @@ class QanaryCustomControllerTest {
                     .andExpect(MockMvcResultMatchers.jsonPath("$.knowledgebaseId").exists()) //
                     .andExpect(MockMvcResultMatchers.jsonPath("$.language").exists()) //
                     .andExpect(MockMvcResultMatchers.jsonPath("$.question").exists()) //
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.values").exists()) //
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.queryCandidates").exists()) //
                     .andReturn();
         } catch (Exception e) {
             fail(e.getMessage());
             return;
         }
-
-
     }
 
 }

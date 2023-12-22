@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import java.net.URI;
 
 public class QAnswerRequest {
-    @Schema(description = "Endpoint URL of QAnswer API (default is already available)", example = "http://qanswer-core1.univ-st-etienne.fr/api/gerbil", required = false)
+    @Schema(description = "Endpoint URL of QAnswer API (default is already available)", example = "https://qanswer-core1.univ-st-etienne.fr/api/gerbil", required = false)
     private URI qanswerEndpointUrl;
     @NotBlank
     @Schema(description = "Question for that the results will be fetched from the QAnswer API", example = "What is the capital of Germany?", required = true)
