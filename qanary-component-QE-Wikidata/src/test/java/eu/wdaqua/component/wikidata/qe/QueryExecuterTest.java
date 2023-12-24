@@ -79,9 +79,9 @@ class QueryExecuterTest {
 		for (; results.hasNext(); ) {
 			QuerySolution solution = results.nextSolution();
 			count = results.getRowNumber();
-			logger.debug("{}. solution: {}", results.getRowNumber(), solution.toString());
+			logger.info("{}. solution: {}", results.getRowNumber(), solution.toString());
 			// check if target of the annotation is the assumed question URI
-			assertEquals(question.toASCIIString(), solution.get("question").asResource().toString());
+			assertEquals(question.toASCIIString(), solution.get("hasTarget").asResource().toString());
 		}
 		// check if the number of generated annotation is 1
 		assertEquals(1, count, "There should be just 1 result after executing the component.");
