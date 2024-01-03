@@ -14,6 +14,7 @@ jobs:
       MEANINGCLOUD_API_KEY: ${{ secrets.MEANINGCLOUD_API_KEY }}
       TAGME_API_KEY: ${{ secrets.TAGME_API_KEY }}
       TEXTRAZOR_API_KEY: ${{ secrets.TEXTRAZOR_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - name: Configure java
         uses: actions/setup-java@v4
