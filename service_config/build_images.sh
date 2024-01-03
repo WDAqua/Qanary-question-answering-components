@@ -5,7 +5,7 @@ git clone https://github.com/WDAqua/Qanary.git
 # subshell building the Qanary pipeline
 (
 cd Qanary/
-mvn clean install -Ddockerfile.skip=true -DskipTests
+mvn --batch-mode clean install -Ddockerfile.skip=true -DskipTests
 )
 
 # delete Qanary pipeline repository
@@ -83,9 +83,10 @@ fi
 
 
 # build Docker Images and store name and tag
-if ! mvn clean package -DskipTests;
+if ! mvn --batch-mode clean package -DskipTests;
 then
-  exit 1
+  echo "Maven build failed"
+  exit 4 # stop if maven build fails
 fi
 
 docker image ls | grep -oP "^qanary/qanary-component.*\.[0-9] " > images.temp
