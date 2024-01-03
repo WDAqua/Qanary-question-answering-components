@@ -69,7 +69,7 @@ then
   echo "OPENAI_API_KEY is not set. Check your secrets."
   exit 2 # stop if no API key is set
 else
-  sed -i "s/API_KEY/$OPENAI_API_KEY/g" ./service_config/files/ned-openai-gpt
+  sed -i "s/OPENAI_API_KEY_PLACEHOLDER/$OPENAI_API_KEY/g" ./service_config/files/ned-openai-gpt
 fi
 
 
