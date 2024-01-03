@@ -134,6 +134,15 @@
       "files": {
         ".env": "kg2kg-translateannotationsofinstance"
       }
+    },
+    {
+        "mode": "dockerfile",
+        "port": "40132:5656",
+        "image": "qanary/qanary-component-ned-openai-gpt",
+        "tag": "latest",
+        "files": {
+          ".env": "ned-openai-gpt"
+        }
     }
 
   ],
@@ -152,6 +161,7 @@
     "11": "qanary-qanary-component-qe-wikidata",
     "12": "qanary-qanary-component-tqa-chatgptwrapper",
     "13": "qanary-qanary-component-qb-dateofdeathdpbedia",
-    "14": "qanary-qanary-component-kg2kg-translateannotationsofinstance"
+    "14": "qanary-qanary-component-kg2kg-translateannotationsofinstance",
+    "15": "qanary-qanary-component-ned-openai-gpt"
   }
 }
