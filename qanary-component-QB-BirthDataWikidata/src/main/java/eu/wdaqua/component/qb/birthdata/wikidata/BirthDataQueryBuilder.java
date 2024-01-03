@@ -41,7 +41,7 @@ public class BirthDataQueryBuilder extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(BirthDataQueryBuilder.class);
 
     private static final String FILENAME_ANNOTATIONS = "/queries/getAnnotation.rq";
-    private static final String FILENAME_ANNOTATIONS_FILTERED = "/queries/getAnnotationFiltered.rq";
+    private static final String FILENAME_ANNOTATIONS_FILTERED = "/queries/getAnnotationFilteredOnlyWikidata.rq";
 
     private static final String FILENAME_WIKIDATA_BIRTHDATA_QUERY_PERSON = "/queries/getQuestionAnswerFromWikidataByPerson.rq";
     private static final String FILENAME_WIKIDATA_BIRTHDATA_QUERY_FIRST_AND_LASTNAME = "/queries/getQuestionAnswerFromWikidataByFirstnameLastname.rq";

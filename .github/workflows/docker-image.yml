@@ -29,7 +29,7 @@ jobs:
       - name: Build and push Java components
         run: bash -c ./service_config/build_images.sh
       - name: Init update
-        uses: MindMaster98/docker-service-updater@v0.2.1
+        uses: WSE-research/docker-service-updater@v0.2.1
         with:
           api_key: ${{ secrets.API_KEY }}
           updater_host: ${{ secrets.UPDATER_HOST }}

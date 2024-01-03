@@ -6,3 +6,4 @@ SPARQLWrapper
 Flask
 langid
 pytest
+pytest-env
