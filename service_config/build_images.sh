@@ -70,6 +70,15 @@ then
   exit 2 # stop if no API key is set
 else
   sed -i "s/OPENAI_API_KEY_PLACEHOLDER/$OPENAI_API_KEY/g" ./service_config/files/ned-openai-gpt
+  # safety check
+  if [ `grep OPENAI_API_KEY_PLACEHOLDER ./service_config/files/ned-openai-gpt` ]
+  then 
+    echo "check fails: OPENAI_API_KEY_PLACEHOLDER still in ned-openai-gpt"; 
+    exit 3 # stop if no API key is set
+  else 
+    echo "check ok: OPENAI_API_KEY_PLACEHOLDER was replaced in ned-openai-gpt"; 
+  fi
+
 fi
 
 
