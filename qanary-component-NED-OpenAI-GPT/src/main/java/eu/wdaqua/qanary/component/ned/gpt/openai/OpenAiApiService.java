@@ -59,6 +59,8 @@ public class OpenAiApiService {
 			LOGGER.error("The API token was empty: '{}'. Please set the configuration property 'openai.api.key'.",
 					this.token);
 			throw new MissingArgumentException("openai.api.key is not avaible.");
+		} else {
+			LOGGER.info("API key available: {}*****{}", token.substring(0, 5), token.substring(token.length() - 5));
 		}
 	}
 

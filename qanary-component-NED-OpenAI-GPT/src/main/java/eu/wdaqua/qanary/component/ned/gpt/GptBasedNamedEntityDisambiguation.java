@@ -50,8 +50,6 @@ public class GptBasedNamedEntityDisambiguation extends QanaryComponent {
 	private static final String FILENAME_SELECT_MAPPINGS_FROM_DBPEDIA = "/queries/select_mappings_from_DBpedia.rq";
 	private static final String FILENAME_INSERT_ONE_ANNOTATIONOFINSTANCE = "/queries/insert_one_AnnotationOfInstance.rq";
 
-	private static final String START = "start";
-	private static final String END = "end";
 	private static final String NAMEDENTITY = "named_entity";
 	private static final String WIKIPEDIAURL = "wikipedia_url";
 
