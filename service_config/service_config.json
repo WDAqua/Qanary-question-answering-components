@@ -137,7 +137,7 @@
     },
     {
         "mode": "dockerfile",
-        "port": "40132:5656",
+        "port": "40132:40132",
         "image": "qanary/qanary-component-ned-openai-gpt",
         "tag": "latest",
         "files": {

@@ -1,5 +1,5 @@
 SERVER_HOST=http://demos.swe.htwk-leipzig.de
-SERVER_PORT=5656
+SERVER_PORT=40132
 SPRING_BOOT_ADMIN_URL=http://demos.swe.htwk-leipzig.de:40111/
 SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE-BASE-URL=http://demos.swe.htwk-leipzig.de:40132
 OPENAI_API_KEY=API_KEY
