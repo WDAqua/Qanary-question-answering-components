@@ -31,7 +31,7 @@ fi
 
 if [ -z "$DANDELION_API_KEY" ]
 then
-  echo "$DANDELION_API_KEY is not set. Check your secrets."
+  echo "DANDELION_API_KEY is not set. Check your secrets."
   exit
 else
   sed -i "s/API_KEY/$DANDELION_API_KEY/g" ./service_config/files/ned-dandelion
@@ -40,7 +40,7 @@ fi
 
 if [ -z "$MEANINGCLOUD_API_KEY" ]
 then
-  echo "$MEANINGCLOUD_API_KEY is not set. Check your secrets."
+  echo "MEANINGCLOUD_API_KEY is not set. Check your secrets."
   exit
 else
   sed -i "s/API_KEY/$MEANINGCLOUD_API_KEY/g" ./service_config/files/ned-meaningcloud
@@ -49,7 +49,7 @@ fi
 
 if [ -z "$TAGME_API_KEY" ]
 then
-  echo "$TAGME_API_KEY is not set. Check your secrets."
+  echo "TAGME_API_KEY is not set. Check your secrets."
   exit
 else
   sed -i "s/API_KEY/$TAGME_API_KEY/g" ./service_config/files/ned-tagme
@@ -58,10 +58,18 @@ fi
 
 if [ -z "$TEXTRAZOR_API_KEY" ]
 then
-  echo "$TEXTRAZOR_API_KEY is not set. Check your secrets."
+  echo "TEXTRAZOR_API_KEY is not set. Check your secrets."
   exit
 else
   sed -i "s/API_KEY/$TEXTRAZOR_API_KEY/g" ./service_config/files/ner-text-razor
+fi
+
+if [ -z "$OPENAI_API_KEY" ]
+then
+  echo "OPENAI_API_KEY is not set. Check your secrets."
+  exit
+else
+  sed -i "s/API_KEY/$OPENAI_API_KEY/g" ./service_config/files/ned-openai-gpt
 fi
 
 
