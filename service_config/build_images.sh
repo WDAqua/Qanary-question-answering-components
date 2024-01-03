@@ -15,7 +15,7 @@ rm -rf Qanary/
 if [ -z "$BABELFY_API_KEY" ]
 then
   echo "BABELFY_API_KEY is not set. Check your secrets."
-  exit
+  exit 2 # stop if no API key is set
 else
   sed -i "s/API_KEY/$BABELFY_API_KEY/g" ./service_config/files/ned-babelfy
   sed -i "s/API_KEY/$BABELFY_API_KEY/g" ./service_config/files/ner-babelfy
@@ -24,7 +24,7 @@ fi
 if [ -z "$CHATGPT_API_KEY" ]
 then
   echo "CHATGPT_API_KEY is not set. Check your secrets."
-  exit
+  exit 2 # stop if no API key is set
 else
   sed -i "s/API_KEY/$CHATGPT_API_KEY/g" ./service_config/files/tqa-chatgptwrapper
 fi
@@ -32,7 +32,7 @@ fi
 if [ -z "$DANDELION_API_KEY" ]
 then
   echo "DANDELION_API_KEY is not set. Check your secrets."
-  exit
+  exit 2 # stop if no API key is set
 else
   sed -i "s/API_KEY/$DANDELION_API_KEY/g" ./service_config/files/ned-dandelion
   sed -i "s/API_KEY/$DANDELION_API_KEY/g" ./service_config/files/ner-dandelion
@@ -41,7 +41,7 @@ fi
 if [ -z "$MEANINGCLOUD_API_KEY" ]
 then
   echo "MEANINGCLOUD_API_KEY is not set. Check your secrets."
-  exit
+  exit 2 # stop if no API key is set
 else
   sed -i "s/API_KEY/$MEANINGCLOUD_API_KEY/g" ./service_config/files/ned-meaningcloud
   sed -i "s/API_KEY/$MEANINGCLOUD_API_KEY/g" ./service_config/files/ner-meaning-cloud
@@ -50,7 +50,7 @@ fi
 if [ -z "$TAGME_API_KEY" ]
 then
   echo "TAGME_API_KEY is not set. Check your secrets."
-  exit
+  exit 2 # stop if no API key is set
 else
   sed -i "s/API_KEY/$TAGME_API_KEY/g" ./service_config/files/ned-tagme
   sed -i "s/API_KEY/$TAGME_API_KEY/g" ./service_config/files/ner-tagme
@@ -59,7 +59,7 @@ fi
 if [ -z "$TEXTRAZOR_API_KEY" ]
 then
   echo "TEXTRAZOR_API_KEY is not set. Check your secrets."
-  exit
+  exit 2 # stop if no API key is set
 else
   sed -i "s/API_KEY/$TEXTRAZOR_API_KEY/g" ./service_config/files/ner-text-razor
 fi
@@ -67,7 +67,7 @@ fi
 if [ -z "$OPENAI_API_KEY" ]
 then
   echo "OPENAI_API_KEY is not set. Check your secrets."
-  exit
+  exit 2 # stop if no API key is set
 else
   sed -i "s/API_KEY/$OPENAI_API_KEY/g" ./service_config/files/ned-openai-gpt
 fi
