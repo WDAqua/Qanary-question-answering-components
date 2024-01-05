@@ -8,7 +8,8 @@ FROM <urn:graph>
 WHERE
   { ?annotation  oa:hasBody   ?wikidataResource ;
               qa:score        ?annotationScore ;
-              oa:hasTarget    ?target .
+              oa:hasTarget    ?target ;
+              oa:annotatedBy  ?annotator .
     ?target   oa:hasSource    <urn:source> ;
               oa:hasSelector  ?textSelector .
     ?textSelector
@@ -16,5 +17,6 @@ WHERE
               oa:start        ?start ;
               oa:end          ?end
     FILTER ( ?start = "5"^^<http://www.w3.org/2001/XMLSchema#int> )
+    FILTER regex(?wikidataResource, ?regexForResourceFilter, "i")
   }
 ORDER BY DESC(?annotationScore)

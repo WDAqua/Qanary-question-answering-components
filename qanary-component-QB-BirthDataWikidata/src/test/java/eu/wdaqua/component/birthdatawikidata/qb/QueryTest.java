@@ -48,7 +48,7 @@ class QueryTest {
         bindingsForAnnotation.add("filterStart", ResourceFactory.createTypedLiteral(String.valueOf(5), XSDDatatype.XSDint));
 
         String sparqlGetAnnotation = QanaryTripleStoreConnector.readFileFromResourcesWithMap(
-                TestConfiguration.FILENAME_ANNOTATIONS_FILTERED,
+                TestConfiguration.FILENAME_ANNOTATIONS_NAMED_ENTITY_FILTERED_FOR_WIKIDATA,
                 bindingsForAnnotation
         );
 
