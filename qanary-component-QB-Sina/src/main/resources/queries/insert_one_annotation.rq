@@ -9,7 +9,7 @@ INSERT {
         ?a oa:hasBody ?body ;
             oa:annotatedBy ?application ;
             oa:annotatedAt ?time ;
-            qa:hasScore ?score .
+            qa:score ?score .
     }
 }
 WHERE {
