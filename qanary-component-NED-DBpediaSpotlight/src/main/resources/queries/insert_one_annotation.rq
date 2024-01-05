@@ -20,6 +20,6 @@ GRAPH ?graph {
     qa:score ?score .
 }}
 WHERE {
-    BIND (IRI(str(RAND())) AS ?a) .
+    BIND (IRI(CONCAT("urn:qanary:annotation:instance:", STR(RAND()))) AS ?a) .
     BIND (now() as ?time)
 }
