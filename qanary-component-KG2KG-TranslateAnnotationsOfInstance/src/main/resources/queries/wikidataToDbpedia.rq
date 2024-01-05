@@ -1,3 +1,4 @@
+# find the URI of the resource in the DBpedia knowledge graph 
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 SELECT ?resource
 WHERE {

@@ -1,3 +1,4 @@
+# insert annotation typed as AnnotationOfInstance
 PREFIX qa: <http://www.wdaqua.eu/qa#>
 PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -21,6 +22,6 @@ GRAPH ?graph {
     qa:score ?score .
 }}
 WHERE {
-    BIND (IRI(str(RAND())) AS ?a) .
+	BIND (IRI(CONCAT("urn:qanary:annotation:instance:", STR(RAND()))) AS ?a) .    
     BIND (now() as ?time)
 }
