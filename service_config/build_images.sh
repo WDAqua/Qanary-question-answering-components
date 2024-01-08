@@ -89,7 +89,7 @@ then
   exit 4 # stop if maven build fails
 fi
 
-docker image ls | grep -oP "^qanary/qanary-component.*\.[0-9] " > images.temp
+docker image ls | grep -oP "^qanary/qanary-component.*\.[0-9]+ " > images.temp
 
 # read image list
 images=$(cat images.temp)
