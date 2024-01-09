@@ -48,7 +48,7 @@
     {
       "mode": "dockerfile",
       "port": "40152:40152",
-      "image": "qanary/qanary-component-qb-birthdatawikidata",
+      "image": "qanary/qanary-component-qb-birthdata-wikidata",
       "tag": "latest",
       "files": {
         ".env": "qb-birthdatawikidata"
@@ -134,6 +134,15 @@
       "files": {
         ".env": "kg2kg-translateannotationsofinstance"
       }
+    },
+    {
+        "mode": "dockerfile",
+        "port": "40132:40132",
+        "image": "qanary/qanary-component-ned-openai-gpt",
+        "tag": "latest",
+        "files": {
+          ".env": "ned-openai-gpt"
+        }
     }
 
   ],
@@ -143,7 +152,7 @@
     "2": "qanary-qanary-component-ned-opentapioca",
     "3": "qanary-qanary-component-ner-comiccharacternamesimplenamedentityrecognizer",
     "4": "qanary-qanary-component-qc-answertypeclassifier",
-    "5": "qanary-qanary-component-qb-birthdatawikidata",
+    "5": "qanary-qanary-component-qb-birthdata-wikidata",
     "6": "qanary-qanary-component-qb-comiccharacteralteregosimpledbpedia",
     "7": "qanary-qanary-component-qb-qanswer",
     "8": "qanary-qanary-component-qbe-qanswer",
@@ -152,6 +161,7 @@
     "11": "qanary-qanary-component-qe-wikidata",
     "12": "qanary-qanary-component-tqa-chatgptwrapper",
     "13": "qanary-qanary-component-qb-dateofdeathdpbedia",
-    "14": "qanary-qanary-component-kg2kg-translateannotationsofinstance"
+    "14": "qanary-qanary-component-kg2kg-translateannotationsofinstance",
+    "15": "qanary-qanary-component-ned-openai-gpt"
   }
 }

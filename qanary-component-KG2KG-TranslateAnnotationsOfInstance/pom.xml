@@ -19,9 +19,9 @@
         <docker.image.prefix>qanary</docker.image.prefix>
         <docker.image.name>qanary-component-kg2kg-translateannotationsofinstance</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-        <spingdoc.version>1.7.0</spingdoc.version>
-        <qanary.component.version>[3.7.6,4.0.0)</qanary.component.version>
-        <qanary.commons.version>[3.8.0,4.0.0)</qanary.commons.version>
+        <springdoc.version>1.7.0</springdoc.version>
+        <qanary.component.version>[3.9.2,4.0.0)</qanary.component.version>
+        <qanary.commons.version>[3.11.0,4.0.0)</qanary.commons.version>
     </properties>
     <dependencies>
         <dependency>
@@ -53,7 +53,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>${spingdoc.version}</version>
+            <version>${springdoc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

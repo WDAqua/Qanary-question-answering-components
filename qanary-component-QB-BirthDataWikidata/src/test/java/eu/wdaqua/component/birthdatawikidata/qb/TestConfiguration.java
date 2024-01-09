@@ -10,11 +10,15 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+import eu.wdaqua.component.qb.birthdata.wikidata.BirthDataQueryBuilder;
+
 @org.springframework.boot.test.context.TestConfiguration
 public class TestConfiguration {
-    protected static final String FILENAME_ANNOTATIONS = "/queries/select_all_AnnotationOfInstance.rq";
-    protected static final String FILENAME_WIKIDATA_BIRTHDATA_QUERY_PERSON = "/queries/getQuestionAnswerFromWikidataByPerson.rq";
-    protected static final String FILENAME_WIKIDATA_BIRTHDATA_QUERY_FIRST_AND_LASTNAME = "/queries/getQuestionAnswerFromWikidataByFirstnameLastname.rq";
+
+    protected static final String FILENAME_ANNOTATIONS = BirthDataQueryBuilder.FILENAME_ANNOTATIONS;
+    protected static final String FILENAME_ANNOTATIONS_NAMED_ENTITY_FILTERED_FOR_WIKIDATA = BirthDataQueryBuilder.FILENAME_ANNOTATIONS_NAMED_ENTITY_FILTERED_FOR_WIKIDATA; 
+    protected static final String FILENAME_WIKIDATA_BIRTHDATA_QUERY_PERSON = BirthDataQueryBuilder.FILENAME_WIKIDATA_BIRTHDATA_QUERY_PERSON;
+    protected static final String FILENAME_WIKIDATA_BIRTHDATA_QUERY_FIRST_AND_LASTNAME = BirthDataQueryBuilder.FILENAME_WIKIDATA_BIRTHDATA_QUERY_FIRST_AND_LASTNAME;
 
     /**
      * get the defined SPARQL query and remove all control characters (like newline)
