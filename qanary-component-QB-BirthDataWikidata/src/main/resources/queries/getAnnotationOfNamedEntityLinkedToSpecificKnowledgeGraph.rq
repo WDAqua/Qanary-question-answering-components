@@ -1,19 +1,25 @@
+# retrieve an annotation pointing to Wikidata entity from a text segment (TextSelector) 
 PREFIX dbr: <http://dbpedia.org/resource/>
 PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
 PREFIX qa: <http://www.wdaqua.eu/qa#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
-SELECT * WHERE {
-	GRAPH ?graph {
+SELECT * 
+FROM ?graph
+WHERE {
 		?annotation     oa:hasBody   ?wikidataResource .
 		?annotation     qa:score     ?annotationScore .
 		?annotation     oa:hasTarget ?target .
-		?target     oa:hasSource    ?source .
-		?target     oa:hasSelector  ?textSelector .
+		?annotation 	oa:annotatedBy ?annotator .
+		?target     	oa:hasSource    ?source .
+		?target     	oa:hasSelector  ?textSelector .
 		?textSelector   rdf:type    oa:TextPositionSelector .
 		?textSelector   oa:start    ?start .
 		?textSelector   oa:end      ?end .
+		
+		# filter named entities that have particular start index in the given question
 		FILTER(?start = ?filterStart) .
-	}
+		# accept only Wikidata resources as it is a Wikidata Query Builder component 
+		FILTER( REGEX(?wikidataResource, ?regexForResourceFilter, "i"))  
 }
 ORDER BY DESC(?annotationScore) 

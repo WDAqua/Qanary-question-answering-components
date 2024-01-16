@@ -55,6 +55,8 @@ SPRING_BOOT_ADMIN_USERNAME=admin
 SPRING_BOOT_ADMIN_PASSWORD=admin
 SERVICE_NAME_COMPONENT=MT-MBart
 SERVICE_DESCRIPTION_COMPONENT=Translates question to English
+SOURCE_LANGUAGE=de
+TARGET_LANGUAGE=en
 ```
 
 The parameters description:
@@ -67,6 +69,8 @@ The parameters description:
 * `SPRING_BOOT_ADMIN_CLIENT_INSTANCE_SERVICE-BASE-URL` -- the URL of your Qanary component (has to be visible to the Qanary pipeline)
 * `SERVICE_NAME_COMPONENT` -- the name of your Qanary component (for better identification)
 * `SERVICE_DESCRIPTION_COMPONENT` -- the description of your Qanary component
+* `SOURCE_LANGUAGE` -- (optional) the source language of the text (the component will use langdetect if no source language is given)
+* `TARGET_LANGUAGE` -- the language that the text should be translated to
 
 4. Build the Docker image: 
 

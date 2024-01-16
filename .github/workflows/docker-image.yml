@@ -14,9 +14,10 @@ jobs:
       MEANINGCLOUD_API_KEY: ${{ secrets.MEANINGCLOUD_API_KEY }}
       TAGME_API_KEY: ${{ secrets.TAGME_API_KEY }}
       TEXTRAZOR_API_KEY: ${{ secrets.TEXTRAZOR_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - name: Configure java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'corretto'
           java-version: '17'
@@ -29,7 +30,7 @@ jobs:
       - name: Build and push Java components
         run: bash -c ./service_config/build_images.sh
       - name: Init update
-        uses: MindMaster98/docker-service-updater@v0.2.1
+        uses: WSE-research/docker-service-updater@v0.2.1
         with:
           api_key: ${{ secrets.API_KEY }}
           updater_host: ${{ secrets.UPDATER_HOST }}

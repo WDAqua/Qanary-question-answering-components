@@ -1,0 +1,18 @@
+# add a RDF description of the component here, use the RDF Turtle format
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix qa: <https://w3id.org/wdaqua/qanary#> .
+@prefix ISO6391: <http://id.loc.gov/vocabulary/iso639-1/> .
+
+<urn:qanary:GptBasedNamedEntityDisambiguation>
+  a                       qa:QanaryComponentNED ;
+  rdfs:label              "Qanary component: NER and NED based on Open AI GPT API"@en ;
+  qa:hasInputAnnotations  [ 
+                            a qa:AnnotationQuestion ;
+                            qa:supportedLanguages ISO6391:en, ISO6391:fr, ISO6391:es, ISO6391:de, ISO6391:ru, ISO6391:it 
+                          ] ;
+  qa:hasOutputAnnotations [ 
+                            a qa:AnnotationOfInstance ;
+                            qa:supportedKnowledgeGraphs <http://www.dbpedia.org>
+                          ] .
+
+
