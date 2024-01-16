@@ -34,9 +34,9 @@ public class QueryBuilder extends QanaryComponent {
     @Value("${dbpedia.sparql.endpoint:http://dbpedia.org/sparql}")
     String dbpediaSparqlEndpoint;
 
-    private String FILENAME_SELECT_CLASSES = "/queries/select_classes.rq";
-    private String FILENAME_SELECT_PROPERTIES = "/queries/select_properties.rq";
-    private String FILENAME_SELECT_ENTITIES = "/queries/select_entities.rq";
+    private String FILENAME_SELECT_CLASSES = "/queries/select_all_AnnotationOfClass.rq";
+    private String FILENAME_SELECT_PROPERTIES = "/queries/select_all_AnnotationOfRelation.rq";
+    private String FILENAME_SELECT_ENTITIES = "/queries/select_all_AnnotationOfInstance.rq";
     private String FILENAME_INSERT_SPARQL = "/queries/insert_sparql.rq";
     private String FILENAME_INSERT_JSON = "/queries/insert_json.rq";
 
@@ -293,8 +293,8 @@ public class QueryBuilder extends QanaryComponent {
 
         while (r.hasNext()) {
             QuerySolution s = r.next();
-            classes.add(s.getResource("uri").getURI());
-            logger.info("class: {}", s.getResource("uri").getURI());
+            classes.add(s.getResource("hasBody").getURI());
+            logger.info("class: {}", s.getResource("hasBody").getURI());
         }
 
         return classes;
@@ -321,8 +321,8 @@ public class QueryBuilder extends QanaryComponent {
 
         while (r.hasNext()) {
             QuerySolution s = r.next();
-            properties.add(s.getResource("uri").getURI());
-            logger.info("property: {}", s.getResource("uri").getURI());
+            properties.add(s.getResource("hasBody").getURI());
+            logger.info("property: {}", s.getResource("hasBody").getURI());
         }
         return properties;
     }
@@ -348,8 +348,8 @@ public class QueryBuilder extends QanaryComponent {
         while (r.hasNext()) {
             QuerySolution s = r.next();
 
-            entities.add(s.getResource("uri").getURI());
-            logger.info("entity: {}", s.getResource("uri").getURI());
+            entities.add(s.getResource("hasBody").getURI());
+            logger.info("entity: {}", s.getResource("hasBody").getURI());
         }
         return entities;
     }

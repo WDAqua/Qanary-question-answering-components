@@ -43,7 +43,7 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
         the final insert query  */
 
     // query used to fetch required information from the graphURI
-    private static final String QUERY_FILE_FETCH_REQUIRED_ANNOTATIONS = "/queries/fetch_required_annotations.rq";
+    private static final String QUERY_FILE_FETCH_REQUIRED_ANNOTATIONS = "/queries/select_all_AnnotationOfInstance.rq";
 
     // That's the later inserted query / new computed query
     private static final String QUERY_FILE_DBPEDIA_QUERY = "/queries/dbpedia_query.rq";
@@ -168,9 +168,9 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
     public QuerySolutionMap getBindingsForSparqlQuery(QanaryQuestion myQanaryQuestion) throws Exception {
         QuerySolutionMap querySolutionMap = new QuerySolutionMap();
         querySolutionMap.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));// Set the GraphID
-        querySolutionMap.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
-        querySolutionMap.add("startValue", ResourceFactory.createTypedLiteral(String.valueOf(SUPPORTED_PREFIX.length()), XSDDatatype.XSDnonNegativeInteger));
-        querySolutionMap.add("confidence", ResourceFactory.createTypedLiteral("1.0", XSDDatatype.XSDfloat));
+        querySolutionMap.add("hasSource", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+        querySolutionMap.add("start", ResourceFactory.createTypedLiteral(String.valueOf(SUPPORTED_PREFIX.length()), XSDDatatype.XSDnonNegativeInteger));
+        querySolutionMap.add("score", ResourceFactory.createTypedLiteral("1.0", XSDDatatype.XSDfloat));
 
         return querySolutionMap;
     }

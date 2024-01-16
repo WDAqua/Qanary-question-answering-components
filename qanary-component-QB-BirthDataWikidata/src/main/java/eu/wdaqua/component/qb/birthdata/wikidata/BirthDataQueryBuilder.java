@@ -44,7 +44,6 @@ import io.swagger.v3.oas.annotations.Operation;
 @Component
 public class BirthDataQueryBuilder extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(BirthDataQueryBuilder.class);
-
 	public static final String FILENAME_ANNOTATIONS = "/queries/getAnnotation.rq";
 	public static final String FILENAME_ANNOTATIONS_NAMED_ENTITY_FILTERED_FOR_WIKIDATA = "/queries/getAnnotationOfNamedEntityLinkedToSpecificKnowledgeGraph.rq";
 

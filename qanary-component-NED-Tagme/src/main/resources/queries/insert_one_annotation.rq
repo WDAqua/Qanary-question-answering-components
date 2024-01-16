@@ -12,8 +12,8 @@ GRAPH ?graph {
             a oa:TextPositionSelector ;
             oa:start ?start ;
             oa:end  ?end ;
-            qa:score ?score .
-        ] .
+            qa:score ?score
+        ]
     ] .
     ?a oa:hasBody ?answer ;
     oa:annotatedBy ?application ;
