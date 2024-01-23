@@ -44,7 +44,6 @@ import io.swagger.v3.oas.annotations.Operation;
 @Component
 public class BirthDataQueryBuilder extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(BirthDataQueryBuilder.class);
-
 	public static final String FILENAME_ANNOTATIONS = "/queries/getAnnotation.rq";
 	public static final String FILENAME_ANNOTATIONS_NAMED_ENTITY_FILTERED_FOR_WIKIDATA = "/queries/getAnnotationOfNamedEntityLinkedToSpecificKnowledgeGraph.rq";
 
@@ -152,12 +151,12 @@ public class BirthDataQueryBuilder extends QanaryComponent {
 			return myQanaryMessage;
 		}
 
-//        // second, let's try to find a firstname and lastname, if that works we stop 
-//        myQanaryMessage = this.processForFirstNameAndLastName(myQanaryMessage);
-//        if( myQanaryMessage != null ) {
-//        	logger.info("Found firstname and lastname. Processing finished.");
-//        	return myQanaryMessage;
-//        }
+        // second, let's try to find a firstname and lastname, if that works we stop 
+        myQanaryMessage = this.processForFirstNameAndLastName(myQanaryMessage);
+        if( myQanaryMessage != null ) {
+        	logger.info("Found firstname and lastname. Processing finished.");
+        	return myQanaryMessage;
+        }
 
 		logger.warn("Nothing could be done here.");
 		return myQanaryMessage;

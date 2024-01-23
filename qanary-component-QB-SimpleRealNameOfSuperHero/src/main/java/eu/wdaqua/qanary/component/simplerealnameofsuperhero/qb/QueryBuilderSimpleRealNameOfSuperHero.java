@@ -43,7 +43,7 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 
 	private String supportedQuestionPrefix = "What is the real name of ";
 
-	private String FILENAME_GET_ANNOTATION_OF_NAMED_ENTITIES = "/queries/get_annotation_of_named_entities.rq";
+	private String FILENAME_GET_ANNOTATION_OF_NAMED_ENTITIES = "/queries/select_all_AnnotationOfInstance.rq";
 	private String FILENAME_DBPEDIA_QUERY = "/queries/dbpedia_query.rq";
 	private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
 
@@ -93,8 +93,8 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 
 		QuerySolutionMap bindingsForGetAnnotationOfNamedEntities = new QuerySolutionMap();
 		bindingsForGetAnnotationOfNamedEntities.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
-		bindingsForGetAnnotationOfNamedEntities.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
-		bindingsForGetAnnotationOfNamedEntities.add("startValue", ResourceFactory.createTypedLiteral(String.valueOf(supportedQuestionPrefix.length()), XSDDatatype.XSDnonNegativeInteger));
+		bindingsForGetAnnotationOfNamedEntities.add("hasSource", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+		bindingsForGetAnnotationOfNamedEntities.add("start", ResourceFactory.createTypedLiteral(String.valueOf(supportedQuestionPrefix.length()), XSDDatatype.XSDnonNegativeInteger));
 
 		// get the template of the INSERT query
 		String sparqlGetAnnotation = this.loadQueryFromFile(FILENAME_GET_ANNOTATION_OF_NAMED_ENTITIES, bindingsForGetAnnotationOfNamedEntities);
@@ -105,7 +105,7 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 			QuerySolution tupel = resultset.next();
 			int start = tupel.get("start").asLiteral().getInt();
 			int end = tupel.get("end").asLiteral().getInt();
-			String dbpediaResource = tupel.get("dbpediaResource").toString();
+			String dbpediaResource = tupel.get("hasBody").toString();
 			logger.warn("found matching resource <{}> at ({},{})", dbpediaResource, start, end);
 
 			// create the DBpedia SPARQL select query to compute the answer

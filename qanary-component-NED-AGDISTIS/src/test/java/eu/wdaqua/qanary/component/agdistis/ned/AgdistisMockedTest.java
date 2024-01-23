@@ -72,7 +72,7 @@ class AgdistisMockedTest {
         ReflectionTestUtils.setField(this.mockedAgdistis, "myRestTemplate", this.myRestTemplate);
         ReflectionTestUtils.setField(this.mockedAgdistis, "myCacheOfResponses", this.myCacheOfResponses);
         ReflectionTestUtils.setField(this.mockedAgdistis, "apiUrl", this.apiUrl);
-        ReflectionTestUtils.setField(this.mockedAgdistis, "FILENAME_SPOTS_FROM_GRAPH", "/queries/select_all_spots_from_graph.rq");
+        ReflectionTestUtils.setField(this.mockedAgdistis, "FILENAME_SPOTS_FROM_GRAPH", "/queries/select_all_AnnotationOfSpotInstance.rq");
         ReflectionTestUtils.setField(this.mockedAgdistis, "FILENAME_INSERT_ANNOTATION", "/queries/insert_one_annotation.rq");
 
         this.mockedQanaryQuestion = Mockito.mock(QanaryQuestion.class);

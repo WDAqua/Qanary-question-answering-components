@@ -48,7 +48,7 @@
     {
       "mode": "dockerfile",
       "port": "40152:40152",
-      "image": "qanary/qanary-component-qb-birthdatawikidata",
+      "image": "qanary/qanary-component-qb-birthdata-wikidata",
       "tag": "latest",
       "files": {
         ".env": "qb-birthdatawikidata"
@@ -152,7 +152,7 @@
     "2": "qanary-qanary-component-ned-opentapioca",
     "3": "qanary-qanary-component-ner-comiccharacternamesimplenamedentityrecognizer",
     "4": "qanary-qanary-component-qc-answertypeclassifier",
-    "5": "qanary-qanary-component-qb-birthdatawikidata",
+    "5": "qanary-qanary-component-qb-birthdata-wikidata",
     "6": "qanary-qanary-component-qb-comiccharacteralteregosimpledbpedia",
     "7": "qanary-qanary-component-qb-qanswer",
     "8": "qanary-qanary-component-qbe-qanswer",

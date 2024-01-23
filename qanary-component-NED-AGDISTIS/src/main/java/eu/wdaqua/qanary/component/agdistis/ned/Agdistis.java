@@ -48,7 +48,7 @@ import java.util.List;
 public class Agdistis extends QanaryComponent {
     private static final Logger LOGGER = LoggerFactory.getLogger(Agdistis.class);
 
-    private final String FILENAME_SPOTS_FROM_GRAPH = "/queries/select_all_spots_from_graph.rq";
+    private final String FILENAME_SPOTS_FROM_GRAPH = "/queries/select_all_AnnotationOfSpotInstance.rq";
     private final String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
 
     private final String applicationName;

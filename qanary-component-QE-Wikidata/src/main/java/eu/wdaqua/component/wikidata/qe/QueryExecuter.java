@@ -83,7 +83,6 @@ public class QueryExecuter extends QanaryComponent {
 	/**
 	 * Create a query to store the computed information in the Qanary triplestore
 	 *
-	 * @param myQanaryQuestion the QanaryQuestion currently being processed
 	 * @param answerJson       the JSON returned by Wikidata
 	 * @return sparql
 	 * @throws QanaryExceptionNoOrMultipleQuestions

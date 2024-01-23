@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-QB-QAnswer</artifactId>
-    <version>4.0.1</version>
+    <version>4.1.0</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -19,6 +19,7 @@
         <docker.image.name>qanary-component-qb-qanswer</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
         <springdoc.version>1.7.0</springdoc.version>
+        <qanary.commons.version>[3.8.0,4.0.0)</qanary.commons.version>
     </properties>
 
     <dependencies>
@@ -26,6 +27,11 @@
             <groupId>eu.wdaqua.qanary</groupId>
             <artifactId>qa.component</artifactId>
             <version>${qanary.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.wdaqua.qanary</groupId>
+            <artifactId>qa.commons</artifactId>
+            <version>${qanary.commons.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

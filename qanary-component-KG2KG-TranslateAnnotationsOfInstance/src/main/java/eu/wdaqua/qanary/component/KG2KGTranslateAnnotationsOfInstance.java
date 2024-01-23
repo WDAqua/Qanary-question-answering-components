@@ -35,7 +35,7 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
     - depending on what is given the other resource is returned
      */
 
-    private static final String ANNOTATION_OF_INSTANCE_RESOURCES_QUERY = "/queries/annotationsOfInstanceResourceQuery.rq";
+    private static final String ANNOTATION_OF_INSTANCE_RESOURCES_QUERY = "/queries/select_all_AnnotationOfInstance.rq";
     private static final String DBPEDIA_TO_WIKIDATA_QUERY = "/queries/dbpediaToWikidata.rq";
     private static final String WIKIDATA_TO_DBPEDIA_QUERY = "/queries/wikidataToDbpedia.rq";
     private static final String INSERT_ANNOTATION_QUERY = "/queries/insert_one_annotation.rq";
@@ -99,7 +99,7 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
      */
     public String getRequestQuery(String graphID) throws IOException {
         QuerySolutionMap bindingsForQuery = new QuerySolutionMap();
-        bindingsForQuery.add("graphID", ResourceFactory.createResource(graphID));
+        bindingsForQuery.add("graph", ResourceFactory.createResource(graphID));
 
         return QanaryTripleStoreConnector.readFileFromResourcesWithMap(ANNOTATION_OF_INSTANCE_RESOURCES_QUERY, bindingsForQuery);
     }
@@ -109,9 +109,9 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
 
         while (resultSet.hasNext()) {
             QuerySolution entry = resultSet.next();
-            String entryResource = entry.get("resource").toString();
+            String entryResource = entry.get("hasBody").toString();
             double score = entry.get("score").asLiteral().getDouble();
-            String targetQuestion = entry.get("targetQuestion").toString();
+            String targetQuestion = entry.get("hasSource").toString();
             int start = entry.get("start").asLiteral().getInt();
             int end = entry.get("end").asLiteral().getInt();
             String annotationId = entry.get("annotationId").toString();
