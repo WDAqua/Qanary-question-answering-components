@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary-component-QB-DeepPavlovWrapper</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.1</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -22,6 +22,7 @@
 			a artifactId not following the naming conventions, (c.f., https://maven.apache.org/guides/mini/guide-naming-conventions.html) -->
 		<docker.image.name>qanary-component-qb-deeppavlovwrapper</docker.image.name>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
+		<springdoc.version>1.7.0</springdoc.version>
 	</properties>
 
 	<dependencies>
@@ -61,10 +62,33 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-data-rest -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-data-rest</artifactId>
+			<version>${springdoc.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>${springdoc.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>io.swagger.core.v3</groupId>
+					<artifactId>swagger-annotations</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>		
+		<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-core-jakarta -->
+		<dependency>
+				<groupId>io.swagger.core.v3</groupId>
+				<artifactId>swagger-core-jakarta</artifactId>
+				<version>2.2.16</version>
+		</dependency>
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
@@ -123,6 +147,18 @@
 					<buildArgs>
 						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
 					</buildArgs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+						</manifest>
+					</archive>
 				</configuration>
 			</plugin>
 		</plugins>
