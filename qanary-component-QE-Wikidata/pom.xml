@@ -6,7 +6,6 @@
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-QE-Wikidata</artifactId>
     <version>3.1.9</version>
-
     <parent>
       <groupId>eu.wdaqua.qanary</groupId>
       <artifactId>qa.qanarycomponent-parent</artifactId>

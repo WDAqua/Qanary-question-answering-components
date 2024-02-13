@@ -36,7 +36,7 @@ class QueryTest {
         assertFalse(sparql.isEmpty());
         assertFalse(sparql.isBlank());
 
-        assertEquals(TestConfiguration.getTestQuery("queries/select_annotation_test.rq"), sparql);
+        assertEquals(TestConfiguration.getTestQuery("queries/select_annotation_test.rq").concat("\n"), sparql);
     }
 
     @Test

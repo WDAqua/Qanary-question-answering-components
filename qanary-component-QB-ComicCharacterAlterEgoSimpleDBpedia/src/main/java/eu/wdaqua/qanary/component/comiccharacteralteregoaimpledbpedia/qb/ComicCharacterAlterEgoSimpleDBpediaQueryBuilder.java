@@ -38,7 +38,7 @@ public class ComicCharacterAlterEgoSimpleDBpediaQueryBuilder extends QanaryCompo
     private final String applicationName;
 
     private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
-    private String FILENAME_SELECT_ANNOTATION = "/queries/select_annotation.rq";
+    private String FILENAME_SELECT_ANNOTATION = "/queries/select_all_AnnotationOfSpotInstance.rq";
     private String FILENAME_DBPEDIA_QUERY = "/queries/dbpedia_query.rq";
 
     public ComicCharacterAlterEgoSimpleDBpediaQueryBuilder(@Value("${spring.application.name}") final String applicationName) {
@@ -75,7 +75,7 @@ public class ComicCharacterAlterEgoSimpleDBpediaQueryBuilder extends QanaryCompo
 
         QuerySolutionMap bindingsForSelect = new QuerySolutionMap();
         bindingsForSelect.add("graph", ResourceFactory.createResource(qanaryQuestion.getOutGraph().toASCIIString()));
-        bindingsForSelect.add("targetQuestion", ResourceFactory.createResource(qanaryQuestion.getUri().toASCIIString()));
+        bindingsForSelect.add("hasSource", ResourceFactory.createResource(qanaryQuestion.getUri().toASCIIString()));
 
         // get the template of the INSERT query
         String sparql = this.loadQueryFromFile(FILENAME_SELECT_ANNOTATION, bindingsForSelect);
@@ -89,8 +89,8 @@ public class ComicCharacterAlterEgoSimpleDBpediaQueryBuilder extends QanaryCompo
         while (resultSet.hasNext()) {
             QuerySolution result = resultSet.next();
             logger.info("result: \n{}", result);
-            int start = result.get("startOfSpecificResource").asLiteral().getInt();
-            int end = result.get("endOfSpecificResource").asLiteral().getInt();
+            int start = result.get("start").asLiteral().getInt();
+            int end = result.get("end").asLiteral().getInt();
             String name = question.substring(start, end);
             logger.warn("annotation found for name '{}' (at {},{})", name, start, end);
 

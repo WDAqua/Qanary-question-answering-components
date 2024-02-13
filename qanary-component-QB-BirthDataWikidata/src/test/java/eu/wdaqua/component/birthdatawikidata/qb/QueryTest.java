@@ -14,6 +14,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,7 +29,7 @@ class QueryTest {
     void filenameAnnotationsQueryTest() throws IOException {
         QuerySolutionMap bindingsForFirstname = new QuerySolutionMap();
         bindingsForFirstname.add("graph", ResourceFactory.createResource("urn:graph"));
-        bindingsForFirstname.add("value", ResourceFactory.createStringLiteral("FIRST_NAME"));
+        bindingsForFirstname.add("hasBody", ResourceFactory.createStringLiteral("FIRST_NAME"));
 
         String sparqlCheckFirstname = QanaryTripleStoreConnector.readFileFromResourcesWithMap(
                 TestConfiguration.FILENAME_ANNOTATIONS, bindingsForFirstname
@@ -37,17 +39,18 @@ class QueryTest {
         assertFalse(sparqlCheckFirstname.isEmpty());
         assertFalse(sparqlCheckFirstname.isBlank());
 
-        assertEquals(TestConfiguration.getTestQuery("queries/getAnnotationTest.rq"), sparqlCheckFirstname);
+        assertEquals(TestConfiguration.getTestQuery("queries/getAnnotationTest.rq").concat("\n"),sparqlCheckFirstname);
     }
 
     @Test
     void filenameAnnotationsFilteredQueryTest() throws IOException {
         QuerySolutionMap bindingsForAnnotation = new QuerySolutionMap();
         bindingsForAnnotation.add("graph", ResourceFactory.createResource("urn:graph"));
-        bindingsForAnnotation.add("source", ResourceFactory.createResource("urn:source"));
-        bindingsForAnnotation.add("filterStart", ResourceFactory.createTypedLiteral(String.valueOf(5), XSDDatatype.XSDint));
+        bindingsForAnnotation.add("hasSource", ResourceFactory.createResource("urn:source"));
+        bindingsForAnnotation.add("start", ResourceFactory.createTypedLiteral(String.valueOf(5), XSDDatatype.XSDint));
 
         String sparqlGetAnnotation = QanaryTripleStoreConnector.readFileFromResourcesWithMap(
+
                 TestConfiguration.FILENAME_ANNOTATIONS_NAMED_ENTITY_FILTERED_FOR_WIKIDATA,
                 bindingsForAnnotation
         );
@@ -56,7 +59,7 @@ class QueryTest {
         assertFalse(sparqlGetAnnotation.isEmpty());
         assertFalse(sparqlGetAnnotation.isBlank());
 
-        assertEquals(TestConfiguration.getTestQuery("queries/getAnnotationFilteredTest.rq"), sparqlGetAnnotation);
+        assertEquals(TestConfiguration.getTestQuery("queries/getAnnotationFilteredTest.rq").concat("\n"), sparqlGetAnnotation);
     }
 
     @Test
@@ -73,7 +76,7 @@ class QueryTest {
         assertFalse(sparql.isEmpty());
         assertFalse(sparql.isBlank());
 
-        assertEquals(TestConfiguration.getTestQuery("queries/getQuestionAnswerFromWikidataByPersonTest.rq"), sparql);
+        assertEquals(TestConfiguration.getTestQuery("queries/getQuestionAnswerFromWikidataByPersonTest.rq").concat("\n"), sparql);
     }
 
     @Test
@@ -90,7 +93,7 @@ class QueryTest {
         assertFalse(sparql.isEmpty());
         assertFalse(sparql.isBlank());
 
-        assertEquals(TestConfiguration.getTestQuery("queries/getQuestionAnswerFromWikidataByFirstnameLastnameTest.rq"), sparql);
+        assertEquals(TestConfiguration.getTestQuery("queries/getQuestionAnswerFromWikidataByFirstnameLastnameTest.rq").concat("\n"), sparql);
     }
 
 }

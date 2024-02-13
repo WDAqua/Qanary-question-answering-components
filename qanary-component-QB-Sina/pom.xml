@@ -5,8 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-QB-Sina</artifactId>
-    <version>3.2.4</version>
-
+    <version>3.3.1</version>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -32,6 +31,11 @@
                     <artifactId>log4j-to-slf4j</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>eu.wdaqua.qanary</groupId>
+            <artifactId>qa.commons</artifactId>
+            <version>[3.5.4,4.0.0]</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

@@ -295,8 +295,8 @@ public class QanaryServiceQueryBuilderDateOfDeathDBpediaControllerTest {
             Map<String, RDFNode> solutionsAsMap = querySolutionMap.asMap();
             assertAll("Check correct Map",
                     () -> assertEquals(solutionsAsMap.get("graph").toString(), qanaryMessage.getOutGraph().toString()),
-                    () -> assertEquals(solutionsAsMap.get("targetQuestion").toString(), EXAMPLE_QUESTION),
-                    () -> assertEquals(solutionsAsMap.get("startValue").asLiteral(),
+                    () -> assertEquals(solutionsAsMap.get("hasSource").toString(), EXAMPLE_QUESTION),
+                    () -> assertEquals(solutionsAsMap.get("start").asLiteral(),
                             ResourceFactory.createTypedLiteral(String.valueOf(SUPPORTED_PREFIX.length()), XSDDatatype.XSDnonNegativeInteger))
             );
         }

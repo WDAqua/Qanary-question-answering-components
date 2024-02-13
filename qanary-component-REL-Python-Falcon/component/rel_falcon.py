@@ -70,7 +70,7 @@ async def qanary_service(request: Request):
                     """.format(
                         uuid=triplestore_ingraph_uuid,
                         question_uri=question_uri,
-                        component="qanary:" + SERVICE_NAME_COMPONENT.replace(" ", "-"),
+                        component="urn:qanary:" + SERVICE_NAME_COMPONENT.replace(" ", "-"),
                         relation=relation["URI"])
 
         insert_into_triplestore(triplestore_endpoint_url,

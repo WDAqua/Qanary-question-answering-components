@@ -1,17 +1,20 @@
 PREFIX  qa:   <http://www.wdaqua.eu/qa#>
 PREFIX  oa:   <http://www.w3.org/ns/openannotation/core/>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
-SELECT  ?a ?dbpediaResource ?startOfSpecificResource ?endOfSpecificResource ?annotatorComponent ?time
+SELECT  *
 FROM <urn:graph>
 WHERE
-  { VALUES ?dbpediaResource { <urn:targetQuestion> }
-    ?a    a               qa:AnnotationOfSpotInstance ;
-          oa:hasTarget    _:b0 .
-    _:b0  a               oa:SpecificResource ;
-          oa:hasSource    ?dbpediaResource ;
-          oa:hasSelector  _:b1 .
-    _:b1  a               oa:TextPositionSelector ;
-          oa:start        ?startOfSpecificResource ;
-          oa:end          ?endOfSpecificResource .
-    ?a    oa:annotatedAt  ?time
+  { ?annotationId
+              rdf:type        qa:AnnotationOfSpotInstance ;
+              oa:hasTarget    _:b0 .
+    _:b0      rdf:type        oa:SpecificResource ;
+              oa:hasSource    ?hasSource ;
+              oa:hasSelector  _:b1 .
+    _:b1      rdf:type        oa:TextPositionSelector ;
+              oa:start        ?start ;
+              oa:end          ?end .
+    ?annotationId
+              oa:annotatedAt  ?annotatedAt ;
+              oa:annotatedBy  ?annotatedBy
   }

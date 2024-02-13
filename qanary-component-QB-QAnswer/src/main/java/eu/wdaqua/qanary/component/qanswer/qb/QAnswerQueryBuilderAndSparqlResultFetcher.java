@@ -56,7 +56,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
     private String langDefault;
     private String knowledgeBaseDefault;
     private String userDefault;
-    private final String FILENAME_GET_ANNOTATED_ENTITIES = "/queries/get_annotated_entities.rq";
+    private final String FILENAME_GET_ANNOTATED_ENTITIES = "/queries/select_all_annotationsWithSelectorAndPosition.rq";
 
     public QAnswerQueryBuilderAndSparqlResultFetcher( //
                                                       float threshold, //
@@ -205,8 +205,8 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
         LinkedList<NamedEntity> namedEntities = new LinkedList<>();
 
         QuerySolutionMap bindingsForSelectAnnotations = new QuerySolutionMap();
-        bindingsForSelectAnnotations.add("GRAPH", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
-        bindingsForSelectAnnotations.add("QUESTION_URI", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+        bindingsForSelectAnnotations.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+        bindingsForSelectAnnotations.add("hasSource", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
 
         // get the template of the SELECT query
         String sparqlGetAnnotations = this.loadQueryFromFile(FILENAME_GET_ANNOTATED_ENTITIES, bindingsForSelectAnnotations);
@@ -226,10 +226,10 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
             end = tupel.get("end").asLiteral().getInt();
             score = null;
 
-            if (tupel.contains("annotationScore")) {
-                score = tupel.get("annotationScore").asLiteral().getFloat();
+            if (tupel.contains("score")) {
+                score = tupel.get("score").asLiteral().getFloat();
             }
-            URI entityResource = new URI(tupel.get("entityResource").asResource().getURI());
+            URI entityResource = new URI(tupel.get("hasBody").asResource().getURI());
 
             if (score == null || score >= threshold) {
                 namedEntities.add(new NamedEntity(entityResource, start, end, score));

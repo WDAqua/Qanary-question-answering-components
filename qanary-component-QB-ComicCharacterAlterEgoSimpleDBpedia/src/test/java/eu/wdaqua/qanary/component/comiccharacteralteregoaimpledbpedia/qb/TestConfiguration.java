@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 @org.springframework.boot.test.context.TestConfiguration
 public class TestConfiguration {
     protected static final String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
-    protected static final String FILENAME_SELECT_ANNOTATION = "/queries/select_annotation.rq";
+    protected static final String FILENAME_SELECT_ANNOTATION = "/queries/select_all_AnnotationOfSpotInstance.rq";
     protected static final String FILENAME_DBPEDIA_QUERY = "/queries/dbpedia_query.rq";
 
     /**
