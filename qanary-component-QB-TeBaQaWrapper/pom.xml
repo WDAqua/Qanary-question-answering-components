@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary-component-QB-TeBaQAWrapper</artifactId>
-	<version>3.2.4</version>
+	<version>3.2.5</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -105,7 +105,7 @@
 		<dependency>
 			<groupId>net.minidev</groupId>
 			<artifactId>json-smart</artifactId>
-			<version>2.4.8</version>
+			<version>2.5.0</version>
 		</dependency>
 	</dependencies>
 	<build>
