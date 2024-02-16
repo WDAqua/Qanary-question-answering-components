@@ -21,14 +21,6 @@ else
   sed -i "s/API_KEY/$BABELFY_API_KEY/g" ./service_config/files/ner-babelfy
 fi
 
-if [ -z "$CHATGPT_API_KEY" ]
-then
-  echo "CHATGPT_API_KEY is not set. Check your secrets."
-  exit 2 # stop if no API key is set
-else
-  sed -i "s/API_KEY/$CHATGPT_API_KEY/g" ./service_config/files/tqa-chatgptwrapper
-fi
-
 if [ -z "$DANDELION_API_KEY" ]
 then
   echo "DANDELION_API_KEY is not set. Check your secrets."
@@ -69,12 +61,28 @@ then
   echo "OPENAI_API_KEY is not set. Check your secrets."
   exit 2 # stop if no API key is set
 else
+  sed -i "s/OPENAI_API_KEY_PLACEHOLDER/$OPENAI_API_KEY/g" ./service_config/files/tqa-chatgptwrapper
+  if [ `grep OPENAI_API_KEY_PLACEHOLDER ./service_config/files/tqa-chatgptwrapper` ]
+  then 
+    echo "check fails: OPENAI_API_KEY_PLACEHOLDER still in ./service_config/files/tqa-chatgptwrapper"; 
+    exit 3 # stop if the API key was not replaced
+  else 
+    echo "check ok: OPENAI_API_KEY_PLACEHOLDER was replaced in ./service_config/files/tqa-chatgptwrapper"; 
+  fi
+fi
+
+
+if [ -z "$OPENAI_API_KEY" ]
+then
+  echo "OPENAI_API_KEY is not set. Check your secrets."
+  exit 2 # stop if no API key is set
+else
   sed -i "s/OPENAI_API_KEY_PLACEHOLDER/$OPENAI_API_KEY/g" ./service_config/files/ned-openai-gpt
   # safety check
   if [ `grep OPENAI_API_KEY_PLACEHOLDER ./service_config/files/ned-openai-gpt` ]
   then 
     echo "check fails: OPENAI_API_KEY_PLACEHOLDER still in ned-openai-gpt"; 
-    exit 3 # stop if no API key is set
+    exit 3 # stop if the API key was not replaced
   else 
     echo "check ok: OPENAI_API_KEY_PLACEHOLDER was replaced in ned-openai-gpt"; 
   fi
