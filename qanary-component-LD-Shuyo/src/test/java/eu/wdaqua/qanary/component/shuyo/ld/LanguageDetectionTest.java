@@ -1,15 +1,25 @@
 package eu.wdaqua.qanary.component.shuyo.ld;
 
-import com.cybozu.labs.langdetect.LangDetectException;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import com.cybozu.labs.langdetect.LangDetectException;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
+
 
 public class LanguageDetectionTest {
 
@@ -201,4 +211,27 @@ public class LanguageDetectionTest {
         }
     }
 
+    @Test
+    void testSetLanguageText() throws Exception {
+        QanaryQuestion<String> mockedQanaryQuestion = Mockito.mock(QanaryQuestion.class);
+        QanaryUtils mockedQanaryUtils = Mockito.mock(QanaryUtils.class);
+        QanaryTripleStoreConnector mockedQanaryTriplestoreConnector = Mockito.mock(QanaryTripleStoreConnector.class);
+        String questionUri = "urn:test:question";
+        String graphUri = "urn:test:graph";
+
+        // not explicitly stubbing QanaryTriplestoreConnector.update(), as it is void
+        Mockito.when(mockedQanaryUtils.getQanaryTripleStoreConnector()).thenReturn(mockedQanaryTriplestoreConnector);
+        Mockito.when(mockedQanaryQuestion.getUri()).thenReturn(new URI(questionUri));
+        Mockito.when(mockedQanaryQuestion.getOutGraph()).thenReturn(new URI(graphUri));
+
+        // given a list of identified languages 
+        List<String> languages = new ArrayList<>(Arrays.asList("en", "de"));
+
+        // when setLanguageText() is called
+        myLanguageDetection.setLanguageText(languages, mockedQanaryQuestion, mockedQanaryUtils);
+
+        // then a query string is created and the update() method is called for each language
+        Mockito.verify(mockedQanaryTriplestoreConnector, Mockito.times(languages.size()))
+            .update(Mockito.anyString());
+    }
 }
