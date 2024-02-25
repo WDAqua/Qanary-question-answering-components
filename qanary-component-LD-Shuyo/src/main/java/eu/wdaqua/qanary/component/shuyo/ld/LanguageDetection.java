@@ -1,21 +1,5 @@
 package eu.wdaqua.qanary.component.shuyo.ld;
 
-import com.cybozu.labs.langdetect.Detector;
-import com.cybozu.labs.langdetect.DetectorFactory;
-import com.cybozu.labs.langdetect.LangDetectException;
-import eu.wdaqua.qanary.commons.QanaryMessage;
-import eu.wdaqua.qanary.commons.QanaryQuestion;
-import eu.wdaqua.qanary.commons.QanaryUtils;
-import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
-import eu.wdaqua.qanary.component.QanaryComponent;
-import org.apache.commons.io.IOUtils;
-import org.apache.jena.query.QuerySolutionMap;
-import org.apache.jena.rdf.model.ResourceFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
@@ -27,6 +11,24 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.jena.query.QuerySolutionMap;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.cybozu.labs.langdetect.Detector;
+import com.cybozu.labs.langdetect.DetectorFactory;
+import com.cybozu.labs.langdetect.LangDetectException;
+
+import eu.wdaqua.qanary.commons.QanaryMessage;
+import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
+import eu.wdaqua.qanary.component.QanaryComponent;
+
 /**
  * the component detects the languages of the current component
  * 
@@ -36,7 +38,7 @@ import java.util.jar.JarFile;
  */
 @Component
 public class LanguageDetection extends QanaryComponent {
-	private final String FILENAME_ANNOTATIONS_FILTERED = "/queries/insert_one_annotation_of_question_language.rq";
+	private final String FILENAME_ANNOTATIONS_FILTERED = "/queries/insert_one_AnnotationOfQuestionLanguage.rq";
 
 	private static final Logger logger = LoggerFactory.getLogger(LanguageDetection.class);
 	private static boolean languageProfileLoaded = false;
@@ -150,9 +152,9 @@ public class LanguageDetection extends QanaryComponent {
 			QuerySolutionMap bindings = new QuerySolutionMap();
 			// use here the variable names defined in method insertAnnotationOfAnswerSPARQL
 			bindings.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
-			bindings.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
-			bindings.add("language", ResourceFactory.createStringLiteral(languages.get(i)));
-			bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+			bindings.add("hasTarget", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+			bindings.add("hasBody", ResourceFactory.createStringLiteral(languages.get(i)));
+			bindings.add("annotatedBy", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
 			// get the template of the INSERT query
 			String sparql = this.loadQueryFromFile(FILENAME_ANNOTATIONS_FILTERED, bindings);
