@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-NER-Stanford</artifactId>
-    <version>3.1.8</version>
+    <version>3.1.9</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -71,12 +71,12 @@
         <dependency>
             <groupId>edu.stanford.nlp</groupId>
             <artifactId>stanford-corenlp</artifactId>
-            <version>4.5.5</version>
+            <version>4.5.6</version>
         </dependency>
         <dependency>
             <groupId>edu.stanford.nlp</groupId>
             <artifactId>stanford-corenlp</artifactId>
-            <version>4.5.5</version>
+            <version>4.5.6</version>
             <classifier>models</classifier>
         </dependency>
         <dependency>
