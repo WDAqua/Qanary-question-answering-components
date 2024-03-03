@@ -5,63 +5,21 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-TQA-ChatGPTWrapper</artifactId>
-    <version>0.3.2</version>
+    <version>0.3.3</version>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.6.7</version>
-        <relativePath/>
+      <groupId>eu.wdaqua.qanary</groupId>
+      <artifactId>qa.qanarycomponent-parent</artifactId>
+      <version>[0.1.0,1.0.0)</version>
     </parent>
     <properties>
         <java.version>17</java.version>
-        <qanary.component.version>[3.7.6,4.0.0)</qanary.component.version>
-        <qanary.commons.version>[3.8.0,4.0.0)</qanary.commons.version>
         <docker.image.prefix>qanary</docker.image.prefix>
         <docker.image.name>qanary-component-tqa-chatgptwrapper</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-        <springdoc.version>1.7.0</springdoc.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>eu.wdaqua.qanary</groupId>
-            <artifactId>qa.component</artifactId>
-            <version>${qanary.component.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.wdaqua.qanary</groupId>
-            <artifactId>qa.commons</artifactId>
-            <version>${qanary.commons.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-            <version>1.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>hamcrest-core</artifactId>
-                    <groupId>org.hamcrest</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
@@ -72,7 +30,12 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>${springdoc.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-core-jakarta -->
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-core-jakarta</artifactId>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.theokanning.openai-gpt3-java/service -->
@@ -103,10 +66,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <!-- https://github.com/spotify/dockerfile-maven -->
             <!-- build Docker image: mvn dockerfile:build  -->
@@ -139,6 +98,18 @@
                     <buildArgs>
                         <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
                     </buildArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                    <manifest>
+                        <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                    </manifest>
+                    </archive>
                 </configuration>
             </plugin>
         </plugins>

@@ -80,11 +80,12 @@ import java.util.List;
     }
 
     @Bean
-    public OpenAPI customOpenAPI(@Value("${springdoc.version}") String springdocVersion) {
+    public OpenAPI customOpenAPI(@Value("${springdoc.version:none}") final String springdocVersion) {
+		    String appVersion = getClass().getPackage().getImplementationVersion();
         return new OpenAPI().info(new Info() //
                 .title("Platypus wrapper component") //
-                .version(springdocVersion) //
-                .description("This is a server created using springdocs " +  springdocVersion + " - a library for OpenAPI 3 with Spring Boot.") //
+                .version(appVersion) //
+                .description("This is a server created using springdocs " +  appVersion + " - a library for OpenAPI 3 with Spring Boot.") //
                 .termsOfService("http://swagger.io/terms/") //
                 .license(new License().name("Apache 2.0").url("http://springdoc.org")) //
         );

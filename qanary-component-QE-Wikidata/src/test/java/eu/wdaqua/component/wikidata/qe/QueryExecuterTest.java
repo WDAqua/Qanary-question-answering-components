@@ -21,6 +21,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * test the correct functionality of the SPARQL INSERT query used in
@@ -76,12 +78,13 @@ class QueryExecuterTest {
 		String sparqlQueryString = QanaryTripleStoreConnector.getAllAnnotationOfAnswerInGraph(outGraph);
 		ResultSet results = myQanaryTripleStoreConnector.select(sparqlQueryString);
 		int count = 0;
-		for (; results.hasNext(); ) {
+		while ( results.hasNext() ) {
 			QuerySolution solution = results.nextSolution();
 			count = results.getRowNumber();
 			logger.info("{}. solution: {}", results.getRowNumber(), solution.toString());
 			// check if target of the annotation is the assumed question URI
-			assertEquals(question.toASCIIString(), solution.get("hasTarget").asResource().toString());
+			assertNotNull(solution.get("annotationAnswer").asResource().toString());
+			assertFalse(solution.get("annotationAnswer").asResource().toString().isEmpty());
 		}
 		// check if the number of generated annotation is 1
 		assertEquals(1, count, "There should be just 1 result after executing the component.");

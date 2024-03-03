@@ -74,17 +74,17 @@ public class Application {
 	@Autowired
 	public QanaryComponentConfiguration qanaryComponentConfiguration;
 	
-  public static void main(String[] args) {
-      SpringApplication.run(Application.class, args);
-  }
-
-  @Bean
-  public OpenAPI customOpenAPI(@Value("${springdoc.version}") String appVersion) {
-      return new OpenAPI().info(new Info() //
-              .title("DeepPavlov wrapper component") //
-              .version(appVersion) //
-              .description("This is a sample Foobar server created using springdocs - " + "a library for OpenAPI 3 with spring boot.").termsOfService("http://swagger.io/terms/") //
-              .license(new License().name("Apache 2.0").url("http://springdoc.org")) //
-      );
-  }
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+	@Bean 
+	public OpenAPI customOpenAPI() { 
+		String appVersion = getClass().getPackage().getImplementationVersion();
+		return new OpenAPI().info(new Info() //
+						.title("DeepPavlov wrapper component") //
+						.version(appVersion) //
+						.description("This is a sample Foobar server created using springdocs - " + "a library for OpenAPI 3 with spring boot.").termsOfService("http://swagger.io/terms/") //
+						.license(new License().name("Apache 2.0").url("http://springdoc.org")) //
+		);
+}
 }
