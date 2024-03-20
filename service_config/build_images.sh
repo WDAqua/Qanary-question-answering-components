@@ -5,7 +5,7 @@ git clone https://github.com/WDAqua/Qanary.git
 # subshell building the Qanary pipeline
 (
 cd Qanary/
-mvn --batch-mode clean install -Ddockerfile.skip=true -DskipTests
+mvn --batch-mode clean install -Ddockerfile.skip=true -DskipTests -Dgpg.skip=true
 )
 
 # delete Qanary pipeline repository
