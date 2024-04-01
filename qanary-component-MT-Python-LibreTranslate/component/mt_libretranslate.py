@@ -43,17 +43,40 @@ def qanary_service():
     result, _ = translate_input(text, lang)
 
     # building SPARQL query TODO: verify this annotation AnnotationOfQuestionTranslation ??
-    SPARQLquery = """
+    SPARQLqueryAnnotationOfQuestionTranslation = """
         PREFIX qa: <http://www.wdaqua.eu/qa#>
         PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
         INSERT {{
         GRAPH <{uuid}> {{
             ?a a qa:AnnotationOfQuestionTranslation ;
-                oa:hasTarget <{qanary_question_uri}> ; 
-                oa:hasBody "{translation_result}"@en ;
+                oa:hasTarget <{qanary_question_uri}> ;
+                oa:hasBody "{translation_result}"@{target_lang} ;
                 oa:annotatedBy <urn:qanary:{app_name}> ;
                 oa:annotatedAt ?time .
+
+            }}
+        }}
+        WHERE {{
+            BIND (IRI(str(RAND())) AS ?a) .
+            BIND (now() as ?time)
+        }}
+    """.format(
+        uuid=triplestore_ingraph,
+        qanary_question_uri=question_uri,
+        translation_result=result.replace("\"", "\\\""), #keep quotation marks that are part of the translation
+        target_lang=TARGET_LANG,
+        app_name=SERVICE_NAME_COMPONENT
+    )
+
+    SPARQLqueryAnnotationOfQuestionLanguage = """
+        PREFIX qa: <http://www.wdaqua.eu/qa#>
+        PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+        INSERT {{
+        GRAPH <{uuid}> {{
             ?b a qa:AnnotationOfQuestionLanguage ;
                 oa:hasTarget <{qanary_question_uri}> ;
                 oa:hasBody "{src_lang}"^^xsd:string ;
@@ -62,21 +85,21 @@ def qanary_service():
             }}
         }}
         WHERE {{
-            BIND (IRI(str(RAND())) AS ?a) .
             BIND (IRI(str(RAND())) AS ?b) .
-            BIND (now() as ?time) 
+            BIND (now() as ?time)
         }}
     """.format(
         uuid=triplestore_ingraph,
         qanary_question_uri=question_uri,
-        translation_result=result,
         src_lang=lang,
         app_name=SERVICE_NAME_COMPONENT
     )
-    
-    logging.info(f'SPARQL: {SPARQLquery}')
+
+    logging.info(f'SPARQL: {SPARQLqueryAnnotationOfQuestionTranslation}')
+    logging.info(f'SPARQL: {SPARQLqueryAnnotationOfQuestionLanguage}')
     # inserting new data to the triplestore
-    insert_into_triplestore(triplestore_endpoint, SPARQLquery)
+    insert_into_triplestore(triplestore_endpoint, SPARQLqueryAnnotationOfQuestionTranslation)
+    insert_into_triplestore(triplestore_endpoint, SPARQLqueryAnnotationOfQuestionLanguage)
 
     return jsonify(request.get_json())
 
