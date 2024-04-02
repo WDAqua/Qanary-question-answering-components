@@ -16,5 +16,7 @@ do
     echo "Pushing ${versioned_image_name} and ${latest_image_name}"
     docker push "${versioned_image_name}"
     docker push "${latest_image_name}"
+    docker rmi -f "${versioned_image_name}"
+    docker rmi -f "${latest_image_name}"
     cd ..
 done
