@@ -18,7 +18,7 @@
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<docker.image.name>qanary-component-ned-opentapioca</docker.image.name>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-		<springdoc.version>1.7.0</springdoc.version>
+		<springdoc.version>1.8.0</springdoc.version>
 	</properties>
 
 	<dependencies>
