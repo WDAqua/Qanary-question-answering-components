@@ -333,41 +333,21 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
     }
 
     public String getSparqlInsertQueryForImprovedQuestion(
-            URI graph, URI questionUri, QAnswerResult result) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed {
+            URI graph, URI questionUri, QAnswerResult result) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
 
+        logger.warn("get query for Improved Question");
         // the computed answer's SPARQL query needs to be cleaned
         String improvedQuestion = cleanStringForSparqlQuery(result.getQuestion());
 
-        String sparql = "" //
-                + "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
-                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> \n" //
-                + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n" //
-                + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
-                + "INSERT { \n" //
-                + "GRAPH ?graph { \n" //
-                // improved question
-                + "  ?annotationImprovedQuestion  a 	qa:AnnotationOfImprovedQuestion ; \n" //
-                + " 		oa:hasTarget    ?question ; \n" //
-                + " 		oa:hasBody      ?improvedQuestion ; \n" //
-                + " 		oa:annotatedBy  ?service ; \n" //
-                + " 		oa:annotatedAt  ?time ; \n" //
-                + " 		qa:score        ?score . \n" //
-                //
-                + "  ?improvedQuestion a    qa:ImprovedQuestion ; \n " //
-                + "         rdf:value 		?improvedQuestionText . \n " //
-                + "  }\n" // end: GRAPH
-                + "}\n" // end: insert
-                + "WHERE { \n" //
-                + "  BIND (IRI(str(RAND())) AS ?annotationImprovedQuestion) . \n" //
-                + "  BIND (IRI(str(RAND())) AS ?improvedQuestion) . \n" //
-                //
-                + "  BIND (now() AS ?time) . \n" //
-                + "  BIND (<" + graph.toASCIIString() + "> AS ?graph) . \n" //
-                + "  BIND (<" + questionUri.toASCIIString() + "> AS ?question) . \n" //
-                + "  BIND (<urn:qanary:" + this.applicationName + "> AS ?service ) . \n" //
-                + "  BIND (\"\"\"" + improvedQuestion + "\"\"\"^^xsd:string  AS ?improvedQuestionText ) . \n" //
-                //
-                + "} \n"; // end: where
+        // bind: graph, question, service, improvedQuestionText
+        QuerySolutionMap bindings = new QuerySolutionMap();
+        bindings.add("graph", ResourceFactory.createResource(graph.toASCIIString()));
+        bindings.add("question", ResourceFactory.createResource(questionUri.toASCIIString()));
+        bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+        bindings.add("improvedQuestionText", ResourceFactory.createStringLiteral(improvedQuestion));
+
+        String sparql = QanaryTripleStoreConnector.insertAnnotationOfImprovedQuestion(bindings);
+        logger.warn("sparql: {}", sparql);
 
         return sparql;
     }
