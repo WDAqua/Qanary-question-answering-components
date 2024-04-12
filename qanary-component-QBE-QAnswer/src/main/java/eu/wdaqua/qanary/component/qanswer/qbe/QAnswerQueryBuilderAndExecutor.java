@@ -164,6 +164,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
         // STEP 3: add information to Qanary triplestore
         URI graph = myQanaryQuestion.getOutGraph();
         URI questionUri = myQanaryQuestion.getUri();
+
         String sparqlImprovedQuestion = getSparqlInsertQueryForImprovedQuestion(graph, questionUri, result);
         logger.debug("created SPARQL query for improved question: {}", sparqlImprovedQuestion);
         myQanaryUtils.getQanaryTripleStoreConnector().update(sparqlImprovedQuestion);
@@ -232,7 +233,8 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
             logger.info("post to endpoint not successful: {}", e);
         }
 
-        return new QAnswerResult(response.getBody(), questionString, uri, lang, knowledgeBaseId, user);
+        return new QAnswerResult(response.getBody(),
+                questionString, uri, lang, knowledgeBaseId, user);
     }
 
     /**
