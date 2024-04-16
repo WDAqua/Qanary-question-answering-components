@@ -24,7 +24,6 @@ lang_code_map = {
     'es': 'spa_Latn',
     'pt': 'por_Latn'
 }
-target_lang = TARGET_LANG
 
 
 @mt_nllb_bp.route("/annotatequestion", methods=["POST"])
@@ -65,7 +64,7 @@ def qanary_service():
     # Perform the translation and decode the output
     generated_tokens = model.generate(
         **batch,
-        forced_bos_token_id=tokenizer.lang_code_to_id[lang_code_map[target_lang]])
+        forced_bos_token_id=tokenizer.lang_code_to_id[lang_code_map[TARGET_LANG]])
     result = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)[0]
 
 
