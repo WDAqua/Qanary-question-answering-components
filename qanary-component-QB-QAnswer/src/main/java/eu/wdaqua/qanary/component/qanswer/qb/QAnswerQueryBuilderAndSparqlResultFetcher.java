@@ -18,12 +18,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -35,7 +38,6 @@ import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerResult;
 import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerResult.QAnswerQueryCandidate;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-import net.minidev.json.JSONObject;
 
 @Component
 /**
@@ -143,6 +145,8 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
         // STEP 2: compute new information about the question
 
         // enriching of query, based on recognized resources
+        List<NamedEntity> retrievedNamedEntities = getNamedEntitiesOfQuestion(myQanaryQuestion,
+                myQanaryQuestion.getInGraph());
         String questionStringWithResources = computeQuestionStringWithReplacedResources(
                 questionString, retrievedNamedEntities, threshold);
         // fetching SPARQL query candidates from the QAnswer API
@@ -185,11 +189,13 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
                 .queryParam("user", "{user}") //
                 .encode().toUriString();
 
-        HttpEntity<JSONObject> response = myRestTemplate.getForEntity(urlTemplate, JSONObject.class, parameters);
-        logger.info("QAnswer JSON result for question '{}': {}", questionString,
-                response.getBody().getAsString("question"));
+        ResponseEntity<String> stringResponse = myRestTemplate.getForEntity(urlTemplate, String.class, parameters);
+        logger.info("QAnswer String result for question '{}': {}", questionString,
+                stringResponse.getBody());
+        
+        JsonObject jsonResponse = JsonParser.parseString(stringResponse.getBody()).getAsJsonObject();
 
-        return new QAnswerResult(response.getBody(), questionString, qanaryApiUri, lang, knowledgeBaseId, user);
+        return new QAnswerResult(jsonResponse, questionString, qanaryApiUri, lang, knowledgeBaseId, user);
     }
 
     /**

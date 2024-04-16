@@ -11,10 +11,8 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import io.swagger.v3.oas.annotations.Hidden;
-import net.minidev.json.JSONObject;
 
 public class QAnswerResult {
     private static final Logger logger = LoggerFactory.getLogger(QAnswerResult.class);
@@ -27,12 +25,8 @@ public class QAnswerResult {
     private String question;
     private List<QAnswerQueryCandidate> queryCandidates;
 
-    public QAnswerResult(JSONObject json, String question, URI endpoint, String language, String knowledgebaseId, String user)
+    public QAnswerResult(JsonObject json, String question, URI endpoint, String language, String knowledgebaseId, String user)
             throws URISyntaxException {
-
-        logger.debug("result: {}", json.toJSONString());
-
-        JsonObject parsedJsonObject = JsonParser.parseString(json.toJSONString()).getAsJsonObject();
 
         this.question = question;
         this.language = language;
@@ -41,7 +35,7 @@ public class QAnswerResult {
         this.endpoint = endpoint;
         this.queryCandidates = new LinkedList<QAnswerQueryCandidate>();
 
-        initData(parsedJsonObject);
+        initData(json);
     }
 
     /**
