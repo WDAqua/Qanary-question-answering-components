@@ -3,7 +3,6 @@ from component import app
 from unittest.mock import patch
 import re
 from unittest import TestCase
-#import pytest
 
 class TestComponent(TestCase):
 
@@ -15,16 +14,16 @@ class TestComponent(TestCase):
     out_graph = "urn:qanary#test-outGraph"
 
     source_language = "de"
-    question_translation = "what is a test?"
+    target_language = "en"
 
     request_data = '''{
         "values": {
-            "urn:qanary#endpoint": "urn:qanary#test-endpoint", 
-            "urn:qanary#inGraph": "urn:qanary#test-inGraph", 
+            "urn:qanary#endpoint": "urn:qanary#test-endpoint",
+            "urn:qanary#inGraph": "urn:qanary#test-inGraph",
             "urn:qanary#outGraph": "urn:qanary#test-outGraph"
         },
-        "endpoint": "urn:qanary#test-endpoint", 
-        "inGraph": "urn:qanary#test-inGraph", 
+        "endpoint": "urn:qanary#test-endpoint",
+        "inGraph": "urn:qanary#test-inGraph",
         "outGrpah": "urn:qanary#test-outGraph"
     }'''
 
@@ -49,21 +48,32 @@ class TestComponent(TestCase):
             # when a call to /annotatequestion is made
             response_json = client.post("/annotatequestion", headers = self.headers, data = self.request_data)
 
-            # then
-            # the text question is retrieved from the triplestore
+            # then the text question is retrieved from the triplestore
             mocked_get_text_question_in_graph.assert_called_with(triplestore_endpoint=self.endpoint, graph=self.in_graph)
 
-            # new information is pushed to the triplestore 
-            mocked_insert_into_triplestore.assert_called()
+            # get arguments of the (2) separate insert calls 
+            arg_list = mocked_insert_into_triplestore.call_args_list
+            # get the call arguments for question translation
+            call_args_translation = [a.args for a in arg_list if "AnnotationOfQuestionTranslation" in a.args[1]]
+            assert len(call_args_translation) == 1
+            # get the call arguments for question language
+            call_args_language = [a.args for a in arg_list if "AnnotationOfQuestionLanguage" in a.args[1]]
+            assert len(call_args_language) == 1
 
-            args = mocked_insert_into_triplestore.call_args.args
-            query_stored = re.sub(r"(\\n\W*|\n\W*)", " ", args[1])
+            # clean query strings
+            query_translation = re.sub(r"(\\n\W*|\n\W*)", " ", call_args_translation[0][1])
+            query_language = re.sub(r"(\\n\W*|\n\W*)", " ", call_args_language[0][1])
 
-            # the source language is correctly identified and annotated
-            self.assertRegex(query_stored, r".*AnnotationOfQuestionLanguage(.*;\W?)*oa:hasBody \""+self.source_language+r"\".*\.")
-            # the question is translated and the result is annotated
-            assert self.question_translation in query_stored
+            # then the triplestore is updated twice 
+            # (question language and translation)
+            assert mocked_insert_into_triplestore.call_count == 2
 
-            # the response is not empty
+            # then the source language is correctly identified and annotated
+            self.assertRegex(query_language, r".*AnnotationOfQuestionLanguage(.*;\W?)*oa:hasBody \""+self.source_language+r"\".*\.")
+
+            # then the question is translated and the result is annotated
+            self.assertRegex(query_translation, r".*AnnotationOfQuestionTranslation(.*;\W?)*oa:hasBody \".*\"@" + self.target_language + r".*\.")
+            assert "@"+self.target_language in query_translation.lower()
+
+            # then the response is not empty
             assert response_json != None
-
