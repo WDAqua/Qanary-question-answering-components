@@ -154,6 +154,8 @@
         <module>qanary-component-KG2KG-TranslateAnnotationsOfInstance</module>
                         
         <module>qanary-component-QB-DateOfDeathDBpedia</module>
+
+        <module>qanary-component-QB-DeepPavlovWrapper</module>
                     
       </modules>
               
