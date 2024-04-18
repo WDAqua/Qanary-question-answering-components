@@ -458,7 +458,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
         bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
         // get the template of the INSERT query
-        String sparql = QanaryTripleStoreConnector.insertAnnotationOfAnswerType(bindings);
+        String sparql = QanaryTripleStoreConnector.insertAnnotationOfAnswerDataType(bindings);
         logger.info("SPARQL insert for adding data to Qanary triplestore: {}", sparql);
 
         return sparql;
