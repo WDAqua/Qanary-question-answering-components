@@ -48,11 +48,13 @@ public class QAnswerResult {
 
         JsonArray queryCandidatesArray = parsedJsonObject.getAsJsonArray("queries").getAsJsonArray();
 
-        for (JsonElement queryCandidate : queryCandidatesArray) {
+        for (int i = 0; i < queryCandidatesArray.size(); i++) {
+            JsonElement queryCandidate = queryCandidatesArray.get(i);
             JsonObject queryCandidateObject = queryCandidate.getAsJsonObject(); 
             String query = queryCandidateObject.get("query").getAsString();
             float score = queryCandidateObject.get("confidence").getAsFloat();
-            QAnswerQueryCandidate candidate = new QAnswerQueryCandidate(query, score);
+            int index = i;
+            QAnswerQueryCandidate candidate = new QAnswerQueryCandidate(query, index, score);
             queryCandidates.add(candidate);
         }
 
@@ -86,10 +88,12 @@ public class QAnswerResult {
     public class QAnswerQueryCandidate {
         private String query;
         private float score;
+        private int index;
 
-        public QAnswerQueryCandidate(String query, float score) {
+        public QAnswerQueryCandidate(String query, int index, float score) {
             this.query = query;
             this.score = score;
+            this.index = index;
         }
 
         public String getQueryString() {
@@ -98,6 +102,10 @@ public class QAnswerResult {
 
         public float getScore() {
             return this.score;
+        }
+
+        public int getIndex() {
+            return this.index;
         }
     }
 

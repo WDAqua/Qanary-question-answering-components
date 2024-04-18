@@ -125,8 +125,7 @@ public class SparqlExecuter extends QanaryComponent {
     }
 
     public String getResultSparqlQuery(QanaryUtils myQanaryUtils, QanaryQuestion myQanaryQuestion) throws SparqlQueryFailed, IOException{
-        // TODO: this was changed (no longer using QanaryMessage.getInGraph())
-        ResultSet resultset = myQanaryUtils.getQanaryTripleStoreConnector().select(QanaryTripleStoreConnector.getHighestScoreAnnotationOfAnswerInGraph(myQanaryQuestion.getOutGraph()));
+        ResultSet resultset = myQanaryUtils.getQanaryTripleStoreConnector().select(QanaryTripleStoreConnector.getLowestIndexAnnotationOfAnswerInGraph(myQanaryQuestion.getOutGraph()));
         String sparqlQuery = "";
         while (resultset.hasNext()) {
             sparqlQuery = resultset.next().get("selectQueryThatShouldComputeTheAnswer").toString().replace("\\\"", "\"").replace("\\n", "\n");

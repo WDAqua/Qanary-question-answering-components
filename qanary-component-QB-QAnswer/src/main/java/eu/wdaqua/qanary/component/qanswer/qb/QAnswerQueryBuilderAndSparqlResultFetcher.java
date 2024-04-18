@@ -341,6 +341,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
             bindings.add("targetQuestion", ResourceFactory.createResource(questionUri.toASCIIString()));
             bindings.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createStringLiteral(queryCandidate.getQueryString()));
             bindings.add("confidence", ResourceFactory.createTypedLiteral(queryCandidate.getScore()));
+            bindings.add("index", ResourceFactory.createTypedLiteral(queryCandidate.getIndex()));
             bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
             // get the template of the INSERT query

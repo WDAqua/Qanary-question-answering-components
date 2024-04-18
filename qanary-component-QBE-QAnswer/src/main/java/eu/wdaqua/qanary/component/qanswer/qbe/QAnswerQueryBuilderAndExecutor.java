@@ -395,6 +395,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
         bindings.add("targetQuestion", ResourceFactory.createResource(questionUri.toASCIIString()));
         bindings.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createStringLiteral(result.getSparql()));
         bindings.add("confidence", ResourceFactory.createTypedLiteral(result.getConfidence()));
+        bindings.add("index", ResourceFactory.createTypedLiteral(0)); // TODO: currently, only one SPARQL is annotated, so index is always 0
         bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
         // get the template of the INSERT query
