@@ -152,11 +152,29 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
         // STEP 1: get the required data from the Qanary triplestore (the global process
         // memory)
         QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
-        String questionString = myQanaryQuestion.getTextualRepresentation();
-        List<NamedEntity> retrievedNamedEntities = getNamedEntitiesOfQuestion(myQanaryQuestion,
-                myQanaryQuestion.getInGraph());
+
+        String questionString = "";
+        try {
+          questionString = myQanaryQuestion.getTextualRepresentation(lang);
+          logger.info("Using specific textual representation for language {}: {}", lang, questionString);
+        } catch (Exception e) {
+          logger.warn("Could not retrieve specific textual representation for language {}:\n{}", e.getMessage());
+        }
+        // only if no language-specific text could be found
+        if (questionString.length() == 0){
+            try {
+                questionString = myQanaryQuestion.getTextualRepresentation();
+                logger.info("Using default textual representation {}", questionString);
+            } catch (Exception e) {
+                logger.warn("Could not retrieve textual representation:\n{}", e.getMessage());
+                // stop processing of the question, as it will not work without a question text
+                return myQanaryMessage;
+            }
+        }
 
         // STEP 2: enriching of query and fetching data from the QAnswer API
+        List<NamedEntity> retrievedNamedEntities = getNamedEntitiesOfQuestion(myQanaryQuestion,
+                myQanaryQuestion.getInGraph());
         String questionStringWithResources = computeQuestionStringWithReplacedResources(questionString,
                 retrievedNamedEntities, threshold);
         QAnswerResult result = requestQAnswerWebService(this.getQanswerEndpoint(), questionStringWithResources, lang, knowledgeBaseId, user);
