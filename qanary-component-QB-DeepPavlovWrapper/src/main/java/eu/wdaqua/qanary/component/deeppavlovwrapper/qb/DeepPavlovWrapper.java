@@ -250,6 +250,7 @@ public class DeepPavlovWrapper extends QanaryComponent {
       bindings.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
       bindings.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createStringLiteral(query));
       bindings.add("confidence", ResourceFactory.createTypedLiteral(result.getConfidence()));
+      bindings.add("index", ResourceFactory.createTypedLiteral(0)); // TODO: currently, only one SPARQL is annotated, so index is always 0
       bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
       // get the template of the INSERT query
