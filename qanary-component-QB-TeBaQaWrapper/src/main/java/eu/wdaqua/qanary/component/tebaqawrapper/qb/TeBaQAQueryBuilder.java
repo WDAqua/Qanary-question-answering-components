@@ -136,7 +136,8 @@ import java.util.List;
         }
 
         // STEP 3: add information to Qanary triplestore
-        String sparql = getSparqlInsertQuery(myQanaryQuestion, result);
+        int index = 0; // only one query expected
+        String sparql = getSparqlInsertQuery(myQanaryQuestion, result, index);
         myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 
         return myQanaryMessage;
@@ -195,7 +196,7 @@ import java.util.List;
      * @throws SparqlQueryFailed
      * @throws IOException
      */
-    protected String getSparqlInsertQuery(QanaryQuestion<String> myQanaryQuestion, TeBaQAResult result) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
+    protected String getSparqlInsertQuery(QanaryQuestion<String> myQanaryQuestion, TeBaQAResult result, int index) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
 
         String answerSparql = cleanStringForSparqlQuery(result.getSparql());
 
@@ -206,6 +207,7 @@ import java.util.List;
         bindings.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
         bindings.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createStringLiteral(answerSparql));
         bindings.add("confidence", ResourceFactory.createTypedLiteral(result.getConfidence()));
+        bindings.add("index", ResourceFactory.createTypedLiteral(index));
         bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
         // get the template of the INSERT query

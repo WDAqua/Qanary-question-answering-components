@@ -49,7 +49,6 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
     private static final String QUERY_FILE_DBPEDIA_QUERY = "/queries/dbpedia_query.rq";
 
     // used from the Qanary commons queries, query to create a new annotation and store the computed query
-    private static final String QUERY_FILE_STORE_COMPUTED_ANNOTATIONS = "/queries/insert_one_AnnotationOfAnswerSPARQL.rq";
     private static final Logger logger = LoggerFactory.getLogger(QueryBuilderDateOfDeathDBpedia.class);
     private final String SUPPORTED_PREFIX = "What is the date of death of ";
     private final String applicationName;
@@ -60,7 +59,6 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
         // here if the files are available and do contain content // do files exist?
         QanaryTripleStoreConnector.guardNonEmptyFileFromResources(QUERY_FILE_FETCH_REQUIRED_ANNOTATIONS);
         QanaryTripleStoreConnector.guardNonEmptyFileFromResources(QUERY_FILE_DBPEDIA_QUERY);
-        QanaryTripleStoreConnector.guardNonEmptyFileFromResources(QUERY_FILE_STORE_COMPUTED_ANNOTATIONS);
     }
 
     /**
@@ -155,9 +153,9 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
      */
     public List<String> createQueries(QanaryQuestion qanaryQuestion, List<String> queries) throws Exception {
         List<String> createdQueries = new ArrayList<>();
-        for (String entity : queries
-        ) {
-            createdQueries.add(getInsertQuery(qanaryQuestion, entity));
+
+        for (int i = 0; i > queries.size(); i++) {
+            createdQueries.add(getInsertQuery(qanaryQuestion, queries.get(i), i));
         }
         return createdQueries;
     }
@@ -195,7 +193,7 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
     }
 
     // binds query variables with concrete values and returns the Insert-query
-    public String getInsertQuery(QanaryQuestion<String> myQanaryQuestion, String createdDbpediaQuery)
+    public String getInsertQuery(QanaryQuestion<String> myQanaryQuestion, String createdDbpediaQuery, int index)
             throws SparqlQueryFailed, URISyntaxException, QanaryExceptionNoOrMultipleQuestions, IOException {
 
         QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
@@ -204,8 +202,9 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
         bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
         bindingsForInsert.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createTypedLiteral(createdDbpediaQuery, XSDDatatype.XSDdate));
         bindingsForInsert.add("score", ResourceFactory.createTypedLiteral("1.0", XSDDatatype.XSDfloat));
+        bindingsForInsert.add("index", ResourceFactory.createTypedLiteral(Integer.toString(index), XSDDatatype.XSDint));
 
-        return QanaryTripleStoreConnector.readFileFromResourcesWithMap(QUERY_FILE_STORE_COMPUTED_ANNOTATIONS, bindingsForInsert);
+        return QanaryTripleStoreConnector.insertAnnotationOfAnswerSPARQL(bindingsForInsert);
     }
 
 }

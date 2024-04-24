@@ -187,7 +187,8 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
         logger.debug("created SPARQL query for improved question: {}", sparqlImprovedQuestion);
         myQanaryUtils.getQanaryTripleStoreConnector().update(sparqlImprovedQuestion);
 
-        String sparqlQueryCandidate = getSparqlInsertQueryForQueryCandidate(graph, questionUri, result);
+        int index = 0; // only one query expected
+        String sparqlQueryCandidate = getSparqlInsertQueryForQueryCandidate(graph, questionUri, result, index);
         logger.debug("created SPARQL query for query candidate: {}", sparqlQueryCandidate);
         myQanaryUtils.getQanaryTripleStoreConnector().update(sparqlQueryCandidate);
 
@@ -405,7 +406,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
      * @throws IOException
      */
     public String getSparqlInsertQueryForQueryCandidate(
-            URI graph, URI questionUri, QAnswerResult result) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
+            URI graph, URI questionUri, QAnswerResult result, int index) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
 
         QuerySolutionMap bindings = new QuerySolutionMap();
         // use the variable names defined in method insertAnnotationOfAnswerSPARQL
@@ -413,7 +414,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
         bindings.add("targetQuestion", ResourceFactory.createResource(questionUri.toASCIIString()));
         bindings.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createStringLiteral(result.getSparql()));
         bindings.add("confidence", ResourceFactory.createTypedLiteral(result.getConfidence()));
-        bindings.add("index", ResourceFactory.createTypedLiteral(0)); // TODO: currently, only one SPARQL is annotated, so index is always 0
+        bindings.add("index", ResourceFactory.createTypedLiteral(index)); // TODO: currently, only one SPARQL is annotated, so index is always 0
         bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
         // get the template of the INSERT query
