@@ -1,0 +1,36 @@
+name: Qanary component test pipeline
+
+on:
+  pull_request:
+    branches: [master]
+  schedule:
+    - cron: '25 0 * * 0'
+
+jobs:
+  test-java:
+    runs-on: ubuntu-latest
+    env:
+      BABELFY_API_KEY: ${{ secrets.BABELFY_API_KEY }}
+      CHATGPT_API_KEY: ${{ secrets.CHATGPT_API_KEY }}
+      DANDELION_API_KEY: ${{ secrets.DANDELION_API_KEY }}
+      MEANINGCLOUD_API_KEY: ${{ secrets.MEANINGCLOUD_API_KEY }}
+      TAGME_API_KEY: ${{ secrets.TAGME_API_KEY }}
+      TEXTRAZOR_API_KEY: ${{ secrets.TEXTRAZOR_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - name: Configure java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+      - uses: actions/checkout@v4
+      - name: Test Java components
+        run: bash -c ./service_config/test_java_components.sh
+  test-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test Python components
+        run: bash -c ./service_config/test_python_components.sh
+
+
