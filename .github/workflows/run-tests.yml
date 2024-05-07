@@ -10,13 +10,23 @@ jobs:
   test-java:
     runs-on: ubuntu-latest
     env:
-      BABELFY_API_KEY: ${{ secrets.BABELFY_API_KEY }}
-      CHATGPT_API_KEY: ${{ secrets.CHATGPT_API_KEY }}
-      DANDELION_API_KEY: ${{ secrets.DANDELION_API_KEY }}
-      MEANINGCLOUD_API_KEY: ${{ secrets.MEANINGCLOUD_API_KEY }}
-      TAGME_API_KEY: ${{ secrets.TAGME_API_KEY }}
-      TEXTRAZOR_API_KEY: ${{ secrets.TEXTRAZOR_API_KEY }}
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      BABELFY_API_KEY : someapikey
+      CHATGPT_API_KEY : someapikey
+      DANDELION_API_KEY : someapikey
+      MEANINGCLOUD_API_KEY : someapikey
+      TAGME_API_KEY : someapikey
+      TEXTRAZOR_API_KEY : someapikey
+      OPENAI_API_KEY : someapikey
+      BABELFY_API_LIVE_TEST_ACTIVE : false
+      PLATYPUS_API_LIVE_TEST_ACTIVE : false
+      TEXTRAZOR_API_LIVE_TEST_ACTIVE : false
+      BABELFY_API_LIVE_TEST_ACTIVE : false
+      CHATGPT_API_LIVE_TEST_ACTIVE : false
+      DANDELION_API_LIVE_TEST_ACTIVE : false
+      MEANINGCLOUD_API_LIVE_TEST_ACTIVE : false
+      AGDISTIS_API_LIVE_TEST_ACTIVE : false
+      OPENAI_API_LIVE_TEST_ACTIVE : false
+      TAGME_API_LIVE_TEST_ACTIVE : false
     steps:
       - name: Configure java
         uses: actions/setup-java@v4
@@ -32,5 +42,3 @@ jobs:
       - uses: actions/checkout@v4
       - name: Test Python components
         run: bash -c ./service_config/test_python_components.sh
-
-
