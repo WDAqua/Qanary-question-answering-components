@@ -12,7 +12,7 @@ mvn --batch-mode clean install -Ddockerfile.skip=true -DskipTests -Dgpg.skip=tru
 rm -rf Qanary/
 
 # test components
-if ! mvn --batch-mode test;
+if ! mvn --batch-mode --no-transfer-progress test;
 then
   echo "Maven test failed"
   exit 4 # stop if test fails

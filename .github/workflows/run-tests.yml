@@ -2,9 +2,8 @@ name: Qanary component test pipeline
 
 on:
   pull_request:
+    types: [opened, synchronize]
     branches: [master]
-  schedule:
-    - cron: '25 0 * * 0'
 
 jobs:
   test-java:
