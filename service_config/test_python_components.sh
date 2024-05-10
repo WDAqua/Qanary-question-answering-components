@@ -6,6 +6,22 @@ components=$(ls | grep -P "qanary-component.*Python-[a-zA-Z]+$")
 
 printf "Found Python components:\n\n${components}\n\n"
 
+python -m venv env 
+source env/bin/activate
+
+
+# install pytest manually if not included in requirements 
+if ! pip show pytest; then
+  echo "Installing pytest manually..."
+  pip install pytest
+fi 
+if ! pip show pytest-env; then 
+  echo "Installing pytest-env manually..."
+  pip install pytest-env
+fi
+
+pip install pyclean # for later cleaning
+
 for dir in $components
 do
   # iterate over Python components 
@@ -14,19 +30,8 @@ do
 
   # setup virtual environment
   cd $dir
-  python -m venv env 
-  source env/bin/activate
   pip install -r requirements.txt 
 
-  # install pytest manually if not included in requirements 
-  if ! pip show pytest; then
-    echo "Installing pytest manually..."
-    pip install pytest
-  fi 
-  if ! pip show pytest-env; then 
-    echo "Installing pytest-env manually..."
-    pip install pytest-env
-  fi
 
   # run tests 
   pytest
@@ -42,14 +47,14 @@ do
   fi 
 
   # cleanup
-  pip install pyclean
   pyclean .
-  pip freeze | xargs pip uninstall -y
-  deactivate
-  rm -r env/
   cd ..
 
 done
+
+pip freeze | xargs pip uninstall -y
+deactivate
+rm -r env/
 
 # print a summary
 printf "\n\n===== SUMMARY =====\n\n"
