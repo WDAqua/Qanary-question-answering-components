@@ -12,11 +12,11 @@ mt_libretranslate_bp = Blueprint("mt_libretranslate_bp", __name__, template_fold
 
 SERVICE_NAME_COMPONENT = os.environ["SERVICE_NAME_COMPONENT"]
 
-
-target_lang = 'en'
+SOURCE_LANG = os.environ["SOURCE_LANGUAGE"]
+#TARGET_LANG = os.environ["TARGET_LANGUAGE"]
+TARGET_LANG = "en" # currently only supports English
 TRANSLATE_ENDPOINT = os.environ["TRANSLATE_ENDPOINT"]
 LANGUAGES_ENDPOINT = os.environ["LANGUAGES_ENDPOINT"]
-
 
 
 @mt_libretranslate_bp.route("/annotatequestion", methods=["POST"])
@@ -29,18 +29,26 @@ def qanary_service():
     logging.info("endpoint: %s, inGraph: %s, outGraph: %s" % \
                  (triplestore_endpoint, triplestore_ingraph, triplestore_outgraph))
 
-    text = get_text_question_in_graph(triplestore_endpoint=triplestore_endpoint, 
+    text = get_text_question_in_graph(triplestore_endpoint=triplestore_endpoint,
                                       graph=triplestore_ingraph)[0]["text"]
     question_uri = get_text_question_in_graph(triplestore_endpoint=triplestore_endpoint,
                                               graph=triplestore_ingraph)[0]["uri"]
     logging.info(f"Question text: {text}")
+
+    if SOURCE_LANG != None and len(SOURCE_LANG.strip()) > 0:
+        lang = SOURCE_LANG
+        logging.info("Using custom SOURCE_LANGUAGE")
+    else:
+        lang = detect(text)
+        logging.info("No SOURCE_LANGUAGE specified, using langdetect!")
+    logging.info(f"source language: {lang}")
 
     #lang, prob = langid.classify(text)
     lang = detect(text)
     logging.info(f"source language: {lang}")
 
     ## TODO: MAIN FUNCTIONALITY
-    result, _ = translate_input(text, lang)
+    result, _ = translate_input(text, lang, TARGET_LANG)
 
     # building SPARQL query TODO: verify this annotation AnnotationOfQuestionTranslation ??
     SPARQLqueryAnnotationOfQuestionTranslation = """
@@ -112,7 +120,7 @@ def index():
     return "Python MT LibreTranslate Qanary component"
 
 
-def translate_input(text, source_lang):
+def translate_input(text, source_lang, target_lang):
 
     req_json = {
         'q': text,
@@ -135,11 +143,11 @@ def check_connection():
     success = "The test translation was successful"
     try:
         # TODO: test with supported language? 
-        t, error = translate_input("eingabe zum testen", "de")
+        t, error = translate_input("eingabe zum testen", "de", "en")
         logging.info(f"got translation: {t}")
         assert len(t) > 0
         return True, success
-    except Exception: 
+    except Exception:
         logging.info(f"test failed with {error}")
         return False, error
 
