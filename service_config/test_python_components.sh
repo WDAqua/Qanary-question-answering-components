@@ -20,10 +20,11 @@ do
 
   # run tests 
   pytest
+  test_status=$?
   # check exit codes
-  if [ $? -eq 0 ]; then # all tests successful 
+  if [ $test_status -eq 0 ]; then # all tests successful 
     summary[${name}]="passed"
-  elif [ $? -eq 5 ]; then # no tests found
+  elif [ $test_status -eq 5 ]; then # no tests found
     summary[${name}]="no tests"
   else # tests failed or something else went wrong
     summary[${name}]="failed"
@@ -43,9 +44,9 @@ done
 # print a summary
 printf "\n\n===== SUMMARY =====\n\n"
 for x in "${!summary[@]}"; do printf "%s\t:\t[%s]\n" "$x" "${summary[$x]}"; done | column -s$'\t' -t
-if [ failures ]; then
-  echo "\nSome tests failed!"
+if $failures; then
+  printf "\nSome tests failed!"
   exit 4
 else
-  echo "\nTests succeeded"
+  printf "\nTests succeeded"
 fi 
