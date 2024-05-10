@@ -18,6 +18,16 @@ do
   source env/bin/activate
   pip install -r requirements.txt 
 
+  # install pytest manually if not included in requirements 
+  if ! pip show pytest; then
+    echo "Installing pytest manually..."
+    pip install pytest
+  fi 
+  if ! pip show pytest-env; then 
+    echo "Installing pytest-env manually..."
+    pip install pytest-env
+  fi
+
   # run tests 
   pytest
   test_status=$?
@@ -45,8 +55,8 @@ done
 printf "\n\n===== SUMMARY =====\n\n"
 for x in "${!summary[@]}"; do printf "%s\t:\t[%s]\n" "$x" "${summary[$x]}"; done | column -s$'\t' -t
 if $failures; then
-  printf "\nSome tests failed!"
+  printf "\nSome tests failed!\n"
   exit 4
 else
-  printf "\nTests succeeded"
+  printf "\nTests succeeded\n"
 fi 
