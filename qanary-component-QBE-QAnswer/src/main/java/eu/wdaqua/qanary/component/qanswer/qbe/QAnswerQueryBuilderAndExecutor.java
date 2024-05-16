@@ -473,7 +473,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
         // use the variable names defined in method insertAnnotationOfAnswerSPARQL
         bindings.add("graph", ResourceFactory.createResource(graph.toASCIIString()));
         bindings.add("targetQuestion", ResourceFactory.createResource(questionUri.toASCIIString()));
-        bindings.add("answerDataType", ResourceFactory.createStringLiteral(result.getType())); 
+        bindings.add("answerDataType", ResourceFactory.createResource(result.getDatatype().toString())); 
         bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
         // get the template of the INSERT query
