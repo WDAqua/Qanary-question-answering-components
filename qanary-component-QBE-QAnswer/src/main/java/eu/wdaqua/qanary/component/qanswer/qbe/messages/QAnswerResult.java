@@ -29,6 +29,7 @@ public class QAnswerResult {
     private String question;
     private String sparql;
     private List<String> values;
+    private String answerJsonString;
     private String type;
     private URI datatype;
     private double confidence;
@@ -98,13 +99,17 @@ public class QAnswerResult {
         JsonArray languages = questionData.get("language").getAsJsonArray();
         logger.debug("responseQuestion->language: {}", languages.toString());
 
+        String answerJson = questionData.get("answers").getAsString();
+
         JsonObject language = languages.get(0).getAsJsonObject();
         logger.debug("0. language: {}", language.toString());
         logger.debug("0. sparql: {}", language.get("SPARQL").getAsString());
+        logger.debug("0. answer json: {}", answerJson);
         logger.debug("0. confidence: {}", language.get("confidence").getAsDouble());
 
         this.confidence = language.get("confidence").getAsDouble();
         this.sparql = language.get("SPARQL").getAsString();
+        this.answerJsonString = answerJson;
 
     }
 
@@ -302,5 +307,9 @@ public class QAnswerResult {
 
     public String getJsonString() {
         return jsonString;
+    }
+
+    public String getAnswerJsonString(){
+        return answerJsonString;
     }
 }

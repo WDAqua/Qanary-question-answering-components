@@ -159,7 +159,8 @@ public class DeepPavlovWrapper extends QanaryComponent {
         // STEP 3: store computed knowledge about the given question into the Qanary triplestore 
         // (the global process memory)
         // --------------------------------------------------------------------
-        String sparql = getSparqlInsertQuery(myQanaryQuestion, result);
+        int index = 0; // only one query expected
+        String sparql = getSparqlInsertQuery(myQanaryQuestion, result, index);
         myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
       }
     } catch (Exception e) {
@@ -239,7 +240,7 @@ public class DeepPavlovWrapper extends QanaryComponent {
      * @throws SparqlQueryFailed
      * @throws IOException
      */
-    protected String getSparqlInsertQuery(QanaryQuestion<String> myQanaryQuestion, DeepPavlovResult result) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
+    protected String getSparqlInsertQuery(QanaryQuestion<String> myQanaryQuestion, DeepPavlovResult result, int index) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
 
       String query = prepareResultQueryForSparqlInsert(result.getSparql());
 
@@ -250,6 +251,7 @@ public class DeepPavlovWrapper extends QanaryComponent {
       bindings.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
       bindings.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createStringLiteral(query));
       bindings.add("confidence", ResourceFactory.createTypedLiteral(result.getConfidence()));
+      bindings.add("index", ResourceFactory.createTypedLiteral(index)); 
       bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
       // get the template of the INSERT query
