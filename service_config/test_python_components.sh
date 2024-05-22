@@ -4,34 +4,43 @@ declare -A summary
 failures=false 
 components=$(ls | grep -P "qanary-component.*Python-[a-zA-Z]+$")
 
-printf "Found Python components:\n\n${components}\n\n"
-
-python -m venv env 
-source env/bin/activate
-
-
-# install pytest manually if not included in requirements 
-if ! pip show pytest; then
-  echo "Installing pytest manually..."
-  pip install pytest
-fi 
-if ! pip show pytest-env; then 
-  echo "Installing pytest-env manually..."
-  pip install pytest-env
+# create a super directory to hold virtual environments (for caching)
+if mkdir environments; then
+  echo "External environment directory created"
+else
+  echo "External environment directory could not be created"
 fi
 
-pip install pyclean # for later cleaning
+printf "Found Python components:\n\n${components}\n\n"
 
+
+# iterate over components 
 for dir in $components
 do
   # iterate over Python components 
   name=$(echo ${dir} | tr "[:upper:]" "[:lower:]")
   printf "\n\n===== ${name} =====\n\n"
 
-  # setup virtual environment
   cd $dir
-  pip install -r requirements.txt 
+  # setup virtual environment in external super directory 
+  envname=../environments/${name}
+  python -m venv ${envname}
+  if source ${envname}/bin/activate; then
+    pip install -r requirements.txt 
+  else
+    echo "Something went wrong trying to install requirements! Exiting ..."
+    exit 4
+  fi
 
+  # install pytest manually if not included in requirements 
+  if ! pip show pytest; then
+    echo "Installing pytest manually..."
+    pip install pytest
+  fi 
+  if ! pip show pytest-env; then 
+    echo "Installing pytest-env manually..."
+    pip install pytest-env
+  fi
 
   # run tests 
   pytest
@@ -46,15 +55,14 @@ do
     failures=true
   fi 
 
-  # cleanup
-  pyclean .
+  #pip freeze | xargs pip uninstall -y TODO: disabled because that would mess with caching
+  deactivate
+  rm -r ${envname}
+
   cd ..
 
 done
 
-pip freeze | xargs pip uninstall -y
-deactivate
-rm -r env/
 
 # print a summary
 printf "\n\n===== SUMMARY =====\n\n"

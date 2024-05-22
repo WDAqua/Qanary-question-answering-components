@@ -36,6 +36,16 @@ jobs:
   test-python:
     runs-on: ubuntu-latest
     steps:
+      - name: Configure Python
+        uses: actions/setup-python@v4
+        id: setup_python
+        with: 
+          python-version: '3.12'
       - uses: actions/checkout@v4
+      - name: Cache virtual environments
+        uses: actions/cache@v4
+        with:
+          key: environments-${{ runner.os }}-${{ steps.setup_python.outputs.python-version}}-${{ hashFiles('**/requirements.txt') }}
+          path: environments
       - name: Test Python components
         run: bash -c ./service_config/test_python_components.sh
