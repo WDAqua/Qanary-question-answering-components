@@ -19,6 +19,26 @@
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
 		<springdoc.version>1.7.0</springdoc.version>
 	</properties>
+
+	<!-- META INFORMATION, required due to inheritance from component-parent as parent -->
+	<!-- The name tag is inherited and a composition of the groupID and artifactID -->
+	<url>https://github.com/WDAqua/Qanary-question-answering-components</url>
+	<description>NED-DBpediaSpotlight is a Qanary component using DBpediaSpotlight to identify Named Entities in a given text</description>
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name> <!-- Example for Apache2 Licence -->
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url> <!-- Example for Apache2 Licence -->
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>Andreas Both</name>
+			<email>andreas.both@htwk-leipzig.de</email>
+			<organization>WDAqua</organization>
+			<organizationUrl>http://wdaqua.eu/</organizationUrl>
+		</developer>
+	</developers>
+
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-data-rest -->
 		<dependency>

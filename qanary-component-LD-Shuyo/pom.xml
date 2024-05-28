@@ -21,6 +21,25 @@
 		<profile_directory>${basedir}/src/main/resources/language-detection/profiles</profile_directory>
 	</properties>
 
+	<!-- META INFORMATION, required due to inheritance from component-parent as parent -->
+	<!-- The name tag is inherited and a composition of the groupID and artifactID -->
+	<url>https://github.com/WDAqua/Qanary-question-answering-components</url>
+	<description>LD-Shuyo is a Qanary component for determining the language of a question stored in the Qanary triplestore. If successful, it will store an instance of qa:AnnotationOfQuestionLanguage in the Qanary triplestore.</description>
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name> <!-- Example for Apache2 Licence -->
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url> <!-- Example for Apache2 Licence -->
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>Andreas Both</name>
+			<email>andreas.both@htwk-leipzig.de</email>
+			<organization>WDAqua</organization>
+			<organizationUrl>http://wdaqua.eu/</organizationUrl>
+		</developer>
+	</developers>
+
 	<dependencies>
 		<!-- from dependency management -->
 		<dependency>
