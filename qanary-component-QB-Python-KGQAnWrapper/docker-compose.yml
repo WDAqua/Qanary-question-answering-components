@@ -1,0 +1,44 @@
+version: '3'
+services: 
+  component:
+    # for building from source
+    image: qanary-component-qb-python-kgqan:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    network_mode: host
+    env_file:
+      - .env
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface/
+
+# from submodule? KGQAn services
+  word_embedding_server:
+    image: kgqan_word_embedding:local
+    build:
+      context: ./KGQAn/word_embedding
+    ports:
+      - '9600:9600'
+    volumes:
+      - ./data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    network_mode: host
+
+  kgqan_server:
+    image: kgqan_server:local
+    build:
+      context: ./KGQAn/src
+      dockerfile: Dockerfile.server
+    ports:
+      - '8899:8899'
+    volumes:
+      - ./data/output_pred21_8_30:/app/model
+      - ./src:/app
+    environment:
+      - WORD_EMBEDDING_HOST=localhost
+      - WORD_EMBEDDING_PORT=9600
+      - PYTHONUNBUFFERED=1 # visible logging in docker 
+    depends_on:
+      - word_embedding_server
+    network_mode: host
