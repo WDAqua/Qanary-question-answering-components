@@ -1,0 +1,55 @@
+[
+   {
+      "edges" : [
+         "http://dbpedia.org/property/founders"
+      ],
+      "extracted_relation" : [
+         [
+            "Intel",
+            "var1",
+            "founded"
+         ]
+      ],
+      "named_entites" : [
+         "Intel",
+         "var1"
+      ],
+      "nodes" : [
+         "http://dbpedia.org/resource/Intel"
+      ],
+      "question" : "Who founded Intel?",
+      "score" : 0.771619810277574,
+      "sparql" : " SELECT ?var1 ?type WHERE {    <http://dbpedia.org/resource/Intel> <http://dbpedia.org/property/founders> ?var1 .     OPTIONAL {       ?var1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type .     } }",
+      "values" : [
+         "http://dbpedia.org/resource/Robert_Noyce",
+         "http://dbpedia.org/resource/Gordon_Moore"
+      ]
+   },
+   {
+      "edges" : [
+         "http://dbpedia.org/ontology/knownFor"
+      ],
+      "extracted_relation" : [
+         [
+            "Intel",
+            "var1",
+            "founded"
+         ]
+      ],
+      "named_entites" : [
+         "Intel",
+         "var1"
+      ],
+      "nodes" : [
+         "http://dbpedia.org/resource/Intel"
+      ],
+      "question" : "Who founded Intel?",
+      "score" : 0.694774353052029,
+      "sparql" : " SELECT ?var1 ?type WHERE {    ?var1 <http://dbpedia.org/ontology/knownFor> <http://dbpedia.org/resource/Intel> .     OPTIONAL {       ?var1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type .     } }",
+      "values" : [
+         "http://dbpedia.org/resource/Andrew_Grove",
+         "http://dbpedia.org/resource/Gordon_Moore",
+         "http://dbpedia.org/resource/Arthur_Rock"
+      ]
+   }
+]

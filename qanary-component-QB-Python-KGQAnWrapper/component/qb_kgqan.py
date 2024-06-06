@@ -26,15 +26,15 @@ def qanary_service():
     logging.info("endpoint: %s, inGraph: %s, outGraph: %s" % \
                  (triplestore_endpoint, triplestore_ingraph, triplestore_outgraph))
 
-    quetsion_text = get_text_question_in_graph(triplestore_endpoint=triplestore_endpoint,
+    question_text = get_text_question_in_graph(triplestore_endpoint=triplestore_endpoint,
                                       graph=triplestore_ingraph)[0]["text"]
     question_uri = get_text_question_in_graph(triplestore_endpoint=triplestore_endpoint,
                                               graph=triplestore_ingraph)[0]["uri"]
-    logging.info(f"Question text: {quetsion_text}")
+    logging.info(f"Question text: {question_text}")
 
 
     ## MAIN FUNCTIONALITY
-    candidate_list = call_kgqan_endpoint(quetsion_text)
+    candidate_list = call_kgqan_endpoint(question_text=question_text)
 
     # create sparql insert queries 
     for candidate in candidate_list:
