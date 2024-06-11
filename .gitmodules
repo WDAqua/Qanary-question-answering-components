@@ -1,0 +1,3 @@
+[submodule "Qanary-component-QB-Python-KGQAnWrapper"]
+	path = Qanary-component-QB-Python-KGQAnWrapper
+	url = https://github.com/WSE-research/Qanary-component-QB-Python-KGQAnWrapper.git
