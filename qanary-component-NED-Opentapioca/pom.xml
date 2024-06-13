@@ -21,25 +21,6 @@
 		<springdoc.version>1.7.0</springdoc.version>
 	</properties>
 
-	<!-- META INFORMATION, required due to inheritance from component-parent as parent -->
-	<!-- The name tag is inherited and a composition of the groupID and artifactID -->
-	<url>https://github.com/WDAqua/Qanary-question-answering-components</url>
-	<description>NED-Opentapioca is a Qanary component for identifying Wikidata entities in a given text</description>
-	<licenses>
-		<license>
-			<name>The Apache License, Version 2.0</name> <!-- Example for Apache2 Licence -->
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url> <!-- Example for Apache2 Licence -->
-		</license>
-	</licenses>
-	<developers>
-		<developer>
-			<name>Andreas Both</name>
-			<email>andreas.both@htwk-leipzig.de</email>
-			<organization>WDAqua</organization>
-			<organizationUrl>http://wdaqua.eu/</organizationUrl>
-		</developer>
-	</developers>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
