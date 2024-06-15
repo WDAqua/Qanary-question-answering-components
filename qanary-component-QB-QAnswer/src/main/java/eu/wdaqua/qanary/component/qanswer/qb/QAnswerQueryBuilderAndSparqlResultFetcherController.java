@@ -92,10 +92,8 @@ public class QAnswerQueryBuilderAndSparqlResultFetcherController {
 	 * @param request
 	 * @return
 	 * @throws URISyntaxException
-	 * @throws NoLiteralFieldFoundException
 	 * @throws MalformedURLException
 	 */
-
 	@PostMapping(value = QAnswerQueryBuilderAndSparqlResultFetcherController.API, produces = "application/json")
 	@ResponseBody
 	@Operation(summary = "Send a request to the QAnswer API and return the (cached) result here", //
