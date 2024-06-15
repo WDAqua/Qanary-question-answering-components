@@ -213,8 +213,7 @@ import java.util.List;
      * which is providing a predefined query template, s.t., the created data is
      * conform with the expectations of other Qanary components
      *
-     * @param myQanaryQuestion
-     * @param result
+     * @param bindings
      * @return
      * @throws QanaryExceptionNoOrMultipleQuestions
      * @throws URISyntaxException
@@ -240,8 +239,7 @@ import java.util.List;
      * which is providing a predefined query template, s.t., the created data is
      * conform with the expectations of other Qanary components
      *
-     * @param myQanaryQuestion
-     * @param result
+     * @param bindings
      * @return
      * @throws QanaryExceptionNoOrMultipleQuestions
      * @throws URISyntaxException
