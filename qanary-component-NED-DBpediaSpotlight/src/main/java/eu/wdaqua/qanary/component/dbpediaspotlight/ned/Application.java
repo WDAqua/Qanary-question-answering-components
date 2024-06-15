@@ -31,13 +31,28 @@ public class Application {
 
 	private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
+
 	/**
-	 * default main
+	 * defalt main
+	 * 
+	 * @param args
 	 */
 	public static void main(String[] args) {
 		applicationContext = SpringApplication.run(Application.class, args);
 	}
 
+	/**
+	 * get configuration of configuration
+	 * 
+	 * @param myDBpediaSpotlightServiceFetcher
+	 * @param testQuestion
+	 * @param confidenceMinimum
+	 * @param endpoint
+	 * @param performLiveCheckOnComponentStart
+	 * @param ignore
+	 * @return
+	 * @throws DBpediaSpotlightServiceNotAvailable
+	 */
 	@Bean
 	public DBpediaSpotlightConfiguration myDBpediaSpotlightConfiguration( //
 			@Autowired DBpediaSpotlightServiceFetcher myDBpediaSpotlightServiceFetcher, //
@@ -80,6 +95,11 @@ public class Application {
 		}
 	}
 
+	/**
+	 * specific configuration of OpenAPI documentation
+	 * 
+	 * @return
+	 */
 	@Bean
 	public OpenAPI customOpenAPI() {
 		String appVersion = getClass().getPackage().getImplementationVersion();

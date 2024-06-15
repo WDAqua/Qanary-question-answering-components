@@ -51,16 +51,13 @@ public class DBpediaSpotlightServiceFetcher {
 		this.minimumConfidence = minimumConfidence;
 	}
 
+
 	/**
 	 * fetch data from the configured DBpedia Spotlight endpoint
-	 *
+	 * 
 	 * @param myQuestion
-	 * @param endpoint
-	 * @param minimumConfidence
 	 * @return
 	 * @throws Exception
-	 * @throws ClientProtocolException
-	 * @throws IOException
 	 */
 	public JsonArray getJsonFromService(String myQuestion) throws Exception {
 
