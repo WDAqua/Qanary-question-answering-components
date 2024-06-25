@@ -10,7 +10,7 @@ WHERE {
 		?annotation     qa:score     ?annotationScore .
 		?annotation     oa:hasTarget ?target .
 
-		FILTER (?wikidataResource = ?value)
+		FILTER (REGEX(?wikidataResource,?value, "i"))
 
 		?target     oa:hasSource    ?source .
 		?target     oa:hasSelector  ?textSelector .
