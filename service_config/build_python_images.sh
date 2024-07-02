@@ -1,6 +1,8 @@
 #!/bin/bash
 
-images=$(ls | grep -P "qanary-component.*Python-[a-zA-Z]+$")
+# get a list of all Python component directories
+# exclude submodules (external component repositories)
+images=$(comm -3 <(ls | grep -P "[qQ]anary-component.*Python-[a-zA-Z]+$") <(git config --file .gitmodules --get-regexp path | awk '{ print $2 }'))
 
 for dir in $images
 do
