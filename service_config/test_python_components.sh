@@ -2,7 +2,9 @@
 
 declare -A summary
 failures=false 
-components=$(ls | grep -P "qanary-component.*Python-[a-zA-Z]+$")
+# get a list of all Python component directories
+# exclude submodules (external component repositories)
+components=$(comm -3 <(ls | grep -P "[qQ]anary-component.*Python-[a-zA-Z]+$") <(git config --file .gitmodules --get-regexp path | awk '{ print $2 }'))
 
 # create a super directory to hold virtual environments (for caching)
 if mkdir environments; then
