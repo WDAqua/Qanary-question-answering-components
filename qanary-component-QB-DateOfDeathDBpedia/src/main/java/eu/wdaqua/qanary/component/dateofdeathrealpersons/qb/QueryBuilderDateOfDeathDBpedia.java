@@ -154,8 +154,11 @@ public class QueryBuilderDateOfDeathDBpedia extends QanaryComponent {
     public List<String> createQueries(QanaryQuestion qanaryQuestion, List<String> queries) throws Exception {
         List<String> createdQueries = new ArrayList<>();
 
+        logger.info("task: compute {} queries", queries.size());
         for (int i = 0; i > queries.size(); i++) {
-            createdQueries.add(getInsertQuery(qanaryQuestion, queries.get(i), i));
+        	String createdInsertQuery = getInsertQuery(qanaryQuestion, queries.get(i), i);
+        	logger.info("created INSERT query: {}", createdInsertQuery);
+            createdQueries.add(createdInsertQuery);
         }
         return createdQueries;
     }

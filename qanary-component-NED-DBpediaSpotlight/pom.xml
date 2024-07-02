@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary-component-NED-DBpediaSpotlight</artifactId>
-	<version>3.5.0</version>
+	<version>3.5.1</version>
 
   <parent>
 		<groupId>eu.wdaqua.qanary</groupId>

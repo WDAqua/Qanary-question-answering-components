@@ -103,8 +103,6 @@ public class DeepPavlovWrapper extends QanaryComponent {
 	 * implement this method encapsulating the functionality of your Qanary
 	 * component, some helping notes w.r.t. the typical 3 steps of implementing a
 	 * Qanary component are included in the method (you might remove all of them)
-	 * 
-	 * @throws SparqlQueryFailed
 	 */
 	@Override
 	public QanaryMessage process(QanaryMessage myQanaryMessage) {
