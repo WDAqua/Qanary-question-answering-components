@@ -150,7 +150,8 @@ import java.util.List;
         // STEP 3: add information to Qanary triplestore
         //String sparql = getSparqlInsertQuery(myQanaryQuestion, result);
         //myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
-        QuerySolutionMap bindings = populateBindings(myQanaryQuestion, result);
+        int index = 0; // only one query expected
+        QuerySolutionMap bindings = populateBindings(myQanaryQuestion, result, index);
         String insertAnswerSPARQL = getSparqlInsertQueryForAnswerSPARQL(bindings);
         String insertTypedLiteral = getSparqlInsertQueryForTypedLiteral(bindings);
         myQanaryUtils.getQanaryTripleStoreConnector().update(insertAnswerSPARQL);
@@ -257,7 +258,7 @@ import java.util.List;
         return sparql;
     }
 
-    protected QuerySolutionMap populateBindings(QanaryQuestion<String> myQanaryQuestion, PlatypusResult result) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed {
+    protected QuerySolutionMap populateBindings(QanaryQuestion<String> myQanaryQuestion, PlatypusResult result, int index) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed {
 
         String answerSparql = cleanStringForSparqlQuery(result.getSparql());
 
@@ -268,6 +269,7 @@ import java.util.List;
         bindings.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
         bindings.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createStringLiteral(answerSparql));
         bindings.add("confidence", ResourceFactory.createTypedLiteral(result.getConfidence()));
+        bindings.add("index", ResourceFactory.createTypedLiteral(index));
         bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
         // TODO: add result value with correct datatype
         // TODO: how does this handle a *list* of values? 

@@ -243,6 +243,7 @@ public class BirthDataQueryBuilder extends QanaryComponent {
 																												// confidence
 																												// is
 																												// expressed
+				bindings.add("index", ResourceFactory.createTypedLiteral(Integer.toString(i), XSDDatatype.XSDint));
 				bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
 				// get the template of the INSERT query

@@ -18,12 +18,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -35,7 +38,6 @@ import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerResult;
 import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerResult.QAnswerQueryCandidate;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
-import net.minidev.json.JSONObject;
 
 @Component
 /**
@@ -135,14 +137,31 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
         // STEP 1: get the required data from the Qanary triplestore (the global process
         // memory)
         QanaryQuestion<String> myQanaryQuestion = this.getQanaryQuestion(myQanaryMessage);
-        String questionString = myQanaryQuestion.getTextualRepresentation();
-        List<NamedEntity> retrievedNamedEntities = getNamedEntitiesOfQuestion(myQanaryQuestion,
-                myQanaryQuestion.getInGraph());
 
+        String questionString = "";
+        try {
+          questionString = myQanaryQuestion.getTextualRepresentation(lang);
+          logger.info("Using specific textual representation for language {}: {}", lang, questionString);
+        } catch (Exception e) {
+          logger.warn("Could not retrieve specific textual representation for language {}:\n{}", e.getMessage());
+        }
+        // only if no language-specific text could be found
+        if (questionString.length() == 0){
+            try {
+                questionString = myQanaryQuestion.getTextualRepresentation();
+                logger.info("Using default textual representation {}", questionString);
+            } catch (Exception e) {
+                logger.warn("Could not retrieve textual representation:\n{}", e.getMessage());
+                // stop processing of the question, as it will not work without a question text
+                return myQanaryMessage;
+            }
+        }
     
         // STEP 2: compute new information about the question
 
         // enriching of query, based on recognized resources
+        List<NamedEntity> retrievedNamedEntities = getNamedEntitiesOfQuestion(myQanaryQuestion,
+                myQanaryQuestion.getInGraph());
         String questionStringWithResources = computeQuestionStringWithReplacedResources(
                 questionString, retrievedNamedEntities, threshold);
         // fetching SPARQL query candidates from the QAnswer API
@@ -185,11 +204,13 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
                 .queryParam("user", "{user}") //
                 .encode().toUriString();
 
-        HttpEntity<JSONObject> response = myRestTemplate.getForEntity(urlTemplate, JSONObject.class, parameters);
-        logger.info("QAnswer JSON result for question '{}': {}", questionString,
-                response.getBody().getAsString("question"));
+        ResponseEntity<String> stringResponse = myRestTemplate.getForEntity(urlTemplate, String.class, parameters);
+        logger.info("QAnswer String result for question '{}': {}", questionString,
+                stringResponse.getBody());
+        
+        JsonObject jsonResponse = JsonParser.parseString(stringResponse.getBody()).getAsJsonObject();
 
-        return new QAnswerResult(response.getBody(), questionString, qanaryApiUri, lang, knowledgeBaseId, user);
+        return new QAnswerResult(jsonResponse, questionString, qanaryApiUri, lang, knowledgeBaseId, user);
     }
 
     /**
@@ -320,6 +341,7 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
             bindings.add("targetQuestion", ResourceFactory.createResource(questionUri.toASCIIString()));
             bindings.add("selectQueryThatShouldComputeTheAnswer", ResourceFactory.createStringLiteral(queryCandidate.getQueryString()));
             bindings.add("confidence", ResourceFactory.createTypedLiteral(queryCandidate.getScore()));
+            bindings.add("index", ResourceFactory.createTypedLiteral(queryCandidate.getIndex()));
             bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
             // get the template of the INSERT query
@@ -333,41 +355,21 @@ public class QAnswerQueryBuilderAndSparqlResultFetcher extends QanaryComponent {
     }
 
     public String getSparqlInsertQueryForImprovedQuestion(
-            URI graph, URI questionUri, QAnswerResult result) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed {
+            URI graph, URI questionUri, QAnswerResult result) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
 
+        logger.warn("get query for Improved Question");
         // the computed answer's SPARQL query needs to be cleaned
         String improvedQuestion = cleanStringForSparqlQuery(result.getQuestion());
 
-        String sparql = "" //
-                + "PREFIX qa: <http://www.wdaqua.eu/qa#> \n" //
-                + "PREFIX oa: <http://www.w3.org/ns/openannotation/core/> \n" //
-                + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \n" //
-                + "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" //
-                + "INSERT { \n" //
-                + "GRAPH ?graph { \n" //
-                // improved question
-                + "  ?annotationImprovedQuestion  a 	qa:AnnotationOfImprovedQuestion ; \n" //
-                + " 		oa:hasTarget    ?question ; \n" //
-                + " 		oa:hasBody      ?improvedQuestion ; \n" //
-                + " 		oa:annotatedBy  ?service ; \n" //
-                + " 		oa:annotatedAt  ?time ; \n" //
-                + " 		qa:score        ?score . \n" //
-                //
-                + "  ?improvedQuestion a    qa:ImprovedQuestion ; \n " //
-                + "         rdf:value 		?improvedQuestionText . \n " //
-                + "  }\n" // end: GRAPH
-                + "}\n" // end: insert
-                + "WHERE { \n" //
-                + "  BIND (IRI(str(RAND())) AS ?annotationImprovedQuestion) . \n" //
-                + "  BIND (IRI(str(RAND())) AS ?improvedQuestion) . \n" //
-                //
-                + "  BIND (now() AS ?time) . \n" //
-                + "  BIND (<" + graph.toASCIIString() + "> AS ?graph) . \n" //
-                + "  BIND (<" + questionUri.toASCIIString() + "> AS ?question) . \n" //
-                + "  BIND (<urn:qanary:" + this.applicationName + "> AS ?service ) . \n" //
-                + "  BIND (\"\"\"" + improvedQuestion + "\"\"\"^^xsd:string  AS ?improvedQuestionText ) . \n" //
-                //
-                + "} \n"; // end: where
+        // bind: graph, question, service, improvedQuestionText
+        QuerySolutionMap bindings = new QuerySolutionMap();
+        bindings.add("graph", ResourceFactory.createResource(graph.toASCIIString()));
+        bindings.add("question", ResourceFactory.createResource(questionUri.toASCIIString()));
+        bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
+        bindings.add("improvedQuestionText", ResourceFactory.createStringLiteral(improvedQuestion));
+
+        String sparql = QanaryTripleStoreConnector.insertAnnotationOfImprovedQuestion(bindings);
+        logger.warn("sparql: {}", sparql);
 
         return sparql;
     }
