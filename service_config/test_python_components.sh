@@ -7,10 +7,16 @@ failures=false
 components=$(comm -3 <(ls | grep -P "[qQ]anary-component.*Python-[a-zA-Z]+$") <(git config --file .gitmodules --get-regexp path | awk '{ print $2 }'))
 
 # create a super directory to hold virtual environments (for caching)
-if mkdir environments; then
-  echo "External environment directory created"
+
+if [ -d environments ]; then
+  echo "External evironment directory exists"
 else
-  echo "External environment directory could not be created"
+  if mkdir environments; then
+    echo "External environment directory created"
+  else
+    echo "External environment directory could not be created"
+    exit 4
+  fi
 fi
 
 printf "Found Python components:\n\n${components}\n\n"
