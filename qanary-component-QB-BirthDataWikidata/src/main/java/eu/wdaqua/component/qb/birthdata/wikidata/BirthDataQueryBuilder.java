@@ -142,21 +142,21 @@ public class BirthDataQueryBuilder extends QanaryComponent {
 		this.myQuestion = myQanaryQuestion.getTextualRepresentation(); // get the question as String
 
 		// STEP 1-3 have two options
-
+		QanaryMessage qanaryMessageNew = myQanaryMessage;
 		// first, try to use a named entity annotation because it is more precise if it
 		// works, then stop
-		myQanaryMessage = this.processForExistingNamedEntity(myQanaryMessage);
-		if (myQanaryMessage != null) {
+		qanaryMessageNew = this.processForExistingNamedEntity(myQanaryMessage);
+		if (qanaryMessageNew != null) {
 			logger.info("Found a named entity annotation. Processing finished.");
-			return myQanaryMessage;
+			return qanaryMessageNew;
 		}
 
-        // second, let's try to find a firstname and lastname, if that works we stop 
-        myQanaryMessage = this.processForFirstNameAndLastName(myQanaryMessage);
-        if( myQanaryMessage != null ) {
-        	logger.info("Found firstname and lastname. Processing finished.");
-        	return myQanaryMessage;
-        }
+		// second, let's try to find a firstname and lastname, if that works we stop
+		qanaryMessageNew = this.processForFirstNameAndLastName(myQanaryMessage);
+		if( qanaryMessageNew != null ) {
+			logger.info("Found firstname and lastname. Processing finished.");
+			return qanaryMessageNew;
+		}
 
 		logger.warn("Nothing could be done here.");
 		return myQanaryMessage;

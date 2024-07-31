@@ -1,15 +1,14 @@
 #!/bin/bash
-# clone Qanary pipeline
-git clone https://github.com/WDAqua/Qanary.git
 
-# subshell building the Qanary pipeline
-(
-cd Qanary/
-mvn --batch-mode clean install -Ddockerfile.skip=true -DskipTests -Dgpg.skip=true
-)
-
-# delete Qanary pipeline repository
-rm -rf Qanary/
+# ensure that submodules are not in maven reactor
+submodules=$(git config --file .gitmodules --get-regexp path | awk '{ print $2 }')
+for submodule in $submodules; 
+do
+  if grep -qi $submodule "pom.xml"; then
+    echo "Submodules should be tested and built externally. Please remove \"${submodule}\" from the maven reactor list."
+    exit 4
+  fi
+done
 
 # replace secrets
 if [ -z "$BABELFY_API_KEY" ]
