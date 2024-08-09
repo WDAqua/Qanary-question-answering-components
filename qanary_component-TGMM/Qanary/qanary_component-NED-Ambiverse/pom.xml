@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary_component-NED-Ambiverse</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -18,13 +18,12 @@
         <!-- Replace the name of the docker image to be generated -->
         <docker.image.name>my-qanary-component</docker.image.name>
     </properties>
-
-    <dependencies>
-    <dependency>
-    <groupId>com.google.code.gson</groupId>
-    <artifactId>gson</artifactId>
-    <version>2.11.0</version>
-</dependency>
+<dependencies>
+         <dependency>
+             <groupId>com.google.code.gson</groupId>
+             <artifactId>gson</artifactId>
+             <version>2.11.0</version>
+         </dependency>
         <dependency>
             <groupId>eu.wdaqua.qanary</groupId>
             <artifactId>qa.component</artifactId>
