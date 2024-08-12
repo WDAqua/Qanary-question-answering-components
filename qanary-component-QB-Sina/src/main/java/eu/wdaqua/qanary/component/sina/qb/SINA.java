@@ -109,7 +109,7 @@ public class SINA extends QanaryComponent {
         return myQanaryMessage;
     }
 
-    private StringBuilder fetchEntities(final QanaryQuestion<String> qanaryQuestion, final QanaryUtils qanaryUtils) throws SparqlQueryFailed, IOException {
+    private StringBuilder fetchEntities(final QanaryQuestion<String> qanaryQuestion, final QanaryUtils qanaryUtils) throws SparqlQueryFailed, IOException, URISyntaxException {
         QuerySolutionMap bindingsForGetEntities = new QuerySolutionMap();
         bindingsForGetEntities.add("graph", ResourceFactory.createResource(qanaryQuestion.getInGraph().toASCIIString()));
 
