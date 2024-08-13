@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.10
 
 COPY requirements.txt ./
 
@@ -7,6 +7,7 @@ RUN pip install -r requirements.txt; exit 0
 RUN pip install gunicorn
 
 COPY component component
+COPY utils utils
 COPY run.py boot.sh  ./
 
 RUN chmod +x boot.sh

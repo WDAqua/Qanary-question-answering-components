@@ -1,7 +1,7 @@
 from component.mt_helsinki_nlp import mt_helsinki_nlp_bp
 from flask import Flask
 
-version = "0.1.2"
+version = "0.2.0"
 
 # default config file (use -c parameter on command line specify a custom config file)
 configfile = "app.conf"

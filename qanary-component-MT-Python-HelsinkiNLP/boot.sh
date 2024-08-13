@@ -3,10 +3,11 @@
 
 export $(grep -v '^#' .env | xargs)
 
-echo Downloading the model
-python -c "from transformers.models.marian.modeling_marian import MarianMTModel; from transformers.models.marian.tokenization_marian import MarianTokenizer; supported_langs = ['ru', 'es', 'de', 'fr']; models = {lang: MarianMTModel.from_pretrained('Helsinki-NLP/opus-mt-{lang}-en'.format(lang=lang)) for lang in supported_langs}; tokenizers = {lang: MarianTokenizer.from_pretrained('Helsinki-NLP/opus-mt-{lang}-en'.format(lang=lang)) for lang in supported_langs}"
-echo Downloading the model finished
+echo Downloading the models
 
+python -c "from utils.model_utils import load_models_and_tokenizers; SUPPORTED_LANGS = { 'en': ['de', 'fr', 'ru', 'es'], 'de': ['en', 'fr', 'es'], 'fr': ['en', 'de', 'ru', 'es'], 'ru': ['en', 'fr', 'es'], 'es': ['en', 'de', 'fr', 'es'], }; load_models_and_tokenizers(SUPPORTED_LANGS); "
+
+echo Downloading the model finished
 
 echo The port number is: $SERVER_PORT
 echo The Qanary pipeline URL is: $SPRING_BOOT_ADMIN_URL

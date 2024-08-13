@@ -8,7 +8,7 @@ class TestComponent(TestCase):
 
     logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
-    questions = list([{"uri": "urn:test-uri", "text": "was ist ein Test?"}])
+    questions = list([{"uri": "urn:test-uri", "text": "Was ist die Hauptstadt von Deutschland?"}])
     endpoint = "urn:qanary#test-endpoint"
     in_graph = "urn:qanary#test-inGraph"
     out_graph = "urn:qanary#test-outGraph"
@@ -32,8 +32,6 @@ class TestComponent(TestCase):
     }
 
     def test_qanary_service(self):
-
-
         logging.info("port: %s" % (os.environ["SERVICE_PORT"]))
         assert os.environ["SERVICE_NAME_COMPONENT"] == "MT-Helsinki-NLP-Component"
 
@@ -77,3 +75,23 @@ class TestComponent(TestCase):
 
             # then the response is not empty
             assert response_json != None
+
+
+    def test_translate_input(self):
+        translations = [
+            {"text": "Was ist die Hauptstadt von Deutschland?",
+             "translation": "What is the capital of Germany?",
+             "source_lang": "de", "target_lang": "en"},
+            {"text": "What is the capital of Germany?",
+             "translation": "Quelle est la capitale de l'Allemagne?",
+             "source_lang": "en", "target_lang": "fr"},
+            {"text": "What is the capital of Germany?",
+             "translation": "Какая столица Германии?",
+             "source_lang": "en", "target_lang": "ru"},
+        ]
+
+        for translation in translations:
+            expected = translation["translation"]
+            actual = translate_input(translation["text"], translation["source_lang"], translation["target_lang"])
+            assert expected == actual
+
