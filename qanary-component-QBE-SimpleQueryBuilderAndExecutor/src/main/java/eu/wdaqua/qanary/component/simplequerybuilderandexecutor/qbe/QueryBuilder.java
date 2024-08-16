@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.net.URISyntaxException;
 
 @Component
 /**
@@ -280,7 +281,7 @@ public class QueryBuilder extends QanaryComponent {
      * @param myQanaryQuestion
      * @return
      */
-    private List<String> getClassesFromQanaryKB(QanaryUtils myQanaryUtils, QanaryQuestion<String> myQanaryQuestion) throws SparqlQueryFailed, IOException {
+    private List<String> getClassesFromQanaryKB(QanaryUtils myQanaryUtils, QanaryQuestion<String> myQanaryQuestion) throws SparqlQueryFailed, IOException, URISyntaxException {
         List<String> classes = new ArrayList<String>();
 
         QuerySolutionMap bindingsForSelect = new QuerySolutionMap();
@@ -308,7 +309,7 @@ public class QueryBuilder extends QanaryComponent {
      * @param myQanaryQuestion
      * @return
      */
-    private List<String> getPropertiesFromQanaryKB(QanaryUtils myQanaryUtils, QanaryQuestion<String> myQanaryQuestion) throws SparqlQueryFailed, IOException {
+    private List<String> getPropertiesFromQanaryKB(QanaryUtils myQanaryUtils, QanaryQuestion<String> myQanaryQuestion) throws SparqlQueryFailed, IOException, URISyntaxException {
         List<String> properties = new ArrayList<String>();
 
         QuerySolutionMap bindingsForSelect = new QuerySolutionMap();
@@ -335,7 +336,7 @@ public class QueryBuilder extends QanaryComponent {
      * @param myQanaryQuestion
      * @return
      */
-    private List<String> getEntitiesFromQanaryKB(QanaryUtils myQanaryUtils, QanaryQuestion<String> myQanaryQuestion) throws SparqlQueryFailed, IOException {
+    private List<String> getEntitiesFromQanaryKB(QanaryUtils myQanaryUtils, QanaryQuestion<String> myQanaryQuestion) throws SparqlQueryFailed, IOException, URISyntaxException {
         List<String> entities = new ArrayList<String>();
 
         QuerySolutionMap bindingsForSelect = new QuerySolutionMap();
