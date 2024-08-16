@@ -124,7 +124,7 @@ public class SparqlExecuter extends QanaryComponent {
         return endpoint;
     }
 
-    public String getResultSparqlQuery(QanaryUtils myQanaryUtils, QanaryQuestion myQanaryQuestion) throws SparqlQueryFailed, IOException{
+    public String getResultSparqlQuery(QanaryUtils myQanaryUtils, QanaryQuestion myQanaryQuestion) throws SparqlQueryFailed, IOException, URISyntaxException{
         ResultSet resultset = myQanaryUtils.getQanaryTripleStoreConnector().select(QanaryTripleStoreConnector.getLowestIndexAnnotationOfAnswerInGraph(myQanaryQuestion.getOutGraph()));
         String sparqlQuery = "";
         while (resultset.hasNext()) {

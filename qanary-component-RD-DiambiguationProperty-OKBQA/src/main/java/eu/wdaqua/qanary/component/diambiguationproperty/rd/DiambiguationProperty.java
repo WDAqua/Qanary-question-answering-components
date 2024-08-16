@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -130,7 +131,7 @@ public class DiambiguationProperty extends QanaryComponent {
      * component
      */
     @Override
-    public QanaryMessage process(QanaryMessage myQanaryMessage) throws SparqlQueryFailed, IOException {
+    public QanaryMessage process(QanaryMessage myQanaryMessage) throws SparqlQueryFailed, IOException, URISyntaxException {
         long startTime = System.currentTimeMillis();
         //org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
         logger.info("process: {}", myQanaryMessage);

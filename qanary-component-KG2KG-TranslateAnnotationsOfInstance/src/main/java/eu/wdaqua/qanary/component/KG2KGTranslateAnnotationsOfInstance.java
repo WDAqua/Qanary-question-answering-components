@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.net.URISyntaxException;
 
 @Component
 public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
@@ -89,7 +90,7 @@ public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
     /**
      * Fetching all annotations of type qa:AnnotationsOfInstance
      */
-    public ResultSet fetchAnnotations(String graphID, final QanaryUtils qanaryUtils) throws IOException, SparqlQueryFailed {
+    public ResultSet fetchAnnotations(String graphID, final QanaryUtils qanaryUtils) throws IOException, SparqlQueryFailed, URISyntaxException {
         String requestQuery = getRequestQuery(graphID);
         return qanaryUtils.getQanaryTripleStoreConnector().select(requestQuery);
     }

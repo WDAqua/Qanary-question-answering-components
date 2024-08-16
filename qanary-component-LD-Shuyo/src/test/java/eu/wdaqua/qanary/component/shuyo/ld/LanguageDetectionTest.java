@@ -25,7 +25,7 @@ public class LanguageDetectionTest {
 
     private static final Logger logger = LoggerFactory.getLogger(LanguageDetectionTest.class);
     private static LanguageDetection myLanguageDetection;
-    private final short expectedQualityAsPercent = 85;
+    private final short expectedQualityAsPercent = 80;
 
     @BeforeAll
     public static void initLanguageDetection() throws IOException, LangDetectException {

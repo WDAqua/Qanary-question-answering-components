@@ -84,7 +84,7 @@ class SparqlExecuterTest {
     }
 
     @Test
-    void testGetResultSparqlQuery() throws SparqlQueryFailed, IOException {
+    void testGetResultSparqlQuery() throws SparqlQueryFailed, IOException, URISyntaxException {
         // This test exists only to ensure that SparqlExecuter.getResultSparqlQuery() 
         // can handle the return type org.apache.jena.query.ResultSet.
         //
