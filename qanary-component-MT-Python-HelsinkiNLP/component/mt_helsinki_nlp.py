@@ -3,8 +3,8 @@ import logging
 from urllib.parse import urlparse
 import os
 from flask import Blueprint, jsonify, request
-from qanary_helpers.qanary_queries import get_text_question_in_graph, insert_into_triplestore, select_from_triplestore
-from qanary_helpers.language_queries import get_translated_texts_in_triplestore, get_texts_with_detected_language_in_triplestore, question_text_with_language
+from qanary_helpers.qanary_queries import get_text_question_in_graph, insert_into_triplestore
+from qanary_helpers.language_queries import get_translated_texts_in_triplestore, get_texts_with_detected_language_in_triplestore, question_text_with_language, create_annotation_of_question_language, create_annotation_of_question_translation
 from utils.model_utils import load_models_and_tokenizers
 # TODO: consider renaming to config utils -> generally think about configuration class
 from utils.lang_utils import translation_options
@@ -18,8 +18,7 @@ models, tokenizers = load_models_and_tokenizers(translation_options)
 
 
 def translate_input(text: str, source_lang: str, target_lang: str) -> str:
-    logging.info(f"{text} {source_lang} {target_lang}")
-    logging.info(translation_options)
+    logging.info(f"translating \"{text}\" from \"{source_lang}\" to \"{target_lang}\"")
     batch = tokenizers[source_lang][target_lang]([text], return_tensors="pt", padding=True)
     # Make sure that the tokenized text does not exceed the maximum
     # allowed size of 512
@@ -28,68 +27,9 @@ def translate_input(text: str, source_lang: str, target_lang: str) -> str:
     # Perform the translation and decode the output
     translation = models[source_lang][target_lang].generate(**batch)
     result = tokenizers[source_lang][target_lang].batch_decode(translation, skip_special_tokens=True)[0]
-    return result
-
-
-def create_annotation_of_question_translation(graph_uri: str, question_uri: str, translation: str, translation_language: str) -> str:
-    SPARQLqueryAnnotationOfQuestionTranslation = """
-        PREFIX qa: <http://www.wdaqua.eu/qa#>
-        PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
-        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-
-        INSERT {{
-        GRAPH <{uuid}> {{
-            ?a a qa:AnnotationOfQuestionTranslation ;
-                oa:hasTarget <{qanary_question_uri}> ;
-                oa:hasBody "{translation_result}"@{target_lang} ;
-                oa:annotatedBy <urn:qanary:{app_name}> ;
-                oa:annotatedAt ?time .
-
-            }}
-        }}
-        WHERE {{
-            BIND (IRI(str(RAND())) AS ?a) .
-            BIND (now() as ?time)
-        }}
-    """.format(
-        uuid=graph_uri,
-        qanary_question_uri=question_uri,
-        translation_result=translation,
-        target_lang=translation_language,
-        app_name=SERVICE_NAME_COMPONENT
-    )
-    logging.info(f'SPARQL: {SPARQLqueryAnnotationOfQuestionTranslation}')
-    return SPARQLqueryAnnotationOfQuestionTranslation
-
-
-def create_annotation_of_question_language(graph_uri: str, question_uri: str, language: str) -> str:
-    SPARQLqueryAnnotationOfQuestionLanguage = """
-        PREFIX qa: <http://www.wdaqua.eu/qa#>
-        PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
-        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-
-        INSERT {{
-        GRAPH <{uuid}> {{
-            ?b a qa:AnnotationOfQuestionLanguage ;
-                oa:hasTarget <{qanary_question_uri}> ;
-                oa:hasBody "{src_lang}"^^xsd:string ;
-                oa:annotatedBy <urn:qanary:{app_name}> ;
-                oa:annotatedAt ?time .
-            }}
-        }}
-        WHERE {{
-            BIND (IRI(str(RAND())) AS ?b) .
-            BIND (now() as ?time)
-        }}
-    """.format(
-        uuid=graph_uri,
-        qanary_question_uri=question_uri,
-        src_lang=language,
-        app_name=SERVICE_NAME_COMPONENT
-    )
-
-    logging.info(f'SPARQL: {SPARQLqueryAnnotationOfQuestionLanguage}')
-    return SPARQLqueryAnnotationOfQuestionLanguage
+    logging.info(f"result: \"{result}\"")
+    translation = result.replace("\"", "\\\"") #keep quotation marks that are part of the translation
+    return translation
 
 
 def find_source_texts_in_triplestore(triplestore_endpoint: str, graph_uri: str, lang: str) -> list[question_text_with_language]:
@@ -143,13 +83,13 @@ def qanary_service():
         # translate source texts into specified target languages
         for target_lang in translation_options[source_lang]:
             for source_text in source_texts:
-                result = translate_input(source_text.get_text(), source_lang, target_lang)
-                translation = result.replace("\"", "\\\"") #keep quotation marks that are part of the translation
+                translation = translate_input(source_text.get_text(), source_lang, target_lang)
                 SPARQLqueryAnnotationOfQuestionTranslation = create_annotation_of_question_translation(
                     graph_uri=triplestore_ingraph,
                     question_uri=source_text.get_uri(),
                     translation=translation,
-                    translation_language=target_lang
+                    translation_language=target_lang,
+                    app_name=SERVICE_NAME_COMPONENT
                 )
                 insert_into_triplestore(triplestore_endpoint, SPARQLqueryAnnotationOfQuestionTranslation)
 

@@ -49,6 +49,7 @@ def setup_translation_options() -> dict:
         for lang in translation_options.keys():
             translation_options[lang] = SUPPORTED_LANGS[lang] # use default supported languages
 
+    logging.info(translation_options)
     return translation_options
 
 
