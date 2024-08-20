@@ -1,53 +1,61 @@
 import os
 import logging
-#from decouple config 
 
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
-SOURCE_LANG_DEFAULT = os.getenv("SOURCE_LANGUAGE_DEFAULT")
-TARGET_LANG_DEFAULT = os.getenv("TARGET_LANGUAGE_DEFAULT")
+SOURCE_LANGUAGE = os.getenv("SOURCE_LANGUAGE")
+TARGET_LANGUAGE = os.getenv("TARGET_LANGUAGE")
 SUPPORTED_LANGS = {
 #   source: targets
     'en': ['de', 'fr', 'ru', 'es'],
     'de': ['en', 'fr', 'es'],
     'fr': ['en', 'de', 'ru', 'es'],
     'ru': ['en', 'fr', 'es'],
-    'es': ['en', 'de', 'fr', 'es'],
+    'es': ['en', 'de', 'fr'],
 }
 
 
 def setup_translation_options() -> dict:
+    """Create a dictionary of possible source and target languages, based on SUPPORTED_LANGS
+    and configured languages."""
 
     logging.info("SETTING UP TRANSLATION OPTIONS")
-    translation_options = {}
+    translation_options = dict() # init emtpy
 
-    if SOURCE_LANG_DEFAULT != None and len(SOURCE_LANG_DEFAULT.strip()) > 0:
-        if SOURCE_LANG_DEFAULT not in SUPPORTED_LANGS.keys():
-            raise ValueError(f"Default source language \"{SOURCE_LANG_DEFAULT}\" is not supported!")
-        elif TARGET_LANG_DEFAULT not in SUPPORTED_LANGS[SOURCE_LANG_DEFAULT]:
-            raise ValueError(f"Default target language \"{TARGET_LANG_DEFAULT}\" is not supported for default source language \"{SOURCE_LANG_DEFAULT}\"!")
-        else:
-            logging.info(f"Using specific SOURCE_LANGUAGE from configuration: {SOURCE_LANG_DEFAULT}")
-            translation_options[SOURCE_LANG_DEFAULT] = [] # init empty
+    # check if a source language is specified
+    if SOURCE_LANGUAGE != None and len(SOURCE_LANGUAGE.strip()) > 0:
+        # pre-select appropriate translation options from the list of supported source languages
+        try:
+            translation_options[SOURCE_LANGUAGE] = SUPPORTED_LANGS[SOURCE_LANGUAGE]
+        # this will fail for invalid keys!
+        except KeyError:
+            raise ValueError(f"The source language \"{SOURCE_LANGUAGE}\" is not supported!")
+    # if no source language is specified, use all source languages that are supported by the models
     else:
-        logging.info(f"No SOURCE_LANGUAGE specified. Using all supported source languages: {SUPPORTED_LANGS.keys()}")
-        translation_options.update({lang: [] for lang in SUPPORTED_LANGS.keys()}) # init empty 
+        translation_options = SUPPORTED_LANGS
 
-    if TARGET_LANG_DEFAULT != None and len(TARGET_LANG_DEFAULT.strip()) > 0:
-        logging.info(f"Using specific TARGET_LANGUAGE from configuration: {TARGET_LANG_DEFAULT}")
-        for lang in translation_options.keys():
-            if TARGET_LANG_DEFAULT in SUPPORTED_LANGS[lang]:
-                translation_options[lang] = [TARGET_LANG_DEFAULT]
+    # check if a target language is specified
+    if TARGET_LANGUAGE != None and len(TARGET_LANGUAGE.strip()) > 0:
+        discard_keys = list()
+        # remove instances where source == target
+        translation_options.pop(TARGET_LANGUAGE, None)
+        for source_lang in translation_options.keys():
+            if TARGET_LANGUAGE in translation_options[source_lang]:
+                translation_options[source_lang] = [TARGET_LANGUAGE]
             else:
-                logging.warning(f"Specific target language {TARGET_LANG_DEFAULT} is not supported for source language {lang}!. \
-                                This language pair will be ignored.")
-                translation_options.pop(lang) # remove unsupported language pair
-    else:
-        print_langs = {s_lang: SUPPORTED_LANGS[s_lang] for s_lang in translation_options.keys()}
-        logging.info(f"No TARGET_LANGUAGE specified. Using all supported target languages for determined source languages {print_langs}")
-        for lang in translation_options.keys():
-            translation_options[lang] = SUPPORTED_LANGS[lang] # use default supported languages
+                discard_keys.append(source_lang)
+        # cleanup keys
+        translation_options = {sl:tl for sl,tl in translation_options.items() if sl not in discard_keys}
+        # check for empty translation options, if all keys dropped
+        if len(translation_options.keys()) == 0:
+            raise ValueError("The target language \"{tl}\" is not supported for any configured source languages! \nValid language pairs (source: [targets]) are: \n{slk}!"
+                             .format(tl=TARGET_LANGUAGE, slk=SUPPORTED_LANGS))
+        # check if only some keys dropped
+        elif len(discard_keys) > 0:
+            logging.warning("Specific target language \"{tl}\" is not supported for these source languages: {dk}!. \nThese language pairs will be ignored."
+                            .format(tl=TARGET_LANGUAGE, dk=discard_keys))
+    # else do nothing, the lists are already complete
 
     logging.info(translation_options)
     return translation_options

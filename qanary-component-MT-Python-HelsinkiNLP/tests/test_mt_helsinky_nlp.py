@@ -38,16 +38,18 @@ class TestComponent(TestCase):
         "Content-Type": "application/json"
     }
 
-    @mock.patch.dict(os.environ, {'SOURCE_LANGUAGE_DEFAULT': 'de', 'TARGET_LANGUAGE_DEFAULT': 'en'})
+    @mock.patch.dict(os.environ, {'SOURCE_LANGUAGE': 'de', 'TARGET_LANGUAGE': 'en'})
     def test_qanary_service(self):
-        from component import app
+        import utils.lang_utils
+        importlib.reload(utils.lang_utils)
         import component.mt_helsinki_nlp
-        #importlib.reload(component.mt_helsinki_nlp)
+        importlib.reload(component.mt_helsinki_nlp)
+        from component import app
 
         logging.info("port: %s" % (os.environ["SERVICE_PORT"]))
         assert os.environ["SERVICE_NAME_COMPONENT"] == "MT-Helsinki-NLP-Component"
-        assert os.environ["SOURCE_LANGUAGE_DEFAULT"] == "de"
-        assert os.environ["TARGET_LANGUAGE_DEFAULT"] == "en"
+        assert os.environ["SOURCE_LANGUAGE"] == self.source_language
+        assert os.environ["TARGET_LANGUAGE"] == self.target_language
 
         with app.test_client() as client, \
                 patch('component.mt_helsinki_nlp.get_text_question_in_graph') as mocked_get_text_question_in_graph, \
@@ -65,7 +67,7 @@ class TestComponent(TestCase):
             # then the text question is retrieved from the triplestore
             mocked_get_text_question_in_graph.assert_called_with(triplestore_endpoint=self.endpoint, graph=self.in_graph)
 
-            mocked_find_source_texts_in_triplestore.assert_called_with(triplestore_endpoint=self.endpoint, graph_uri=self.in_graph, lang='de')
+            mocked_find_source_texts_in_triplestore.assert_called_with(triplestore_endpoint=self.endpoint, graph_uri=self.in_graph, lang=self.source_language)
             assert mocked_find_source_texts_in_triplestore.call_count == 1
 
             # get arguments of the (2) separate insert calls 
@@ -89,6 +91,7 @@ class TestComponent(TestCase):
             assert response_json != None
 
 
+    # test with all supported languages enabled
     def test_translate_input(self):
         import component.mt_helsinki_nlp
         from component.mt_helsinki_nlp import translate_input
@@ -111,4 +114,3 @@ class TestComponent(TestCase):
             expected = translation["translation"]
             actual = translate_input(translation["text"], translation["source_lang"], translation["target_lang"])
             assert expected == actual
-
