@@ -4,8 +4,8 @@ from flask import Blueprint, jsonify, request
 from qanary_helpers.qanary_queries import get_text_question_in_graph, insert_into_triplestore
 from qanary_helpers.language_queries import get_translated_texts_in_triplestore, get_texts_with_detected_language_in_triplestore, question_text_with_language, create_annotation_of_question_language, create_annotation_of_question_translation
 from utils.model_utils import load_models_and_tokenizers
-# TODO: consider renaming to config utils -> generally think about configuration class
 from utils.lang_utils import translation_options
+
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 mt_helsinki_nlp_bp = Blueprint('mt_helsinki_nlp_bp', __name__, template_folder='templates')
