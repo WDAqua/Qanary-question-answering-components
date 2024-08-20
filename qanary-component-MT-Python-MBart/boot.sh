@@ -2,8 +2,10 @@
 
 export $(grep -v '^#' .env | xargs)
 
-echo Downloading the model
-python -c 'from transformers import MBartForConditionalGeneration, MBart50TokenizerFast; model = MBartForConditionalGeneration.from_pretrained("facebook/mbart-large-50-many-to-many-mmt"); tokenizer = MBart50TokenizerFast.from_pretrained("facebook/mbart-large-50-many-to-many-mmt")'
+echo Downloading the models
+
+python -c "from utils.model_utils import load_models_and_tokenizers; load_models_and_tokenizers(); "
+
 echo Downloading the model finished
 
 echo SERVER_PORT: $SERVER_PORT

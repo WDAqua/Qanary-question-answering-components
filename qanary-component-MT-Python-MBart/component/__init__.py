@@ -1,7 +1,7 @@
 from component.mt_mbart_nlp import mt_mbart_nlp_bp
 from flask import Flask 
 
-version = "0.1.2"
+version = "0.2.0"
 
 # default config file
 configfile = "app.conf"
