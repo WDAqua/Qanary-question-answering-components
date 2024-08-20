@@ -1,7 +1,7 @@
 from component.mt_nllb import mt_nllb_bp
 from flask import Flask
 
-version = "0.1.3"
+version = "0.2.0"
 
 # default config file
 configfile = "app.conf"

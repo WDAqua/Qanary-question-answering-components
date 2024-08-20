@@ -1,29 +1,61 @@
-from langdetect import detect
 import logging
 import os
 from flask import Blueprint, jsonify, request
 from qanary_helpers.qanary_queries import get_text_question_in_graph, insert_into_triplestore
+from qanary_helpers.language_queries import get_translated_texts_in_triplestore, get_texts_with_detected_language_in_triplestore, question_text_with_language, create_annotation_of_question_translation
+from utils.model_utils import load_models_and_tokenizers
+from utils.lang_utils import translation_options, LANG_CODE_MAP
 
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
-
 mt_nllb_bp = Blueprint("mt_nllb_bp", __name__, template_folder="templates")
 
 SERVICE_NAME_COMPONENT = os.environ["SERVICE_NAME_COMPONENT"]
-SOURCE_LANG = os.environ["SOURCE_LANGUAGE"]
-TARGET_LANG = os.environ["TARGET_LANGUAGE"]
 
-model = AutoModelForSeq2SeqLM.from_pretrained("facebook/nllb-200-distilled-600M")
-tokenizer = AutoTokenizer.from_pretrained("facebook/nllb-200-distilled-600M")
-lang_code_map = {
-    'en': 'eng_Latn',
-    'de': 'deu_Latn',
-    'ru': 'rus_Cyrl',
-    'fr': 'fra_Latn',
-    'es': 'spa_Latn',
-    'pt': 'por_Latn'
-}
+model, tokenizer = load_models_and_tokenizers()
+
+
+def translate_input(text: str, source_lang: str, target_lang: str) -> str:
+    logging.info(f"translating \"{text}\" from \"{source_lang}\" to \"{target_lang}\"")
+    tokenizer.src_lang = LANG_CODE_MAP[source_lang]
+    logging.info(f"source language mapped code: {tokenizer.src_lang}")
+    batch = tokenizer(text, return_tensors="pt")
+
+    # Make sure that the tokenized text does not exceed the maximum
+    # allowed size of 512
+    batch["input_ids"] = batch["input_ids"][:, :512]
+    batch["attention_mask"] = batch["attention_mask"][:, :512]
+
+    # Perform the translation and decode the output
+    generated_tokens = model.generate(
+        **batch,
+        forced_bos_token_id=tokenizer.convert_tokens_to_ids(LANG_CODE_MAP[target_lang]))
+    result = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)[0]
+    translation = result.replace("\"", "\\\"") #keep quotation marks that are part of the translation
+    logging.info(f"result: \"{translation}\"")
+    return translation
+
+
+def find_source_texts_in_triplestore(triplestore_endpoint: str, graph_uri: str, lang: str) -> list[question_text_with_language]:
+    source_texts = []
+
+    # check if supported languages have been determined already (LD)
+    # (use filters)
+    # if so, use the target uris to find the question text to translate
+    ld_source_texts = get_texts_with_detected_language_in_triplestore(triplestore_endpoint, graph_uri, lang)
+    source_texts.extend(ld_source_texts)
+
+    # check if there are translations into the relevant language (MT)
+    # (use filters)
+    # if so, use the translation texts
+    mt_source_texts = get_translated_texts_in_triplestore(triplestore_endpoint, graph_uri, lang)
+    source_texts.extend(mt_source_texts)
+
+    # TODO: what if nothing found? 
+    if len(source_texts) == 0:
+        logging.warning(f"No source texts with language {lang} could be found In the triplestore!")
+
+    return source_texts
 
 
 @mt_nllb_bp.route("/annotatequestion", methods=["POST"])
@@ -36,94 +68,35 @@ def qanary_service():
     logging.info("endpoint: %s, inGraph: %s, outGraph: %s" % \
                  (triplestore_endpoint, triplestore_ingraph, triplestore_outgraph))
 
-    text = get_text_question_in_graph(triplestore_endpoint=triplestore_endpoint,
-                                      graph=triplestore_ingraph)[0]["text"]
-    question_uri = get_text_question_in_graph(triplestore_endpoint=triplestore_endpoint,
-                                              graph=triplestore_ingraph)[0]["uri"]
-    logging.info(f"Question text: {text}")
-
-    if SOURCE_LANG != None and len(SOURCE_LANG.strip()) > 0:
-        lang = SOURCE_LANG
-        logging.info("Using custom SOURCE_LANGUAGE")
-    else:
-        lang = detect(text)
-        logging.info("No SOURCE_LANGUAGE specified, using langdetect!")
-    logging.info(f"source language: {lang}")
+    text_question_in_graph = get_text_question_in_graph(triplestore_endpoint=triplestore_endpoint, graph=triplestore_ingraph)
+    question_text = text_question_in_graph[0]['text']
+    logging.info(f'Original question text: {question_text}')
 
 
-    ## MAIN FUNCTIONALITY
-    tokenizer.src_lang = lang_code_map[lang]
-    logging.info(f"source language mapped code: {tokenizer.src_lang}")
-    batch = tokenizer(text, return_tensors="pt")
+    # Collect texts to be translated (group by source language)
 
-    # Make sure that the tokenized text does not exceed the maximum
-    # allowed size of 512
-    batch["input_ids"] = batch["input_ids"][:, :512]
-    batch["attention_mask"] = batch["attention_mask"][:, :512]
+    for source_lang in translation_options.keys():
+        source_texts = find_source_texts_in_triplestore(
+            triplestore_endpoint=triplestore_endpoint,
+            graph_uri=triplestore_ingraph,
+            lang=source_lang
+        )
 
-    # Perform the translation and decode the output
-    generated_tokens = model.generate(
-        **batch,
-        forced_bos_token_id=tokenizer.lang_code_to_id[lang_code_map[TARGET_LANG]])
-    result = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)[0]
-
-
-    # building SPARQL query TODO: verify this annotation AnnotationOfQuestionTranslation ??
-    SPARQLqueryAnnotationOfQuestionTranslation = """
-        PREFIX qa: <http://www.wdaqua.eu/qa#>
-        PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
-        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-
-        INSERT {{
-        GRAPH <{uuid}> {{
-            ?a a qa:AnnotationOfQuestionTranslation ;
-                oa:hasTarget <{qanary_question_uri}> ;
-                oa:hasBody "{translation_result}"@{target_lang} ;
-                oa:annotatedBy <urn:qanary:{app_name}> ;
-                oa:annotatedAt ?time .
-
-            }}
-        }}
-        WHERE {{
-            BIND (IRI(str(RAND())) AS ?a) .
-            BIND (now() as ?time)
-        }}""".format(
-        uuid=triplestore_ingraph,
-        qanary_question_uri=question_uri,
-        translation_result=result.replace("\"", "\\\""), #keep quotation marks that are part of the translation
-        target_lang=TARGET_LANG,
-        app_name=SERVICE_NAME_COMPONENT
-    )
-
-    SPARQLqueryAnnotationOfQuestionLanguage = """
-        PREFIX qa: <http://www.wdaqua.eu/qa#>
-        PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
-        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-
-        INSERT {{
-        GRAPH <{uuid}> {{
-            ?b a qa:AnnotationOfQuestionLanguage ;
-                oa:hasTarget <{qanary_question_uri}> ;
-                oa:hasBody "{src_lang}"^^xsd:string ;
-                oa:annotatedBy <urn:qanary:{app_name}> ;
-                oa:annotatedAt ?time .
-            }}
-        }}
-        WHERE {{
-            BIND (IRI(str(RAND())) AS ?b) .
-            BIND (now() as ?time)
-        }}""".format(
-        uuid=triplestore_ingraph,
-        qanary_question_uri=question_uri,
-        src_lang=lang,
-        app_name=SERVICE_NAME_COMPONENT
-    )
-
-    logging.info(f'SPARQL: {SPARQLqueryAnnotationOfQuestionTranslation}')
-    logging.info(f'SPARQL: {SPARQLqueryAnnotationOfQuestionLanguage}')
-    # inserting new data to the triplestore
-    insert_into_triplestore(triplestore_endpoint, SPARQLqueryAnnotationOfQuestionTranslation)
-    insert_into_triplestore(triplestore_endpoint, SPARQLqueryAnnotationOfQuestionLanguage)
+        # translate source texts into specified target languages
+        for target_lang in translation_options[source_lang]:
+            for source_text in source_texts:
+                translation = translate_input(source_text.get_text(), source_lang, target_lang)
+                if len(translation.strip()) > 0:
+                    SPARQLqueryAnnotationOfQuestionTranslation = create_annotation_of_question_translation(
+                        graph_uri=triplestore_ingraph,
+                        question_uri=source_text.get_uri(),
+                        translation=translation,
+                        translation_language=target_lang,
+                        app_name=SERVICE_NAME_COMPONENT
+                    )
+                    insert_into_triplestore(triplestore_endpoint, SPARQLqueryAnnotationOfQuestionTranslation)
+                else:
+                    logging.error(f"result is empty string!")
 
     return jsonify(request.get_json())
 

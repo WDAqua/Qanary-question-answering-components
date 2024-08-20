@@ -2,8 +2,10 @@
 
 export $(grep -v '^#' .env | xargs)
 
-echo Downloading the model
-python -c 'from transformers import AutoModelForSeq2SeqLM, AutoTokenizer; model = AutoModelForSeq2SeqLM.from_pretrained("facebook/nllb-200-distilled-600M") ; tokenizer = AutoTokenizer.from_pretrained("facebook/nllb-200-distilled-600M")'
+echo Downloading the models
+
+python -c "from utils.model_utils import load_models_and_tokenizers; load_models_and_tokenizers(); "
+
 echo Downloading the model finished
 
 echo The port number is: $SERVER_PORT
