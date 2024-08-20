@@ -1,6 +1,4 @@
-from collections import UserList
 import logging
-from urllib.parse import urlparse
 import os
 from flask import Blueprint, jsonify, request
 from qanary_helpers.qanary_queries import get_text_question_in_graph, insert_into_triplestore
@@ -94,6 +92,26 @@ def qanary_service():
                 insert_into_triplestore(triplestore_endpoint, SPARQLqueryAnnotationOfQuestionTranslation)
 
     return jsonify(request.get_json())
+
+
+@mt_helsinki_nlp_bp.route("/translate_to_one_language", methods=['GET'])
+def translate_to_one_language(question: str, source_language: str, target_language: str):
+    if (source_language in translation_options.keys()) and (target_language in translation_options.get(source_language, [])):
+        translation = translate_input(question, source_language, target_language)
+        return jsonify(translation)
+    else:
+        raise RuntimeError("Unsupported source and/or target language! Valid options: {to}".format(to=translation_options))
+
+
+@mt_helsinki_nlp_bp.route("/translate_to_all_languages", methods=['GET'])
+def translate_to_all_languages(question: str, source_language: str):
+    if source_language in translation_options.keys():
+        translations = dict()
+        for target_language in translation_options[source_language]:
+            translations[target_language] = translate_input(question, source_language, target_language)
+        return jsonify(translations)
+    else:
+        raise RuntimeError("Unsupported source language! Valid options: {to}".format(to=translation_options))
 
 
 @mt_helsinki_nlp_bp.route("/", methods=['GET'])
