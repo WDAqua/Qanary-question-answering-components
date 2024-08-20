@@ -3,7 +3,7 @@ from component.mt_libretranslate import check_connection
 from component.mt_libretranslate import get_languages
 from flask import Flask
 
-version = "0.1.2"
+version = "0.2.0"
 
 # default config file
 configfile = "app.conf"
