@@ -74,7 +74,7 @@ def find_source_texts_in_triplestore(triplestore_endpoint: str, graph_uri: str, 
     return source_texts
 
 
-@router.post("/annotatequestion", methods=["POST"])
+@router.post("/annotatequestion")
 async def qanary_service(request: Request):
     """the POST endpoint required for a Qanary service"""
 
