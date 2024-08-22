@@ -1,5 +1,7 @@
 from component.mt_nllb import mt_nllb_bp
-from flask import Flask
+from fastapi import FastAPI
+from fastapi.responses import RedirectResponse, Response, JSONResponse
+from component import mt_nllb
 
 version = "0.2.0"
 
@@ -8,19 +10,34 @@ configfile = "app.conf"
 
 # service status information
 healthendpoint = "/health"
-
 aboutendpoint = "/about"
+translateendpoint = "/translate"
+# TODO: add languages endpoint?
 
 # init Flask app and add externalized service information
-app = Flask(__name__)
-app.register_blueprint(mt_nllb_bp)
+app = FastAPI(docs_url="/swagger-ui.html")
+app.include_router(mt_nllb.router)
 
-@app.route(healthendpoint, methods=["GET"])
+
+@app.get("/")
+async def main():
+    return RedirectResponse("/about")
+
+
+@app.get(healthendpoint)
 def health():
     """required health endpoint for callback of Spring Boot Admin server"""
-    return "alive"
+    return Response("alive", media_type="text/plain")
 
-@app.route(aboutendpoint, methods=["GET"])
+@app.get(aboutendpoint)
 def about():
     """required about endpoint for callback of Srping Boot Admin server"""
-    return "about" # TODO: replace this with a service description from configuration
+    return Response("Translates questions into English", media_type="text/plain")
+
+@app.get(translateendpoint+"_to_one", description="", tags=["Translate"])
+def translate_to_one(text: str, source_lang: str, target_lang: str):
+    return JSONResponse(translate_to_one(text, source_lang, target_lang))
+
+@app.get(translateendpoint+"_to_all", description="", tags=["Translate"])
+def translate_to_all(text: str, source_lang: str):
+    return JSONResponse(translate_to_all(text, source_lang))

@@ -1,14 +1,15 @@
 import logging
 import os
-from flask import Blueprint, jsonify, request
 from qanary_helpers.qanary_queries import get_text_question_in_graph, insert_into_triplestore
 from qanary_helpers.language_queries import get_translated_texts_in_triplestore, get_texts_with_detected_language_in_triplestore, question_text_with_language, create_annotation_of_question_translation
 from utils.model_utils import load_models_and_tokenizers
 from utils.lang_utils import translation_options, LANG_CODE_MAP
+from fastapi import APIRouter, Request
+from fastapi.responses import JSONResponse
 
 
 logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
-mt_nllb_bp = Blueprint("mt_nllb_bp", __name__, template_folder="templates")
+router = APIRouter()
 
 SERVICE_NAME_COMPONENT = os.environ["SERVICE_NAME_COMPONENT"]
 
@@ -36,6 +37,21 @@ def translate_input(text: str, source_lang: str, target_lang: str) -> str:
     return translation
 
 
+def translate_to_one(text: str, source_lang: str, target_lang: str):
+    translation = translate_input(text, source_lang, target_lang)
+    return {target_lang: translation}
+
+
+def translate_to_all(text: str, source_lang: str):
+    translations = list()
+    for target_lang in translation_options[source_lang]:
+        translation = translate_input(text, source_lang, target_lang)
+        translations.append({
+            target_lang: translation
+        })
+    return translations
+
+
 def find_source_texts_in_triplestore(triplestore_endpoint: str, graph_uri: str, lang: str) -> list[question_text_with_language]:
     source_texts = []
 
@@ -58,13 +74,15 @@ def find_source_texts_in_triplestore(triplestore_endpoint: str, graph_uri: str, 
     return source_texts
 
 
-@mt_nllb_bp.route("/annotatequestion", methods=["POST"])
-def qanary_service():
+@router.post("/annotatequestion", methods=["POST"])
+async def qanary_service(request: Request):
     """the POST endpoint required for a Qanary service"""
 
-    triplestore_endpoint = request.json["values"]["urn:qanary#endpoint"]
-    triplestore_ingraph = request.json["values"]["urn:qanary#inGraph"]
-    triplestore_outgraph = request.json["values"]["urn:qanary#outGraph"]
+    request_json = await request.json()
+
+    triplestore_endpoint = request_json["values"]["urn:qanary#endpoint"]
+    triplestore_ingraph = request_json["values"]["urn:qanary#inGraph"]
+    triplestore_outgraph = request_json["values"]["urn:qanary#outGraph"]
     logging.info("endpoint: %s, inGraph: %s, outGraph: %s" % \
                  (triplestore_endpoint, triplestore_ingraph, triplestore_outgraph))
 
@@ -98,12 +116,4 @@ def qanary_service():
                 else:
                     logging.error(f"result is empty string!")
 
-    return jsonify(request.get_json())
-
-
-@mt_nllb_bp.route("/", methods=["GET"])
-def index():
-    """examplary GET endpoint"""
-
-    logging.info("host_url: %s" % (request.host_url))
-    return "Python MT NLLB Qanary component"
+    return JSONResponse(request_json)
