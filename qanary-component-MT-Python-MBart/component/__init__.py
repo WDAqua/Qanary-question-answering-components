@@ -1,5 +1,4 @@
 from component import mt_mbart
-from flask import Flask
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse, Response, JSONResponse
 

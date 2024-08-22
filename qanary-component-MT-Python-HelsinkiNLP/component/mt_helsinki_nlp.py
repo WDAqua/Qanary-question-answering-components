@@ -32,18 +32,24 @@ def translate_input(text: str, source_lang: str, target_lang: str) -> str:
 
 
 def translate_to_one(text: str, source_lang: str, target_lang: str):
-    translation = translate_input(text, source_lang, target_lang)
-    return {target_lang: translation}
+    if (source_lang in translation_options.keys()) and (target_lang in translation_options.get(source_lang, [])):
+        translation = translate_input(text, source_lang, target_lang)
+        return {target_lang: translation}
+    else:
+        raise RuntimeError("Unsupported source and/or target language! Valid options: {to}".format(to=translation_options))
 
 
 def translate_to_all(text: str, source_lang: str):
-    translations = list()
-    for target_lang in translation_options[source_lang]:
-        translation = translate_input(text, source_lang, target_lang)
-        translations.append({
-            target_lang: translation
-        })
-    return translations
+    if source_lang in translation_options.keys():
+        translations = list()
+        for target_lang in translation_options[source_lang]:
+            translation = translate_input(text, source_lang, target_lang)
+            translations.append({
+                target_lang: translation
+            })
+        return translations
+    else:
+        raise RuntimeError("Unsupported source language! Valid options: {to}".format(to=translation_options))
 
 
 def find_source_texts_in_triplestore(triplestore_endpoint: str, graph_uri: str, lang: str) -> list[question_text_with_language]:
@@ -109,24 +115,3 @@ async def qanary_service(request: Request):
                 insert_into_triplestore(triplestore_endpoint, SPARQLqueryAnnotationOfQuestionTranslation)
 
     return JSONResponse(request_json)
-
-
-def translate_to_one(text: str, source_lang: str, target_lang: str):
-    if (source_lang in translation_options.keys()) and (target_lang in translation_options.get(source_lang, [])):
-        translation = translate_input(text, source_lang, target_lang)
-        return {target_lang: translation}
-    else:
-        raise RuntimeError("Unsupported source and/or target language! Valid options: {to}".format(to=translation_options))
-
-
-def translate_to_all(text: str, source_lang: str):
-    if source_lang in translation_options.keys():
-        translations = list()
-        for target_lang in translation_options[source_lang]:
-            translation = translate_input(text, source_lang, target_lang)
-            translations.append({
-                target_lang: translation
-            })
-        return translations
-    else:
-        raise RuntimeError("Unsupported source language! Valid options: {to}".format(to=translation_options))
