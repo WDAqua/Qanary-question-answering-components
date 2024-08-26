@@ -1,0 +1,108 @@
+version: '3'
+services:
+
+  component-en-de:
+    # for building from source
+    image: qanary-component-mt-python-nllb-en-de:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SOURCE_LANGUAGE=en
+        - TARGET_LANGUAGE=de
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME_COMPONENT=MT-NLLB-en-de
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface/
+    network_mode: host
+
+  component-en-ru:
+    # for building from source
+    image: qanary-component-mt-python-nllb-en-ru:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SOURCE_LANGUAGE=en
+        - TARGET_LANGUAGE=ru
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME_COMPONENT=MT-NLLB-en-ru
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface/
+    network_mode: host
+
+
+  component-en-es:
+    # for building from source
+    image: qanary-component-mt-python-nllb-en-es:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SOURCE_LANGUAGE=en
+        - TARGET_LANGUAGE=es
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME_COMPONENT=MT-NLLB-en-es
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface/
+    network_mode: host
+
+
+  component-de-en:
+    # for building from source
+    image: qanary-component-mt-python-nllb-de-en:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SOURCE_LANGUAGE=de
+        - TARGET_LANGUAGE=en
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME_COMPONENT=MT-NLLB-de-en
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface/
+    network_mode: host
+
+
+  component-ru-en:
+    # for building from source
+    image: qanary-component-mt-python-nllb-ru-en:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SOURCE_LANGUAGE=ru
+        - TARGET_LANGUAGE=en
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME_COMPONENT=MT-NLLB-ru-en
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface/
+    network_mode: host
+
+
+  component-es-en:
+    # for building from source
+    image: qanary-component-mt-python-nllb-es-en:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SOURCE_LANGUAGE=es
+        - TARGET_LANGUAGE=en
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME_COMPONENT=MT-NLLB-es-en
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface/
+    network_mode: host

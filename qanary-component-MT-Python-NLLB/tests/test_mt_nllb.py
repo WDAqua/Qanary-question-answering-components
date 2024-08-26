@@ -1,9 +1,11 @@
 import logging
+from component import app
+from fastapi.testclient import TestClient
 from unittest.mock import patch
 from unittest import mock
 import re
 from unittest import TestCase
-from qanary_helpers.language_queries import question_text_with_language
+from qanary_helpers.language_queries import QuestionTextWithLanguage
 import os
 import importlib
 
@@ -21,7 +23,7 @@ class TestComponent(TestCase):
     target_language = "en"
 
     source_texts = [
-        question_text_with_language("uri", "Was ist die Hauptstadt von Deutschland?", "de")
+        QuestionTextWithLanguage("uri", "Was ist die Hauptstadt von Deutschland?", "de")
     ]
 
     request_data = '''{
@@ -39,6 +41,7 @@ class TestComponent(TestCase):
         "Content-Type": "application/json"
     }
 
+    client = TestClient(app)
 
     @mock.patch.dict(os.environ, {'SOURCE_LANGUAGE': 'de', 'TARGET_LANGUAGE': 'en'})
     def test_qanary_service(self):
@@ -48,15 +51,14 @@ class TestComponent(TestCase):
         importlib.reload(component.mt_nllb)
         from component import app
 
-        logging.info("port: %s" % (os.environ["SERVICE_PORT"]))
+        logging.info("port: %s" % (os.environ["SERVER_PORT"]))
         assert os.environ["SERVICE_NAME_COMPONENT"] == "MT-NLLB-Component"
         assert os.environ["SOURCE_LANGUAGE"] == self.source_language
         assert os.environ["TARGET_LANGUAGE"] == self.target_language
 
-        with app.test_client() as client, \
-                patch('component.mt_nllb.get_text_question_in_graph') as mocked_get_text_question_in_graph, \
-                patch('component.mt_nllb.find_source_texts_in_triplestore') as mocked_find_source_texts_in_triplestore, \
-                patch('component.mt_nllb.insert_into_triplestore') as mocked_insert_into_triplestore:
+        with patch('component.mt_nllb.get_text_question_in_graph') as mocked_get_text_question_in_graph, \
+             patch('component.mt_nllb.find_source_texts_in_triplestore') as mocked_find_source_texts_in_triplestore, \
+             patch('component.mt_nllb.insert_into_triplestore') as mocked_insert_into_triplestore:
 
             # given a non-english question is present in the current graph
             mocked_get_text_question_in_graph.return_value = self.questions
@@ -64,7 +66,7 @@ class TestComponent(TestCase):
             mocked_insert_into_triplestore.return_value = None
 
             # when a call to /annotatequestion is made
-            response_json = client.post("/annotatequestion", headers = self.headers, data = self.request_data)
+            response_json = self.client.post("/annotatequestion", headers = self.headers, data = self.request_data)
 
             # then the text question is retrieved from the triplestore
             mocked_get_text_question_in_graph.assert_called_with(triplestore_endpoint=self.endpoint, graph=self.in_graph)
