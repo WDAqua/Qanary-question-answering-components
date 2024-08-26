@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 export $(grep -v "^#" < .env)
 
 # check required parameters
@@ -12,7 +12,6 @@ declare -a required_vars=(
 "SERVICE_DESCRIPTION_COMPONENT"
 "TRANSLATE_ENDPOINT"
 "LANGUAGES_ENDPOINT"
-# TODO: other?
 )
 
 for param in ${required_vars[@]};

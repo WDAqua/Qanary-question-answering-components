@@ -3,11 +3,19 @@ FROM python:3.10
 COPY requirements.txt ./
 
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt; exit 0
-RUN pip install gunicorn
+RUN pip install -r requirements.txt
+RUN pip install --index-url https://test.pypi.org/simple/ qanary-helpers==0.3.2
 
 COPY component component
-COPY run.py boot.sh ./
+COPY utils utils
+COPY run.py boot.sh  ./
+
+# to allow preconfigured images
+ARG SOURCE_LANGUAGE
+ARG TARGET_LANGUAGE
+
+ENV SOURCE_LANGUAGE=$SOURCE_LANGUAGE
+ENV TARGET_LANGUAGE=$TARGET_LANGUAGE
 
 RUN chmod +x boot.sh
 

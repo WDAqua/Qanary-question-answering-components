@@ -1,10 +1,12 @@
 import logging
+from component import app
+from fastapi.testclient import TestClient
 import pytest
 from unittest.mock import patch
 from unittest import mock
 import re
 from unittest import TestCase
-from qanary_helpers.language_queries import question_text_with_language
+from qanary_helpers.language_queries import QuestionTextWithLanguage
 import os
 import importlib
 
@@ -28,7 +30,7 @@ class TestComponent(TestCase):
     test_translation_placeholder = "test_translation"
 
     source_texts = [
-        question_text_with_language("uri", "Was ist die Hauptstadt von Deutschland?", "de")
+        QuestionTextWithLanguage("uri", "Was ist die Hauptstadt von Deutschland?", "de")
     ]
 
     request_data = '''{
@@ -46,6 +48,7 @@ class TestComponent(TestCase):
         "Content-Type": "application/json"
     }
 
+    client = TestClient(app)
 
     @pytest.mark.skipif(not LIVE_TESTS_ENABLED, reason="Live tests using a LibreTranslate endpoint are disabled.")
     @mock.patch.dict(os.environ, {'SOURCE_LANGUAGE': 'de', 'TARGET_LANGUAGE': 'en'})
@@ -56,10 +59,9 @@ class TestComponent(TestCase):
         importlib.reload(component.mt_libretranslate)
         from component import app
 
-        with app.test_client() as client, \
-                patch('component.mt_libretranslate.get_text_question_in_graph') as mocked_get_text_question_in_graph, \
-                patch('component.mt_libretranslate.find_source_texts_in_triplestore') as mocked_find_source_texts_in_triplestore, \
-                patch('component.mt_libretranslate.insert_into_triplestore') as mocked_insert_into_triplestore:
+        with patch('component.mt_libretranslate.get_text_question_in_graph') as mocked_get_text_question_in_graph, \
+             patch('component.mt_libretranslate.find_source_texts_in_triplestore') as mocked_find_source_texts_in_triplestore, \
+             patch('component.mt_libretranslate.insert_into_triplestore') as mocked_insert_into_triplestore:
 
             # given a non-english question is present in the current graph
             mocked_get_text_question_in_graph.return_value = self.questions
@@ -67,7 +69,7 @@ class TestComponent(TestCase):
             mocked_insert_into_triplestore.return_value = None
 
             # when a call to /annotatequestion is made
-            response_json = client.post("/annotatequestion", headers = self.headers, data = self.request_data)
+            response_json = self.client.post("/annotatequestion", headers = self.headers, data = self.request_data)
 
             # then the text question is retrieved from the triplestore
             mocked_get_text_question_in_graph.assert_called_with(triplestore_endpoint=self.endpoint, graph=self.in_graph)
@@ -104,11 +106,10 @@ class TestComponent(TestCase):
         importlib.reload(component.mt_libretranslate)
         from component import app
 
-        with app.test_client() as client, \
-                patch('component.mt_libretranslate.translate_input') as mocked_translate_input, \
-                patch('component.mt_libretranslate.get_text_question_in_graph') as mocked_get_text_question_in_graph, \
-                patch('component.mt_libretranslate.find_source_texts_in_triplestore') as mocked_find_source_texts_in_triplestore, \
-                patch('component.mt_libretranslate.insert_into_triplestore') as mocked_insert_into_triplestore:
+        with patch('component.mt_libretranslate.translate_input') as mocked_translate_input, \
+             patch('component.mt_libretranslate.get_text_question_in_graph') as mocked_get_text_question_in_graph, \
+             patch('component.mt_libretranslate.find_source_texts_in_triplestore') as mocked_find_source_texts_in_triplestore, \
+             patch('component.mt_libretranslate.insert_into_triplestore') as mocked_insert_into_triplestore:
 
             # given a non-english question is present in the current graph
             mocked_get_text_question_in_graph.return_value = self.questions
@@ -117,7 +118,7 @@ class TestComponent(TestCase):
             mocked_translate_input.return_value = self.test_translation_placeholder
 
             # when a call to /annotatequestion is made
-            response_json = client.post("/annotatequestion", headers = self.headers, data = self.request_data)
+            response_json = self.client.post("/annotatequestion", headers = self.headers, data = self.request_data)
 
             # then the text question is retrieved from the triplestore
             mocked_get_text_question_in_graph.assert_called_with(triplestore_endpoint=self.endpoint, graph=self.in_graph)
