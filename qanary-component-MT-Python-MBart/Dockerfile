@@ -4,7 +4,6 @@ COPY requirements.txt ./
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
-RUN pip install --index-url https://test.pypi.org/simple/ qanary-helpers==0.3.2
 
 COPY component component
 COPY utils utils
