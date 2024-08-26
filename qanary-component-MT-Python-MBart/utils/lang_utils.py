@@ -21,14 +21,12 @@ LANG_CODE_MAP = {
     "de": "de_DE",
     "ru": "ru_RU",
     "fr": "fr_XX",
-    "es": "ex_XX",
-    "pt": "pr_XX"
+    "es": "es_XX",
+    "pt": "pt_XX"
 }
 
-
 def setup_translation_options() -> dict:
-    """Create a dictionary of possible source and target languages, based on SUPPORTED_LANGS
-    and configured languages."""
+    """Creates a dictionary of possible source and target languages, based on SUPPORTED_LANGS and configured languages."""
 
     logging.info("SETTING UP TRANSLATION OPTIONS")
     translation_options = dict() # init emtpy
