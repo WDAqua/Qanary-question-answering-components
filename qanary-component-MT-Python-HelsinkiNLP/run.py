@@ -4,9 +4,12 @@ from datetime import datetime
 from qanary_helpers.registration import Registration
 from qanary_helpers.registrator import Registrator
 
-from component import app, healthendpoint, aboutendpoint
+from component import app, HEALTHENDPOINT, ABOUTENDPOINT
 
-logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
+logging.basicConfig(level=logging.ERROR)
+# TODO: get logger from module
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.WARNING)
 
 SPRING_BOOT_ADMIN_URL = os.getenv('SPRING_BOOT_ADMIN_URL')
 SPRING_BOOT_ADMIN_USERNAME = os.getenv('SPRING_BOOT_ADMIN_USERNAME')
@@ -21,7 +24,7 @@ URL_COMPONENT = f"{SERVICE_HOST}:{SERVICE_PORT}"
 metadata = {
     "start": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     "description": SERVICE_DESCRIPTION_COMPONENT,
-    "about": f"{SERVICE_HOST}:{SERVICE_PORT}{aboutendpoint}",
+    "about": f"{SERVICE_HOST}:{SERVICE_PORT}{ABOUTENDPOINT}",
     "written in": "Python"
 }
 
@@ -29,7 +32,7 @@ metadata = {
 registration = Registration(
     name=SERVICE_NAME_COMPONENT,
     serviceUrl=f"{SERVICE_HOST}:{SERVICE_PORT}",
-    healthUrl=f"{SERVICE_HOST}:{SERVICE_PORT}{healthendpoint}",
+    healthUrl=f"{SERVICE_HOST}:{SERVICE_PORT}{HEALTHENDPOINT}",
     metadata=metadata
 )
 
@@ -47,4 +50,5 @@ registrator_thread.start()
 
 if __name__ == "__main__":
     # start the web service
-    app.run(debug=True, port=SERVICE_PORT)
+    if SERVICE_PORT == None:
+        raise RuntimeError("SERVICE_PORT must not be empty!")

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 export $(grep -v "^#" < .env)
 
 # check required parameters
@@ -10,7 +10,6 @@ declare -a required_vars=(
 "SPRING_BOOT_ADMIN_PASSWORD"
 "SERVICE_NAME_COMPONENT"
 "SERVICE_DESCRIPTION_COMPONENT"
-# TODO: other?
 )
 
 for param in ${required_vars[@]};

@@ -3,6 +3,12 @@ from transformers.models.marian.tokenization_marian import MarianTokenizer
 
 
 def load_models_and_tokenizers(translation_options: dict):
+    """Loads models and tokenizers based on configured translation language pairs.
+
+    Parameters:
+    translation_options (dict): Key is the source language, value is a list of configured target languages
+    """
+
     models = {}
     tokenizers = {}
     for s_lang in translation_options.keys():
