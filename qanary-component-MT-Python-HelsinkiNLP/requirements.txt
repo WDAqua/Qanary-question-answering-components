@@ -1,7 +1,6 @@
 fastapi==0.109.1
 pytest==8.3.2
 pytest-env==1.1.3
-qanary_helpers==0.2.2
 SentencePiece==0.2.0
 SPARQLWrapper==2.0.0
 torch==2.4.0
