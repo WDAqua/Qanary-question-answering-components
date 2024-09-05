@@ -12,7 +12,7 @@ services:
   # component
   component:
     # for building from source
-    image: qanary-component-mt-python-libretranslate:latest
+    image: qanary/qanary-component-mt-python-libretranslate:0.2.0
     build: 
       context: .
       dockerfile: Dockerfile
@@ -20,4 +20,3 @@ services:
       - .env
     environment:
       - SERVICE_NAME_COMPONENT=MT-LibreTranslate
-    network_mode: host

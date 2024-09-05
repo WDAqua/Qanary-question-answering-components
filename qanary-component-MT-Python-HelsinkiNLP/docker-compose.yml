@@ -2,7 +2,7 @@ version: '3'
 services:
   component:
     # for building from source
-    image: qanary-component-mt-python-helsinki:latest
+    image: qanary/qanary-component-mt-python-helsinkinlp:0.2.0
     build: 
       context: .
       dockerfile: Dockerfile

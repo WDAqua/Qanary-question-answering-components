@@ -2,7 +2,7 @@ version: '3'
 services: 
   component:
     # for building from source
-    image: qanary-component-mt-python-nllb:latest
+    image: qanary/qanary-component-mt-python-nllb:0.2.0
     build: 
       context: .
       dockerfile: Dockerfile

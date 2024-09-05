@@ -3,7 +3,7 @@ services:
 
   component-en-de:
     # for building from source
-    image: qanary-component-mt-python-helsinki-en-de:latest
+    image: qanary/qanary-component-mt-python-helsinkinlp-en-de:latest
     build: 
       context: .
       dockerfile: Dockerfile
@@ -13,14 +13,14 @@ services:
     env_file:
       - .env
     environment:
-      - SERVICE_NAME_COMPONENT=MT-Helsinki-en-de
+      - SERVICE_NAME_COMPONENT=MT-helsinkinlp-en-de
     volumes:
       - ~/.cache/huggingface:/root/.cache/huggingface/
     network_mode: host
 
   component-en-ru:
     # for building from source
-    image: qanary-component-mt-python-helsinki-en-ru:latest
+    image: qanary/qanary-component-mt-python-helsinkinlp-en-ru:latest
     build: 
       context: .
       dockerfile: Dockerfile
@@ -30,7 +30,7 @@ services:
     env_file:
       - .env
     environment:
-      - SERVICE_NAME_COMPONENT=MT-Helsinki-en-ru
+      - SERVICE_NAME_COMPONENT=MT-helsinkinlp-en-ru
     volumes:
       - ~/.cache/huggingface:/root/.cache/huggingface/
     network_mode: host
@@ -38,7 +38,7 @@ services:
 
   component-en-es:
     # for building from source
-    image: qanary-component-mt-python-helsinki-en-es:latest
+    image: qanary/qanary-component-mt-python-helsinkinlp-en-es:latest
     build: 
       context: .
       dockerfile: Dockerfile
@@ -48,7 +48,7 @@ services:
     env_file:
       - .env
     environment:
-      - SERVICE_NAME_COMPONENT=MT-Helsinki-en-es
+      - SERVICE_NAME_COMPONENT=MT-helsinkinlp-en-es
     volumes:
       - ~/.cache/huggingface:/root/.cache/huggingface/
     network_mode: host
@@ -56,7 +56,7 @@ services:
 
   component-de-en:
     # for building from source
-    image: qanary-component-mt-python-helsinki-de-en:latest
+    image: qanary/qanary-component-mt-python-helsinkinlp-de-en:latest
     build: 
       context: .
       dockerfile: Dockerfile
@@ -66,7 +66,7 @@ services:
     env_file:
       - .env
     environment:
-      - SERVICE_NAME_COMPONENT=MT-Helsinki-de-en
+      - SERVICE_NAME_COMPONENT=MT-helsinkinlp-de-en
     volumes:
       - ~/.cache/huggingface:/root/.cache/huggingface/
     network_mode: host
@@ -74,7 +74,7 @@ services:
 
   component-ru-en:
     # for building from source
-    image: qanary-component-mt-python-helsinki-ru-en:latest
+    image: qanary/qanary-component-mt-python-helsinkinlp-ru-en:latest
     build: 
       context: .
       dockerfile: Dockerfile
@@ -84,7 +84,7 @@ services:
     env_file:
       - .env
     environment:
-      - SERVICE_NAME_COMPONENT=MT-Helsinki-ru-en
+      - SERVICE_NAME_COMPONENT=MT-helsinkinlp-ru-en
     volumes:
       - ~/.cache/huggingface:/root/.cache/huggingface/
     network_mode: host
@@ -92,7 +92,7 @@ services:
 
   component-es-en:
     # for building from source
-    image: qanary-component-mt-python-helsinki-es-en:latest
+    image: qanary/qanary-component-mt-python-helsinkinlp-es-en:latest
     build: 
       context: .
       dockerfile: Dockerfile
@@ -102,7 +102,7 @@ services:
     env_file:
       - .env
     environment:
-      - SERVICE_NAME_COMPONENT=MT-Helsinki-es-en
+      - SERVICE_NAME_COMPONENT=MT-helsinkinlp-es-en
     volumes:
       - ~/.cache/huggingface:/root/.cache/huggingface/
     network_mode: host

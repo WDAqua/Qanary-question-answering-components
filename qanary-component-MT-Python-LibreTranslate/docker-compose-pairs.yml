@@ -3,7 +3,7 @@ services:
 
   component-en-de:
     # for building from source
-    image: qanary-component-mt-python-libretranslate-en-de:latest
+    image: qanary/qanary-component-mt-python-libretranslate-en-de:latest
     build: 
       context: .
       dockerfile: Dockerfile
@@ -20,7 +20,7 @@ services:
 
   component-en-ru:
     # for building from source
-    image: qanary-component-mt-python-libretranslate-en-ru:latest
+    image: qanary/qanary-component-mt-python-libretranslate-en-ru:latest
     build: 
       context: .
       dockerfile: Dockerfile
@@ -38,7 +38,7 @@ services:
 
   component-en-es:
     # for building from source
-    image: qanary-component-mt-python-libretranslate-en-es:latest
+    image: qanary/qanary-component-mt-python-libretranslate-en-es:latest
     build: 
       context: .
       dockerfile: Dockerfile
@@ -56,7 +56,7 @@ services:
 
   component-de-en:
     # for building from source
-    image: qanary-component-mt-python-libretranslate-de-en:latest
+    image: qanary/qanary-component-mt-python-libretranslate-de-en:latest
     build: 
       context: .
       dockerfile: Dockerfile
@@ -74,7 +74,7 @@ services:
 
   component-ru-en:
     # for building from source
-    image: qanary-component-mt-python-libretranslate-ru-en:latest
+    image: qanary/qanary-component-mt-python-libretranslate-ru-en:latest
     build: 
       context: .
       dockerfile: Dockerfile
@@ -92,7 +92,7 @@ services:
 
   component-es-en:
     # for building from source
-    image: qanary-component-mt-python-libretranslate-es-en:latest
+    image: qanary/qanary-component-mt-python-libretranslate-es-en:latest
     build: 
       context: .
       dockerfile: Dockerfile
