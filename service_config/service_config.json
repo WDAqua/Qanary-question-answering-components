@@ -143,8 +143,34 @@
         "files": {
           ".env": "ned-openai-gpt"
         }
+    },
+    {
+        "mode": "dockerfile",
+        "port": "40193:40193",
+        "image": "qanary/qanary-component-mt-python-helsinkinlp",
+        "tag": "latest",
+        "files": {
+          ".env": "mt-helsinki"
+        }
+    },
+    {
+        "mode": "dockerfile",
+        "port": "40194:40194",
+        "image": "qanary/qanary-component-mt-python-nllb",
+        "tag": "latest",
+        "files": {
+          ".env": "mt-nllb"
+        }
+    },
+    {
+        "mode": "dockerfile",
+        "port": "40196:40196",
+        "image": "qanary/qanary-component-mt-python-mbart",
+        "tag": "latest",
+        "files": {
+          ".env": "mt-mbart"
+        }
     }
-
   ],
   "ids": {
     "0": "qanary-qanary-component-ld-shuyo",
@@ -162,6 +188,9 @@
     "12": "qanary-qanary-component-tqa-chatgptwrapper",
     "13": "qanary-qanary-component-qb-dateofdeathdpbedia",
     "14": "qanary-qanary-component-kg2kg-translateannotationsofinstance",
-    "15": "qanary-qanary-component-ned-openai-gpt"
+    "15": "qanary-qanary-component-ned-openai-gpt",
+    "16": "qanary-qanary-component-mt-python-helsinkinlp",
+    "17": "qanary-qanary-component-mt-python-nllb",
+    "18": "qanary-qanary-component-mt-python-mbart"
   }
 }

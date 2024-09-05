@@ -1,0 +1,108 @@
+version: '3'
+services:
+
+  component-en-de:
+    # for building from source
+    image: qanary/qanary-component-mt-python-mbart-en-de:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SOURCE_LANGUAGE=en
+        - TARGET_LANGUAGE=de
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME_COMPONENT=MT-Mbart-en-de
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface/
+    network_mode: host
+
+  component-en-ru:
+    # for building from source
+    image: qanary/qanary-component-mt-python-mbart-en-ru:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SOURCE_LANGUAGE=en
+        - TARGET_LANGUAGE=ru
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME_COMPONENT=MT-Mbart-en-ru
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface/
+    network_mode: host
+
+
+  component-en-es:
+    # for building from source
+    image: qanary/qanary-component-mt-python-mbart-en-es:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SOURCE_LANGUAGE=en
+        - TARGET_LANGUAGE=es
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME_COMPONENT=MT-Mbart-en-es
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface/
+    network_mode: host
+
+
+  component-de-en:
+    # for building from source
+    image: qanary/qanary-component-mt-python-mbart-de-en:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SOURCE_LANGUAGE=de
+        - TARGET_LANGUAGE=en
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME_COMPONENT=MT-Mbart-de-en
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface/
+    network_mode: host
+
+
+  component-ru-en:
+    # for building from source
+    image: qanary/qanary-component-mt-python-mbart-ru-en:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SOURCE_LANGUAGE=ru
+        - TARGET_LANGUAGE=en
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME_COMPONENT=MT-Mbart-ru-en
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface/
+    network_mode: host
+
+
+  component-es-en:
+    # for building from source
+    image: qanary/qanary-component-mt-python-mbart-es-en:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - SOURCE_LANGUAGE=es
+        - TARGET_LANGUAGE=en
+    env_file:
+      - .env
+    environment:
+      - SERVICE_NAME_COMPONENT=MT-Mbart-es-en
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface/
+    network_mode: host

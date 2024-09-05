@@ -1,33 +1,37 @@
-from component.mt_libretranslate import mt_libretranslate_bp
-from component.mt_libretranslate import check_connection
+from fastapi import FastAPI
+from fastapi.responses import RedirectResponse, Response, JSONResponse
+from component import mt_libretranslate
 from component.mt_libretranslate import get_languages
-from flask import Flask
 
-version = "0.1.2"
+version = "0.2.0"
 
 # default config file
 configfile = "app.conf"
 
 # service status information
-healthendpoint = "/health"
-aboutendpoint = "/about"
-languagesendpoint = "/languages"
+HEALTHENDPOINT = "/health"
+ABOUTENDPOINT = "/about"
+LANGUAGESENDPOINT = "/languages"
 
 # init Flask app and add externalized service information
-app = Flask(__name__)
-app.register_blueprint(mt_libretranslate_bp)
+app = FastAPI(docs_url="/swagger-ui.html")
+app.include_router(mt_libretranslate.router)
 
-@app.route(healthendpoint, methods=["GET"])
+@app.get("/")
+async def main():
+    return RedirectResponse("/about")
+
+@app.get(HEALTHENDPOINT, description="Shows the status of the component")
 def health():
     """required health endpoint for callback of Spring Boot Admin server"""
-    status, message = check_connection()
-    return f"{'ALIVE' if status else 'DOWN'} - {message}"
+    return Response("alive", media_type="text/plain")
 
-@app.route(aboutendpoint, methods=["GET"])
+@app.get(ABOUTENDPOINT, description="Shows a description of the component")
 def about():
     """required about endpoint for callback of Srping Boot Admin server"""
-    return "Translates questions into English. \nSee /languages for a list of supported source languages!"
+    return Response("Translates questions into English", media_type="text/plain")
 
-@app.route(languagesendpoint, methods=["GET"])
+@app.get(LANGUAGESENDPOINT)
 def languages():
-    return get_languages()
+    return JSONResponse(get_languages())
+

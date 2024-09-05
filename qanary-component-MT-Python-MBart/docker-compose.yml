@@ -2,12 +2,14 @@ version: '3'
 services: 
   component:
     # for building from source
-    image: qanary-component-mt-python-mbart:latest
+    image: qanary/qanary-component-mt-python-mbart:0.2.0
     build: 
       context: .
       dockerfile: Dockerfile
-    network_mode: host
     env_file:
       - .env
+    environment:
+      - SERVICE_NAME_COMPONENT=MT-MBart
     volumes:
       - ~/.cache/huggingface:/root/.cache/huggingface/
+    network_mode: host

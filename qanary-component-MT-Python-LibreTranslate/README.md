@@ -22,12 +22,6 @@ Not applicable as the textual question is a default parameter.
     oa:hasBody "translation_result"@en ;
     oa:annotatedBy <urn:qanary:PythonMTLibreTranslate> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
-
-<urn:qanary:output2> a qa:AnnotationOfQuestionLanguage .
-  oa:hasTarget <urn:myQanaryQuestion> ; 
-  oa:hasBody "lang-id"^^xsd:string ;
-  oa:annotatedBy <urn:qanary:PythonMTLibreTranslate> ;
-  oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ```
 
 ## Usage
@@ -55,6 +49,8 @@ SPRING_BOOT_ADMIN_PASSWORD=admin
 SERVICE_NAME_COMPONENT=LibreTranslate
 TRANSLATE_ENDPOINT=http://localhost:5000/translate
 LANGUAGES_ENDPOINT=http://localhost:5000/languages
+SOURCE_LANGUAGE=de
+TARGET_LANGUAGE=en
 ```
 
 The parameters description:
@@ -67,6 +63,8 @@ The parameters description:
 * `SERVICE_NAME_COMPONENT` -- the name of your Qanary component (for better identification)
 * `TRANSLATE_ENDPOINT` -- the LibreTranslate endpoint to be used for translation
 * `LANGUAGES_ENDPOINT` -- the LibreTranslate endpoint returning a list of supported languages
+* `SOURCE_LANGUAGE` -- (optional) the default source language of the translation
+* `TARGET_LANGUAGE` -- (optional) the default target language of the translation 
 
 4. pull the LibreTranslate image:
 
@@ -93,16 +91,41 @@ docker-compose build
 docker-compose up latest
 ```
 
-After execution, component creates Qanary annotation in the Qanary triplestore:
+After successful execution, component creates Qanary annotation in the Qanary triplestore:
 ```
 GRAPH <uuid> {
-        ?a a qa:AnnotationOfQuestionLanguage .
-        ?a qa:translationResult "translation result" .
-        ?a qa:sourceLanguage "ISO_639-1 language code" .
-        ?a oa:annotatedBy <urn:qanary:app_name> .
-        ?a oa:annotatedAt ?time .
-    }
+  ?a a qa:AnnotationOfQuestionTranslation .
+  ?a  oa:hasTarget <urn:myQanaryQuestion> .
+  ?a  oa:hasBody "translation_result"@ISO_639-1 language code
+  ?a  oa:annotatedBy <urn:qanary:app_name> .
+  ?a  oa:annotatedAt ?time .
 }
+```
+
+### Support for multiple Source and Target Languages
+
+This component relies on the presence of one of more existing annotations that associate a question text with a language. 
+This can be in the form of an `AnnotationOfQuestionLanguage`, as created by LD components, or an `AnnotationOfQuestionTranslation` as created by MT components.
+
+It supports multiple combinations of source and target languages. 
+You can specify a desired source and target language independently, or simply use all available language pairings. 
+
+If a `SOURCE_LANGUAGE` is set, then only texts with this specific language are considered for translation. 
+If none is set, then all configured source languages will be used to find candidates for translation. 
+
+Similarily, if a `TARGET_LANGUAGE` is set, then texts are only translated into that language. 
+If none is set, then the texts are translated into all target languages that are supported for their respective source language. 
+
+Note that while configured source languages naturally determine the possible target languages, 
+the configured target languages also determine which source languages can be supported!
+
+### Pre-configured Docker Images
+
+You may use the included file `docker-compose-pairs.yml` to build a list of images that are preconfigured for specific language pairs.
+Note that if you intend to use these containers at the same time, you need to assign different `SERVER_PORT` values for each image. 
+
+```bash
+docker-compose -f docker-compose-pairs.yml build
 ```
 
 ## Endpoints

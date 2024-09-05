@@ -1,0 +1,4 @@
+SPRING_BOOT_ADMIN_URL=http://demos.swe.htwk-leipzig.de:40111/
+SERVER_HOST=http://demos.swe.htwk-leipzig.de
+SERVER_PORT=40193
+SERVICE_DESCRIPTION_COMPONENT="Translates text using Helsinki OpusMT"
