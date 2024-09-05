@@ -50,7 +50,7 @@ class TestComponent(TestCase):
         importlib.reload(component.mt_helsinki_nlp)
         from component import app
 
-        logging.info("port: %s" % (os.environ["SERVICE_PORT"]))
+        logging.info("port: %s" % (os.environ["SERVER_PORT"]))
         assert os.environ["SERVICE_NAME_COMPONENT"] == "MT-Helsinki-NLP-Component"
         assert os.environ["SOURCE_LANGUAGE"] == self.source_language
         assert os.environ["TARGET_LANGUAGE"] == self.target_language
