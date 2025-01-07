@@ -81,7 +81,7 @@ WHERE {
 
 ## Big Picture
  * Qanary provides the methodology for a knowledge-driven, vocabulary-based approach. Our long-term agenda is to create a knowledge-driven ecosystem for the field of Question Answering. It is part of the [WDAqua project](http://wdaqua.eu) where Question Answering systems are researched and developed.
- * [Qanary Framework](https://github.com/WDAqua/Qanary/) is providing the core framework for creating Question Answering systems following the Qanary methodology. You might consider the Qanary Framework as a reference implementation of the Qanary framework as a microservice-based component architecture.
+ * [Qanary Framework](https://github.com/WDAqua/Qanary/) provides the core framework for creating Question Answering systems following the Qanary methodology. You might consider the Qanary Framework as a reference implementation of the Qanary framework as a microservice-based component architecture.
  * [Qanary components](https://github.com/WDAqua/Qanary-question-answering-components) is covering the QA components compatible with the Qanary framework.
  * [Frankenstein](https://github.com/WDAqua/Frankenstein) is a supporting framework to establish a toolset for rapid orchestration and benchmarking of Qanary components. For example, it provides the tools to create from 29 components 380 QA systems.
 
@@ -93,7 +93,7 @@ Please go to the [GitHub Wiki page](https://github.com/WDAqua/Qanary/wiki) of th
 
 ## How to Cite
 
-### Introducing a Vocabulary for knowledge-driven Question Answering Processes
+### Introducing a Vocabulary for Knowledge-driven Question Answering Processes
 
 Kuldeep Singh, Andreas Both, Dennis Diefenbach, Saeedeh Shekarpour:
 Towards a Message-Driven Vocabulary for Promoting the Interoperability of Question Answering Systems. ICSC 2016: 386-389
@@ -181,7 +181,7 @@ It matches terms in a given text with Wikipedia, \ie links text to recognize nam
  * [Qanary ReMatch for *RL*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary-component-REL-ReMatch)
 
 #### RelationLinker2 (RelationMatch)
- * It devise semantic-index based representation of PATTY~\cite{DBLP:conf/emnlp/NakasholeWS12} (a knowledge corpus of linguistic patterns and its associated properties in DBpedia) and a search mechanism over this index with the purpose of enhancing relation linking task.
+ * It devises semantic-index-based representation of PATTY~\cite{DBLP:conf/emnlp/NakasholeWS12} (a knowledge corpus of linguistic patterns and its associated properties in DBpedia) and a search mechanism over this index with the purpose of enhancing relation linking task.
  * [Qanary RelationLinker2 for *RL*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary-component-REL-RelationLinker2)
 
 #### OKBQA DiambiguationProperty (ReLMatch)
@@ -193,7 +193,7 @@ It matches terms in a given text with Wikipedia, \ie links text to recognize nam
  * [Qanary RelNliodRel for *RL*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary-component-REL-RelNliod)
 
 #### Spot Property (AnnotationofSpotProperty)
- * This component is the combination of RNLIWOD and OKBQA disambiguation module for relation linking task. 
+ * This component is the combination of RNLIWOD and OKBQA disambiguation modules for relation-linking tasks. 
  * [Qanary AnnotationofSpotProperty for *RL*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary-component-QB-AnnotationOfSpotClass-OKBQA)
 
 
@@ -201,21 +201,21 @@ It matches terms in a given text with Wikipedia, \ie links text to recognize nam
 ### Question Answering Class Linking (CL) Components
 
 #### ClsNliodCls (NLIWOD CLS)
- * NLIWOD Class Identifier is one among the several other tools provided by NLIWOD community for reuse. The code for class identifier is available on GitHub.
+ * NLIWOD Class Identifier is one among the several other tools provided by the NLIWOD community for reuse. The code for the class identifier is available on GitHub.
  * [Qanary ClsNliodCls for *CL*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary-component-CLS-CLSNLIOD)
 
 #### AnnotationofSpotClass (OKBQA Class linker)
- * This component is part of OKBQA disambiguation module.
+ * This component is part of the OKBQA disambiguation module.
  * [Qanary AnnotationofSpotClass for *CL*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary-component-QB-AnnotationOfSpotClass-OKBQA)
 
 ### Question Answering Query Builder (QB) Components
 
 #### QueryBuilder (NLIWOD Template-based QB)
- * Template-based query builders are widely used in QA community for SPARQL query construction. This component is similar to the existing template-based components.
+ * Template-based query builders are widely used in the QA community for SPARQL query construction. This component is similar to the existing template-based components.
  * [Qanary QueryBuilder for *QB*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qa.qanary_component-QueryBuilder)
 
 #### SINA (QB)
- * SINA is a keyword and natural language query search engine that is based on Hidden Markov Models for choosing the correct dataset to query. We decoupled original implementation to get query builder.
+ * SINA is a keyword and natural language query search engine that is based on Hidden Markov Models for choosing the correct dataset to query. We decoupled the original implementation to get a query builder.
  * [Qanary SINA for *QB*](https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary-component-QB-Sina)
 
 
