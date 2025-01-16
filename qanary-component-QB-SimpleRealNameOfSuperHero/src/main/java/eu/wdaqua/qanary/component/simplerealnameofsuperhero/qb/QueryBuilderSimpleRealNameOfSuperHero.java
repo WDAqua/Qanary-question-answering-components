@@ -92,18 +92,23 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 		// component
 
 		QuerySolutionMap bindingsForGetAnnotationOfNamedEntities = new QuerySolutionMap();
-		bindingsForGetAnnotationOfNamedEntities.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
-		bindingsForGetAnnotationOfNamedEntities.add("hasSource", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
-		bindingsForGetAnnotationOfNamedEntities.add("start", ResourceFactory.createTypedLiteral(String.valueOf(supportedQuestionPrefix.length()), XSDDatatype.XSDnonNegativeInteger));
+		bindingsForGetAnnotationOfNamedEntities.add("graph",
+				ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
+		bindingsForGetAnnotationOfNamedEntities.add("hasSource",
+				ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+		bindingsForGetAnnotationOfNamedEntities.add("start", ResourceFactory.createTypedLiteral(
+				String.valueOf(supportedQuestionPrefix.length()), XSDDatatype.XSDnonNegativeInteger));
 
 		// get the template of the INSERT query
-		String sparqlGetAnnotation = this.loadQueryFromFile(FILENAME_GET_ANNOTATION_OF_NAMED_ENTITIES, bindingsForGetAnnotationOfNamedEntities);
+		String sparqlGetAnnotation = this.loadQueryFromFile(FILENAME_GET_ANNOTATION_OF_NAMED_ENTITIES,
+				bindingsForGetAnnotationOfNamedEntities);
 		logger.info("sparqlGetAnnotation: {}", sparqlGetAnnotation);
 		ResultSet resultset = triplestoreConnector.select(sparqlGetAnnotation);
 
 		while (resultset.hasNext()) {
+			logger.info("Next resultset processing: {}", resultset);
 			QuerySolution tupel = resultset.next();
-			int start = tupel.get("start").asLiteral().getInt();
+			int start = supportedQuestionPrefix.length();
 			int end = tupel.get("end").asLiteral().getInt();
 			String dbpediaResource = tupel.get("hasBody").toString();
 			logger.warn("found matching resource <{}> at ({},{})", dbpediaResource, start, end);
@@ -165,7 +170,8 @@ public class QueryBuilderSimpleRealNameOfSuperHero extends QanaryComponent {
 
 		QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
 		bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
-		bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+		bindingsForInsert.add("targetQuestion",
+				ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
 		bindingsForInsert.add("body", ResourceFactory.createTypedLiteral(createdDBpediaQuery, XSDDatatype.XSDstring));
 		bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
