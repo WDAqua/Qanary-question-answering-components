@@ -63,11 +63,7 @@ public class GptBasedNamedEntityDisambiguation extends QanaryComponent {
 
 	private final OpenAiApiService myOpenAiApiService;
 
-	private String promptTemplate = """
-			Assume you are a Named Entity Recognizer and Named Entity Disambiguator. Given the following sentence, provide the Wikipedia article URL that is describing the found Named Entity, its start and end index in the given sentence.
-			Create a valid JSON array using the format: [{"named_entity": "string", "wikipedia_url": "url"}]
-			The sentence: %s
-			The JSON object is:""";
+	private String promptTemplate = "Assume you are a Named Entity Recognizer and Named Entity Disambiguator. Given the following sentence, provide the Wikipedia article URL that is describing the found Named Entity, its start and end index in the given sentence. \nCreate a valid JSON array using the format: [{\"named_entity\": \"string\", \"wikipedia_url\": \"url\"}] \nThe sentence: %s \nThe JSON object is: ";
 
 	private String model;
 	private String defaultScore;
