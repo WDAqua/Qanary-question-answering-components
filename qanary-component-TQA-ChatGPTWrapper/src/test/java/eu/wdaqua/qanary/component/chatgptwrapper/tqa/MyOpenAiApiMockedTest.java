@@ -48,7 +48,7 @@ class MyOpenAiApiMockedTest {
     MockRestServiceServer mockServer;
 
     private CacheOfRestTemplateResponse myCacheOfResponse = new CacheOfRestTemplateResponse();
-    private RestTemplateWithCaching restTemplate = new RestTemplateWithCaching(this.myCacheOfResponse);
+    private RestTemplateWithCaching restTemplate = new RestTemplateWithCaching(this.myCacheOfResponse, "caching");
 
     @Autowired
     private Environment env;

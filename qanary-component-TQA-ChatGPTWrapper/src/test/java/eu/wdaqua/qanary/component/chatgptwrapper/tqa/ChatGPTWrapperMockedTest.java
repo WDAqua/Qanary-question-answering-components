@@ -54,7 +54,7 @@ class ChatGPTWrapperMockedTest {
     MockRestServiceServer mockServer;
     private ChatGPTWrapper chatGPTWrapper;
     private CacheOfRestTemplateResponse myCacheOfResponse = new CacheOfRestTemplateResponse();
-    private RestTemplateWithCaching restTemplate = new RestTemplateWithCaching(this.myCacheOfResponse);
+    private RestTemplateWithCaching restTemplate = new RestTemplateWithCaching(this.myCacheOfResponse, "caching");
 
     @Autowired
     private MyCompletionRequest completionRequest;
