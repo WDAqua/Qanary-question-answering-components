@@ -39,7 +39,7 @@ class MockPlatypusQueryBuilderTest {
     @Autowired
     private Environment env;
     private CacheOfRestTemplateResponse myCacheOfResponse = new CacheOfRestTemplateResponse();
-    private RestTemplateWithCaching restTemplate = new RestTemplateWithCaching(this.myCacheOfResponse);
+    private RestTemplateWithCaching restTemplate = new RestTemplateWithCaching(this.myCacheOfResponse, "caching");
 
     @BeforeEach
     public void init() throws URISyntaxException, IOException {
