@@ -30,7 +30,7 @@ jobs:
         with:
           distribution: 'corretto'
           java-version: '17'
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Test Java components
         run: bash -c ./service_config/test_java_components.sh
   test-python:
@@ -41,7 +41,7 @@ jobs:
         id: setup_python
         with: 
           python-version: '3.12'
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Cache virtual environments
         uses: actions/cache@v4
         with:
