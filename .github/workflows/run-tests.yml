@@ -43,7 +43,7 @@ jobs:
           python-version: '3.12'
       - uses: actions/checkout@v4
       - name: Cache virtual environments
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           key: environments-${{ runner.os }}-${{ steps.setup_python.outputs.python-version}}-${{ hashFiles('**/requirements.txt') }}
           path: environments
