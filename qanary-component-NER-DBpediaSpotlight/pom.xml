@@ -18,7 +18,8 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <qanary.component.version>[3.7.0,4.0.0)</qanary.component.version>
-        <qanary.commons.version>[3.21.1,4.0.0)</qanary.commons.version>
+        <!-- TODO: Update to 3.21.1 once released -->
+        <qanary.commons.version>[3.20.1,4.0.0)</qanary.commons.version>
         <docker.image.prefix>qanary</docker.image.prefix>
         <docker.image.name>qanary-component-ner-dbpediaspotlight</docker.image.name>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
