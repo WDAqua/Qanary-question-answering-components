@@ -60,15 +60,16 @@ class CacheTests {
         assertNotNull(myRestTemplate);
         assertNotNull(myCacheOfResponse);
 
-        QanaryCacheTest qanaryCacheTest = new QanaryCacheTest();
-        qanaryCacheTest.setMaxTimeSpanSeconds(MAX_TIME_SPAN_SECONDS);
-        qanaryCacheTest.setTestPort(testPort);
-        qanaryCacheTest.setRestTemplate(myRestTemplate);
-        qanaryCacheTest.setCacheOfResponse(myCacheOfResponse);
+        // TODO: Uncomment once qanary.commons is updated to 3.21.1
+        // QanaryCacheTest qanaryCacheTest = new QanaryCacheTest();
+        // qanaryCacheTest.setMaxTimeSpanSeconds(MAX_TIME_SPAN_SECONDS);
+        // qanaryCacheTest.setTestPort(testPort);
+        // qanaryCacheTest.setRestTemplate(myRestTemplate);
+        // qanaryCacheTest.setCacheOfResponse(myCacheOfResponse);
 
-        // check for correct execution of QanaryCacheTest
-        LOGGER.debug("givenRestTemplate_whenRequested_thenLogAndModifyResponse executing QanaryCacheTest");
-        qanaryCacheTest.givenRestTemplate_whenRequested_thenLogAndModifyResponse();
+        // // check for correct execution of QanaryCacheTest
+        // LOGGER.debug("givenRestTemplate_whenRequested_thenLogAndModifyResponse executing QanaryCacheTest");
+        // qanaryCacheTest.givenRestTemplate_whenRequested_thenLogAndModifyResponse();
     }
 
 }
