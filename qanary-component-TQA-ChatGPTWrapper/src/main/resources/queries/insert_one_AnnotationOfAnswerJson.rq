@@ -9,13 +9,14 @@ INSERT {
 GRAPH ?graph  {
         ?newAnnotation rdf:type qa:AnnotationOfTextAnswerJson .
         ?newAnnotation oa:hasTarget ?targetQuestion .
-        ?newAnnotation oa:hasBody ?answer .
         ?newAnnotation oa:annotatedAt ?time .
         ?newAnnotation oa:annotatedBy ?application .
+        ?newAnnotation oa:hasBody ?answer .
 
         ?answer rdf:type qa:ChatGptAnswerJson .
         ?answer rdf:value ?jsonAnswer .
-        qa:AnswerJson rdfs:subClassOf qa:Answer .
+
+        qa:ChatGptAnswerJson rdfs:subClassOf qa:Answer .
     }
 }
 WHERE {

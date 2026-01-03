@@ -13,7 +13,9 @@
 		<version>[0.1.0,1.0.0)</version>
 	</parent>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>25</java.version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<!-- Replace the name of the docker image to be generated -->
 		<!-- if there is an error demanding a lower-case name, then you picked 

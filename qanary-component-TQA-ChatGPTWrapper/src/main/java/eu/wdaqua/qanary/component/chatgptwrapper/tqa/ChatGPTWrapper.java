@@ -46,7 +46,6 @@ public class ChatGPTWrapper extends QanaryComponent {
     private MyOpenAiApi openAiApi;
     private MyCompletionRequest myCompletionRequest;
 
-
     public ChatGPTWrapper(
             @Value("${spring.application.name}") String applicationName, //
             @Value("${chatgpt.api.key}") String token, //
@@ -89,7 +88,6 @@ public class ChatGPTWrapper extends QanaryComponent {
 
         myCompletionRequest.setPrompt(myQuestion);
 
-
         CompletionResult completionResult = this.openAiApi.createCompletion( //
                 this.myRestTemplate, //
                 this.myCacheOfResponses, //
@@ -105,7 +103,7 @@ public class ChatGPTWrapper extends QanaryComponent {
         return myQanaryMessage;
     }
 
-    public JsonObject creatJsonAnswer(CompletionResult completionResult) {
+    public JsonObject createJsonAnswer(CompletionResult completionResult) {
         JsonObject jsonAnswer = new JsonObject();
         JsonArray choices = new JsonArray();
 
@@ -134,14 +132,14 @@ public class ChatGPTWrapper extends QanaryComponent {
     }
 
     public String createInsertQuery( //
-                                     QanaryQuestion<String> myQanaryQuestion, //
-                                     CompletionResult completionResult //
+            QanaryQuestion<String> myQanaryQuestion, //
+            CompletionResult completionResult //
     ) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
         QuerySolutionMap bindings = new QuerySolutionMap();
         // use here the variable names defined in method insertAnnotationOfAnswerSPARQL
         bindings.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
         bindings.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
-        bindings.add("jsonAnswer", ResourceFactory.createStringLiteral(creatJsonAnswer(completionResult).toString()));
+        bindings.add("jsonAnswer", ResourceFactory.createStringLiteral(createJsonAnswer(completionResult).toString()));
         bindings.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
         // get the template of the INSERT query

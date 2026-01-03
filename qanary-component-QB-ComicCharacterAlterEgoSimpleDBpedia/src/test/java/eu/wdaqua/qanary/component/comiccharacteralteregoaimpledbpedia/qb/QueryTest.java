@@ -29,14 +29,16 @@ class QueryTest {
         bindings.add("targetQuestion", ResourceFactory.createResource("urn:targetQuestion"));
 
         String sparql = QanaryTripleStoreConnector.readFileFromResourcesWithMap(
-                TestConfiguration.FILENAME_SELECT_ANNOTATION, bindings
-        );
+                TestConfiguration.FILENAME_SELECT_ANNOTATION, bindings);
 
         assertNotNull(sparql);
         assertFalse(sparql.isEmpty());
         assertFalse(sparql.isBlank());
 
-        assertEquals(TestConfiguration.getTestQuery("queries/select_annotation_test.rq").concat("\n"), sparql);
+        // if the assertion fails, print the expected and actual queries
+        assertEquals(TestConfiguration.getTestQuery("queries/select_annotation_test.rq").concat("\n"), sparql,
+                "Expected query:\n" + TestConfiguration.getTestQuery("queries/select_annotation_test.rq").concat("\n")
+                        + "\nActual query:\n" + sparql);
     }
 
     @Test
@@ -50,8 +52,7 @@ class QueryTest {
 
         String sparql = QanaryTripleStoreConnector.readFileFromResourcesWithMap(
                 TestConfiguration.FILENAME_INSERT_ANNOTATION,
-                bindings
-        );
+                bindings);
 
         assertNotNull(sparql);
         assertFalse(sparql.isEmpty());
@@ -67,8 +68,7 @@ class QueryTest {
 
         String sparql = QanaryTripleStoreConnector.readFileFromResourcesWithMap(
                 TestConfiguration.FILENAME_DBPEDIA_QUERY,
-                bindings
-        );
+                bindings);
 
         assertNotNull(sparql);
         assertFalse(sparql.isEmpty());

@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
-import eu.wdaqua.qanary.component.dbpediaspotlight.ner.exceptions.DBpediaSpotlightJsonParsingNotPossible;;
+import eu.wdaqua.qanary.component.dbpediaspotlight.ner.exceptions.DBpediaSpotlightJsonParsingNotPossible;
 import net.minidev.json.JSONObject;
 import org.apache.shiro.util.Assert;
 import org.slf4j.Logger;

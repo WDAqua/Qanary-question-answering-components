@@ -17,6 +17,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.apache.jena.query.ResultSet;
 
 import java.io.IOException;
 import java.net.URI;
@@ -54,13 +55,13 @@ class ComicCharacterNameSimpleLiveTests {
 
     @Disabled("Question is not supported by the Component.")
     @Test
-    @EnabledIf(
-            expression = "#{environment['ner.comicCharacterNameSimpleNamedEntityRecognizer.api.live.test.active'] == 'true'}", //
-            loadContext = true
-    )
-    void testQuestion1() throws IOException, URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed {
+    @EnabledIf(expression = "#{environment['ner.comicCharacterNameSimpleNamedEntityRecognizer.api.live.test.active'] == 'true'}", //
+            loadContext = true)
+    void testQuestion1()
+            throws IOException, URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed {
 
-        SuperheroNamedEntityFound response = this.comicCharacterNameSimpleNamedEntityRecognizer.getAllSuperheroNamesFromDBpediaMatchingPositions(this.env.getProperty("question1"));
+        SuperheroNamedEntityFound response = this.comicCharacterNameSimpleNamedEntityRecognizer
+                .getAllSuperheroNamesFromDBpediaMatchingPositions(this.env.getProperty("question1"));
 
         assertNotNull(response);
         assertNotNull(response.getSuperheroLabel());
@@ -71,20 +72,20 @@ class ComicCharacterNameSimpleLiveTests {
 
         assertTrue(response.getSuperheroLabel().contains("Albert Einstein"));
 
-
-        String sparql = this.comicCharacterNameSimpleNamedEntityRecognizer.getSparqlInsertQuery(response, this.mockedQanaryQuestion);
+        String sparql = this.comicCharacterNameSimpleNamedEntityRecognizer.getSparqlInsertQuery(response,
+                this.mockedQanaryQuestion);
         assertNotNull(sparql);
         assertNotEquals(0, sparql.length());
     }
 
     @Disabled("Question is not supported by the Component.")
     @Test
-    @EnabledIf(
-            expression = "#{environment['ner.comicCharacterNameSimpleNamedEntityRecognizer.api.live.test.active'] == 'true'}", //
-            loadContext = true
-    )
-    void testQuestion2() throws IOException, URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed {
-        SuperheroNamedEntityFound response = this.comicCharacterNameSimpleNamedEntityRecognizer.getAllSuperheroNamesFromDBpediaMatchingPositions(this.env.getProperty("question2"));
+    @EnabledIf(expression = "#{environment['ner.comicCharacterNameSimpleNamedEntityRecognizer.api.live.test.active'] == 'true'}", //
+            loadContext = true)
+    void testQuestion2()
+            throws IOException, URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed {
+        SuperheroNamedEntityFound response = this.comicCharacterNameSimpleNamedEntityRecognizer
+                .getAllSuperheroNamesFromDBpediaMatchingPositions(this.env.getProperty("question2"));
 
         assertNotNull(response);
         assertNotNull(response.getSuperheroLabel());
@@ -95,33 +96,51 @@ class ComicCharacterNameSimpleLiveTests {
 
         assertTrue(response.getSuperheroLabel().contains("Germany"));
 
-
-        String sparql = this.comicCharacterNameSimpleNamedEntityRecognizer.getSparqlInsertQuery(response, this.mockedQanaryQuestion);
+        String sparql = this.comicCharacterNameSimpleNamedEntityRecognizer.getSparqlInsertQuery(response,
+                this.mockedQanaryQuestion);
         assertNotNull(sparql);
         assertNotEquals(0, sparql.length());
     }
 
     @Test
-    @EnabledIf(
-            expression = "#{environment['ner.comicCharacterNameSimpleNamedEntityRecognizer.live.test.active'] == 'true'}", //
-            loadContext = true
-    )
-    void testQuestion3() throws IOException, URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed {
-        SuperheroNamedEntityFound response = this.comicCharacterNameSimpleNamedEntityRecognizer.getAllSuperheroNamesFromDBpediaMatchingPositions(this.env.getProperty("question3"));
+    @EnabledIf(expression = "#{environment['ner.comicCharacterNameSimpleNamedEntityRecognizer.live.test.active'] == 'true'}", //
+            loadContext = true)
+    void testQuestion3()
+            throws IOException, URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed {
+        SuperheroNamedEntityFound response = this.comicCharacterNameSimpleNamedEntityRecognizer
+                .getAllSuperheroNamesFromDBpediaMatchingPositions(this.env.getProperty("question3"));
 
-        assertNotNull(response);
-        assertNotNull(response.getSuperheroLabel());
-        assertNotNull(response.getResource());
+        assertNotNull(response, "Response is null");
+        assertNotNull(response.getSuperheroLabel(), "Label is null");
+        assertNotNull(response.getResource(), "Resource is null");
 
         assertNotEquals(0, response.getBeginIndex());
         assertNotEquals(0, response.getEndIndex());
 
         assertTrue(response.getSuperheroLabel().contains("Batman"));
 
-
-        String sparql = this.comicCharacterNameSimpleNamedEntityRecognizer.getSparqlInsertQuery(response, this.mockedQanaryQuestion);
+        String sparql = this.comicCharacterNameSimpleNamedEntityRecognizer.getSparqlInsertQuery(response,
+                this.mockedQanaryQuestion);
         assertNotNull(sparql);
         assertNotEquals(0, sparql.length());
+    }
+
+    @Test
+    @EnabledIf(expression = "#{environment['ner.comicCharacterNameSimpleNamedEntityRecognizer.live.test.active'] == 'true'}", //
+            loadContext = true)
+    void testSelectFromCostumeTripleStore()
+            throws IOException, URISyntaxException, QanaryExceptionNoOrMultipleQuestions, SparqlQueryFailed {
+        ResultSet resultSet = this.comicCharacterNameSimpleNamedEntityRecognizer
+                .selectFromCustomTripleStore("SELECT * WHERE { ?s ?p ?o } LIMIT 10", "https://dbpedia.org/sparql");
+        assertNotNull(resultSet);
+        // Count rows by iterating, as getRowNumber() may not be reliable on
+        // materialized ResultSets
+        int rowCount = 0;
+        while (resultSet.hasNext()) {
+            resultSet.next();
+            rowCount++;
+        }
+        assertNotEquals(0, rowCount, "ResultSet should contain at least one row");
     }
 
 }

@@ -12,7 +12,9 @@
 	    <version>[0.1.0,1.0.0)</version>
     </parent>
     <properties>
-        <java.version>17</java.version>
+        <java.version>25</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <qanary.version>[3.7.6,4.0.0)</qanary.version>
         <docker.image.prefix>qanary</docker.image.prefix>
         <docker.image.name>qanary-component-qb-qanswer</docker.image.name>

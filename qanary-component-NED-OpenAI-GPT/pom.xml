@@ -13,7 +13,9 @@
 		<version>[0.1.0,1.0.0)</version>
 	</parent>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>25</java.version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<docker.image.name>qanary-component-ned-openai-gpt</docker.image.name>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
@@ -32,24 +34,24 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.theokanning.openai-gpt3-java/service -->
 		<dependency>
-		    <groupId>com.theokanning.openai-gpt3-java</groupId>
-		    <artifactId>service</artifactId>
-		    <version>0.18.2</version>
+			<groupId>com.theokanning.openai-gpt3-java</groupId>
+			<artifactId>service</artifactId>
+			<version>0.18.2</version>
 		</dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>		
-        </dependency>
 		<dependency>
-		    <groupId>org.springframework.boot</groupId>
-		    <artifactId>spring-boot-starter-cache</artifactId>
-		</dependency>        
-        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-        </dependency>
-		
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>

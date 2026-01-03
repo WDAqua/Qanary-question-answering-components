@@ -6,16 +6,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
 import eu.wdaqua.qanary.component.dbpediaspotlight.ner.exceptions.DBpediaSpotlightJsonParsingNotPossible;
-import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.net.URISyntaxException;
@@ -23,7 +20,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 class DBpediaSpotlightServiceFetcherTest {
@@ -39,14 +35,18 @@ class DBpediaSpotlightServiceFetcherTest {
     }
 
     @BeforeEach
-    public void init() {
+    void init() {
         assert this.restTemplate != null : "restTemplate cannot be null";
     }
 
+    /**
+     * Tests the offline parsing of a JSON response from DBpedia Spotlight service.
+     * Verifies that the fetcher correctly extracts resources from a known valid
+     * response and that all extracted resources are non-null.
+     */
     @Test
     void testParsingOfJsonResponseOffline() throws ParseException, DBpediaSpotlightJsonParsingNotPossible {
         DBpediaSpotlightServiceFetcher myFetcher = new DBpediaSpotlightServiceFetcher();
-        JSONParser parser = new JSONParser();
         JsonElement bodyElement = JsonParser.parseString(knownValidResponseBody);
         JsonObject response = bodyElement.getAsJsonObject();
         JsonArray resources = myFetcher.getResourcesOfResponse(response, knownValidResponseBody);
@@ -59,6 +59,11 @@ class DBpediaSpotlightServiceFetcherTest {
         }
     }
 
+    /**
+     * Tests the extraction of resources from a JSON response from DBpedia Spotlight
+     * service. Verifies that the fetcher correctly extracts resources from a known
+     * valid response and that all extracted resources are non-null.
+     */
     @Test
     void testFoundResources() throws DBpediaSpotlightJsonParsingNotPossible, URISyntaxException {
         DBpediaSpotlightServiceFetcher myFetcher = new DBpediaSpotlightServiceFetcher();

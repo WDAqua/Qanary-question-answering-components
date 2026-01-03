@@ -1,5 +1,4 @@
-
-FROM openjdk:17                                                                                                                                                                                                                             
+FROM eclipse-temurin:25
 
 # Add the service itself
 ARG JAR_FILE

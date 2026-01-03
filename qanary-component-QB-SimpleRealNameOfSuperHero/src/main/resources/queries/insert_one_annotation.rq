@@ -15,6 +15,6 @@ GRAPH ?graph  {
     }
 }
 WHERE {
-    BIND (IRI(str(RAND())) AS ?newAnnotation) . # a new ID
+    BIND (IRI(CONCAT("urn:qanary:annotation:", STR(RAND()))) AS ?a) . # a new ID
     BIND (now() as ?time) .  # timestamp
 }

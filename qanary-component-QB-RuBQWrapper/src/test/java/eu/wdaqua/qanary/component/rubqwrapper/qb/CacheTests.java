@@ -49,16 +49,18 @@ class CacheTests {
      */
     @Test
     void givenRestTemplate_whenRequested_thenLogAndModifyResponse() {
-        QanaryCacheTest qanaryCacheTest = new QanaryCacheTest(
-                testPort,
-                MAX_TIME_SPAN_SECONDS,
-                myRestTemplate,
-                myCacheOfResponse
-        );
+        QanaryCacheTest qanaryCacheTest = new QanaryCacheTest();
+        qanaryCacheTest.setMaxTimeSpanSeconds(MAX_TIME_SPAN_SECONDS);
+        qanaryCacheTest.setTestPort(testPort);
+        qanaryCacheTest.setRestTemplate(myRestTemplate);
+        qanaryCacheTest.setCacheOfResponse(myCacheOfResponse);
+
+        LOGGER.debug(
+                "givenRestTemplate_whenRequested_thenLogAndModifyResponse executing QanaryCacheTest with maxTimeSpanSeconds: {}, testPort: {}, restTemplate: {}, cacheOfResponse: {}",
+                MAX_TIME_SPAN_SECONDS, testPort, myRestTemplate, myCacheOfResponse);
 
         assertDoesNotThrow(
-                qanaryCacheTest::givenRestTemplate_whenRequested_thenLogAndModifyResponse
-        );
+                qanaryCacheTest::givenRestTemplate_whenRequested_thenLogAndModifyResponse);
     }
 
 }

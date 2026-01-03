@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xmlns="http://maven.apache.org/POM/4.0.0"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary-component-LD-Shuyo</artifactId>
@@ -12,7 +12,10 @@
 		<version>[0.1.0,1.0.0)</version>
 	</parent>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>25</java.version>
+		<!-- Compile bytecode to Java 17 for compatibility with the Spring/ASM stack -->
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 		<qanary.version>[3.7.6,4.0.0)</qanary.version>
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<!-- Replace the name of the docker image to be generated -->
@@ -87,9 +90,9 @@
 						<id>default</id>
 						<goals>
 							<goal>build</goal>
-                            <goal>push</goal>
-                        </goals>
-                    </execution>
+							<goal>push</goal>
+						</goals>
+					</execution>
 					<execution>
 						<id>default-2</id>
 						<goals>

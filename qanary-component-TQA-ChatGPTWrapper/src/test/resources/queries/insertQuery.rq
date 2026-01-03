@@ -8,13 +8,15 @@ PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 INSERT {
   GRAPH <urn:qanary#outGraph> {
     ?newAnnotation rdf:type qa:AnnotationOfTextAnswerJson .
-    ?newAnnotation oa:hasTarget <urn:qanary#qestion> .
-    ?newAnnotation oa:hasBody ?answer .
+    ?newAnnotation oa:hasTarget <urn:qanary#question> .
     ?newAnnotation oa:annotatedAt ?time .
     ?newAnnotation oa:annotatedBy <urn:qanary:ChatGPTWrapperMockedTest> .
+    ?newAnnotation oa:hasBody ?answer .
+
     ?answer rdf:type qa:ChatGptAnswerJson .
     ?answer rdf:value "{\"choices\":[{\"text\":\"\\n\\nThis is indeed a test\",\"index\":0,\"finish_reason\":\"length\"}]}" .
-    qa:AnswerJson rdfs:subClassOf qa:Answer .
+
+    qa:ChatGptAnswerJson rdfs:subClassOf qa:Answer .
   }
 }
 WHERE

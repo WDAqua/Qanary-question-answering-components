@@ -16,12 +16,14 @@ import qa.commons.QanaryCacheTest;
 import java.net.URISyntaxException;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CacheTests {
     // time span for caching, tests wait this time span during the test runs
-    protected final static int MAX_TIME_SPAN_SECONDS = 5;
+    protected static final int MAX_TIME_SPAN_SECONDS = 5;
     private static final Logger LOGGER = LoggerFactory.getLogger(CacheTests.class);
 
     private final int testPort;
@@ -39,7 +41,7 @@ class CacheTests {
     }
 
     @BeforeEach
-    public void init() {
+    void init() {
         assert this.myRestTemplate != null : "restTemplate cannot be null";
     }
 
@@ -48,17 +50,25 @@ class CacheTests {
      * @throws URISyntaxException
      */
     @Test
-    void givenRestTemplate_whenRequested_thenLogAndModifyResponse() {
-        QanaryCacheTest qanaryCacheTest = new QanaryCacheTest(
-                testPort,
-                MAX_TIME_SPAN_SECONDS,
-                myRestTemplate,
-                myCacheOfResponse
-        );
+    void givenRestTemplate_whenRequested_thenLogAndModifyResponse() throws InterruptedException, URISyntaxException {
+        LOGGER.warn(
+                "givenRestTemplate_whenRequested_thenLogAndModifyResponse using testPort: {}, MAX_TIME_SPAN_SECONDS: {}",
+                testPort, MAX_TIME_SPAN_SECONDS);
 
-        assertDoesNotThrow(
-                qanaryCacheTest::givenRestTemplate_whenRequested_thenLogAndModifyResponse
-        );
+        // check for correct initialization of QanaryCacheTest
+        assertTrue(MAX_TIME_SPAN_SECONDS > 0);
+        assertNotNull(myRestTemplate);
+        assertNotNull(myCacheOfResponse);
+
+        QanaryCacheTest qanaryCacheTest = new QanaryCacheTest();
+        qanaryCacheTest.setMaxTimeSpanSeconds(MAX_TIME_SPAN_SECONDS);
+        qanaryCacheTest.setTestPort(testPort);
+        qanaryCacheTest.setRestTemplate(myRestTemplate);
+        qanaryCacheTest.setCacheOfResponse(myCacheOfResponse);
+
+        // check for correct execution of QanaryCacheTest
+        LOGGER.debug("givenRestTemplate_whenRequested_thenLogAndModifyResponse executing QanaryCacheTest");
+        qanaryCacheTest.givenRestTemplate_whenRequested_thenLogAndModifyResponse();
     }
 
 }

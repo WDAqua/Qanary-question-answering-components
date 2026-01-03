@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary-component-NED-DBpediaSpotlight</artifactId>
 	<version>3.5.1</version>
 
-  <parent>
+	<parent>
 		<groupId>eu.wdaqua.qanary</groupId>
 		<artifactId>qa.qanarycomponent-parent</artifactId>
 		<version>[0.1.0,1.0.0)</version>
 	</parent>
 	<properties>
-		<java.version>17</java.version> 
+		<java.version>25</java.version>
+		<!-- Compile bytecode to Java 17 for compatibility with the Spring/ASM stack -->
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 		<spring-boot-admin.version>2.7.9</spring-boot-admin.version>
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<docker.image.name>qanary-component-ned-dbpediaspotlight</docker.image.name>
@@ -29,8 +33,8 @@
 		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui -->
 		<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-core-jakarta -->
 		<dependency>
-				<groupId>io.swagger.core.v3</groupId>
-				<artifactId>swagger-core-jakarta</artifactId>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-core-jakarta</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>

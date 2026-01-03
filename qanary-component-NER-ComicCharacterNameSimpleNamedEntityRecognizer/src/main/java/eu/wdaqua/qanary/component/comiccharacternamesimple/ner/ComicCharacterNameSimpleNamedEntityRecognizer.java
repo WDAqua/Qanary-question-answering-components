@@ -11,6 +11,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdfconnection.RDFConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,11 +33,17 @@ import java.net.URISyntaxException;
 public class ComicCharacterNameSimpleNamedEntityRecognizer extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(ComicCharacterNameSimpleNamedEntityRecognizer.class);
 
+    // Static RDFConnection to be reused across all instances
+    private static RDFConnection staticConnection = null;
+    private static final Object connectionLock = new Object();
+    private static String currentEndpoint = null;
+
     private final String applicationName;
     private String FILENAME_INSERT_ANNOTATION = "/queries/insert_one_annotation.rq";
     private String FILENAME_SELECT_HEROS = "/queries/select_all_superhero.rq";
 
-    public ComicCharacterNameSimpleNamedEntityRecognizer(@Value("${spring.application.name}") final String applicationName) {
+    public ComicCharacterNameSimpleNamedEntityRecognizer(
+            @Value("${spring.application.name}") final String applicationName) {
         this.applicationName = applicationName;
 
         // check if files exists and are not empty
@@ -51,32 +58,42 @@ public class ComicCharacterNameSimpleNamedEntityRecognizer extends QanaryCompone
      *
      * @throws Exception
      */
-    public SuperheroNamedEntityFound getAllSuperheroNamesFromDBpediaMatchingPositions(String question) throws IOException {
+    public SuperheroNamedEntityFound getAllSuperheroNamesFromDBpediaMatchingPositions(String question)
+            throws IOException {
 
         // query DBpedia for all superhero film characters
-        String serviceUrl = "http://dbpedia.org/sparql";
+        String serviceUrl = "https://dbpedia.org/sparql";
 
         QuerySolutionMap bindingsForSelect = new QuerySolutionMap();
 
         // get the template of the query
         String sparql = this.loadQueryFromFile(FILENAME_SELECT_HEROS, bindingsForSelect);
 
-        logger.info("searching for character names on DBpedia ...\nDBpedia query: \n{}", sparql);
+        logger.info("searching for character names on DBpedia ...\nDBpedia query:\n{}", sparql);
 
-        ResultSet rs = this.selectFromCostumeTripleStore(sparql, serviceUrl);
+        ResultSet rs = this.selectFromCustomTripleStore(sparql, serviceUrl);
+        if (rs.hasNext() == false) {
+            logger.warn("no rows returned by DBpedia using query:\n {}", //
+                    question, sparql); //
+            return null;
+        }
+
         while (rs.hasNext()) {
             QuerySolution s = rs.nextSolution();
             String characterName = this.getCharacterName(s);
+            logger.debug("found character name: {}", characterName);
             if (nameFound(question, characterName)) {
                 logger.info("found Super Hero name: {}", characterName);
                 String resource = this.getResource(s);
                 int[] index = this.getIndexOfName(question, characterName);
                 // return the found entity
-                return new SuperheroNamedEntityFound(characterName, resource, index[0], index[1]); //note that it will currently stop after having found just one matching name
+                // NOTE: it will currently stop after having found just one matching name
+                return new SuperheroNamedEntityFound(characterName, resource, index[0], index[1]);
             }
         }
         // if nothing was found, then return null
-        logger.warn("no matching names could be found");
+        logger.warn("no matching names could be found for question '{}' on DBpedia using query:\n {}", //
+                question, sparql); //
         return null;
     }
 
@@ -171,12 +188,17 @@ public class ComicCharacterNameSimpleNamedEntityRecognizer extends QanaryCompone
         return myQanaryMessage;
     }
 
-    public String getSparqlInsertQuery(SuperheroNamedEntityFound foundSuperhero, QanaryQuestion<String> myQanaryQuestion) throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
+    public String getSparqlInsertQuery(SuperheroNamedEntityFound foundSuperhero,
+            QanaryQuestion<String> myQanaryQuestion)
+            throws QanaryExceptionNoOrMultipleQuestions, URISyntaxException, SparqlQueryFailed, IOException {
         QuerySolutionMap bindingsForInsert = new QuerySolutionMap();
         bindingsForInsert.add("graph", ResourceFactory.createResource(myQanaryQuestion.getOutGraph().toASCIIString()));
-        bindingsForInsert.add("targetQuestion", ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
-        bindingsForInsert.add("start", ResourceFactory.createTypedLiteral(String.valueOf(foundSuperhero.getBeginIndex()), XSDDatatype.XSDnonNegativeInteger));
-        bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(foundSuperhero.getEndIndex()), XSDDatatype.XSDnonNegativeInteger));
+        bindingsForInsert.add("targetQuestion",
+                ResourceFactory.createResource(myQanaryQuestion.getUri().toASCIIString()));
+        bindingsForInsert.add("start", ResourceFactory
+                .createTypedLiteral(String.valueOf(foundSuperhero.getBeginIndex()), XSDDatatype.XSDnonNegativeInteger));
+        bindingsForInsert.add("end", ResourceFactory.createTypedLiteral(String.valueOf(foundSuperhero.getEndIndex()),
+                XSDDatatype.XSDnonNegativeInteger));
         bindingsForInsert.add("application", ResourceFactory.createResource("urn:qanary:" + this.applicationName));
 
         // get the template of the INSERT query
@@ -190,9 +212,93 @@ public class ComicCharacterNameSimpleNamedEntityRecognizer extends QanaryCompone
         return QanaryTripleStoreConnector.readFileFromResourcesWithMap(filenameWithRelativePath, bindings);
     }
 
-    private ResultSet selectFromCostumeTripleStore(String sparqlQuery, String endpoint) {
-        Query query = QueryFactory.create(sparqlQuery);
-        QueryExecution qExe = QueryExecutionFactory.sparqlService(endpoint, query);
-        return qExe.execSelect();
+    /**
+     * Get or create the static RDFConnection for the given endpoint
+     * 
+     * @param endpoint
+     * @return RDFConnection instance
+     */
+    private static RDFConnection getOrCreateConnection(String endpoint) {
+        synchronized (connectionLock) {
+            // If connection exists and endpoint matches, reuse it
+            if (staticConnection != null && endpoint.equals(currentEndpoint)) {
+                logger.debug("Reusing existing RDFConnection for endpoint: {}", endpoint);
+                return staticConnection;
+            }
+
+            // Close existing connection if endpoint changed
+            if (staticConnection != null) {
+                try {
+                    staticConnection.close();
+                    logger.debug("Closed existing RDFConnection for endpoint: {}", currentEndpoint);
+                } catch (Exception e) {
+                    logger.warn("Error closing existing RDFConnection: {}", e.getMessage());
+                }
+            }
+
+            // Create new connection
+            logger.debug("Creating new RDFConnection for endpoint: {}", endpoint);
+            staticConnection = RDFConnection.connect(endpoint);
+            currentEndpoint = endpoint;
+            return staticConnection;
+        }
+    }
+
+    /**
+     * execute SPARQL query on the given endpoint and return the result set
+     * 
+     * @param sparqlQuery
+     * @param endpoint
+     * @return
+     */
+    protected ResultSet selectFromCustomTripleStore(String sparqlQuery, String endpoint) {
+
+        // execute SPARQL query and return the result set
+        try {
+            RDFConnection conn = getOrCreateConnection(endpoint);
+
+            logger.debug("Executing query: {}", sparqlQuery);
+
+            try (QueryExecution qExe = conn.query(sparqlQuery)) {
+                // Get the streaming ResultSet
+                ResultSet streamingResultSet = qExe.execSelect();
+                if (streamingResultSet == null) {
+                    logger.error("Query execution returned null ResultSet");
+                    return null;
+                }
+
+                // Materialize the ResultSet while QueryExecution is still open
+                // This fully consumes the streaming ResultSet and creates an in-memory copy
+                logger.debug("Materializing ResultSet...");
+                ResultSet resultSet = ResultSetFactory.copyResults(streamingResultSet);
+
+                // Verify the ResultSet has results
+                if (!resultSet.hasNext()) {
+                    logger.warn("Materialized ResultSet is empty for query:\n{}", sparqlQuery);
+                } else {
+                    logger.debug("ResultSet materialized successfully with results");
+                }
+
+                return resultSet;
+            }
+        } catch (Exception e) {
+            logger.error("Error executing SPARQL query on endpoint '{}' with query:\n{}", //
+                    endpoint, sparqlQuery, ExceptionUtils.getStackTrace(e));
+            // If connection error, reset static connection to force reconnection on next
+            // call
+            synchronized (connectionLock) {
+                if (staticConnection != null && endpoint.equals(currentEndpoint)) {
+                    try {
+                        staticConnection.close();
+                    } catch (Exception closeEx) {
+                        // Ignore close errors
+                    }
+                    staticConnection = null;
+                    currentEndpoint = null;
+                    logger.debug("Reset static connection due to error");
+                }
+            }
+            return null;
+        }
     }
 }
