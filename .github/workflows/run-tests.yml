@@ -71,10 +71,6 @@ jobs:
         run: |
           sudo apt-get clean
           df -h
-      - name: "Remove docker images"
-        run: |
-          docker rmi $(docker image ls -aq)
-          df -h   
       - uses: actions/checkout@v6
       - name: Cache virtual environments
         uses: actions/cache@v5
