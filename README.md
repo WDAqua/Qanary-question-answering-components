@@ -20,19 +20,21 @@ Most components in this repository still target the **legacy** Spring Boot 2 /
 Qanary 3.x framework (parent `qa.qanarycomponent-parent [0.1.0,1.0.0)`,
 `qanary.version [3.x,4.0.0)`, resolved from Maven Central). The following
 components have been **migrated to the current Qanary framework 4.0.0**
-(Spring Boot 3, Java 21, Apache Jena 5) and build & test green against it:
+(Spring Boot 3, Java 21, Apache Jena 5).
 
-| Component | Notes |
-|---|---|
-| [qanary-component-CopyValuesOfPriorGraph](./qanary-component-CopyValuesOfPriorGraph) | utility: copy annotations of a prior graph |
-| [qanary-component-QB-BirthDataWikidata](./qanary-component-QB-BirthDataWikidata) | Wikidata query builder |
-| [qanary-component-QB-DateOfDeathDBpedia](./qanary-component-QB-DateOfDeathDBpedia) | DBpedia query builder (Spring Data JPA / H2) |
-| [qanary-component-QBE-SimpleQueryBuilderAndExecutor](./qanary-component-QBE-SimpleQueryBuilderAndExecutor) | query builder + executor; required a Jena 5 API update |
-| [qanary-component-QB-ComicCharacterAlterEgoSimpleDBpedia](./qanary-component-QB-ComicCharacterAlterEgoSimpleDBpedia) | DBpedia query builder |
-| [qanary-component-QB-SimpleRealNameOfSuperHero](./qanary-component-QB-SimpleRealNameOfSuperHero) | DBpedia query builder (minimal tutorial); JUnit 4→5 tests |
-| [qanary-component-KG2KG-TranslateAnnotationsOfInstance](./qanary-component-KG2KG-TranslateAnnotationsOfInstance) | DBpedia↔Wikidata translation; JUnit 4→5, order-independent tests |
-| [qanary-component-NED-DBpediaSpotlight](./qanary-component-NED-DBpediaSpotlight) | NED via DBpedia Spotlight; Apache HttpClient 4→5 migration |
-| [qanary-component-NER-DBpediaSpotlight](./qanary-component-NER-DBpediaSpotlight) | NER via DBpedia Spotlight |
+**Build + tests green (offline):** CopyValuesOfPriorGraph, QB-BirthDataWikidata,
+QB-DateOfDeathDBpedia, QBE-SimpleQueryBuilderAndExecutor,
+QB-ComicCharacterAlterEgoSimpleDBpedia, QB-SimpleRealNameOfSuperHero,
+KG2KG-TranslateAnnotationsOfInstance, NED-DBpediaSpotlight, NER-DBpediaSpotlight,
+QE-SparqlExecuter, NED-AGDISTIS, NED-Ambiverse, NED-Watson, NER-Ambiverse,
+NERD-SMAPH, NER-EntityClassifier, NER-FOX, QB-MonoliticWrapper, NERD-Alchemy,
+NER-ComicCharacterNameSimpleNamedEntityRecognizer.
+
+**Build + package verified; live tests need external resources** (these wrap
+keyed/remote services or load NLP models, so their `*LiveTest` / cache /
+full-context tests require API keys, network or model files — as on 3.x):
+NED-Babelfy, NED-Dandelion, NER-Dandelion, NER-MeaningCloud, NER-Tagme,
+NER-TextRazor, NER-Stanford.
 
 The framework artifacts (`qa.component`, `qa.commons`) are a **local build** of the
 [Qanary](https://github.com/WDAqua/Qanary) repository (`mvn install`), not published
