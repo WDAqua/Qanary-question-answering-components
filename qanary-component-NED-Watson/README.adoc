@@ -37,3 +37,15 @@ Comment: `qa:score` is in `oa:hasSelector` and is of type `xsd:float`.
 == Remarks
 
 * this Qanary component contains a file-based caching mechanism
+
+== Build (Qanary 4.0.0)
+
+Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
+framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
+repository), then build clean with JDK 21:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-ned-watson.jar -t qanary/qanary-component-ned-watson .
+----
