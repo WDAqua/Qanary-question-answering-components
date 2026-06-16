@@ -30,3 +30,34 @@ Not applicable as the textual question is a default parameter
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
     qa:score "0.5"^^xsd:decimal .
 ----
+
+== Build and run
+
+This component targets the current *Qanary framework 4.0.0* (Spring Boot 3,
+Java 21). Install the framework first (`mvn install` in the
+https://github.com/WDAqua/Qanary[Qanary] repository), then build clean:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+java -jar target/qanary-component-ned-dbpediaspotlight.jar
+----
+
+Docker:
+
+[source,bash]
+----
+mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-ned-dbpediaspotlight.jar \
+  -t qanary/qanary-component-ned-dbpediaspotlight .
+----
+
+Configuration is in `src/main/resources/config/application.properties` (the
+DBpedia Spotlight endpoint, confidence, SSL handling, and the usual
+`server.port` / `spring.application.name` / `spring.boot.admin.url`).
+
+== Tests
+
+`mvn test` runs offline unit tests (JSON-response parsing with a mocked service
+fetcher, plus the framework cache test). The Spring Boot Admin client failing to
+reach a non-running pipeline is logged but non-fatal.
