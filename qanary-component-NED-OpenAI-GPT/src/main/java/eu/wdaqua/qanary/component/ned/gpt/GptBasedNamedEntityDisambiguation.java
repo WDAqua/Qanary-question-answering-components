@@ -1,5 +1,6 @@
 package eu.wdaqua.qanary.component.ned.gpt;
 
+import org.apache.jena.sparql.exec.http.QueryExecutionHTTP;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -194,7 +195,7 @@ public class GptBasedNamedEntityDisambiguation extends QanaryComponent {
 			LOGGER.debug("Get mappings for {} using: {}", resource.toASCIIString(), sparqlQueryToGetMappings);
 
 			@SuppressWarnings("deprecation")
-			QueryExecution qexec = QueryExecutionFactory.sparqlService(DBPEDIAENDPOINT, sparqlQueryToGetMappings);
+			QueryExecution qexec = QueryExecutionHTTP.service(DBPEDIAENDPOINT).query(sparqlQueryToGetMappings).build();
 
 			try {
 				ResultSet results = qexec.execSelect();

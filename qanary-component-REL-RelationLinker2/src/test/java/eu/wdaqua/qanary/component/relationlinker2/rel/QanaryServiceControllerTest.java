@@ -4,15 +4,13 @@ package eu.wdaqua.qanary.component.relationlinker2.rel;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.config.QanaryConfiguration;
 import eu.wdaqua.qanary.component.QanaryServiceController;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -25,13 +23,12 @@ import java.net.URISyntaxException;
 import java.util.Map.Entry;
 
 import static eu.wdaqua.qanary.commons.config.QanaryConfiguration.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
 public class QanaryServiceControllerTest {
@@ -48,7 +45,7 @@ public class QanaryServiceControllerTest {
 	 *
 	 * @throws Exception
 	 */
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 		viewResolver.setPrefix("/WEB-INF/jsp/view/");
@@ -74,7 +71,7 @@ public class QanaryServiceControllerTest {
 	 * QanaryConfiguration.annotatequestion, check if the values are the same
 	 */
 	@Test
-	@Ignore //TODO this test cannot be executed as the triplestore needs to be mocked first
+	@Disabled //TODO this test cannot be executed as the triplestore needs to be mocked first
 	public void testMessageReceiveAndSend() {
 
 		QanaryMessage requestMessage;
@@ -114,7 +111,7 @@ public class QanaryServiceControllerTest {
 		for (Entry<URI, URI> entry : requestMessage.getValues().entrySet()) {
 			URI key = entry.getKey();
 			int compareResult = entry.getValue().toString().compareTo(resultMessage.getValues().get(key).toString());
-			assertTrue("check result vs. request: " + key, compareResult == 0);
+			assertTrue(compareResult == 0, "check result vs. request: " + key);
 		}
 
 	}
