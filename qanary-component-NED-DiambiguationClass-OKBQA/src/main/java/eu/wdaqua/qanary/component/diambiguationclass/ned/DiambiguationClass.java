@@ -1,5 +1,6 @@
 package eu.wdaqua.qanary.component.diambiguationclass.ned;
 
+import org.apache.jena.sparql.exec.http.QueryExecutionHTTP;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
@@ -302,7 +303,7 @@ public class DiambiguationClass extends QanaryComponent {
     @Deprecated(since="3.1.3", forRemoval=true)
     private ResultSet selectTripleStore(String sparqlQuery, String endpoint) {
         Query query = QueryFactory.create(sparqlQuery);
-        QueryExecution qExe = QueryExecutionFactory.sparqlService(endpoint, query);
+        QueryExecution qExe = QueryExecutionHTTP.service(endpoint).query(query).build();
         return qExe.execSelect();
     }
 

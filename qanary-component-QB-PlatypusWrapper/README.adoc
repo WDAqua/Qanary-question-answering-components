@@ -39,3 +39,15 @@ e.g. `platypus.endpoint.language.supported=en,fr,ru`.
 == Further references
 
 - https://github.com/WDAqua/Qanary/wiki//How-to-start-a-standard-java-Qanary-component[How to start a standard Java Qanary component]
+
+== Build (Qanary 4.0.0)
+
+Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
+framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
+repository), then build clean with JDK 21:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-qb-platypuswrapper.jar -t qanary/qanary-component-qb-platypuswrapper .
+----

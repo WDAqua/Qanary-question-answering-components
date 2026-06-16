@@ -2,9 +2,6 @@ package eu.wdaqua.qanary.component.relnliod.rel;
 
 import org.apache.jena.graph.Triple;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.lang.PipedRDFIterator;
-import org.apache.jena.riot.lang.PipedRDFStream;
-import org.apache.jena.riot.lang.PipedTriplesStream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -43,20 +40,8 @@ public class DbpediaRecordProperty {
         try {
             File filename = new File(ttlFile);
             System.out.println(filename.getAbsolutePath());
-            PipedRDFIterator<Triple> iter = new PipedRDFIterator<>();
-            final PipedRDFStream<Triple> inputStream = new PipedTriplesStream(iter);
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            Runnable parser;
-            parser = new Runnable() {
-                @Override
-                public void run() {
-                    RDFDataMgr.parse(inputStream, filename.getAbsolutePath());
-
-                }
-            };
-
-            executor.submit(parser);
-            //	executor.shutdown();
+            // Jena 5: PipedRDFIterator/PipedTriplesStream removed; AsyncParser streams triples as an Iterator.
+            java.util.Iterator<Triple> iter = org.apache.jena.riot.system.AsyncParser.asyncParseTriples(filename.getAbsolutePath());
             int count = 0;
             while (iter.hasNext()) {
                 org.apache.jena.graph.Triple next = iter.next();

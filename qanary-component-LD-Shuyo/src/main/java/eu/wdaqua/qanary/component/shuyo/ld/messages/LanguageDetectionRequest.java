@@ -2,7 +2,7 @@ package eu.wdaqua.qanary.component.shuyo.ld.messages;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public class LanguageDetectionRequest {
 

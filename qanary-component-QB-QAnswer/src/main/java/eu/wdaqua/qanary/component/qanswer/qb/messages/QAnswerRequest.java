@@ -2,7 +2,7 @@ package eu.wdaqua.qanary.component.qanswer.qb.messages;
 
 import java.net.URI;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
