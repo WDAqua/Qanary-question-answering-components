@@ -1,4 +1,4 @@
-:toc:
+:toc: macro
 :toclevels: 3
 :source-highlighter: highlight.js
 ifdef::env-github[]
@@ -9,8 +9,6 @@ endif::[]
 = In a Nutshell: Qanary Question Answering Components
 
 image::https://raw.githubusercontent.com/WDAqua/Qanary/master/doc/logo-qanary_s.png[Qanary logo,200,float=right]
-
-toc::[]
 
 The https://github.com/WDAqua/Qanary/[Qanary Framework] is dedicated to creating Question Answering systems. Question Answering (QA) is a task requiring different fields leading to expensive/time-consuming engineering tasks that might block research as it is too expensive. Typical problems/use cases that might occur while developing a Question Answering system are:
 
@@ -23,6 +21,7 @@ The https://github.com/WDAqua/Qanary/[Qanary Framework] is dedicated to creating
 
 In this repository, the https://github.com/WDAqua/Qanary-question-answering-components[components of the Qanary framework]  are stored. All components are implemented in Java and provide a Docker container for lightweight maintenance.
 
+toc::[]
 
 == Status: migration to the current Qanary framework (4.0.0)
 
