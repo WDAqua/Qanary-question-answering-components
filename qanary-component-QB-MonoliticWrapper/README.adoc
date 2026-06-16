@@ -7,30 +7,32 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-= Annotation of Spot Class
+= Monolitic Wrapper
 
 toc::[]
 
 == Intention
 
-Component source: https://www.okbqa.org/architecture/template-generation The component fetches the textual question and annotates a recognized and disambiguated class and save it to the triplestore.
+A dummy component for monolithic systems that produce SPARQL queries.
 
 == Behavior
+
+The queries are executed and stored as well as their result.
 
 As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — build a formal (SPARQL) query from the question and its annotations — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations. See <<Input specification>> / <<Output specification>> below for the exact annotation contract.
 
 == Characteristics
 
 * *Task type:* Query Building (QB).
-* *External service:* http://ws.okbqa.org:1515/templategeneration/rocknrole
+* *External service:* http://dbpedia.org/resource/DBpedia
 * *Offline build:* builds and (where present) tests run offline.
 
 == Implementation
 
 * *Language:* Java (JDK 21).
 * *Major frameworks:* Spring Boot 3.5 (`spring-boot-starter-parent`); the Qanary component framework `eu.wdaqua.qanary:qa.component` 4.0.0 (transitively Spring Boot Admin client + Apache Jena 5).
-* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/annotationofspotclass/qb/AnnotationofSpotClass.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
-* *Tests:* 3 test class(es) under `src/test/java/` (`AnnotationOfSpotClassTest.java`, `QanaryServiceControllerTest.java`, `SwaggerUiAvailabilityTest.java`).
+* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/monoliticwrapper/qb/Monolitic.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
+* *Tests:* 2 test class(es) under `src/test/java/` (`QanaryServiceControllerTest.java`, `SwaggerUiAvailabilityTest.java`).
 
 == Build and run
 
@@ -41,7 +43,7 @@ repository), then build with JDK 21:
 [source,bash]
 ----
 JAVA_HOME=/path/to/jdk21 mvn clean package
-docker build --build-arg JAR_FILE=target/qanary-component-qb-annotationofspotclass-okbqa.jar -t qanary/qanary-component-qb-annotationofspotclass-okbqa .
+docker build --build-arg JAR_FILE=target/qanary-component-qb-monoliticwrapper.jar -t qanary/qanary-component-qb-monoliticwrapper .
 ----
 
 == Input specification
@@ -50,18 +52,22 @@ Not applicable as the textual question is a default parameter
 
 == Output specification
 
-[source, ttl]
+Comment: no score in the output, `rdf:value` for the JSON annotation was not used
+
+[source,ttl]
 ----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<urn:qanary:output> a qa:AnnotationOfClass .
-<urn:qanary:output> oa:hasTarget [
-	a oa:SpecificResource ;
- 	oa:hasSource <urn:myQanaryQuestion> ;
-] .
-<urn:qanary:output> oa:hasBody <urn:dbr:disambiguatedClass> ;
-    oa:annotatedBy <urn:qanary:AnnotationOfSpotClass> ;
-    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime  .
+<urn:qanary:output1> a 	qa:AnnotationOfAnswerSPARQL ;
+	oa:hasTarget    <urn:qanary:myQanaryQuestion> ;
+	oa:hasBody      "SPARQL query"^^xsd:string ;
+	oa:annotatedBy  <urn:qanary:MonoliticWrapper> ;
+	oa:annotatedAt  "2001-10-26T21:32:52"^^xsd:dateTime .
+
+<urn:qanary:output2> a qa:AnnotationOfAnswerJson ;
+    oa:hasTarget <urn:qanary:myQanaryQuestion> ;
+    oa:hasBody "JSON result SPARQL query"^^xsd:string ;
+    oa:annotatedBy <urn:qanary:MonoliticWrapper> ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ----

@@ -1,8 +1,50 @@
+:toc:
+:toclevels: 3
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:warning-caption: :warning:
+endif::[]
+
 = NER Comic Character Name Simple Named Entity Recognizer
 
-== Description
+toc::[]
+
+== Intention
 
 Receives a textual question recognizes and disambiguates named entities and stores them.
+
+== Behavior
+
+As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — recognise (spot) named-entity mentions in the question text — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations. See <<Input specification>> / <<Output specification>> below for the exact annotation contract.
+
+== Characteristics
+
+* *Task type:* Named Entity Recognition (NER).
+* *Knowledge base:* DBpedia.
+* *External service:* https://dbpedia.org/sparql
+* *Note:* This Qanary component is annotating DBpedia's Superhero entities within questions.
+* *Offline build:* builds and (where present) tests run offline.
+
+== Implementation
+
+* *Language:* Java (JDK 21).
+* *Major frameworks:* Spring Boot 3.5 (`spring-boot-starter-parent`); the Qanary component framework `eu.wdaqua.qanary:qa.component` 4.0.0 (transitively Spring Boot Admin client + Apache Jena 5).
+* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/comiccharacternamesimple/ner/ComicCharacterNameSimpleNamedEntityRecognizer.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
+* *Tests:* 5 test class(es) under `src/test/java/` (`ComicCharacterNameSimpleLiveTests.java`, `ComicCharacterNameSimpleMockedTests.java`, `ComicCharacterNameSimpleTestConfiguration.java`, `QanaryServiceControllerTest.java`, `SwaggerUiAvailabilityTest.java`).
+
+== Build and run
+
+Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
+framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
+repository), then build with JDK 21:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-ner-comiccharacternamesimplenamedentityrecognizer.jar -t qanary/qanary-component-ner-comiccharacternamesimplenamedentityrecognizer .
+----
 
 == Input specification
 
@@ -30,16 +72,4 @@ Comment: no score in the output
     ] .
 <urn:qanary:output> oa:annotatedBy <urn:qanary:component:ComicCharacterNameSimpleNamedEntityRecognizer> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
-----
-
-== Build (Qanary 4.0.0)
-
-Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
-framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
-repository), then build clean with JDK 21:
-
-[source,bash]
-----
-JAVA_HOME=/path/to/jdk21 mvn clean package
-docker build --build-arg JAR_FILE=target/qanary-component-ner-comiccharacternamesimplenamedentityrecognizer.jar -t qanary/qanary-component-ner-comiccharacternamesimplenamedentityrecognizer .
 ----

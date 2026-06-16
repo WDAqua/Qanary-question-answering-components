@@ -1,0 +1,45 @@
+:toc:
+:toclevels: 3
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:warning-caption: :warning:
+endif::[]
+
+= Query Candidate Fetcher for a DeepPavlov API
+
+toc::[]
+
+== Intention
+
+see the https://github.com/WDAqua/Qanary/wiki/[Qanary wiki] for a https://github.com/WDAqua/Qanary/wiki/How-do-I-implement-a-new-Qanary-component-using-Java%3F[tutorial] on how to use this Apache Maven archetype for creating a Qanary component.
+
+== Behavior
+
+As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — build a formal (SPARQL) query from the question and its annotations — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations.
+
+== Characteristics
+
+* *Task type:* Query Building (QB).
+* *External service:* http://www.wikidata.org/entity/
+* *Offline build:* builds and (where present) tests run offline.
+
+== Implementation
+
+* *Language:* Java (JDK 21).
+* *Major frameworks:* Spring Boot 3.5 (`spring-boot-starter-parent`); the Qanary component framework `eu.wdaqua.qanary:qa.component` 4.0.0 (transitively Spring Boot Admin client + Apache Jena 5); springdoc-openapi (Swagger UI); Gson.
+* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/deeppavlovwrapper/qb/DeepPavlovWrapper.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
+* *Tests:* 2 test class(es) under `src/test/java/` (`QanaryServiceControllerTest.java`, `SwaggerUiAvailabilityTest.java`).
+
+== Build and run
+
+Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
+framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
+repository), then build with JDK 21:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-qb-deeppavlovwrapper.jar -t qanary/qanary-component-qb-deeppavlovwrapper .
+----

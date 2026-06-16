@@ -7,29 +7,30 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-= NER OntoText
+= REL Relation Linker 1
 
 toc::[]
 
 == Intention
 
-Receives a textual question, forwards it to the OntoText's API and saves resulting named entities.
+Receives a textual question forwards it to some local API, gets back recognized DBpedia relations and stores them.
 
 == Behavior
 
-As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — recognise (spot) named-entity mentions in the question text — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations. See <<Input specification>> / <<Output specification>> below for the exact annotation contract.
+As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — detect and link the relations (properties) expressed in the question — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations. See <<Input specification>> / <<Output specification>> below for the exact annotation contract.
 
 == Characteristics
 
-* *Task type:* Named Entity Recognition (NER).
-* *External service:* https://tag.ontotext.com/extractor-en/extract
-* *Offline build:* builds and (where present) tests run offline.
+* *Task type:* Relation Linking (REL).
+* *Knowledge base:* DBpedia.
+* *External service:* http://dbpedia.org/property/
+* *Requires credentials / network:* wraps a remote, keyed service — its live tests need an API key and network access (build offline with `-DskipTests`).
 
 == Implementation
 
 * *Language:* Java (JDK 21).
 * *Major frameworks:* Spring Boot 3.5 (`spring-boot-starter-parent`); the Qanary component framework `eu.wdaqua.qanary:qa.component` 4.0.0 (transitively Spring Boot Admin client + Apache Jena 5); Apache HttpClient 5.
-* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/ontotext/ner/OntoTextNER.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
+* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/relationlinker/rel/RelationLinker1.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
 * *Tests:* 2 test class(es) under `src/test/java/` (`QanaryServiceControllerTest.java`, `SwaggerUiAvailabilityTest.java`).
 
 == Build and run
@@ -41,7 +42,7 @@ repository), then build with JDK 21:
 [source,bash]
 ----
 JAVA_HOME=/path/to/jdk21 mvn clean package
-docker build --build-arg JAR_FILE=target/qanary-component-ner-ontotext.jar -t qanary/qanary-component-ner-ontotext .
+docker build --build-arg JAR_FILE=target/qanary-component-rel-relationlinker1.jar -t qanary/qanary-component-rel-relationlinker1 .
 ----
 
 == Input specification
@@ -50,14 +51,14 @@ Not applicable as the textual question is a default parameter
 
 == Output specification
 
-Comment: no score in the output
+Comment: no score in the output.
 
-[source, ttl]
+[source,ttl]
 ----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
-<urn:qanary:output> a qa:AnnotationOfSpotInstance .
+<urn:qanary:output> a qa:AnnotationOfRelation .
 <urn:qanary:output> oa:hasTarget [
     a   oa:SpecificResource;
         oa:hasSource    <urn:qanary:myQanaryQuestion> ;
@@ -67,6 +68,7 @@ Comment: no score in the output
             oa:end  "5"^^xsd:nonNegativeInteger
         ]
     ] .
-<urn:qanary:output> oa:annotatedBy <urn:qanary:Ontotext> ;
+<urn:qanary:output> oa:hasBody <dbr:Relation> ;
+    oa:annotatedBy <urn:qanary:RelationLinker1> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ----

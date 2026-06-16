@@ -1,10 +1,50 @@
+:toc:
+:toclevels: 3
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:warning-caption: :warning:
+endif::[]
+
 = ChatGPT Wrapper
 
-== Description
+toc::[]
+
+== Intention
 
 This component is a wrapper for the https://platform.openai.com/overview[OpenAI API].
-It sends the given question to the https://platform.openai.com/docs/api-reference/completions[completions API]
-and store all returned choices in the graph.
+
+== Behavior
+
+It sends the given question to the https://platform.openai.com/docs/api-reference/completions[completions API] and store all returned choices in the graph.
+
+As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — answer the question directly from text using a language model — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations. See <<Input specification>> / <<Output specification>> below for the exact annotation contract.
+
+== Characteristics
+
+* *Task type:* Textual Question Answering (TQA).
+* *Note:* This Qanary component is requesting an answer from the ChatGPT API and stores it into the Qanary triplestore.
+* *Requires credentials / network:* wraps a remote, keyed service — its live tests need an API key and network access (build offline with `-DskipTests`).
+
+== Implementation
+
+* *Language:* Java (JDK 21).
+* *Major frameworks:* Spring Boot 3.5 (`spring-boot-starter-parent`); the Qanary component framework `eu.wdaqua.qanary:qa.component` 4.0.0 (transitively Spring Boot Admin client + Apache Jena 5); springdoc-openapi (Swagger UI); Gson.
+* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/chatgptwrapper/tqa/ChatGPTWrapper.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
+* *Tests:* 8 test class(es) under `src/test/java/` (`CacheTests.java`, `ChatGPTRestControllerTest.java`, `ChatGPTTestConfiguration.java`, `ChatGPTWrapperMockedTest.java`, `MyCompletionRequestTest.java`, `MyOpenAiApiMockedTest.java`).
+
+== Build and run
+
+Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
+framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
+repository), then build with JDK 21:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-tqa-chatgptwrapper.jar -t qanary/qanary-component-tqa-chatgptwrapper .
+----
 
 == Configuration
 
@@ -90,16 +130,4 @@ WHERE
     BIND(iri(str(rand())) AS ?answer)
     BIND(now() AS ?time)
 }
-----
-
-== Build (Qanary 4.0.0)
-
-Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
-framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
-repository), then build clean with JDK 21:
-
-[source,bash]
-----
-JAVA_HOME=/path/to/jdk21 mvn clean package
-docker build --build-arg JAR_FILE=target/qanary-component-tqa-chatgptwrapper.jar -t qanary/qanary-component-tqa-chatgptwrapper .
 ----

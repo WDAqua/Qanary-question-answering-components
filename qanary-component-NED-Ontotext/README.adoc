@@ -1,8 +1,48 @@
+:toc:
+:toclevels: 3
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:warning-caption: :warning:
+endif::[]
+
 = NED Ontotext
 
-== Description
+toc::[]
+
+== Intention
 
 Receives a textual question recognizes and disambiguates named entities and stores them.
+
+== Behavior
+
+As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — disambiguate recognised entity mentions and link them to a knowledge base — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations. See <<Input specification>> / <<Output specification>> below for the exact annotation contract.
+
+== Characteristics
+
+* *Task type:* Named Entity Disambiguation / Entity Linking (NED).
+* *External service:* https://tag.ontotext.com/extractor-en/extract
+* *Offline build:* builds and (where present) tests run offline.
+
+== Implementation
+
+* *Language:* Java (JDK 21).
+* *Major frameworks:* Spring Boot 3.5 (`spring-boot-starter-parent`); the Qanary component framework `eu.wdaqua.qanary:qa.component` 4.0.0 (transitively Spring Boot Admin client + Apache Jena 5); Apache HttpClient 5.
+* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/ontotext/ned/OntoTextNED.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
+* *Tests:* 2 test class(es) under `src/test/java/` (`QanaryServiceControllerTest.java`, `SwaggerUiAvailabilityTest.java`).
+
+== Build and run
+
+Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
+framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
+repository), then build with JDK 21:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-ned-ontotext.jar -t qanary/qanary-component-ned-ontotext .
+----
 
 == Input specification
 
@@ -30,16 +70,4 @@ Comment: no score in the output
 <urn:qanary:output> oa:hasBody <urn:dbr:Resource> ;
     oa:annotatedBy <urn:qanary:Ontotext> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
-----
-
-== Build (Qanary 4.0.0)
-
-Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
-framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
-repository), then build clean with JDK 21:
-
-[source,bash]
-----
-JAVA_HOME=/path/to/jdk21 mvn clean package
-docker build --build-arg JAR_FILE=target/qanary-component-ned-ontotext.jar -t qanary/qanary-component-ned-ontotext .
 ----

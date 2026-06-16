@@ -7,7 +7,7 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-= CLS CLSNLIOD
+= Annotation of Spot Property
 
 toc::[]
 
@@ -17,11 +17,11 @@ The component fetches the textual question and annotates a recognized and disamb
 
 == Behavior
 
-As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — recognise and link the ontology class referred to in the question — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations. See <<Input specification>> / <<Output specification>> below for the exact annotation contract.
+As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — detect/disambiguate the property (relation) referred to in the question — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations. See <<Input specification>> / <<Output specification>> below for the exact annotation contract.
 
 == Characteristics
 
-* *Task type:* Class Linking / Classification (CLS).
+* *Task type:* Relation Detection (RD).
 * *External service:* http://ws.okbqa.org:1515/templategeneration/rocknrole
 * *Offline build:* builds and (where present) tests run offline.
 
@@ -29,7 +29,7 @@ As a Qanary component, it reads the question and the annotations produced by ups
 
 * *Language:* Java (JDK 21).
 * *Major frameworks:* Spring Boot 3.5 (`spring-boot-starter-parent`); the Qanary component framework `eu.wdaqua.qanary:qa.component` 4.0.0 (transitively Spring Boot Admin client + Apache Jena 5).
-* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/clsnliod/cls/ClsNliodCls.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
+* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/annotationofspotproperty/rd/AnnotationofSpotProperty.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
 * *Tests:* 2 test class(es) under `src/test/java/` (`QanaryServiceControllerTest.java`, `SwaggerUiAvailabilityTest.java`).
 
 == Build and run
@@ -41,7 +41,7 @@ repository), then build with JDK 21:
 [source,bash]
 ----
 JAVA_HOME=/path/to/jdk21 mvn clean package
-docker build --build-arg JAR_FILE=target/qanary-component-cls-clsnliod.jar -t qanary/qanary-component-cls-clsnliod .
+docker build --build-arg JAR_FILE=target/qanary-component-rd-annotaitonofspotproperty-okbqa.jar -t qanary/qanary-component-rd-annotaitonofspotproperty-okbqa .
 ----
 
 == Input specification
@@ -50,7 +50,9 @@ Not applicable as the textual question is a default parameter
 
 == Output specification
 
-[source,turtle]
+Comment: the name of the component is "property" but class annotated
+
+[source,ttl]
 ----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
@@ -61,7 +63,7 @@ Not applicable as the textual question is a default parameter
 	a oa:SpecificResource ;
  	oa:hasSource <urn:myQanaryQuestion> ;
 ] .
-<urn:qanary:output> oa:hasBody <dbr:disambiguatedClass> ;
+<urn:qanary:output> oa:hasBody <urn:dbr:disambiguatedClass> ;
     oa:annotatedBy <urn:qanary:AnnotationofSpotProperty> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime  .
 ----

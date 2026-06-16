@@ -1,18 +1,60 @@
-# A Query Builder and Executor to fetch Results from the QAnswer API
+:toc:
+:toclevels: 3
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:warning-caption: :warning:
+endif::[]
+
+= A Query Builder and Executor to fetch Results from the QAnswer API
+
+toc::[]
+
+== Intention
 
 The component is fetching results from the QAnswer API.
-This component is also taking into account the already annotated Named Entities.
-If Named Entities are available in the Qanary triplestore, then their entity URIs are replaced in the text of the given question, s.t., an *enriched question* is computed.
-Hence, information annotated by previous Qanary components can be integrated into the request (see the examples below), s.t., the ambiguity of the computed result might be reduced while activating Named Entity Recognizer or Named Entity Disambiguator (Entity Linking) components in your Qanary process.
-Consequently, your request to the QAnswer API might be more precise.
 
-## Background
+== Behavior
 
-[QAnswer](https://www.qanswer.eu/) is an API capable of retrieving data from different knowledge graphs.
+This component is also taking into account the already annotated Named Entities. If Named Entities are available in the Qanary triplestore, then their entity URIs are replaced in the text of the given question, s.t., an *enriched question* is computed. Hence, information annotated by previous Qanary components can be integrated into the request (see the examples below), s.t., the ambiguity of the computed result might be reduced while activating Named Entity Recognizer or Named Entity Disambiguator (Entity Linking) components in your Qanary process. Consequently, your request to the QAnswer API might be more precise.
 
-## Input specification
+As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — build a formal query from the annotations and execute it to obtain the answer — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations. See <<Input specification>> / <<Output specification>> below for the exact annotation contract.
 
-```ttl
+== Characteristics
+
+* *Task type:* Query Building and Execution (QBE).
+* *External service:* https://query.wikidata.org/bigdata/namespace/wdq/sparql
+* *Note:* This Qanary component retrieves the Named Entities from the Qanary triplestore, replaces entities by the entity URIs, and fetches results for the enriched question from the QAnswer API.
+* *Offline build:* builds and (where present) tests run offline.
+
+== Implementation
+
+* *Language:* Java (JDK 21).
+* *Major frameworks:* Spring Boot 3.5 (`spring-boot-starter-parent`); the Qanary component framework `eu.wdaqua.qanary:qa.component` 4.0.0 (transitively Spring Boot Admin client + Apache Jena 5); springdoc-openapi (Swagger UI); Gson.
+* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/qanswer/qbe/QAnswerQueryBuilderAndExecutor.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
+* *Tests:* 3 test class(es) under `src/test/java/` (`QAnswerQueryBuilderAndExecutorTest.java`, `QanaryServiceControllerTest.java`, `SwaggerUiAvailabilityTest.java`).
+
+== Build and run
+
+Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
+framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
+repository), then build with JDK 21:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-qbe-qanswer.jar -t qanary/qanary-component-qbe-qanswer .
+----
+
+== Background
+
+https://www.qanswer.eu/[QAnswer] is an API capable of retrieving data from different knowledge graphs.
+
+== Input specification
+
+[source,ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -27,13 +69,14 @@ Consequently, your request to the QAnswer API might be more precise.
     ]
   ] ;
   oa:hasBody <wd:Resource> .
-```
+----
 
-## Output specification
+== Output specification
 
 Comment: the SPARQL query is stored as a complex structure; `annotationOfAnswerType` is never used
 
-```ttl
+[source,ttl]
+----
 @prefix qa: <http://www.wdaqua.eu/qa#> .
 @prefix oa: <http://www.w3.org/ns/openannotation/core/> .
 
@@ -78,27 +121,25 @@ Comment: the SPARQL query is stored as a complex structure; `annotationOfAnswerT
 
 ?answerType a qa:AnswerType ;
  	rdf:value <xsd:dataType> ;
-```
+----
 
-## Examples
-
-### Example 1: What is the capital of Germany?
+=== Example 1: What is the capital of Germany?
 
 Given the question `What is the capital of Germany?` and the Named Entity `Germany` at position (23,30) with the URI http://www.wikidata.org/entity/Q183 the following question is send to the QAnswer API:
 
-```What is the capital of http://www.wikidata.org/entity/Q183 ?```
+`What is the capital of http://www.wikidata.org/entity/Q183 ?`
 
 The result will be the following resource URI: http://www.wikidata.org/entity/Q64 (Berlin)
 
-### Example 2: Is Berlin the capital of Germany
+=== Example 2: Is Berlin the capital of Germany
 
 Given the question `Is Berlin the capital of Germany` and the Named Entity `Berlin` at position (3,9) with the URI http://www.wikidata.org/entity/Q64 the following question is send to the QAnswer API:
 
-```Is http://www.wikidata.org/entity/Q64 the capital of Germany```
+`Is http://www.wikidata.org/entity/Q64 the capital of Germany`
 
 The result would be the boolean literal `true`.
 
-## Computed Data in the Qanary Triplestore
+== Computed Data in the Qanary Triplestore
 
 This Qanary component is storing the following information into the Qanary triplestore (that is the global process memory of any Qanary Question Answering process).
 
@@ -119,7 +160,8 @@ The stored information is reflecting the process inside of the component:
 
 To retrieve all information computed by this Qanary component from the Qanary triplestore you might use the following SPARQL query:
 
-```sparql
+[source,sparql]
+----
 SELECT * FROM <YOURGRAPHURI> WHERE {
     ?s ?p ?o ; 
         a ?type. 
@@ -135,13 +177,14 @@ SELECT * FROM <YOURGRAPHURI> WHERE {
     }
 }
 ORDER BY ?type
-```
+----
 
-## Configuration
+== Configuration
 
 The following attributes should be changed if required (typically in the file `application.properties`):
 
-```ini
+[source,ini]
+----
 # define the API endpoint of the QAnswer API
 qanswer.endpoint.url=https://qanswer-core1.univ-st-etienne.fr/api/gerbil
 
@@ -153,9 +196,9 @@ qanswer.endpoint.language.default=en
 
 # define the knowledge base ID that should be used by the QAnswer API
 qanswer.endpoint.knowledgebase.default=wikidata
-```
+----
 
-## Additional Web Interfaces
+== Additional Web Interfaces
 
 An additional QAnswer API wrapper is provided: `POST` method at `/api`.
 You should provide the following data in a JSON format:
@@ -167,29 +210,32 @@ You should provide the following data in a JSON format:
 
 Examples:
 
-```json
+[source,json]
+----
 {
   "question": "What is the capital of Germany?"
 }
-```
+----
 
-```json
+[source,json]
+----
 {
   "question": "What is the capital of http://www.wikidata.org/entity/Q183 ?",
   "knowledgeBaseId": "wikidata"
 }
-```
+----
 
-```json
+[source,json]
+----
 {
   "question": "What is the capital of Germany?",
   "language": "en",
   "knowledgeBaseId": "wikidata",
   "qanswerEndpointUrl": "http://qanswer-core1.univ-st-etienne.fr/api/gerbil"
 }
-```
+----
 
-### API documentation
+=== API documentation
 
 The OpenAPI (Swagger) documentation is available at `/swagger-ui.html` (Web page) and `/api-docs` (JSON format).
 You might redefine the documentation endpoints in your application.properties file.
@@ -198,14 +244,3 @@ If you deploy this component locally using the default configuration, then the f
 
 * http://0.0.0.0:11022/swagger-ui.html
 * http://0.0.0.0:11022/api-docs
-
-## Build (Qanary 4.0.0)
-
-Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
-framework first (`mvn install` in the [Qanary](https://github.com/WDAqua/Qanary)
-repository), then build clean with JDK 21:
-
-```bash
-JAVA_HOME=/path/to/jdk21 mvn clean package
-docker build --build-arg JAR_FILE=target/qanary-component-qbe-qanswer.jar -t qanary/qanary-component-qbe-qanswer .
-```
