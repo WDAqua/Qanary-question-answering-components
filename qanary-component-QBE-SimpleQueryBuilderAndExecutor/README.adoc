@@ -79,3 +79,37 @@ Receives 3 optional data structures: `AnnotationOfClass`, `AnnotationOfRelation`
 ----
 
 Remark: in SparqlExecuter `?answer a qa:AnswerJson` is used
+
+== Build and run
+
+This component targets the current *Qanary framework 4.0.0* (Spring Boot 3,
+Java 21, Apache Jena 5). Install the framework first (`mvn install` in the
+https://github.com/WDAqua/Qanary[Qanary] repository), then build clean:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+java -jar target/qanary-component-qbe-simplequerybuilderandexecutor.jar
+----
+
+Docker:
+
+[source,bash]
+----
+mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-qbe-simplequerybuilderandexecutor.jar \
+  -t qanary/qanary-component-qbe-simplequerybuilderandexecutor .
+----
+
+Configuration is in `src/main/resources/config/application.properties`
+(`server.port`, `spring.application.name`, `spring.boot.admin.url`).
+
+== Tests
+
+`mvn test` runs the full-context `QanaryServiceControllerTest` and `QueryTest`
+(the latter validates the generated SPARQL). The Spring Boot Admin client failing
+to reach a non-running pipeline is logged but non-fatal.
+
+NOTE: the migration to Jena 5 replaced the removed
+`QueryExecutionFactory.sparqlService(endpoint, query)` with
+`QueryExecutionHTTP.service(endpoint).query(query).build()`.

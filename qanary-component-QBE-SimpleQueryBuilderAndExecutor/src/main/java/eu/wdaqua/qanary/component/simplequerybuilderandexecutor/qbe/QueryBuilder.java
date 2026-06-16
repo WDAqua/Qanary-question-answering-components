@@ -8,6 +8,7 @@ import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.sparql.exec.http.QueryExecutionHTTP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -127,7 +128,7 @@ public class QueryBuilder extends QanaryComponent {
                                 + "}";
 
                         Query query = QueryFactory.create(generatedQuery);
-                        QueryExecution exec = QueryExecutionFactory.sparqlService(dbpediaSparqlEndpoint, query);
+                        QueryExecution exec = QueryExecutionHTTP.service(dbpediaSparqlEndpoint).query(query).build();
                         ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
 
                         if (!results.hasNext()) {
@@ -144,7 +145,7 @@ public class QueryBuilder extends QanaryComponent {
                                 + "}";
 
                         Query query = QueryFactory.create(generatedQuery);
-                        QueryExecution exec = QueryExecutionFactory.sparqlService(dbpediaSparqlEndpoint, query);
+                        QueryExecution exec = QueryExecutionHTTP.service(dbpediaSparqlEndpoint).query(query).build();
                         ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
                         if (!results.hasNext()) {
                             generatedQuery = "SELECT DISTINCT ?uri WHERE { " //
@@ -179,7 +180,7 @@ public class QueryBuilder extends QanaryComponent {
                             + "}";
 
                     Query query = QueryFactory.create(generatedQuery);
-                    QueryExecution exec = QueryExecutionFactory.sparqlService(dbpediaSparqlEndpoint, query);
+                    QueryExecution exec = QueryExecutionHTTP.service(dbpediaSparqlEndpoint).query(query).build();
                     ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
                     if (!results.hasNext()) {
                         generatedQuery = "SELECT DISTINCT ?uri WHERE { " //
@@ -249,7 +250,7 @@ public class QueryBuilder extends QanaryComponent {
             myQanaryUtils.getQanaryTripleStoreConnector().update(sparql);
 
             Query query = QueryFactory.create(generatedQuery);
-            QueryExecution exec = QueryExecutionFactory.sparqlService(dbpediaSparqlEndpoint, query);
+            QueryExecution exec = QueryExecutionHTTP.service(dbpediaSparqlEndpoint).query(query).build();
 
             ResultSet results = ResultSetFactory.copyResults(exec.execSelect());
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
