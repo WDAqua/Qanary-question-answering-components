@@ -14,6 +14,50 @@ The [Qanary Framework](https://github.com/WDAqua/Qanary/) is dedicated to creati
 In this repository, the [components of the Qanary framework](https://github.com/WDAqua/Qanary-question-answering-components)  are stored. All components are implemented in Java and provide a Docker container for lightweight maintenance.
 
 
+## Status: migration to the current Qanary framework (4.0.0)
+
+Most components in this repository still target the **legacy** Spring Boot 2 /
+Qanary 3.x framework (parent `qa.qanarycomponent-parent [0.1.0,1.0.0)`,
+`qanary.version [3.x,4.0.0)`, resolved from Maven Central). The following
+components have been **migrated to the current Qanary framework 4.0.0**
+(Spring Boot 3, Java 21, Apache Jena 5) and build & test green against it:
+
+| Component | Notes |
+|---|---|
+| [qanary-component-CopyValuesOfPriorGraph](./qanary-component-CopyValuesOfPriorGraph) | utility: copy annotations of a prior graph |
+| [qanary-component-QB-BirthDataWikidata](./qanary-component-QB-BirthDataWikidata) | Wikidata query builder |
+| [qanary-component-QB-DateOfDeathDBpedia](./qanary-component-QB-DateOfDeathDBpedia) | DBpedia query builder (Spring Data JPA / H2) |
+| [qanary-component-QBE-SimpleQueryBuilderAndExecutor](./qanary-component-QBE-SimpleQueryBuilderAndExecutor) | query builder + executor; required a Jena 5 API update |
+| [qanary-component-QB-ComicCharacterAlterEgoSimpleDBpedia](./qanary-component-QB-ComicCharacterAlterEgoSimpleDBpedia) | DBpedia query builder |
+
+The framework artifacts (`qa.component`, `qa.commons`) are a **local build** of the
+[Qanary](https://github.com/WDAqua/Qanary) repository (`mvn install`), not published
+to Maven Central — so build the migrated components with **JDK 21**.
+
+### Migration recipe (per component)
+
+1. Replace the parent `eu.wdaqua.qanary:qa.qanarycomponent-parent [0.1.0,1.0.0)`
+   (Spring Boot 2) with `org.springframework.boot:spring-boot-starter-parent:3.5.15`
+   and depend on `eu.wdaqua.qanary:qa.component:4.0.0` (mirrors the 4.0.0 component
+   template). Set `<java.version>21</java.version>`.
+2. Where the component exposes OpenAPI/Swagger, replace `springdoc-openapi-ui` /
+   `springdoc-openapi-webmvc-core` (1.x) with `springdoc-openapi-starter-webmvc-ui`
+   2.x (it provides `io.swagger.v3.oas.*` and the `@Operation` annotations).
+3. Fold the explicit JUnit 4/5, Hamcrest, Mockito, `spring-test` and `json-path`
+   test dependencies into a single `spring-boot-starter-test` (test scope); drop
+   leftover JUnit 4 imports (`org.junit.Ignore` → JUnit 5 `@Disabled`).
+4. Drop the unmaintained `com.spotify:dockerfile-maven-plugin`; set a stable
+   `<finalName>` and build the image via the `Dockerfile` (`eclipse-temurin:21-jre`).
+5. Fix Spring Boot 2→3 / Jena 4→5 fallout, e.g.
+   `QueryExecutionFactory.sparqlService(endpoint, query)` →
+   `QueryExecutionHTTP.service(endpoint).query(query).build()`. Most
+   credential-free components need no further code changes.
+6. **Build clean** (`mvn clean …`): an earlier Spring Boot 2 build of a module
+   weaves framework classes (the explainability aspect) into `target/classes` via
+   the old parent's AspectJ plugin; stale `javax.servlet` classes there would
+   otherwise shadow the 4.0.0 (jakarta) ones at test time.
+
+
 ## Build and run a *minimal* set of components
 
 To show the Qanary methodology and its functionality a tiny template-based Question Answering system was designed. It is capable of answering questions for the *real name* of a superhero like "What is the real name of Captain America?". For this purpose, just two components were used:
