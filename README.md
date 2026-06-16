@@ -16,25 +16,21 @@ In this repository, the [components of the Qanary framework](https://github.com/
 
 ## Status: migration to the current Qanary framework (4.0.0)
 
-Most components in this repository still target the **legacy** Spring Boot 2 /
-Qanary 3.x framework (parent `qa.qanarycomponent-parent [0.1.0,1.0.0)`,
-`qanary.version [3.x,4.0.0)`, resolved from Maven Central). The following
-components have been **migrated to the current Qanary framework 4.0.0**
-(Spring Boot 3, Java 21, Apache Jena 5).
+**All Java Question Answering components in this repository have been migrated to
+the current Qanary framework 4.0.0** (Spring Boot 3, Java 21, Apache Jena 5).
+(They previously targeted the legacy Spring Boot 2 / Qanary 3.x framework — parent
+`qa.qanarycomponent-parent [0.1.0,1.0.0)`, `qanary.version [3.x,4.0.0)`.) The only
+non-migrated module is the standalone dev tool `qanary_docker-compose-writer`,
+which is not a Spring Boot Qanary component.
 
-**Build + tests green (offline):** CopyValuesOfPriorGraph, QB-BirthDataWikidata,
-QB-DateOfDeathDBpedia, QBE-SimpleQueryBuilderAndExecutor,
-QB-ComicCharacterAlterEgoSimpleDBpedia, QB-SimpleRealNameOfSuperHero,
-KG2KG-TranslateAnnotationsOfInstance, NED-DBpediaSpotlight, NER-DBpediaSpotlight,
-QE-SparqlExecuter, NED-AGDISTIS, NED-Ambiverse, NED-Watson, NER-Ambiverse,
-NERD-SMAPH, NER-EntityClassifier, NER-FOX, QB-MonoliticWrapper, NERD-Alchemy,
-NER-ComicCharacterNameSimpleNamedEntityRecognizer.
-
-**Build + package verified; live tests need external resources** (these wrap
-keyed/remote services or load NLP models, so their `*LiveTest` / cache /
-full-context tests require API keys, network or model files — as on 3.x):
-NED-Babelfy, NED-Dandelion, NER-Dandelion, NER-MeaningCloud, NER-Tagme,
-NER-TextRazor, NER-Stanford.
+Most components **build + pass their tests** on a clean offline build. The
+following wrap **keyed/remote services or load NLP models**, so they are verified
+to **build + package** but their `*LiveTest` / cache / full-context `@SpringBootTest`
+tests require API keys, network access or model files (as was already the case on
+3.x) — run those with credentials, or `mvn … -DskipTests` offline:
+NED-Aylien, NED-Babelfy, NED-Dandelion, NED-MeaningCloud, NED-OpenAI-GPT,
+NER-Dandelion, NER-MeaningCloud, NER-Stanford, NER-Tagme, NER-TextRazor,
+REL-RelationLinker1, REL-RelationLinker2, TQA-ChatGPTWrapper.
 
 The framework artifacts (`qa.component`, `qa.commons`) are a **local build** of the
 [Qanary](https://github.com/WDAqua/Qanary) repository (`mvn install`), not published
