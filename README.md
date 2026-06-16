@@ -29,6 +29,10 @@ components have been **migrated to the current Qanary framework 4.0.0**
 | [qanary-component-QB-DateOfDeathDBpedia](./qanary-component-QB-DateOfDeathDBpedia) | DBpedia query builder (Spring Data JPA / H2) |
 | [qanary-component-QBE-SimpleQueryBuilderAndExecutor](./qanary-component-QBE-SimpleQueryBuilderAndExecutor) | query builder + executor; required a Jena 5 API update |
 | [qanary-component-QB-ComicCharacterAlterEgoSimpleDBpedia](./qanary-component-QB-ComicCharacterAlterEgoSimpleDBpedia) | DBpedia query builder |
+| [qanary-component-QB-SimpleRealNameOfSuperHero](./qanary-component-QB-SimpleRealNameOfSuperHero) | DBpedia query builder (minimal tutorial); JUnit 4→5 tests |
+| [qanary-component-KG2KG-TranslateAnnotationsOfInstance](./qanary-component-KG2KG-TranslateAnnotationsOfInstance) | DBpedia↔Wikidata translation; JUnit 4→5, order-independent tests |
+| [qanary-component-NED-DBpediaSpotlight](./qanary-component-NED-DBpediaSpotlight) | NED via DBpedia Spotlight; Apache HttpClient 4→5 migration |
+| [qanary-component-NER-DBpediaSpotlight](./qanary-component-NER-DBpediaSpotlight) | NER via DBpedia Spotlight |
 
 The framework artifacts (`qa.component`, `qa.commons`) are a **local build** of the
 [Qanary](https://github.com/WDAqua/Qanary) repository (`mvn install`), not published
