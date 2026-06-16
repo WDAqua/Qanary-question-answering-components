@@ -2,15 +2,15 @@ package eu.wdaqua.qanary.component.simplerealnameofsuperhero.qb;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -22,7 +22,7 @@ public class QueryBuilderTest {
     private QueryBuilderSimpleRealNameOfSuperHero qb;
     private String testQuery;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         qb = new QueryBuilderSimpleRealNameOfSuperHero("test.name");
         testQuery = "" +
@@ -64,7 +64,7 @@ public class QueryBuilderTest {
 
         URI ingraph = new URI("urn:qanary:ingraph");
         URI outgraph = new URI("urn:qanary:outgraph");
-        URI uri = new URI("test_question_uri");
+        URI uri = new URI("urn:qanary:test_question_uri");
 
         when(qanaryMessage.getInGraph()).thenReturn(ingraph);
         when(qanaryMessage.getOutGraph()).thenReturn(outgraph);
