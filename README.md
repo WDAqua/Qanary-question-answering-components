@@ -36,6 +36,17 @@ The framework artifacts (`qa.component`, `qa.commons`) are a **local build** of 
 [Qanary](https://github.com/WDAqua/Qanary) repository (`mvn install`), not published
 to Maven Central — so build the migrated components with **JDK 21**.
 
+### Docker verification
+
+All 59 components were verified stepwise on `eclipse-temurin:21-jre`: build the jar
+→ build the image → run the container → check startup → remove the container + image.
+Result: every component's image builds and the Spring Boot fat jar loads. **44
+containers start cleanly** (the Spring Boot Admin "connection refused" to a
+non-running pipeline is logged but non-fatal). The 13 keyed/remote/model components
+listed above **fail to finish startup only because they validate an API key or
+remote endpoint, or load model files, in a bean constructor at boot** — expected
+without those resources; they start normally once the service/key is reachable.
+
 ### Migration recipe (per component)
 
 1. Replace the parent `eu.wdaqua.qanary:qa.qanarycomponent-parent [0.1.0,1.0.0)`
