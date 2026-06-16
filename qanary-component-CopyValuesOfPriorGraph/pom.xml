@@ -3,64 +3,61 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
+	<!-- Spring Boot 3, aligned with the current Qanary framework (qa.* 4.0.0).
+	     The old [0.1.0,1.0.0) qa.qanarycomponent-parent (Spring Boot 2) is replaced
+	     by the Spring Boot starter parent, mirroring the 4.0.0 component template. -->
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.5.15</version>
+		<relativePath/>
+	</parent>
+
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary-component-CopyValuesOfPriorGraph</artifactId>
 	<version>0.1.3</version>
+	<name>Qanary component: CopyValuesOfPriorGraph</name>
+	<description>Qanary component that copies the annotations of a prior process graph into the current graph</description>
 
-	<parent>
-		<groupId>eu.wdaqua.qanary</groupId>
-		<artifactId>qa.qanarycomponent-parent</artifactId>
-		<version>[0.1.0,1.0.0)</version>
-	</parent>
 	<properties>
-		<java.version>25</java.version>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
-		<qanary.version>[3.7.6,4.0.0)</qanary.version>
-		<spring-boot-admin.version>2.7.10</spring-boot-admin.version>
+		<java.version>21</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<qanary.version>4.0.0</qanary.version>
+		<springdoc.version>2.8.9</springdoc.version>
 		<docker.image.prefix>qanary</docker.image.prefix>
-		<!-- Replace the name of the docker image to be generated -->
-		<!-- if there is an error demanding a lower-case name, then you picked 
-			an artifactId not following the naming conventions, (c.f., https://maven.apache.org/guides/mini/guide-naming-conventions.html) -->
 		<docker.image.name>qanary-component-copyvaluesofpriorgraph</docker.image.name>
-		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-		<springdoc.version>1.7.0</springdoc.version>
 	</properties>
 
 	<dependencies>
-		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-data-rest -->
+		<!-- the Qanary component framework (pulls qa.commons, spring web, SBA client, Apache Jena transitively) -->
+		<dependency>
+			<groupId>eu.wdaqua.qanary</groupId>
+			<artifactId>qa.component</artifactId>
+			<version>${qanary.version}</version>
+		</dependency>
+		<!-- OpenAPI 3 / Swagger UI (provides the springdoc.* paths logged by the controller) -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-data-rest</artifactId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>${springdoc.version}</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui -->
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-ui</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>io.swagger.core.v3</groupId>
-					<artifactId>swagger-annotations</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>		
-		<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-core-jakarta -->
-		<dependency>
-				<groupId>io.swagger.core.v3</groupId>
-				<artifactId>swagger-core-jakarta</artifactId>
-		</dependency>
+		<!-- JSON path utilities (version managed by the Spring Boot parent) -->
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
 		</dependency>
+		<!-- JUnit 5 + Spring MockMvc for the component tests (not transitive from qa.component) -->
 		<dependency>
-			<groupId>com.jayway.jsonpath</groupId>
-			<artifactId>json-path-assert</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
 	<build>
+		<!-- stable jar name so the Dockerfile can reference it without the version -->
+		<finalName>qanary-component-copyvaluesofpriorgraph</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -75,33 +72,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<!-- https://github.com/spotify/dockerfile-maven -->
-			<!-- build Docker image: mvn dockerfile:build -->
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<version>${dockerfile-maven-version}</version>
-				<executions>
-					<execution>
-						<id>default</id>
-						<goals>
-							<goal>build</goal>
-							<goal>push</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<repository>${docker.image.name}</repository>
-					<tag>${project.version}</tag>
-					<buildArgs>
-						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-					</buildArgs>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
