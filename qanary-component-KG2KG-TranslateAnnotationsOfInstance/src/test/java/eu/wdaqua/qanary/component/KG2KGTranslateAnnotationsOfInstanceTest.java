@@ -100,12 +100,12 @@ public class KG2KGTranslateAnnotationsOfInstanceTest {
             List<RDFNode> rdfNodes = kg2KGTranslateAnnotationsOfInstance.getEquivalentResource(DBPEDIA_TO_WIKIDATA_QUERY, originResourceDbpedia);
             logger.info("Test getEquivalentResourceTest, computed rdf nodes: {}", rdfNodes.toString());
 
-            assertEquals(rdfNodes.size(), 3);
-            assertAll("Wikidata resources correct", () -> {
-                assertEquals(wikidataResources[0], rdfNodes.get(0).toString());
-                assertEquals(wikidataResources[1], rdfNodes.get(1).toString());
-                assertEquals(wikidataResources[2], rdfNodes.get(2).toString());
-            });
+            assertEquals(3, rdfNodes.size());
+            // compare order-independently: SPARQL result order without ORDER BY is unspecified
+            // (and differs between Jena 4 and Jena 5)
+            java.util.List<String> computed = rdfNodes.stream().map(RDFNode::toString).toList();
+            assertTrue(computed.containsAll(java.util.Arrays.asList(wikidataResources)),
+                    "expected all of " + java.util.Arrays.toString(wikidataResources) + " but got " + computed);
         }
 
         @Test

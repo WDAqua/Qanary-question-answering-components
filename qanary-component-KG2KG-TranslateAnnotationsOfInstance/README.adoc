@@ -78,3 +78,31 @@ The component's process follows three steps:
     oa:annotatedBy <urn:qanary:KG2KGTranslateAnnotationsOfInstance> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ----
+
+== Build and run
+
+This component targets the current *Qanary framework 4.0.0* (Spring Boot 3,
+Java 21, Apache Jena 5). Install the framework first (`mvn install` in the
+https://github.com/WDAqua/Qanary[Qanary] repository), then build clean:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+java -jar target/qanary-component-kg2kg-translateannotationsofinstance.jar
+----
+
+Docker:
+
+[source,bash]
+----
+mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-kg2kg-translateannotationsofinstance.jar \
+  -t qanary/qanary-component-kg2kg-translateannotationsofinstance .
+----
+
+== Tests
+
+`mvn test` runs the unit tests against an in-memory Jena test dataset
+(`src/test/resources/testDataset.rdf`); no live DBpedia/Wikidata endpoint is
+required. The Spring Boot Admin client failing to reach a non-running pipeline is
+logged but non-fatal.
