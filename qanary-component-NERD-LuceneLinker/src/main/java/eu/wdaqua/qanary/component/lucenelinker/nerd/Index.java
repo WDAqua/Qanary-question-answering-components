@@ -2,9 +2,6 @@ package eu.wdaqua.qanary.component.lucenelinker.nerd;
 
 import org.apache.jena.graph.Triple;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.lang.PipedRDFIterator;
-import org.apache.jena.riot.lang.PipedRDFStream;
-import org.apache.jena.riot.lang.PipedTriplesStream;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
@@ -58,7 +55,7 @@ public class Index {
 
         //Create an index for the instances
         IndexWriter w_instances = new IndexWriter(index, config);
-        PipedRDFIterator<Triple> iter = parse(dump);
+        java.util.Iterator<Triple> iter = parse(dump);
         int count = 0;
         while (iter.hasNext()) {
             Triple next = iter.next();
@@ -126,25 +123,11 @@ public class Index {
         return result;
     }
 
-    //Methods to parse rdf dunmps. It takes as input the location of the dump and returns an iterator over it
-    private static PipedRDFIterator<Triple> parse(String dump) {
-        PipedRDFIterator<Triple> iter = new PipedRDFIterator<Triple>();
-        final String d = dump;
-        final PipedRDFStream<Triple> inputStream = new PipedTriplesStream(iter);
-        // PipedRDFStream and PipedRDFIterator need to be on different threads
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        // Create a runnable for our parser thread
-        Runnable parser = new Runnable() {
-            @Override
-            public void run() {
-                // Call the parsing process.
-                RDFDataMgr.parse(inputStream, d);
-            }
-        };
-
-        // Start the parser on another thread
-        executor.submit(parser);
-        return iter;
+    //Methods to parse rdf dumps. It takes as input the location of the dump and returns an iterator over it.
+    // Jena 5: PipedRDFIterator/PipedTriplesStream were removed; AsyncParser streams the triples on a
+    // background thread and exposes them as an Iterator.
+    private static java.util.Iterator<Triple> parse(String dump) {
+        return org.apache.jena.riot.system.AsyncParser.asyncParseTriples(dump);
     }
 
     private static boolean compareStemmed(String s1, String s2) throws IOException {

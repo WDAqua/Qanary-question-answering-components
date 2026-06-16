@@ -226,7 +226,7 @@ public class LuceneLinker extends QanaryComponent {
     @Deprecated(since = "3.1.5", forRemoval = true)
     private ResultSet selectTripleStore(String sparqlQuery, String endpoint) {
         Query query = QueryFactory.create(sparqlQuery);
-        QueryExecution qExe = QueryExecutionFactory.sparqlService(endpoint, query);
+        QueryExecution qExe = org.apache.jena.sparql.exec.http.QueryExecutionHTTP.service(endpoint).query(query).build();
         return qExe.execSelect();
     }
 

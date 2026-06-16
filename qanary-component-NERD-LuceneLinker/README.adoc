@@ -31,3 +31,15 @@ Comment: no score in the output.
     oa:annotatedBy <urn:qanary:LuceneLinker> ;
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
 ----
+
+== Build (Qanary 4.0.0)
+
+Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
+framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
+repository), then build clean with JDK 21:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-nerd-lucenelinker.jar -t qanary/qanary-component-nerd-lucenelinker .
+----
