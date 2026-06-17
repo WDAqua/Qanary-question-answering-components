@@ -19,7 +19,7 @@ The https://github.com/WDAqua/Qanary/[Qanary Framework] is dedicated to creating
  * the quality of components dedicated to a particular task needs to be analyzed
     * it is expensive to integrate all of the particular components due to a missing generalized interface
 
-In this repository, the https://github.com/WDAqua/Qanary-question-answering-components[components of the Qanary framework]  are stored. All components are implemented in Java and provide a Docker container for lightweight maintenance.
+In this repository, the https://github.com/WDAqua/Qanary-question-answering-components[components of the Qanary framework]  are stored. All components are implemented in Java or Python, and provide a Docker container for lightweight maintenance.
 
 toc::[]
 
