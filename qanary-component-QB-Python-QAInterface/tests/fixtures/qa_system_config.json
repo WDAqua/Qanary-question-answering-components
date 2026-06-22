@@ -1,0 +1,6 @@
+{
+    "QAInterface-test": {
+        "QA_SYSTEM_URL": "http://qa-system.example/answer?question={question}",
+        "QA_SYSTEM_PARAMS": {}
+    }
+}
