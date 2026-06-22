@@ -1,0 +1,77 @@
+:toc:
+:toclevels: 3
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:warning-caption: :warning:
+endif::[]
+
+= NER Diambiguation Property OKBQA
+
+toc::[]
+
+== Intention
+
+<<<<<<< HEAD:qanary-component-RD-DiambiguationProperty-OKBQA/README.md component source: https://www.okbqa.org/architecture/disambiguation =======.
+
+== Behavior
+
+As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — detect/disambiguate the property (relation) referred to in the question — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations. See <<Input specification>> / <<Output specification>> below for the exact annotation contract.
+
+== Characteristics
+
+* *Task type:* Relation Detection (RD).
+* *External service:* http://repository.okbqa.org/components/21
+* *Offline build:* builds and (where present) tests run offline.
+
+== Implementation
+
+* *Language:* Java (JDK 21).
+* *Major frameworks:* Spring Boot 3.5 (`spring-boot-starter-parent`); the Qanary component framework `eu.wdaqua.qanary:qa.component` 4.0.0 (transitively Spring Boot Admin client + Apache Jena 5); Apache HttpClient 5.
+* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/diambiguationproperty/rd/DiambiguationProperty.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
+* *Tests:* 2 test class(es) under `src/test/java/` (`QanaryServiceControllerTest.java`, `SwaggerUiAvailabilityTest.java`).
+
+== Build and run
+
+Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
+framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
+repository), then build with JDK 21:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-rd-diambiguationproperty-okbqa.jar -t qanary/qanary-component-rd-diambiguationproperty-okbqa .
+----
+
+== Input specification
+
+[source,ttl]
+----
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+
+<urn:qanary:input> oa:hasTarget <urn:myQanaryQuestion> ;
+    oa:hasBody "langCode"^^xsd:string ;
+    a qa:AnnotationOfQuestionLanguage .
+----
+
+== Output specification
+
+[source,ttl]
+----
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:qanary:output> a qa:AnnotationOfRelation .
+<urn:qanary:output> oa:hasTarget [
+	a oa:SpecificClass ;
+ 	oa:hasSource <urn:myQanaryQuestion> ;
+] .
+<urn:qanary:output> oa:hasBody <urn:disambiguatedEntity> ;
+    oa:annotatedBy <urn:qanary:DiambiguationClassOKBQA> ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime  .
+----
+
+> > > > > > > master:qa.qanary_component-DiambiguationProperty-OKBQA/README.md

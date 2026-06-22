@@ -1,0 +1,74 @@
+:toc:
+:toclevels: 3
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:warning-caption: :warning:
+endif::[]
+
+= REL Relation Linker 2
+
+toc::[]
+
+== Intention
+
+Receives a textual question forwards it to some local API, gets back recognized DBpedia relations and stores them.
+
+== Behavior
+
+As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — detect and link the relations (properties) expressed in the question — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations. See <<Input specification>> / <<Output specification>> below for the exact annotation contract.
+
+== Characteristics
+
+* *Task type:* Relation Linking (REL).
+* *Knowledge base:* DBpedia.
+* *External service:* http://dbpedia.org/property/
+* *Requires credentials / network:* wraps a remote, keyed service — its live tests need an API key and network access (build offline with `-DskipTests`).
+
+== Implementation
+
+* *Language:* Java (JDK 21).
+* *Major frameworks:* Spring Boot 3.5 (`spring-boot-starter-parent`); the Qanary component framework `eu.wdaqua.qanary:qa.component` 4.0.0 (transitively Spring Boot Admin client + Apache Jena 5); Apache HttpClient 5.
+* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/relationlinker2/rel/RelationLinker2.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
+* *Tests:* 2 test class(es) under `src/test/java/` (`QanaryServiceControllerTest.java`, `SwaggerUiAvailabilityTest.java`).
+
+== Build and run
+
+Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
+framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
+repository), then build with JDK 21:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-rel-relationlinker2.jar -t qanary/qanary-component-rel-relationlinker2 .
+----
+
+== Input specification
+
+Not applicable as the textual question is a default parameter
+
+== Output specification
+
+Comment: no score in the output.
+
+[source,ttl]
+----
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+
+<urn:qanary:output> a qa:AnnotationOfRelation .
+<urn:qanary:output> oa:hasTarget [
+    a   oa:SpecificResource;
+        oa:hasSource    <urn:qanary:myQanaryQuestion> ;
+        oa:hasSelector  [
+            a oa:TextPositionSelector ;
+            oa:start "0"^^xsd:nonNegativeInteger ;
+            oa:end  "5"^^xsd:nonNegativeInteger
+        ]
+    ] .
+<urn:qanary:output> oa:hasBody <dbr:Relation> ;
+    oa:annotatedBy <urn:qanary:RelationLinker2> ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
+----

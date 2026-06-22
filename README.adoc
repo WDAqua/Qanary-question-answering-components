@@ -1,0 +1,409 @@
+:toc: macro
+:toclevels: 3
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:warning-caption: :warning:
+endif::[]
+= In a Nutshell: Qanary Question Answering Components
+
+image::https://raw.githubusercontent.com/WDAqua/Qanary/master/doc/logo-qanary_s.png[Qanary logo,200,float=right]
+
+The https://github.com/WDAqua/Qanary/[Qanary Framework] is dedicated to creating Question Answering systems. Question Answering (QA) is a task requiring different fields leading to expensive/time-consuming engineering tasks that might block research as it is too expensive. Typical problems/use cases that might occur while developing a Question Answering system are:
+
+ * an algorithm requires analyzing textual questions and annotating the found entities, relations, classes, etc. 
+    * it is time-consuming as many services/algorithms/tools need to be compared 
+ * your QA process needs to be improved
+    * following traditional development approaches requires additional efforts for testing and debugging of code to uncover possible flaws
+ * the quality of components dedicated to a particular task needs to be analyzed
+    * it is expensive to integrate all of the particular components due to a missing generalized interface
+
+In this repository, the https://github.com/WDAqua/Qanary-question-answering-components[components of the Qanary framework]  are stored. All components are implemented in Java or Python, and provide a Docker container for lightweight maintenance.
+
+toc::[]
+
+== Status: migration to the current Qanary framework (4.0.0)
+
+*All Java Question Answering components in this repository have been migrated to
+the current Qanary framework 4.0.0* (Spring Boot 3, Java 21, Apache Jena 5).
+(They previously targeted the legacy Spring Boot 2 / Qanary 3.x framework — parent
+`qa.qanarycomponent-parent [0.1.0,1.0.0)`, `qanary.version [3.x,4.0.0)`.) The only
+non-migrated module is the standalone dev tool `qanary_docker-compose-writer`,
+which is not a Spring Boot Qanary component.
+
+Most components *build + pass their tests* on a clean offline build. The
+following wrap *keyed/remote services or load NLP models*, so they are verified
+to *build + package* but their `*LiveTest` / cache / full-context `@SpringBootTest`
+tests require API keys, network access or model files (as was already the case on
+3.x) — run those with credentials, or `mvn … -DskipTests` offline:
+NED-Aylien, NED-Babelfy, NED-Dandelion, NED-MeaningCloud, NED-OpenAI-GPT,
+NER-Dandelion, NER-MeaningCloud, NER-Stanford, NER-Tagme, NER-TextRazor,
+REL-RelationLinker1, REL-RelationLinker2, TQA-ChatGPTWrapper.
+
+The framework artifacts (`qa.component`, `qa.commons`) are a *local build* of the
+https://github.com/WDAqua/Qanary[Qanary] repository (`mvn install`), not published
+to Maven Central — so build the migrated components with *JDK 21*.
+
+=== Docker verification
+
+All 59 components were verified stepwise on `eclipse-temurin:21-jre`: build the jar
+→ build the image → run the container → check startup → remove the container + image.
+Result: every component's image builds and the Spring Boot fat jar loads. *44
+containers start cleanly* (the Spring Boot Admin "connection refused" to a
+non-running pipeline is logged but non-fatal). The 13 keyed/remote/model components
+listed above *fail to finish startup only because they validate an API key or
+remote endpoint, or load model files, in a bean constructor at boot* — expected
+without those resources; they start normally once the service/key is reachable.
+
+=== Migration recipe (per component)
+
+1. Replace the parent `eu.wdaqua.qanary:qa.qanarycomponent-parent [0.1.0,1.0.0)`
+   (Spring Boot 2) with `org.springframework.boot:spring-boot-starter-parent:3.5.15`
+   and depend on `eu.wdaqua.qanary:qa.component:4.0.0` (mirrors the 4.0.0 component
+   template). Set `<java.version>21</java.version>`.
+2. Where the component exposes OpenAPI/Swagger, replace `springdoc-openapi-ui` /
+   `springdoc-openapi-webmvc-core` (1.x) with `springdoc-openapi-starter-webmvc-ui`
+   2.x (it provides `io.swagger.v3.oas.*` and the `@Operation` annotations).
+3. Fold the explicit JUnit 4/5, Hamcrest, Mockito, `spring-test` and `json-path`
+   test dependencies into a single `spring-boot-starter-test` (test scope); drop
+   leftover JUnit 4 imports (`org.junit.Ignore` → JUnit 5 `@Disabled`).
+4. Drop the unmaintained `com.spotify:dockerfile-maven-plugin`; set a stable
+   `<finalName>` and build the image via the `Dockerfile` (`eclipse-temurin:21-jre`).
+5. Fix Spring Boot 2→3 / Jena 4→5 fallout, e.g.
+   `QueryExecutionFactory.sparqlService(endpoint, query)` →
+   `QueryExecutionHTTP.service(endpoint).query(query).build()`. Most
+   credential-free components need no further code changes.
+6. *Build clean* (`mvn clean …`): an earlier Spring Boot 2 build of a module
+   weaves framework classes (the explainability aspect) into `target/classes` via
+   the old parent's AspectJ plugin; stale `javax.servlet` classes there would
+   otherwise shadow the 4.0.0 (jakarta) ones at test time.
+
+
+== Build and run a *minimal* set of components
+
+To show the Qanary methodology and its functionality a tiny template-based Question Answering system was designed. It is capable of answering questions for the *real name* of a superhero like "What is the real name of Captain America?". For this purpose, just two components were used:
+ a) https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary-component-NED-DBpediaSpotlight[Qanary DBpedia Spotlight component]: The component is capable of finding superhero names and linking it to the https://wiki.dbpedia.org/[DBpedia knowledge base] (such a process is called Named Entity Recognition and Disambiguation).
+ b) https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary-component-QB-SimpleRealNameOfSuperHero[Qanary Query Builder for Superhero Names]: The component is capable of creating https://www.w3.org/TR/sparql11-overview/[SPARQL] SELECT queries to be executed on DBpedia (such a component is typically called Query Builder) if the given question is following the template `What is the real name of <superheroname>`.
+
+Hence, given a question following the described pattern the result will be a SPARQL query that might be executed, s.t., the real name of a superhero is retrieved from DBpedia.
+
+
+=== Run a minimalistic Question Answering system
+
+ 1. https://github.com/WDAqua/Qanary#how-to-run-the-code[Install the Qanary core components]
+ 2. Clone the current repository:
+[source]
+----
+git clone https://github.com/WDAqua/Qanary-question-answering-components.git
+----
+ 3. Switch to the folder `Qanary-question-answering-components`:
+[source]
+----
+cd Qanary-question-answering-components
+----
+ 4. Build the minimal set of components using the Maven profile "tinytutorial" (here we skip creating the corresponding Docker images by adding the parameter `-Ddockerfile.skip=true` to the Maven command):
+[source]
+----
+mvn clean package -Ddockerfile.skip=true -P tinytutorial
+----
+    * The output should look like the following indicating that the component `qa.NED-DBpedia-Spotlight``and `qanary_component-QB-SimpleRealNameOfSuperHero` was created:
+[source]
+----
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] qa.NED-DBpedia-Spotlight 2.1.0 ..................... SUCCESS [  3.717 s]
+[INFO] qanary_component-QB-SimpleRealNameOfSuperHero 2.0.0  SUCCESS [  1.083 s]
+[INFO] mvn.reactor 0.1.1-SNAPSHOT ......................... SUCCESS [  0.073 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+----
+
+ 5. Now, both components might be started using the JAR files:
+[source]
+----
+java -jar qanary_component-NED-DBpedia-Spotlight/target/qa.NED-DBpedia-Spotlight-X.Y.Z.jar
+java -jar qanary_component-QB-SimpleRealNameOfSuperHero/target/qanary_component-QB-SimpleRealNameOfSuperHero-X.Y.Z.jar
+----
+
+ 6. https://github.com/WDAqua/Qanary#without-creating-docker-images[Build and start a Qanary pipeline]
+ 
+ 7. While having installed the Qanary components and Qanary pipeline using the standard configuration you can access a trivial Question Answering frontend via http://localhost:8080/startquestionansweringwithtextquestion
+    * Use the question "What is the real name of Captain America?". 
+    * The question can be answered using the given two components. 
+    * Thereafter, the triplestore will hold a SPARQL query that was created by the QueryBuilder component `SimpleRealNameOfSuperHero` (for http://DBpedia.org/SPARQL[DBpedia]). It could be used to retrieve the actual answer from DBpedia. The UI shows the graph ID where the computed information was stored.
+      * Retrieve the SPARQL query from your Qanary triplestore using:
+[source]
+----
+PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+PREFIX qa: <http://www.wdaqua.eu/qa#> 
+
+SELECT *
+FROM <ADD-YOUR-GRAPH-ID-HERE>
+WHERE {
+    ?s a qa:AnnotationOfAnswerSPARQL.
+    ?s oa:hasBody ?sparqlQueryOnDBpedia .
+    ?s oa:annotatedBy ?annotatingService .
+}
+----
+
+
+
+== Big Picture
+ * Qanary provides the methodology for a knowledge-driven, vocabulary-based approach. Our long-term agenda is to create a knowledge-driven ecosystem for the field of Question Answering. It is part of the http://wdaqua.eu[WDAqua project] where Question Answering systems are researched and developed.
+ * https://github.com/WDAqua/Qanary/[Qanary Framework] provides the core framework for creating Question Answering systems following the Qanary methodology. You might consider the Qanary Framework as a reference implementation of the Qanary framework as a microservice-based component architecture.
+ * https://github.com/WDAqua/Qanary-question-answering-components[Qanary components] is covering the QA components compatible with the Qanary framework.
+ * https://github.com/WDAqua/Frankenstein[Frankenstein] is a supporting framework to establish a toolset for rapid orchestration and benchmarking of Qanary components. For example, it provides the tools to create from 29 components 380 QA systems.
+
+
+Regarding questions, ideas, or any feedback related to Qanary please do not hesitate to https://github.com/WDAqua/Qanary/wiki/Who-do-I-talk-to%3F[contact the core developers]. However, if you would like to see a QA system originally built using the Qanary framework, one of our core developers has built a complete end-to-end QA system that allows you to query several RDF data stores: http://wdaqua.eu/qa[http://wdaqua.eu/qa].
+
+Please go to the https://github.com/WDAqua/Qanary/wiki[GitHub Wiki page] of the Qanary repository to get more insights on how to use this framework, how to add new components etc.
+
+
+== How to Cite
+
+=== Introducing a Vocabulary for Knowledge-driven Question Answering Processes
+
+Kuldeep Singh, Andreas Both, Dennis Diefenbach, Saeedeh Shekarpour:
+Towards a Message-Driven Vocabulary for Promoting the Interoperability of Question Answering Systems. ICSC 2016: 386-389
+https://doi.org/10.1109/ICSC.2016.59[DOI 10.1109/ICSC.2016.59]
+
+=== Introducing the Qanary Framework
+
+Andreas Both, Dennis Diefenbach, Kuldeep Singh, Saeedeh Shekarpour, Didier Cherix, Christoph Lange:
+Qanary - A Methodology for Vocabulary-Driven Open Question Answering Systems. ESWC 2016: 625-641
+https://doi.org/10.1007/978-3-319-34129-3_38[DOI 10.1007/978-3-319-34129-3_38]
+
+=== Analytics of NER/NED Components
+
+Dennis Diefenbach, Kuldeep Singh, Andreas Both, Didier Cherix, Christoph Lange, Sören Auer:
+The Qanary Ecosystem: Getting New Insights by Composing Question Answering Pipelines. ICWE 2017: 171-189
+https://doi.org/10.1007/978-3-319-60131-1_10[DOI 10.1007/978-3-319-60131-1_10]
+
+*For https://github.com/WDAqua/Qanary/wiki/Publications-related-to-Qanary-Methodology-and-Framework[further publications] please see the following https://github.com/WDAqua/Qanary/wiki/Publications-related-to-Qanary-Methodology-and-Framework[wiki page].*
+
+***
+
+== Qanary Components
+
+All Question Answering components in this repository, grouped by task. Each links to the component's own `README.adoc` (intention, behavior, characteristics and implementation details).
+
+=== Automatic Speech Recognition (ASR)
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary-component-ASR-Kaldi/README.adoc[ASR-Kaldi] | Java | The component get the voice signal and transforms it to the textual representation which is saved in a standardized way to the Qanary triplestore.
+|===
+
+=== Language Detection (LD)
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary-component-LD-Shuyo/README.adoc[LD-Shuyo] | Java | The component is classifying the queston of the current process (already stored in the Qanary triplestore) using the Shuyo language model.
+|===
+
+=== Machine Translation (MT)
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary-component-MT-Python-HelsinkiNLP/README.adoc[MT-Python-HelsinkiNLP] | Python | MT tool that uses pre-trained models by Helsinki NLP implemented in transformers library.
+| link:qanary-component-MT-Python-LibreTranslate/README.adoc[MT-Python-LibreTranslate] | Python | MT tool that uses https://libretranslate.com/[LibreTranslate] to translate questions into English.
+| link:qanary-component-MT-Python-MBart/README.adoc[MT-Python-MBart] | Python | MT tool that uses pre-trained MBart and Mbart-50 models by implemented in transformers library.
+| link:qanary-component-MT-Python-NLLB/README.adoc[MT-Python-NLLB] | Python | MT tool that uses pre-trained "No Language Left Behind" (NLLB) models by Meta in transformers library.
+|===
+
+=== Named Entity Recognition (NER)
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary-component-NER-Ambiverse/README.adoc[NER-Ambiverse] | Java | Receives a textual question recognizes named entities and stores them.
+| link:qanary-component-NER-Aylien/README.adoc[NER-Aylien] | Java | Receives a textual question recognizes and disambiguates named entities and stores them.
+| link:qanary-component-NER-Babelfy/README.adoc[NER-Babelfy] | Java | Receives a textual question recognizes and disambiguates named entities and stores them.
+| link:qanary-component-NER-ComicCharacterNameSimpleNamedEntityRecognizer/README.adoc[NER-ComicCharacterNameSimpleNamedEntityRecognizer] | Java | Receives a textual question recognizes and disambiguates named entities and stores them.
+| link:qanary-component-NER-Dandelion/README.adoc[NER-Dandelion] | Java | Receives a textual question recognizes and disambiguates named entities and stores them.
+| link:qanary-component-NER-DBpediaSpotlight/README.adoc[NER-DBpediaSpotlight] | Java | Receives a textual question, forwards it to DBpedia Spotlight API and writes result in JSON format.
+| link:qanary-component-NER-EntityClassifier/README.adoc[NER-EntityClassifier] | Java | This is a dummy component.
+| link:qanary-component-NER-EntityClassifier2/README.adoc[NER-EntityClassifier2] | Java | Receives a textual question, forwards it to https://ner.vse.cz API and saves resulting named entities.
+| link:qanary-component-NER-FOX/README.adoc[NER-FOX] | Java | Receives a textual question, forwards it to http://fox-demo.aksw.org/api API and saves resulting named entities.
+| link:qanary-component-NER-MeaningCloud/README.adoc[NER-MeaningCloud] | Java | Receives a textual question, forwards it to the Meaning Cloud's API and saves resulting named entities.
+| link:qanary-component-NER-Ontotext/README.adoc[NER-Ontotext] | Java | Receives a textual question, forwards it to the OntoText's API and saves resulting named entities.
+| link:qanary-component-NER-Stanford/README.adoc[NER-Stanford] | Java | Receives a textual question, and uses Stanford NLP library to for NER task.
+| link:qanary-component-NER-Tagme/README.adoc[NER-Tagme] | Java | Receives a textual question forwards it to the API of TagMe, gets back recognized entities and stores them.
+| link:qanary-component-NER-TextRazor/README.adoc[NER-TextRazor] | Java | Receives a textual question forwards it to the API of Text Razor, gets back recognized entities and stores them.
+|===
+
+=== Named Entity Disambiguation / Entity Linking (NED)
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary-component-NED-AGDISTIS/README.adoc[NED-AGDISTIS] | Java | Receives a textual question and the spots from an NER component, disambiguates the spots and stores the corresponding named entities.
+| link:qanary-component-NED-Ambiverse/README.adoc[NED-Ambiverse] | Java | Receives a textual question recognizes and disambiguates named entities and stores them.
+| link:qanary-component-NED-Aylien/README.adoc[NED-Aylien] | Java | Receives a textual question recognizes and disambiguates named entities and stores them.
+| link:qanary-component-NED-Babelfy/README.adoc[NED-Babelfy] | Java | Receives a textual question recognizes and disambiguates named entities and stores them.
+| link:qanary-component-NED-Dandelion/README.adoc[NED-Dandelion] | Java | Receives a textual question recognizes and disambiguates named entities and stores them.
+| link:qanary-component-NED-DBpediaSpotlight/README.adoc[NED-DBpediaSpotlight] | Java | Receives a textual question, forwards it to DBpedia Spotlight API and writes result in JSON format.
+| link:qanary-component-NED-DiambiguationClass-OKBQA/README.adoc[NED-DiambiguationClass-OKBQA] | Java | Disambiguate recognised entity mentions and link them to a knowledge base.
+| link:qanary-component-NED-MeaningCloud/README.adoc[NED-MeaningCloud] | Java | Receives a textual question recognizes and disambiguates named entities and stores them.
+| link:qanary-component-NED-Ontotext/README.adoc[NED-Ontotext] | Java | Receives a textual question recognizes and disambiguates named entities and stores them.
+| link:qanary-component-NED-OpenAI-GPT/README.adoc[NED-OpenAI-GPT] | Java | Receives a textual question, forwards it to OpenAI API and links them to the DBpedia knowledge graph.
+| link:qanary-component-NED-Opentapioca/README.adoc[NED-Opentapioca] | Java | Receives a textual question recognizes and disambiguates named entities and stores them.
+| link:qanary-component-NED-Tagme/README.adoc[NED-Tagme] | Java | Receives a textual question recognizes and disambiguates named entities and stores them.
+| link:qanary-component-NED-Watson/README.adoc[NED-Watson] | Java | * API documentation: http://cloud.ibm.com/apidocs/natural-language-understanding * request own API key: http://cloud.ibm.com/catalog/services/natural-language-understanding.
+|===
+
+=== Named Entity Recognition and Disambiguation (NERD)
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary-component-NERD-Alchemy/README.adoc[NERD-Alchemy] | Java | Receives a textual question recognizes and links named entities with the Alchemy API and stores them.
+| link:qanary-component-NERD-LuceneLinker/README.adoc[NERD-LuceneLinker] | Java | Receives a textual question, tokenizes it with Lucene, links named entities given a static textual file and stores them.
+| link:qanary-component-NERD-SMAPH/README.adoc[NERD-SMAPH] | Java | In order to use this component you need to install the https://github.com/WDAqua/smaph-erd[smaph-erd fork] and run smaph system first.
+|===
+
+=== Class Linking / Classification (CLS)
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary-component-CLS-CLSNLIOD/README.adoc[CLS-CLSNLIOD] | Java | The component fetches the textual question and annotates a recognized and disambiguated class and save it to the triplestore.
+|===
+
+=== Relation Linking (REL)
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary-component-REL-Python-Falcon/README.adoc[REL-Python-Falcon] | Python | The component wraps the https://labs.tib.eu/falcon/[Falcon] relation extraction service.
+| link:qanary-component-REL-RelationLinker1/README.adoc[REL-RelationLinker1] | Java | Receives a textual question forwards it to some local API, gets back recognized DBpedia relations and stores them.
+| link:qanary-component-REL-RelationLinker2/README.adoc[REL-RelationLinker2] | Java | Receives a textual question forwards it to some local API, gets back recognized DBpedia relations and stores them.
+| link:qanary-component-REL-RelNliod/README.adoc[REL-RelNliod] | Java | Receives a textual question forwards it to some local API, gets back recognized DBpedia relations and stores them.
+|===
+
+=== Relation Detection (RD)
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary-component-RD-AnnotaitonOfSpotProperty-OKBQA/README.adoc[RD-AnnotaitonOfSpotProperty-OKBQA] | Java | The component fetches the textual question and annotates a recognized and disambiguated class and save it to the triplestore.
+| link:qanary-component-RD-DiambiguationProperty-OKBQA/README.adoc[RD-DiambiguationProperty-OKBQA] | Java | <<<<<<< HEAD:qanary-component-RD-DiambiguationProperty-OKBQA/README.md component source: https://www.okbqa.org/architecture/disambiguation =======.
+|===
+
+=== Question Classification (QC)
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary-component-QC-AnswerTypeClassifier/README.adoc[QC-AnswerTypeClassifier] | Java | Classify the question (e.g. its expected answer type).
+|===
+
+=== Expected Answer Type (EAT)
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary_component-EAT-Python-Answer-Type-classifier/README.adoc[EAT-Python-Answer-Type-classifier] | Python | The component classifies the DBpedia answer type of a textual question.
+|===
+
+=== Query Building (QB)
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary-component-QB-AnnotationOfSpotClass-OKBQA/README.adoc[QB-AnnotationOfSpotClass-OKBQA] | Java | Component source: https://www.okbqa.org/architecture/template-generation The component fetches the textual question and annotates a recognized and disambiguated class and save it to the triplestore.
+| link:qanary-component-QB-BirthDataWikidata/README.adoc[QB-BirthDataWikidata] | Java | Receives a disambiguated entity and builds a SPARQL query over Wikidata about all the data related to birth of an entity.
+| link:qanary-component-QB-ComicCharacterAlterEgoSimpleDBpedia/README.adoc[QB-ComicCharacterAlterEgoSimpleDBpedia] | Java | Receives a disambiguated entity and builds a SPARQL query over Wikidata about all the data related to birth of an entity.
+| link:qanary-component-QB-DateOfDeathDBpedia/README.adoc[QB-DateOfDeathDBpedia] | Java | This component is intended to create and store a SPARQL query which can be executed on dbpedia to receive the date of death for a given person.
+| link:qanary-component-QB-DeepPavlovWrapper/README.adoc[QB-DeepPavlovWrapper] | Java | see the https://github.com/WDAqua/Qanary/wiki/[Qanary wiki] for a https://github.com/WDAqua/Qanary/wiki/How-do-I-implement-a-new-Qanary-component-using-Java%3F[tutorial] on how to use this Apache Maven archetype for creating a Qanary component.
+| link:qanary-component-QB-GAnswerWrapper/README.adoc[QB-GAnswerWrapper] | Java | The main task of this component is to manage the communication between the Qanary pipeline and the gAnswer API and to prepare the data.
+| link:qanary-component-QB-MonoliticWrapper/README.adoc[QB-MonoliticWrapper] | Java | A dummy component for monolithic systems that produce SPARQL queries.
+| link:qanary-component-QB-PlatypusWrapper/README.adoc[QB-PlatypusWrapper] | Java | The main task of this component is to manage the communication between the Qanary pipeline and the Platypus API and to prepare the data.
+| link:qanary-component-QB-Python-QAInterface/README.adoc[QB-Python-QAInterface] | Python | QA Interface component is a customizable wrapper for black-box KGQA systems.
+| link:qanary-component-QB-QAnswer/README.adoc[QB-QAnswer] | Java | The component is fetching (typically 60) SPARQL queries from the QAnswer API which are considered to be possible solutons for the given question (aka SPARQL Query Candidates).
+| link:qanary-component-QB-RuBQWrapper/README.adoc[QB-RuBQWrapper] | Java | The main task of this component is to manage the communication between the Qanary pipeline and the RuBQ API and to prepare the data.
+| link:qanary-component-QB-SimpleRealNameOfSuperHero/README.adoc[QB-SimpleRealNameOfSuperHero] | Java | This rule-based Qanary component is intended to create a SPARQL query that can be executed on DBpedia for the limited knowledge domain of superhero names.
+| link:qanary-component-QB-Sina/README.adoc[QB-Sina] | Java | Receives 3 data structures: `AnnotationOfClass`, `AnnotationOfRelation`, and `AnnotationOfInstance`.
+| link:qanary-component-QB-TeBaQaWrapper/README.adoc[QB-TeBaQaWrapper] | Java | The main task of this component is to manage the communication between the Qanary pipeline and the TeBaQA API and to prepare the data.
+|===
+
+=== Query Building and Execution (QBE)
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary-component-QBE-QAnswer/README.adoc[QBE-QAnswer] | Java | The component is fetching results from the QAnswer API.
+| link:qanary-component-QBE-SimpleQueryBuilderAndExecutor/README.adoc[QBE-SimpleQueryBuilderAndExecutor] | Java | Receives 3 optional data structures: `AnnotationOfClass`, `AnnotationOfRelation`, and `AnnotationOfInstance`.
+|===
+
+=== Query Execution (QE)
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary-component-QE-Python-SparqlExecuter/README.adoc[QE-Python-SparqlExecuter] | Python | A simple component that executes a SPARQL query on a given endpoint and returns the results.
+| link:qanary-component-QE-SparqlExecuter/README.adoc[QE-SparqlExecuter] | Java | Receives a SPARQL query over DBpedia or Wikidata, executes it and writes result in JSON format.
+| link:qanary-component-QE-Wikidata/README.adoc[QE-Wikidata] | Java | Receives a SPARQL query over Wikidata, executes it and writes result in JSON format.
+|===
+
+=== Knowledge-graph translation (KG2KG)
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary-component-KG2KG-TranslateAnnotationsOfInstance/README.adoc[KG2KG-TranslateAnnotationsOfInstance] | Java | :toc: :toclevels: 5 :toc-placement!: :source-highlighter: highlight.js ifdef::env-github[] :tip-caption: :bulb: :note-caption: :information_source: :important-caption: :heavy_exclamation_mark: :caution-caption: :fire: :warning-caption: :warning: endif::[] # KG2KG Translation of AnnotationOfInstance This component is intended to translate resources from https://dbpedia.org/[DBpedia] to https://www.wikidata.org/[Wikidata] and vice versa for existing annotations of type `qa:AnnotationOfInstance`.
+|===
+
+=== Textual Question Answering (TQA)
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary-component-TQA-ChatGPTWrapper/README.adoc[TQA-ChatGPTWrapper] | Java | This component is a wrapper for the https://platform.openai.com/overview[OpenAI API].
+|===
+
+=== Utility
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary-component-CopyValuesOfPriorGraph/README.adoc[CopyValuesOfPriorGraph] | Java | A Qanary component that *copies the annotations of a prior process graph into the current graph*.
+|===
+
+=== Question classification (legacy)
+
+[cols="2,1,5",options="header"]
+|===
+| Component | Language | Intention
+
+| link:qanary_component-TGMM/README.adoc[TGMM] | Legacy | This repository contain all the reusable resources present in Frankenstein Architecture, and detailed description of how to use the resources within Frankenstein.
+|===
+
+=== Tooling and non-components
+
+* `qanary_docker-compose-writer` — a development link:qanary_docker-compose-writer/README.adoc[build tool] (generates a docker-compose file), not a QA component.
+* `Qanary-component-QB-Python-KGQAnWrapper` — an (uninitialized) git submodule; no sources are present in this checkout.

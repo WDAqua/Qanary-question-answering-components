@@ -3,73 +3,60 @@
 	xmlns="http://maven.apache.org/POM/4.0.0"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
+	<!-- Spring Boot 3, aligned with the current Qanary framework (qa.* 4.0.1) -->
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.5.15</version>
+		<relativePath/>
+	</parent>
+
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary-component-QB-SimpleRealNameOfSuperHero</artifactId>
 	<version>3.3.1</version>
-
-	<parent>
-		<groupId>eu.wdaqua.qanary</groupId>
-		<artifactId>qa.qanarycomponent-parent</artifactId>
-		<version>[0.1.0,1.0.0)</version>
-	</parent>
+	<name>Qanary component: QB-SimpleRealNameOfSuperHero</name>
+	<description>Qanary query builder that creates a DBpedia query for the real name of a superhero</description>
 
 	<properties>
-		<java.version>25</java.version>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
+		<java.version>21</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<qanary.version>4.0.1</qanary.version>
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<docker.image.name>qanary-component-qb-simplerealnameofsuperhero</docker.image.name>
-		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
 	</properties>
 
 	<dependencies>
+		<!-- the Qanary component framework (pulls qa.commons, spring web, SBA client, Apache Jena transitively) -->
 		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
+			<groupId>eu.wdaqua.qanary</groupId>
+			<artifactId>qa.component</artifactId>
+			<version>${qanary.version}</version>
+		</dependency>
+		<!-- JUnit 5 + Mockito + Spring test (not transitive from qa.component) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.jayway.jsonpath</groupId>
-			<artifactId>json-path</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.jayway.jsonpath</groupId>
-			<artifactId>json-path-assert</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-inline</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-ui</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-webmvc-core</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>eu.wdaqua.qanary</groupId>
+            <artifactId>qa.component</artifactId>
+            <version>${qanary.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
+
 	<build>
+		<!-- stable jar name so the Dockerfile can reference it without the version -->
+		<finalName>qanary-component-qb-simplerealnameofsuperhero</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>
-						eu.wdaqua.qanary.component.simplerealnameofsuperhero.qb.Application</mainClass>
+					<mainClass>eu.wdaqua.qanary.component.simplerealnameofsuperhero.qb.Application</mainClass>
 				</configuration>
 				<executions>
 					<execution>
@@ -79,40 +66,16 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- https://github.com/spotify/dockerfile-maven -->
-			<!-- build Docker image: mvn dockerfile:build  -->
 			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<version>${dockerfile-maven-version}</version>
-				<executions>
-					<execution>
-						<id>default</id>
-						<goals>
-							<goal>build</goal>
-							<goal>push</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>default-2</id>
-						<goals>
-							<goal>tag</goal>
-							<goal>push</goal>
-						</goals>
-						<configuration>
-							<tag>
-								latest</tag>
-						</configuration>
-					</execution>
-				</executions>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
-					<repository>
-						${docker.image.prefix}/${docker.image.name}</repository>
-					<tag>${project.version}</tag>
-					<buildArgs>
-						<JAR_FILE>
-							${project.build.finalName}.jar</JAR_FILE>
-					</buildArgs>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+						</manifest>
+					</archive>
 				</configuration>
 			</plugin>
 		</plugins>

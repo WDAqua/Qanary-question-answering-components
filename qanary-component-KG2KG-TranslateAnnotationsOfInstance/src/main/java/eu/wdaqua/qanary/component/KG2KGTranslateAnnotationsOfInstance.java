@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.net.URISyntaxException;
 
-@Component
 public class KG2KGTranslateAnnotationsOfInstance extends QanaryComponent {
 
     /*

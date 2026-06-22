@@ -20,10 +20,10 @@ public class Application {
     }
 
     @Bean
-    public QanaryComponent qanaryComponent(
+    public KG2KGTranslateAnnotationsOfInstance qanaryComponent(
             @Value("${spring.application.name}") final String applicationName) {
         return new KG2KGTranslateAnnotationsOfInstance(applicationName);
-    } 
+    }
     
     @Bean
     public OpenAPI customOpenAPI() {

@@ -10,7 +10,6 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -27,10 +26,11 @@ import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 
 
-@Component
 /**
  * This component connected automatically to the Qanary pipeline.
  * The Qanary pipeline endpoint defined in application.properties (spring.boot.admin.url)
+ * The bean is created in {@link Application#qanaryComponent} (not component-scanned)
+ * to avoid double registration with the {@code @Bean} definition.
  * @see <a href="https://github.com/WDAqua/Qanary/wiki/How-do-I-integrate-a-new-component-in-Qanary%3F" target="_top">Github wiki howto</a>
  */
 public class CopyValuesOfPriorGraph extends QanaryComponent {

@@ -102,6 +102,7 @@ class SparqlExecuterTest {
     }
 
     @Test
+    @org.junit.jupiter.api.Disabled("requires live network access to the public Wikidata Query Service (query.wikidata.org)")
     void testGetQueryResultsAsJson() throws eu.wdaqua.qanary.sparqlexecuter.exception.SparqlQueryFailed, UnsupportedEncodingException, URISyntaxException {
         
         String jsonString = this.mockedSparqlExecuter.getQueryResultsAsJson(

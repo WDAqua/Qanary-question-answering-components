@@ -1,0 +1,56 @@
+:toc:
+:toclevels: 3
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:warning-caption: :warning:
+endif::[]
+
+= Welcome to the Frankenstein!
+
+toc::[]
+
+== Intention
+
+This repository contain all the reusable resources present in Frankenstein Architecture, and detailed description of how to use the resources within Frankenstein.
+
+== Behavior
+
+The Frankenstein Architecture currently contain 29 components. For detailed list of the components, their high level input and output, please refer to https://github.com/WDAqua/Frankenstein/blob/master/Component%20List.csv[Component List]. This repository is maintained uder GPL 3.0 lisence agreement. The repository contain two folders:
+
+As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — classify questions (legacy Frankenstein import) — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations.
+
+== Characteristics
+
+* *Task type:* Question classification (legacy).
+* *Runtime:* containerised; some models/services may need to be downloaded on first run.
+
+== Implementation
+
+* *Language:* Java (legacy; nested `Qanary/` module).
+* *Major frameworks:* legacy Qanary 1.x / Spring Boot 1.x (not migrated to 4.0.0).
+* *Tests:* see the nested `Qanary/` module.
+
+== Build and run
+
+See the nested `Qanary/` module for build instructions (legacy).
+
+== [Qanary](https://github.com/WDAqua/Frankenstein/tree/master/Qanary)
+
+In this folder, all the 29 integrated components (written using the https://github.com/WDAqua/Qanary[Qanary framework for Question Answering Systems]) within Frankenstein are given as independent resources. 
+The detailed instruction for how to run these components, how to include a newer component can be seen in the separate read me file within the folder.
+
+== [Learning](https://github.com/WDAqua/Frankenstein/tree/master/Learning)
+
+In this folder, you will see the Frankenstein learning module. It learns from given features and f-score to select the best 
+component per QA task (i.e., a question). This folder also contain another folder named https://github.com/WDAqua/Frankenstein/tree/master/Learning/Datasets[Dataset], this folder contain our detailed results, 
+empirical study results etc. from the original Frankenstein paper
+
+== 380 QA pipelines in Frankenstein
+
+These 29 indegrated components given in ``Component_List.csv`` can be used to build QA pipelines. 
+We have 11 commponents dedicated to Named Entity Recognition (NER), 9 for Named Entity Disambiguation (NED), 5 for Relation Linker (RL), 2 Class Linker (CL), and 2 Query Builder (QB).
+We do not have a benchmark for NER, and AGDISTIS NED tool needs question and recognised entities as input so all 11 NER components are used for creating input for AGDISTIS. 
+Hence, logically it become 19 NED components which can be combined with 5 RL, 2 Cl, and 2 QB 
+components, resulting into 380 QA pipelines (19X5X2X2).

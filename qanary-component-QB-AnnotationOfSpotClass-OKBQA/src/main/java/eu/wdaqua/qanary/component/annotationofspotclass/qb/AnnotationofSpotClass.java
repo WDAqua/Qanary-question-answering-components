@@ -1,5 +1,6 @@
 package eu.wdaqua.qanary.component.annotationofspotclass.qb;
 
+import org.apache.jena.sparql.exec.http.QueryExecutionHTTP;
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
 import eu.wdaqua.qanary.commons.QanaryUtils;
@@ -144,7 +145,7 @@ public class AnnotationofSpotClass extends QanaryComponent {
 
     private ResultSet selectTripleStore(String sparqlQuery, String endpoint) {
         Query query = QueryFactory.create(sparqlQuery);
-        QueryExecution qExe = QueryExecutionFactory.sparqlService(endpoint, query);
+        QueryExecution qExe = QueryExecutionHTTP.service(endpoint).query(query).build();
         return qExe.execSelect();
     }
 

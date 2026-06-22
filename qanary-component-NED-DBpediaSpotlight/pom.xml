@@ -3,60 +3,83 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
+	<!-- Spring Boot 3, aligned with the current Qanary framework (qa.* 4.0.1) -->
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.5.15</version>
+		<relativePath/>
+	</parent>
+
 	<groupId>eu.wdaqua.qanary.component</groupId>
 	<artifactId>qanary-component-NED-DBpediaSpotlight</artifactId>
 	<version>3.5.1</version>
+	<name>Qanary component: NED-DBpediaSpotlight</name>
+	<description>Qanary named entity disambiguation component using the public DBpedia Spotlight web service</description>
 
-	<parent>
-		<groupId>eu.wdaqua.qanary</groupId>
-		<artifactId>qa.qanarycomponent-parent</artifactId>
-		<version>[0.1.0,1.0.0)</version>
-	</parent>
 	<properties>
-		<java.version>25</java.version>
-		<!-- Compile bytecode to Java 17 for compatibility with the Spring/ASM stack -->
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
-		<spring-boot-admin.version>2.7.9</spring-boot-admin.version>
+		<java.version>21</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<qanary.version>4.0.1</qanary.version>
+		<springdoc.version>2.8.9</springdoc.version>
 		<docker.image.prefix>qanary</docker.image.prefix>
 		<docker.image.name>qanary-component-ned-dbpediaspotlight</docker.image.name>
-		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-		<springdoc.version>1.7.0</springdoc.version>
 	</properties>
+
 	<dependencies>
-		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-data-rest -->
+		<!-- the Qanary component framework (pulls qa.commons incl. RestTemplate caching, spring web, SBA client, Jena) -->
+		<dependency>
+			<groupId>eu.wdaqua.qanary</groupId>
+			<artifactId>qa.component</artifactId>
+			<version>${qanary.version}</version>
+		</dependency>
+		<!-- OpenAPI 3 / Swagger UI: provides io.swagger.v3.oas.* used by the OpenAPI bean -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-data-rest</artifactId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>${springdoc.version}</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui -->
-		<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-core-jakarta -->
-		<dependency>
-			<groupId>io.swagger.core.v3</groupId>
-			<artifactId>swagger-core-jakarta</artifactId>
-		</dependency>
+		<!-- JSON handling -->
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 		</dependency>
+		<!-- Apache HttpClient 5 (Spring Boot 3 default) for the optional SSL-bypassing request factory -->
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
+			<groupId>org.apache.httpcomponents.client5</groupId>
+			<artifactId>httpclient5</artifactId>
+		</dependency>
+		<!-- JUnit 5 + Mockito + Spring test (not transitive from qa.component) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+		<!-- the framework's QanaryCacheTest base class (qa.commons test-jar) -->
+		<dependency>
+			<groupId>eu.wdaqua.qanary</groupId>
+			<artifactId>qa.commons</artifactId>
+			<version>${qanary.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+        <dependency>
+            <groupId>eu.wdaqua.qanary</groupId>
+            <artifactId>qa.component</artifactId>
+            <version>${qanary.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
+
 	<build>
+		<!-- stable jar name so the Dockerfile can reference it without the version -->
+		<finalName>qanary-component-ned-dbpediaspotlight</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -71,39 +94,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<!-- https://github.com/spotify/dockerfile-maven -->
-			<!-- build Docker image: mvn dockerfile:build  -->
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<version>${dockerfile-maven-version}</version>
-				<executions>
-					<execution>
-						<id>default</id>
-						<goals>
-							<goal>build</goal>
-							<goal>push</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>default-2</id>
-						<goals>
-							<goal>tag</goal>
-							<goal>push</goal>
-						</goals>
-						<configuration>
-							<tag>latest</tag>
-						</configuration>
-					</execution>
-				</executions>
-				<configuration>
-					<repository>${docker.image.prefix}/${docker.image.name}</repository>
-					<tag>${project.version}</tag>
-					<buildArgs>
-						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-					</buildArgs>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

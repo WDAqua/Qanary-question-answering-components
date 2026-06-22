@@ -1,8 +1,48 @@
+:toc:
+:toclevels: 3
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:warning-caption: :warning:
+endif::[]
+
 = NED Dandelion
 
-== Description
+toc::[]
+
+== Intention
 
 Receives a textual question recognizes and disambiguates named entities and stores them.
+
+== Behavior
+
+As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — disambiguate recognised entity mentions and link them to a knowledge base — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations. See <<Input specification>> / <<Output specification>> below for the exact annotation contract.
+
+== Characteristics
+
+* *Task type:* Named Entity Disambiguation / Entity Linking (NED).
+* *External service:* https://api.dandelion.eu/datatxt/nex/v1/?text=
+* *Requires credentials / network:* wraps a remote, keyed service — its live tests need an API key and network access (build offline with `-DskipTests`).
+
+== Implementation
+
+* *Language:* Java (JDK 21).
+* *Major frameworks:* Spring Boot 3.5 (`spring-boot-starter-parent`); the Qanary component framework `eu.wdaqua.qanary:qa.component` 4.0.0 (transitively Spring Boot Admin client + Apache Jena 5); Gson.
+* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/dandelion/ned/DandelionNED.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
+* *Tests:* 6 test class(es) under `src/test/java/` (`CacheTests.java`, `DandelionLiveTest.java`, `DandelionMockedTest.java`, `DandelionTestConfiguration.java`, `QanaryServiceControllerTest.java`, `SwaggerUiAvailabilityTest.java`).
+
+== Build and run
+
+Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
+framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
+repository), then build with JDK 21:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-ned-dandelion.jar -t qanary/qanary-component-ned-dandelion .
+----
 
 == Input specification
 

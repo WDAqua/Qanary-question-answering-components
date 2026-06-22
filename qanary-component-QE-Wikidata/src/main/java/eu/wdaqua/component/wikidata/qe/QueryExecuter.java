@@ -64,8 +64,8 @@ public class QueryExecuter extends QanaryComponent {
 	public String getAnswersFromWikidata(String queryString) {
 
 		String wikidataEndpoint = "https://query.wikidata.org/sparql";
-		QueryExecution qexec = QueryExecutionFactory.sparqlService(wikidataEndpoint,
-				queryString.replace("\\\"", "\"").replace("\\n", "\n"));
+		QueryExecution qexec = org.apache.jena.sparql.exec.http.QueryExecutionHTTP.service(wikidataEndpoint)
+				.query(queryString.replace("\\\"", "\"").replace("\\n", "\n")).build();
 
 		try {
 			ResultSet results = qexec.execSelect();

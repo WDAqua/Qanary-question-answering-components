@@ -1,8 +1,49 @@
+:toc:
+:toclevels: 3
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:warning-caption: :warning:
+endif::[]
+
 = QB ComicCharacterAlterEgoSimpleQueryBuilder component
 
-== Description
+toc::[]
 
-Receives a disambiguated entity and builds a SPARQL query over Wikidata about all the data related to birth of an entity
+== Intention
+
+Receives a disambiguated entity and builds a SPARQL query over Wikidata about all the data related to birth of an entity.
+
+== Behavior
+
+As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — build a formal (SPARQL) query from the question and its annotations — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations. See <<Input specification>> / <<Output specification>> below for the exact annotation contract.
+
+== Characteristics
+
+* *Task type:* Query Building (QB).
+* *Knowledge base:* Wikidata.
+* *Note:* This component creates a SPARQL query that can be used to find the real name of fictional characters.
+* *Offline build:* builds and (where present) tests run offline.
+
+== Implementation
+
+* *Language:* Java (JDK 21).
+* *Major frameworks:* Spring Boot 3.5 (`spring-boot-starter-parent`); the Qanary component framework `eu.wdaqua.qanary:qa.component` 4.0.0 (transitively Spring Boot Admin client + Apache Jena 5).
+* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/comiccharacteralteregoaimpledbpedia/qb/ComicCharacterAlterEgoSimpleDBpediaQueryBuilder.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
+* *Tests:* 4 test class(es) under `src/test/java/` (`QanaryServiceControllerTest.java`, `QueryTest.java`, `SwaggerUiAvailabilityTest.java`, `TestConfiguration.java`).
+
+== Build and run
+
+Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
+framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
+repository), then build with JDK 21:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-qb-comiccharacteralteregosimpledbpedia.jar -t qanary/qanary-component-qb-comiccharacteralteregosimpledbpedia .
+----
 
 == Input specification
 
@@ -45,3 +86,33 @@ Comment: complex `oa:hasTarget` is used
     oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime ;
     oa:annotatedBy <urn:qanary:applicationName > .
 ----
+
+== Build and run
+
+This component targets the current *Qanary framework 4.0.0* (Spring Boot 3,
+Java 21). Install the framework first (`mvn install` in the
+https://github.com/WDAqua/Qanary[Qanary] repository), then build clean:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+java -jar target/qanary-component-qb-comiccharacteralteregosimpledbpedia.jar
+----
+
+Docker:
+
+[source,bash]
+----
+mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-qb-comiccharacteralteregosimpledbpedia.jar \
+  -t qanary/qanary-component-qb-comiccharacteralteregosimpledbpedia .
+----
+
+Configuration is in `src/main/resources/config/application.properties`
+(`server.port`, `spring.application.name`, `spring.boot.admin.url`).
+
+== Tests
+
+`mvn test` runs the full-context `QanaryServiceControllerTest` and `QueryTest`.
+The Spring Boot Admin client failing to reach a non-running pipeline is logged but
+non-fatal.

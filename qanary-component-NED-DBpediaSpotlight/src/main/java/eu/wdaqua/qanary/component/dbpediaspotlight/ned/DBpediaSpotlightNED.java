@@ -8,13 +8,15 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import javax.inject.Inject;
 import javax.net.ssl.SSLContext;
 
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.core5.ssl.SSLContexts;
+import org.apache.hc.core5.ssl.TrustStrategy;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -63,7 +65,7 @@ public class DBpediaSpotlightNED extends QanaryComponent {
 
 	private DBpediaSpotlightServiceFetcher myDBpediaSpotlightServiceFetcher;
 
-	@Inject
+	@Autowired
 	private DBpediaSpotlightConfiguration myDBpediaSpotlightConfiguration;
 
 	private boolean ignoreSslCertificate;
@@ -120,12 +122,16 @@ public class DBpediaSpotlightNED extends QanaryComponent {
 			throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 		TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
 
-		SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy)
+		SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy)
 				.build();
 
 		SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
 
-		CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
+		// HttpClient 5: the SSL socket factory is configured on the connection manager
+		PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+				.setSSLSocketFactory(csf).build();
+
+		CloseableHttpClient httpClient = HttpClients.custom().setConnectionManager(connectionManager).build();
 
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 

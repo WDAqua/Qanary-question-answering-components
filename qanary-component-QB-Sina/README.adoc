@@ -1,6 +1,50 @@
+:toc:
+:toclevels: 3
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:warning-caption: :warning:
+endif::[]
+
 = QB SINA component
 
-Receives 3 data structures: `AnnotationOfClass`, `AnnotationOfRelation`, and `AnnotationOfInstance`. Depending on the availability of them, generates a query and stores it.
+toc::[]
+
+== Intention
+
+Receives 3 data structures: `AnnotationOfClass`, `AnnotationOfRelation`, and `AnnotationOfInstance`.
+
+== Behavior
+
+Depending on the availability of them, generates a query and stores it.
+
+As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — build a formal (SPARQL) query from the question and its annotations — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations. See <<Input specification>> / <<Output specification>> below for the exact annotation contract.
+
+== Characteristics
+
+* *Task type:* Query Building (QB).
+* *External service:* http://dbpedia.org/resource/Berlin
+* *Offline build:* builds and (where present) tests run offline.
+
+== Implementation
+
+* *Language:* Java (JDK 21).
+* *Major frameworks:* Spring Boot 3.5 (`spring-boot-starter-parent`); the Qanary component framework `eu.wdaqua.qanary:qa.component` 4.0.0 (transitively Spring Boot Admin client + Apache Jena 5).
+* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/sina/qb/SINA.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
+* *Tests:* 3 test class(es) under `src/test/java/` (`QanaryServiceControllerTest.java`, `SinaTest.java`, `SwaggerUiAvailabilityTest.java`).
+
+== Build and run
+
+Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
+framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
+repository), then build with JDK 21:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-qb-sina.jar -t qanary/qanary-component-qb-sina .
+----
 
 == Input specification
 

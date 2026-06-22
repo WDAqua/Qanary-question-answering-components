@@ -1,7 +1,48 @@
+:toc:
+:toclevels: 3
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:warning-caption: :warning:
+endif::[]
+
 = QB SimpleRealNameOfSuperHero component
+
+toc::[]
+
+== Intention
 
 This rule-based Qanary component is intended to create a SPARQL query that can be executed on DBpedia for the limited knowledge domain of superhero names.
 
+== Behavior
+
+As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — build a formal (SPARQL) query from the question and its annotations — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations. See <<Input specification>> / <<Output specification>> below for the exact annotation contract.
+
+== Characteristics
+
+* *Task type:* Query Building (QB).
+* *Knowledge base:* DBpedia.
+* *Offline build:* builds and (where present) tests run offline.
+
+== Implementation
+
+* *Language:* Java (JDK 21).
+* *Major frameworks:* Spring Boot 3.5 (`spring-boot-starter-parent`); the Qanary component framework `eu.wdaqua.qanary:qa.component` 4.0.0 (transitively Spring Boot Admin client + Apache Jena 5).
+* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/simplerealnameofsuperhero/qb/QueryBuilderSimpleRealNameOfSuperHero.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
+* *Tests:* 3 test class(es) under `src/test/java/` (`QanaryServiceControllerTest.java`, `QueryBuilderTest.java`, `SwaggerUiAvailabilityTest.java`).
+
+== Build and run
+
+Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
+framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
+repository), then build with JDK 21:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-qb-simplerealnameofsuperhero.jar -t qanary/qanary-component-qb-simplerealnameofsuperhero .
+----
 
 == Input specification
 
@@ -38,8 +79,6 @@ This rule-based Qanary component is intended to create a SPARQL query that can b
     oa:annotatedBy <urn:qanary:applicationName > .
 ----
 
-== Example
-
 === Question of the Qanary process
 
 ----
@@ -68,7 +107,7 @@ ORDER BY ?resource
 
 == Precondition
 
- * The current question needs to follow the pattern `What is the real name of <superheroname>`.
+* The current question needs to follow the pattern `What is the real name of <superheroname>`.
    * a possible question mark is not demanded or will be ignored
  * This component expects an annotation of named entities within the Qanary triplestore. Hence, previously another component capable of recognizing and disambiguating (NER/NED) DBpedia named entities needs to be executed.
    * e.g., the NED component using https://github.com/WDAqua/Qanary-question-answering-components/tree/master/qanary_component-NED-DBpedia-Spotlight[Qanary DBpedia Spotlight component]
@@ -91,8 +130,6 @@ WHERE {
        oa:annotatedBy ?annotatingService .
 }
 ----
-
-== Build and Run
 
 === Build with Maven
 

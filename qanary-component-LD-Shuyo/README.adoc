@@ -1,7 +1,51 @@
+:toc:
+:toclevels: 3
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:warning-caption: :warning:
+endif::[]
+
 = A out-of-the-box Qanary Language Classifier Component
 
+toc::[]
+
+== Intention
+
 The component is classifying the queston of the current process (already stored in the Qanary triplestore) using the Shuyo language model.
+
+== Behavior
+
 The component is creating a new annotation of the type `qa:AnnotationOfQuestionLanguage`.
+
+As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — detect the natural language of the question — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations. See <<Input specification>> / <<Output specification>> below for the exact annotation contract.
+
+== Characteristics
+
+* *Task type:* Language Detection (LD).
+* *External service:* http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+* *Note:* The component detects the languages of the current component.
+* *Offline build:* builds and (where present) tests run offline.
+
+== Implementation
+
+* *Language:* Java (JDK 21).
+* *Major frameworks:* Spring Boot 3.5 (`spring-boot-starter-parent`); the Qanary component framework `eu.wdaqua.qanary:qa.component` 4.0.0 (transitively Spring Boot Admin client + Apache Jena 5); springdoc-openapi (Swagger UI).
+* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/shuyo/ld/LanguageDetection.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
+* *Tests:* 3 test class(es) under `src/test/java/` (`LanguageDetectionTest.java`, `QanaryServiceControllerTest.java`, `SwaggerUiAvailabilityTest.java`).
+
+== Build and run
+
+Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
+framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
+repository), then build with JDK 21:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-ld-shuyo.jar -t qanary/qanary-component-ld-shuyo .
+----
 
 == Data
 

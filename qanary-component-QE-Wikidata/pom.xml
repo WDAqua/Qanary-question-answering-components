@@ -1,60 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <!-- Spring Boot 3, aligned with the current Qanary framework (qa.* 4.0.1) -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.15</version>
+        <relativePath/>
+    </parent>
+
     <groupId>eu.wdaqua.qanary.component</groupId>
     <artifactId>qanary-component-QE-Wikidata</artifactId>
     <version>3.1.9</version>
-    <parent>
-      <groupId>eu.wdaqua.qanary</groupId>
-      <artifactId>qa.qanarycomponent-parent</artifactId>
-      <version>[0.1.0,1.0.0)</version>
-    </parent>
+    <name>Qanary component: QE-Wikidata</name>
+
     <properties>
-        <java.version>25</java.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <qanary.version>4.0.1</qanary.version>
+        <springdoc.version>2.8.9</springdoc.version>
         <docker.image.prefix>qanary</docker.image.prefix>
         <docker.image.name>qanary-component-qe-wikidata</docker.image.name>
-        <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-        <springdoc.version>1.7.0</springdoc.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <version>2.4</version>
+            <classifier>jdk15</classifier>
         </dependency>
+        <!-- the Qanary component framework (pulls qa.commons, spring web, SBA client, Apache Jena transitively) -->
         <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path</artifactId>
-            <scope>compile</scope>
+            <groupId>eu.wdaqua.qanary</groupId>
+            <artifactId>qa.component</artifactId>
+            <version>${qanary.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path-assert</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-data-rest -->
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-data-rest</artifactId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui -->
         <dependency>
-          <groupId>org.springdoc</groupId>
-          <artifactId>springdoc-openapi-ui</artifactId>
-        </dependency>		
-        <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-core-jakarta -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-core-jakarta</artifactId>
+            <groupId>eu.wdaqua.qanary</groupId>
+            <artifactId>qa.component</artifactId>
+            <version>${qanary.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
+        <finalName>qanary-component-qe-wikidata</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -70,50 +75,17 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- https://github.com/spotify/dockerfile-maven -->
-            <!-- build Docker image: mvn dockerfile:build -->
             <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>dockerfile-maven-plugin</artifactId>
-                <version>${dockerfile-maven-version}</version>
-                <executions>
-                    <execution>
-                        <id>default</id>
-                        <goals>
-                            <goal>build</goal>
-                            <goal>push</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>default-2</id>
-                        <goals>
-                            <goal>tag</goal>
-                            <goal>push</goal>
-                        </goals>
-                        <configuration>
-                            <tag>latest</tag>
-                        </configuration>
-                    </execution>
-                </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
-                    <repository>${docker.image.prefix}/${docker.image.name}</repository>
-                    <tag>${project.version}</tag>
-                    <buildArgs>
-                        <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-                    </buildArgs>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                    </archive>
                 </configuration>
-            </plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-jar-plugin</artifactId>
-              <configuration>
-                <archive>
-                  <manifest>
-                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                  </manifest>
-                </archive>
-              </configuration>
             </plugin>
         </plugins>
     </build>

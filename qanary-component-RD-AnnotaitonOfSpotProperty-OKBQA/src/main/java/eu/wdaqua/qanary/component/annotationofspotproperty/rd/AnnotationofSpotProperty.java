@@ -205,7 +205,7 @@ public class AnnotationofSpotProperty extends QanaryComponent {
 
 	private ResultSet selectTripleStore(String sparqlQuery, String endpoint) {
 		Query query = QueryFactory.create(sparqlQuery);
-		QueryExecution qExe = QueryExecutionFactory.sparqlService(endpoint, query);
+		QueryExecution qExe = org.apache.jena.sparql.exec.http.QueryExecutionHTTP.service(endpoint).query(query).build();
 		return qExe.execSelect();
 	}
 

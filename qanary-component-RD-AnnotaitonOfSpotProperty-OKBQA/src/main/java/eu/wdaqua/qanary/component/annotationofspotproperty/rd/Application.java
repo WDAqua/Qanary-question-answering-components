@@ -2,9 +2,6 @@ package eu.wdaqua.qanary.component.annotationofspotproperty.rd;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.lang.PipedRDFIterator;
-import org.apache.jena.riot.lang.PipedRDFStream;
-import org.apache.jena.riot.lang.PipedTriplesStream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -74,20 +71,8 @@ class DbpediaRecorodProperty {
             File filename = new File("qa.qanary_component-AnnotationofSpotProperty-tgm/src/main/resources/dbpedia_3Eng_property.ttl");
             System.out.println("GetAbsolutePath(): " + filename.getAbsolutePath());
 
-            PipedRDFIterator<org.apache.jena.graph.Triple> iter = new PipedRDFIterator<>();
-            final PipedRDFStream<org.apache.jena.graph.Triple> inputStream = new PipedTriplesStream(iter);
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            Runnable parser;
-            parser = new Runnable() {
-                @Override
-                public void run() {
-                    RDFDataMgr.parse(inputStream, filename.getAbsolutePath());
-
-                }
-            };
-
-            executor.submit(parser);
-            executor.shutdown();
+            // Jena 5: PipedRDFIterator/PipedTriplesStream removed; AsyncParser streams triples as an Iterator.
+            java.util.Iterator<org.apache.jena.graph.Triple> iter = org.apache.jena.riot.system.AsyncParser.asyncParseTriples(filename.getAbsolutePath());
             while (iter.hasNext()) {
                 org.apache.jena.graph.Triple next = iter.next();
                 DbpediaRecorodProperty.put(next.getObject().toString().replaceAll("\"", "").toLowerCase(),

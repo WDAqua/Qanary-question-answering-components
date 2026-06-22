@@ -1,10 +1,8 @@
 package eu.wdaqua.qanary.component.clsnliod.cls;
 
 import eu.wdaqua.qanary.component.QanaryComponent;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.lang.PipedRDFIterator;
-import org.apache.jena.riot.lang.PipedRDFStream;
-import org.apache.jena.riot.lang.PipedTriplesStream;
+import org.apache.jena.riot.system.AsyncParser;
+import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -81,28 +79,15 @@ class DbpediaRecordClass {
 			//File filename = new File("src/main/resources/dbpedia_3Eng_class.ttl");
 			logger.info(filename.getAbsolutePath());
 
-			PipedRDFIterator<org.apache.jena.graph.Triple> iter = new PipedRDFIterator<>();
-			final PipedRDFStream<org.apache.jena.graph.Triple> inputStream = new PipedTriplesStream(iter);
-			ExecutorService executor = Executors.newSingleThreadExecutor();
-			Runnable parser;
-			parser = new Runnable() {
-				@Override
-				public void run() {
-					RDFDataMgr.parse(inputStream, filename.getAbsolutePath());
-
-				}
-			};
-
-			executor.submit(parser);
-			executor.shutdown();
+			// Jena 5: PipedRDFIterator/PipedTriplesStream were removed; AsyncParser
+			// streams the triples on a background thread and exposes them as an Iterator.
+			Iterator<org.apache.jena.graph.Triple> iter = AsyncParser.asyncParseTriples(filename.getAbsolutePath());
 			while (iter.hasNext()) {
 				org.apache.jena.graph.Triple next = iter.next();
 				DbpediaRecordClass.put(next.getObject().toString().replaceAll("\"", "").toLowerCase(),
 						next.getSubject().toString());
-				//	System.out.println(iter.next().toString());
 			}
 			DbpediaRecordClass.print();
-			//	executor.shutdown();
 		} catch (Exception e) {
 			logger.error("Except: {}", e);
 			// TODO Auto-generated catch block

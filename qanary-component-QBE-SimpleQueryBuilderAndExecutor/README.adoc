@@ -1,8 +1,51 @@
+:toc:
+:toclevels: 3
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:warning-caption: :warning:
+endif::[]
+
 = Query Builder
 
-== Description
+toc::[]
 
-Receives 3 optional data structures: `AnnotationOfClass`, `AnnotationOfRelation`, and `AnnotationOfInstance`. Depending on the availability of them, generates a query over DBpedia and stores it.
+== Intention
+
+Receives 3 optional data structures: `AnnotationOfClass`, `AnnotationOfRelation`, and `AnnotationOfInstance`.
+
+== Behavior
+
+Depending on the availability of them, generates a query over DBpedia and stores it.
+
+As a Qanary component, it reads the question and the annotations produced by upstream components from the Qanary triplestore (the shared process memory), performs its task — build a formal query from the annotations and execute it to obtain the answer — and writes the result back as standard Qanary (Web Annotation / `qa:`) annotations. See <<Input specification>> / <<Output specification>> below for the exact annotation contract.
+
+== Characteristics
+
+* *Task type:* Query Building and Execution (QBE).
+* *Knowledge base:* DBpedia.
+* *External service:* http://dbpedia.org/sparql}
+* *Offline build:* builds and (where present) tests run offline.
+
+== Implementation
+
+* *Language:* Java (JDK 21).
+* *Major frameworks:* Spring Boot 3.5 (`spring-boot-starter-parent`); the Qanary component framework `eu.wdaqua.qanary:qa.component` 4.0.0 (transitively Spring Boot Admin client + Apache Jena 5).
+* *Main component class:* `src/main/java/eu/wdaqua/qanary/component/simplequerybuilderandexecutor/qbe/QueryBuilder.java` (extends `eu.wdaqua.qanary.component.QanaryComponent`).
+* *Tests:* 4 test class(es) under `src/test/java/` (`QanaryServiceControllerTest.java`, `QueryTest.java`, `SwaggerUiAvailabilityTest.java`, `TestConfiguration.java`).
+
+== Build and run
+
+Targets the current Qanary framework 4.0.0 (Spring Boot 3, Java 21). Install the
+framework first (`mvn install` in the https://github.com/WDAqua/Qanary[Qanary]
+repository), then build with JDK 21:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-qbe-simplequerybuilderandexecutor.jar -t qanary/qanary-component-qbe-simplequerybuilderandexecutor .
+----
 
 == Input specification
 
@@ -79,3 +122,37 @@ Receives 3 optional data structures: `AnnotationOfClass`, `AnnotationOfRelation`
 ----
 
 Remark: in SparqlExecuter `?answer a qa:AnswerJson` is used
+
+== Build and run
+
+This component targets the current *Qanary framework 4.0.0* (Spring Boot 3,
+Java 21, Apache Jena 5). Install the framework first (`mvn install` in the
+https://github.com/WDAqua/Qanary[Qanary] repository), then build clean:
+
+[source,bash]
+----
+JAVA_HOME=/path/to/jdk21 mvn clean package
+java -jar target/qanary-component-qbe-simplequerybuilderandexecutor.jar
+----
+
+Docker:
+
+[source,bash]
+----
+mvn clean package
+docker build --build-arg JAR_FILE=target/qanary-component-qbe-simplequerybuilderandexecutor.jar \
+  -t qanary/qanary-component-qbe-simplequerybuilderandexecutor .
+----
+
+Configuration is in `src/main/resources/config/application.properties`
+(`server.port`, `spring.application.name`, `spring.boot.admin.url`).
+
+== Tests
+
+`mvn test` runs the full-context `QanaryServiceControllerTest` and `QueryTest`
+(the latter validates the generated SPARQL). The Spring Boot Admin client failing
+to reach a non-running pipeline is logged but non-fatal.
+
+NOTE: the migration to Jena 5 replaced the removed
+`QueryExecutionFactory.sparqlService(endpoint, query)` with
+`QueryExecutionHTTP.service(endpoint).query(query).build()`.
