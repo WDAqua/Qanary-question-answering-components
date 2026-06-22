@@ -42,10 +42,13 @@
             <artifactId>stanford-corenlp</artifactId>
             <version>4.5.9</version>
         </dependency>
+        <!-- the NER tagger models ship in the 'models' classifier jar; required at
+             runtime and by StanfordNERComponentTest (the migration dropped it). -->
         <dependency>
             <groupId>edu.stanford.nlp</groupId>
             <artifactId>stanford-corenlp</artifactId>
             <version>4.5.9</version>
+            <classifier>models</classifier>
         </dependency>
         <dependency>
             <groupId>eu.wdaqua.qanary</groupId>
