@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Spring Boot 3, aligned with the current Qanary framework (qa.* 4.0.0) -->
+    <!-- Spring Boot 3, aligned with the current Qanary framework (qa.* 4.0.1) -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -20,7 +20,7 @@
     <properties>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <qanary.version>4.0.0</qanary.version>
+        <qanary.version>4.0.1</qanary.version>
         <docker.image.prefix>qanary</docker.image.prefix>
         <docker.image.name>qanary-component-rd-annotaitonofspotproperty-okbqa</docker.image.name>
     </properties>
