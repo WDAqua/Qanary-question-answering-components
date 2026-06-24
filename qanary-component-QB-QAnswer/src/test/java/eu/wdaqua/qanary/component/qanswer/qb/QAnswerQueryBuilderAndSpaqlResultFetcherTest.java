@@ -17,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
@@ -32,7 +31,6 @@ import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerResult.QAnswerQuery
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ComponentScan("eu.wdaqua.qanary")
-@AutoConfigureWebClient
 class QAnswerQueryBuilderAndSpaqlResultFetcherTest {
     private static final Logger logger = LoggerFactory.getLogger(QAnswerQueryBuilderAndSpaqlResultFetcherTest.class);
     private final String applicationName = "QAnswerQueryBuilderAndExecutorTest";

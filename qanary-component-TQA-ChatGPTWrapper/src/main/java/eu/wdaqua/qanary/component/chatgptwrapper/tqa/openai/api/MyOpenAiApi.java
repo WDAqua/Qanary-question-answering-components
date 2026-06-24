@@ -144,9 +144,9 @@ public class MyOpenAiApi {
         Assert.notNull(response);
         Assert.notNull(response.getBody());
 
-        if (200 != response.getStatusCodeValue()) {
-            LOGGER.error("OpenAI API is not alive. Status code: {}", response.getStatusCodeValue());
-            throw new OpenApiUnreachableException("OpenAI API is not alive. Status code: " + response.getStatusCodeValue());
+        if (200 != response.getStatusCode().value()) {
+            LOGGER.error("OpenAI API is not alive. Status code: {}", response.getStatusCode().value());
+            throw new OpenApiUnreachableException("OpenAI API is not alive. Status code: " + response.getStatusCode().value());
         }
 
         LOGGER.info("Live test was successful");

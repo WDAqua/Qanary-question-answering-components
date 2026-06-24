@@ -81,8 +81,8 @@ public class OpenTapiocaServiceFetcher {
         try {			
 	    	ResponseEntity<String> result = restTemplate.getForEntity(getUri, String.class); 
 	        
-        	if (!(result.getStatusCodeValue() >= 200 && result.getStatusCodeValue() < 400 )) {
-        		logger.error("OpenTapioca endpoint responds with HTTP error: {}", result.getStatusCodeValue());
+        	if (!(result.getStatusCode().value() >= 200 && result.getStatusCode().value() < 400 )) {
+        		logger.error("OpenTapioca endpoint responds with HTTP error: {}", result.getStatusCode().value());
 		        logger.error("found {} annotations for \"{}\"", resources.size(), myQuestion);
         		return resources;
         	} else {

@@ -10,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
@@ -29,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(classes = Application.class)
 //@WebAppConfiguration
 @ComponentScan("eu.wdaqua.qanary")
-@AutoConfigureWebClient
 class PlatypusQueryBuilderTest {
     private static final Logger logger = LoggerFactory.getLogger(PlatypusQueryBuilderTest.class);
     private final String applicationName = "PlatypusQueryBuilder";
