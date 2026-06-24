@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.15</version>
+        <version>4.0.5</version>
         <relativePath/>
     </parent>
 
@@ -20,7 +20,7 @@
     <properties>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <qanary.version>4.0.1</qanary.version>
+        <qanary.version>5.0.0</qanary.version>
         <docker.image.prefix>qanary</docker.image.prefix>
         <docker.image.name>qanary-component-qb-monoliticwrapper</docker.image.name>
     </properties>
@@ -42,6 +42,20 @@
             <artifactId>qa.component</artifactId>
             <version>${qanary.version}</version>
             <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <!-- Spring Boot 4 split the web test-slices out of spring-boot-starter-test.
+             qa.component declares them at test scope, which is NOT transitive, so each
+             component that inherits AbstractSwaggerUiAvailabilityTest / QanaryComponentIntegrationTest
+             must declare them itself. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-resttestclient</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
