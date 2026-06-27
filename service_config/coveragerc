@@ -1,0 +1,18 @@
+# Shared coverage.py configuration for the Python component tests.
+# Coverage is measured per component (pytest runs inside each component dir with
+# --cov=.), so we only need to exclude the test code and bookkeeping files from
+# the reported numbers — the component source (run.py, component/**, etc.) stays in.
+[run]
+branch = False
+omit =
+    */tests/*
+    */test_*.py
+    */conftest.py
+    */__pycache__/*
+    */environments/*
+    setup.py
+
+[report]
+exclude_also =
+    if __name__ == .__main__.:
+    raise NotImplementedError

@@ -10,9 +10,22 @@ do
   fi
 done
 
-# test components
-if ! mvn --batch-mode --no-transfer-progress test;
-then
+# Test components with JaCoCo code-coverage instrumentation.
+#
+# JaCoCo is attached on the command line so no per-component pom needs to change;
+# 0.8.15 runs on the Java 25 CI runner while instrumenting the components' Java 21
+# bytecode. --fail-at-end keeps testing every module so coverage is still collected
+# when a module's tests fail, and the report goal then runs against the collected
+# jacoco.exec data (producing target/site/jacoco/jacoco.xml + html per module).
+JACOCO="org.jacoco:jacoco-maven-plugin:0.8.15"
+
+mvn --batch-mode --no-transfer-progress --fail-at-end "${JACOCO}:prepare-agent" test
+test_status=$?
+
+# Always render the coverage reports from whatever exec data was collected.
+mvn --batch-mode --no-transfer-progress "${JACOCO}:report" || true
+
+if [ $test_status -ne 0 ]; then
   echo "Maven test failed"
   exit 4 # stop if test fails
-fi 
+fi
