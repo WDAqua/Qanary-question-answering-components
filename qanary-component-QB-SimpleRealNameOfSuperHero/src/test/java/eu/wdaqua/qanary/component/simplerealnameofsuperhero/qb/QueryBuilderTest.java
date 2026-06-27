@@ -2,6 +2,8 @@ package eu.wdaqua.qanary.component.simplerealnameofsuperhero.qb;
 
 import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.commons.QanaryQuestion;
+import eu.wdaqua.qanary.commons.QanaryUtils;
+import eu.wdaqua.qanary.commons.triplestoreconnectors.QanaryTripleStoreConnector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -10,8 +12,12 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 
@@ -82,5 +88,27 @@ public class QueryBuilderTest {
         assertTrue(sparqlInsert.contains("GRAPH <" + outgraph.toString() + ">"));
         assertTrue(sparqlInsert.contains("oa:hasTarget <" + uri.toString() + ">"));
         assertTrue(sparqlInsert.contains("oa:hasBody \"" + testQuery.replace("\n", "\\n").replace("\"", "\\\"") + "\""));
+    }
+
+    @Test
+    public void testProcessLeavesUnsupportedQuestionUntouched() throws Exception {
+        // process() reads the question from the triplestore; for a question that is not
+        // a "What is the real name of ..." question it must return the message unchanged
+        // without running any SPARQL against the triplestore.
+        QueryBuilderSimpleRealNameOfSuperHero component = spy(new QueryBuilderSimpleRealNameOfSuperHero("test.name"));
+        QanaryMessage qanaryMessage = mock(QanaryMessage.class);
+        QanaryQuestion<String> qanaryQuestion = mock(QanaryQuestion.class);
+        QanaryUtils qanaryUtils = mock(QanaryUtils.class);
+        QanaryTripleStoreConnector connector = mock(QanaryTripleStoreConnector.class);
+
+        when(qanaryQuestion.getTextualRepresentation()).thenReturn("Where was Aquaman born?");
+        when(qanaryUtils.getQanaryTripleStoreConnector()).thenReturn(connector);
+        doReturn(qanaryUtils).when(component).getUtils(qanaryMessage);
+        doReturn(qanaryQuestion).when(component).getQanaryQuestion(qanaryMessage);
+
+        QanaryMessage result = component.process(qanaryMessage);
+
+        assertSame(qanaryMessage, result);
+        verifyNoInteractions(connector); // unsupported question => no SPARQL select/insert
     }
 }
