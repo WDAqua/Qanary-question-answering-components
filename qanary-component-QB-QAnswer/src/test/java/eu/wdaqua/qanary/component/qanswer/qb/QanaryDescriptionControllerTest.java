@@ -16,7 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import javax.inject.Inject;
 import java.net.URI;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -33,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class QanaryDescriptionControllerTest {
 
     private static final Logger logger = LoggerFactory.getLogger(QanaryDescriptionControllerTest.class);
-    @Inject
+    @Autowired
     QanaryComponentDescriptionController descriptionController;
     @Autowired
     private Environment env;

@@ -9,7 +9,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.inject.Inject;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +42,7 @@ import eu.wdaqua.qanary.component.qanswer.qb.messages.QAnswerResult;
 class QanaryCustomControllerTest {
 
     private static final Logger logger = LoggerFactory.getLogger(QanaryCustomControllerTest.class);
-    @Inject
+    @Autowired
     QAnswerQueryBuilderAndSparqlResultFetcherController customController;
     @Autowired
     private Environment env;

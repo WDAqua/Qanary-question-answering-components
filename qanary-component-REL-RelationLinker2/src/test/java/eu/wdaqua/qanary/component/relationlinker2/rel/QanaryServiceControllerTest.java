@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import javax.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map.Entry;
@@ -35,7 +35,7 @@ public class QanaryServiceControllerTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(QanaryServiceControllerTest.class);
 
-	@Inject
+	@Autowired
 	QanaryServiceController controller;
 
 	private MockMvc mockMvc;
