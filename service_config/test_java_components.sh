@@ -23,7 +23,10 @@ mvn --batch-mode --no-transfer-progress --fail-at-end "${JACOCO}:prepare-agent" 
 test_status=$?
 
 # Always render the coverage reports from whatever exec data was collected.
-mvn --batch-mode --no-transfer-progress "${JACOCO}:report" || true
+# --fail-at-end is essential here: a single module whose report goal errors (e.g.
+# QB-Sina ships a shaded jar inside target/classes that JaCoCo can't analyze) must
+# not abort the reactor and leave every later module without a report.
+mvn --batch-mode --no-transfer-progress --fail-at-end "${JACOCO}:report" || true
 
 if [ $test_status -ne 0 ]; then
   echo "Maven test failed"
