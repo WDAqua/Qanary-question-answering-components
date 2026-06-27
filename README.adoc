@@ -321,7 +321,7 @@ All Question Answering components in this repository, grouped by task. Each link
 |===
 | Component | Language | Intention
 
-| link:qanary_component-EAT-Python-Answer-Type-classifier/README.adoc[EAT-Python-Answer-Type-classifier] | Python | The component classifies the DBpedia answer type of a textual question.
+| link:qanary-component-EAT-Python-AnswerTypeClassifier/README.adoc[EAT-Python-AnswerTypeClassifier] | Python | The component classifies the DBpedia answer type of a textual question.
 |===
 
 === Query Building (QB)

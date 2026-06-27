@@ -64,7 +64,8 @@ def qanary_service():
         PREFIX qa: <http://www.wdaqua.eu/qa#>
         PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
         INSERT {{
         GRAPH <{uuid}> {{
             ?a a qa:AnnotationOfAnswerSPARQL ;

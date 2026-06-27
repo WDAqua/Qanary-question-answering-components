@@ -39,8 +39,8 @@ def qanary_service():
 
                     INSERT {{
                     GRAPH <{uuid}> {{
-                        ?a a qa:qa:AnnotationOfQuestionAnswerType .
-                            oa:hasTarget <{qanary_question_uri}> ; 
+                        ?a a qa:AnnotationOfQuestionAnswerType ;
+                            oa:hasTarget <{qanary_question_uri}> ;
                             oa:hasBody dbo:{answer_type} ;
                             oa:annotatedBy <urn:qanary:{app_name}> ;
                             oa:annotatedAt ?time .

@@ -89,7 +89,7 @@ async def qanary_service(request: Request):
         json_string = json.dumps(execute(query=generated_sparql, endpoint_url=ENDPOINT), ensure_ascii=False).replace('\\"',"").replace('"', '\\"')
     except Exception as e:
         logging.info(f"No SPARQL was generated")
-        json_string = json.loads(dummy_answers)
+        json_string = json.dumps(dummy_answers).replace('\\"', "").replace('"', '\\"')
 
     SPARQLquery = """
     PREFIX dbr: <http://dbpedia.org/resource/>
