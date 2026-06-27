@@ -227,7 +227,7 @@ public class QAnswerQueryBuilderAndExecutor extends QanaryComponent {
         parameters.add("kb", knowledgeBaseId);
         parameters.add("user", user);
 
-        String urlTemplate = UriComponentsBuilder.fromHttpUrl(
+        String urlTemplate = UriComponentsBuilder.fromUriString(
                 this.qanswerEndpoint.toURL().toURI().toASCIIString()) //
                 .queryParam("query", "{query}") //
                 .queryParam("lang", "{lang}") //

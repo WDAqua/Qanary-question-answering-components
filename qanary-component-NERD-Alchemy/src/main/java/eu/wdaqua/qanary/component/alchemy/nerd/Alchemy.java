@@ -82,7 +82,7 @@ public class Alchemy extends QanaryComponent {
         // call the Alchemy service, see also
         // http://www.alchemyapi.com/api/entity/proc.html
         RestTemplate myRestTemplate = new RestTemplate();
-        UriComponentsBuilder myServiceCall = UriComponentsBuilder.fromHttpUrl(alchemyService)
+        UriComponentsBuilder myServiceCall = UriComponentsBuilder.fromUriString(alchemyService)
                 .queryParam("apikey", alchemyKey).queryParam("text", myQuestion);
         logger.info("Service request: {} ", myServiceCall);
         ResponseEntity<String> alchemyResponse = myRestTemplate.exchange(myServiceCall.build().encode().toUri(),

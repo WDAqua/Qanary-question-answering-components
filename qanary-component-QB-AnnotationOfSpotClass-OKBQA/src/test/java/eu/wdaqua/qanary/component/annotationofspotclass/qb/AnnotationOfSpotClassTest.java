@@ -11,7 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -24,7 +24,7 @@ class AnnotationOfSpotClassTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AnnotationOfSpotClassTest.class);
 
-    @Inject
+    @Autowired
     QanaryServiceController controller;
     @Value("${annotationOfSpotClass.url}")
     String url;

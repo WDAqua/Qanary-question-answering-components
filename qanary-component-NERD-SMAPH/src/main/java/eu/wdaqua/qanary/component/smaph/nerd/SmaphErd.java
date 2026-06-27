@@ -54,7 +54,7 @@ public class SmaphErd extends QanaryComponent {
 
         List<TextPositionSelector> discoveredNamedEntities = new LinkedList<>();
         RestTemplate myRestTemplate = new RestTemplate();
-        UriComponentsBuilder myServiceCall = UriComponentsBuilder.fromHttpUrl(service).queryParam("Text", myQuestion);
+        UriComponentsBuilder myServiceCall = UriComponentsBuilder.fromUriString(service).queryParam("Text", myQuestion);
         logger.info("Service request: {} ", myServiceCall);
         ResponseEntity<String> response = myRestTemplate.exchange(myServiceCall.build().encode().toUri(),
                 HttpMethod.GET, null, String.class);

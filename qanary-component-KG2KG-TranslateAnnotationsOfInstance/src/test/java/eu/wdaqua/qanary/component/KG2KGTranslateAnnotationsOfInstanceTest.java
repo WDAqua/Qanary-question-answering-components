@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,6 +161,10 @@ public class KG2KGTranslateAnnotationsOfInstanceTest {
 
         @BeforeEach
         public void setup() throws SparqlQueryFailed {
+            // Spring Boot 4 test listeners no longer initialise plain @Mock fields,
+            // so initialise them explicitly (the mock is passed as a method argument,
+            // not injected into the context, hence not a @MockitoBean case).
+            MockitoAnnotations.openMocks(this);
             Mockito.doNothing().when(qanaryTripleStoreConnector).update(any());
         }
 
