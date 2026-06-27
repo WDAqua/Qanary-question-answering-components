@@ -36,16 +36,15 @@ jobs:
       - uses: actions/checkout@v7
       - name: Test Java components
         run: bash -c ./service_config/test_java_components.sh
-      - name: Java coverage report (JaCoCo)
+      - name: Aggregate Java coverage report
         if: always() # report coverage even when some component tests fail
-        uses: madrapps/jacoco-report@v1.8.0
+        run: python3 service_config/jacoco_summary.py
+      - name: Post Java coverage comment
+        if: always()
+        uses: marocchino/sticky-pull-request-comment@v2
         with:
-          paths: ${{ github.workspace }}/**/target/site/jacoco/jacoco.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: Java component code coverage
-          update-comment: true
-          min-coverage-overall: 0 # report-only, never fails the build
-          min-coverage-changed-files: 0
+          header: java-component-coverage
+          path: java-coverage-summary.md
       - name: Upload Java coverage HTML
         if: always()
         uses: actions/upload-artifact@v4
