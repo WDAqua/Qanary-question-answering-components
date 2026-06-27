@@ -1,7 +1,11 @@
 #!/bin/bash
 
+# Repository root (this script is invoked from the repo root); used to locate the
+# shared coverage config so every component measures coverage the same way.
+ROOT="$(pwd)"
+
 declare -A summary
-failures=false 
+failures=false
 # get a list of all Python component directories
 # exclude submodules (external component repositories)
 components=$(comm -3 <(ls | grep -P "[qQ]anary-component.*Python-[a-zA-Z]+$") <(git config --file .gitmodules --get-regexp path | awk '{ print $2 }'))
@@ -45,13 +49,21 @@ do
     echo "Installing pytest manually..."
     pip install pytest
   fi 
-  if ! pip show pytest-env; then 
+  if ! pip show pytest-env; then
     echo "Installing pytest-env manually..."
     pip install pytest-env
   fi
+  # pytest-cov measures code coverage; install it if the component does not pin it
+  if ! pip show pytest-cov; then
+    echo "Installing pytest-cov manually..."
+    pip install pytest-cov
+  fi
 
-  # run tests 
-  pytest
+  # run tests with coverage (per-component coverage.xml + htmlcov; test files are
+  # excluded via the shared coveragerc). The coverage flags do not change pytest's
+  # exit codes (0 = passed, 5 = no tests collected).
+  pytest --cov=. --cov-config="${ROOT}/service_config/coveragerc" \
+         --cov-report=xml:coverage.xml --cov-report=html:htmlcov --cov-report=term
   test_status=$?
   # check exit codes
   if [ $test_status -eq 0 ]; then # all tests successful 
