@@ -1,0 +1,3 @@
+# disposable raw-data cache written by generate_fixtures.py
+_cache/
+__pycache__/

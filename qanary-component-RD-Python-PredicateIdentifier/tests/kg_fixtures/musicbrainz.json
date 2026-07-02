@@ -1,0 +1,5470 @@
+{
+ "knowledge_graph": "MusicBrainz",
+ "endpoint": "https://musicbrainz.org/ws/2",
+ "generated_at": "2026-07-02T03:53:34Z",
+ "generator": "tests/kg_fixtures/generate_fixtures.py",
+ "resource_count": 100,
+ "case_count": 392,
+ "resources": [
+  {
+   "resource": "http://musicbrainz.org/artist/89ad4ac3-39f7-470e-963a-56509c546377",
+   "resource_label": "Various Artists",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of Various Artists?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which disambiguation is associated with Various Artists?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the tag of Various Artists.",
+     "expected_predicate": "http://purl.org/ontology/mo/tag",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d",
+   "resource_label": "The Beatles",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_end",
+     "end date"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of The Beatles?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with The Beatles?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of The Beatles.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What disambiguation does The Beatles have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/01809552-4f87-45b0-afff-2c6f0730a3be",
+   "resource_label": "Elvis Presley",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_end",
+     "end date"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/gender",
+     "gender"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of Elvis Presley?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with Elvis Presley?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of Elvis Presley.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What disambiguation does Elvis Presley have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/aba64937-3334-4c65-90a1-4e6b9d4d7ada",
+   "resource_label": "Aesop Rock",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/gender",
+     "gender"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of Aesop Rock?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with Aesop Rock?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of Aesop Rock.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What disambiguation does Aesop Rock have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/ad0ecd8b-805e-406e-82cb-5b00c3a3a29e",
+   "resource_label": "Kid Rock",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/gender",
+     "gender"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of Kid Rock?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with Kid Rock?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of Kid Rock.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What disambiguation does Kid Rock have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/a3cb23fc-acd3-4ce0-8f36-1e5aa6a18432",
+   "resource_label": "U2",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of U2?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with U2?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of U2.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What disambiguation does U2 have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/39a973f2-0785-4ef6-90d9-551378864f89",
+   "resource_label": "Pete Rock",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/gender",
+     "gender"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of Pete Rock?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with Pete Rock?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of Pete Rock.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What disambiguation does Pete Rock have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/e01646f2-2a04-450d-8bf2-0d993082e058",
+   "resource_label": "Phish",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of Phish?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Phish?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the disambiguation of Phish.",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    },
+    {
+     "question": "What begin date does Phish have?",
+     "expected_predicate": "http://purl.org/ontology/mo/activity_start",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/4d7d7dde-74a3-4075-9771-81b83eead1dd",
+   "resource_label": "T‐Rock",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/gender",
+     "gender"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of T‐Rock?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with T‐Rock?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of T‐Rock.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What disambiguation does T‐Rock have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/0383dadf-2a4e-4d10-a46a-e9e041da8eb3",
+   "resource_label": "Queen",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of Queen?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with Queen?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of Queen.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What disambiguation does Queen have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/125ec42a-7229-4250-afc5-e057484327fe",
+   "resource_label": "[unknown]",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/gender",
+     "gender"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of [unknown]?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with [unknown]?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of [unknown].",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What disambiguation does [unknown] have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/75472b2f-55ca-47bb-a192-5ac8601350ba",
+   "resource_label": "The Modern Jazz Quartet",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_end",
+     "end date"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of The Modern Jazz Quartet?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with The Modern Jazz Quartet?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of The Modern Jazz Quartet.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What end date does The Modern Jazz Quartet have?",
+     "expected_predicate": "http://purl.org/ontology/mo/activity_end",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/54799c0e-eb45-4eea-996d-c4d71a63c499",
+   "resource_label": "Ella Fitzgerald",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_end",
+     "end date"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/gender",
+     "gender"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of Ella Fitzgerald?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with Ella Fitzgerald?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of Ella Fitzgerald.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What disambiguation does Ella Fitzgerald have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/209ddf15-ee0a-41a1-a1f5-6f4c0409d2ee",
+   "resource_label": "Art Blakey & The Jazz Messengers",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_end",
+     "end date"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of Art Blakey & The Jazz Messengers?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with Art Blakey & The Jazz Messengers?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of Art Blakey & The Jazz Messengers.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What end date does Art Blakey & The Jazz Messengers have?",
+     "expected_predicate": "http://purl.org/ontology/mo/activity_end",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/561d854a-6a28-4aa7-8c99-323e6ce46c2a",
+   "resource_label": "Miles Davis",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_end",
+     "end date"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/gender",
+     "gender"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of Miles Davis?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with Miles Davis?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of Miles Davis.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What disambiguation does Miles Davis have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/869f504d-2119-466b-8a3c-ff44cd8abcd0",
+   "resource_label": "The Jazz Butcher",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_end",
+     "end date"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of The Jazz Butcher?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with The Jazz Butcher?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of The Jazz Butcher.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What disambiguation does The Jazz Butcher have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/68fb131b-858d-4b7f-93b8-5b1924908421",
+   "resource_label": "Incognito",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of Incognito?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with Incognito?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of Incognito.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What disambiguation does Incognito have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/7b353d3c-2bd9-40e3-a21d-b7da3f941339",
+   "resource_label": "Glenn Miller",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_end",
+     "end date"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/gender",
+     "gender"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of Glenn Miller?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with Glenn Miller?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of Glenn Miller.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What disambiguation does Glenn Miller have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/c7356af9-9ea6-4a78-a55b-c73775716312",
+   "resource_label": "Charlie Parker",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_end",
+     "end date"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/gender",
+     "gender"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of Charlie Parker?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with Charlie Parker?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of Charlie Parker.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What disambiguation does Charlie Parker have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/5a2463af-eef0-4a22-bc8f-5865fbe9c78e",
+   "resource_label": "Peggy Lee",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_end",
+     "end date"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/gender",
+     "gender"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of Peggy Lee?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with Peggy Lee?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of Peggy Lee.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What disambiguation does Peggy Lee have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/650bf385-6f6d-4992-a3b9-779d144920a4",
+   "resource_label": "Django Reinhardt",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_end",
+     "end date"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/gender",
+     "gender"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of Django Reinhardt?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with Django Reinhardt?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of Django Reinhardt.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What disambiguation does Django Reinhardt have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/1cf1db8f-06bc-4c02-a608-4fc7980bbfcc",
+   "resource_label": "Johnny Hates Jazz",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#alias",
+     "alias"
+    ],
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the alias of Johnny Hates Jazz?",
+     "expected_predicate": "http://musicbrainz.org/ontology#alias",
+     "score": 1.0
+    },
+    {
+     "question": "Which area is associated with Johnny Hates Jazz?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the country of Johnny Hates Jazz.",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "What begin date does Johnny Hates Jazz have?",
+     "expected_predicate": "http://purl.org/ontology/mo/activity_start",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/3cdb360e-d0a2-459f-92f6-f0f28e62127d",
+   "resource_label": "Electronic",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_end",
+     "end date"
+    ],
+    [
+     "http://purl.org/ontology/mo/activity_start",
+     "begin date"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of Electronic?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Electronic?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the end date of Electronic.",
+     "expected_predicate": "http://purl.org/ontology/mo/activity_end",
+     "score": 1.0
+    },
+    {
+     "question": "What genre does Electronic have?",
+     "expected_predicate": "http://purl.org/ontology/mo/genre",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/b4ed32d5-9d19-4a28-9746-4e8286554d58",
+   "resource_label": "Electronič",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#beginArea",
+     "begin area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of Electronič?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Electronič?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the disambiguation of Electronič.",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/artist/fdcbf873-4a8d-4c62-9352-327451b6a910",
+   "resource_label": "Electronic Frequency",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://purl.org/ontology/mo/genre",
+     "genre"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of Electronic Frequency?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Electronic Frequency?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the genre of Electronic Frequency.",
+     "expected_predicate": "http://purl.org/ontology/mo/genre",
+     "score": 1.0
+    },
+    {
+     "question": "What tag does Electronic Frequency have?",
+     "expected_predicate": "http://purl.org/ontology/mo/tag",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/3864dff9-93e2-4390-9fcb-3f934a943a18",
+   "resource_label": "Love Love Love Love Love",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#barcode",
+     "barcode"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#packaging",
+     "packaging"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the barcode of Love Love Love Love Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#barcode",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Love Love Love Love Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the packaging of Love Love Love Love Love.",
+     "expected_predicate": "http://musicbrainz.org/ontology#packaging",
+     "score": 1.0
+    },
+    {
+     "question": "What status does Love Love Love Love Love have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/3df77460-77e4-4fc4-8ff7-5fb650fc332f",
+   "resource_label": "Love, Love, Love, Love, Love",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#packaging",
+     "packaging"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the country of Love, Love, Love, Love, Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Which packaging is associated with Love, Love, Love, Love, Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#packaging",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the status of Love, Love, Love, Love, Love.",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "What date does Love, Love, Love, Love, Love have?",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/40a52788-604e-47a2-a658-9444f69d6e21",
+   "resource_label": "Love Love Love",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#barcode",
+     "barcode"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the barcode of Love Love Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#barcode",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Love Love Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the status of Love Love Love.",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "What date does Love Love Love have?",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/bc87d64c-8541-4a31-9fa9-5034db62d308",
+   "resource_label": "Love Love Love",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the country of Love Love Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Which date is associated with Love Love Love?",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the title of Love Love Love.",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "What format does Love Love Love have?",
+     "expected_predicate": "http://purl.org/ontology/mo/format",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/579195a0-0d69-4d82-a5e9-8900810a8ee2",
+   "resource_label": "Love Love Love",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the status of Love Love Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Love Love Love?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the format of Love Love Love.",
+     "expected_predicate": "http://purl.org/ontology/mo/format",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Love Love Love have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/dcfa903a-f45a-4892-98e2-6f1cfdccaa75",
+   "resource_label": "Love Love Love",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the country of Love Love Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Which status is associated with Love Love Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the date of Love Love Love.",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    },
+    {
+     "question": "What title does Love Love Love have?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/220aa1b4-83bb-4b58-b462-c89203c827f2",
+   "resource_label": "Love, Love, Love",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#packaging",
+     "packaging"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the country of Love, Love, Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Which packaging is associated with Love, Love, Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#packaging",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the status of Love, Love, Love.",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "What date does Love, Love, Love have?",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/cef4dc52-c83f-4d26-8a54-36510ff6ad0b",
+   "resource_label": "Love. Love. Love",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#barcode",
+     "barcode"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the barcode of Love. Love. Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#barcode",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Love. Love. Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the status of Love. Love. Love.",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "What date does Love. Love. Love have?",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/a46aa8cb-8bd4-4ea6-aaff-b2552a1136e7",
+   "resource_label": "Love Love Love",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the country of Love Love Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Which status is associated with Love Love Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the date of Love Love Love.",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    },
+    {
+     "question": "What title does Love Love Love have?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/5110c0fe-7288-4cf2-b330-6ff0e84c5a1a",
+   "resource_label": "Love.. Love..? Love..!",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the country of Love.. Love..? Love..!?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Which status is associated with Love.. Love..? Love..!?",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the date of Love.. Love..? Love..!.",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    },
+    {
+     "question": "What title does Love.. Love..? Love..! have?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/52d56cb0-63a1-4a70-8620-075876edcca9",
+   "resource_label": "Love Love Love",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#packaging",
+     "packaging"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the country of Love Love Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Which packaging is associated with Love Love Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#packaging",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the status of Love Love Love.",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "What date does Love Love Love have?",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/32a4f447-2263-4e7b-9a2c-6feacc128b9e",
+   "resource_label": "Love, Love, Love",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#packaging",
+     "packaging"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the packaging of Love, Love, Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#packaging",
+     "score": 1.0
+    },
+    {
+     "question": "Which status is associated with Love, Love, Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the date of Love, Love, Love.",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    },
+    {
+     "question": "What title does Love, Love, Love have?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/20e35f78-5e3f-4f78-804b-c15d86ee4731",
+   "resource_label": "Live",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#barcode",
+     "barcode"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the barcode of Live?",
+     "expected_predicate": "http://musicbrainz.org/ontology#barcode",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Live?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the status of Live.",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "What date does Live have?",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/915cc431-caac-4255-b093-43d07dedaaf0",
+   "resource_label": "One Way",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#barcode",
+     "barcode"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the barcode of One Way?",
+     "expected_predicate": "http://musicbrainz.org/ontology#barcode",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with One Way?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the status of One Way.",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "What date does One Way have?",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/015a483b-5840-4243-b611-9763f55b2ecc",
+   "resource_label": "Spiritual Plug VOL 1",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the country of Spiritual Plug VOL 1?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Which status is associated with Spiritual Plug VOL 1?",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the date of Spiritual Plug VOL 1.",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    },
+    {
+     "question": "What title does Spiritual Plug VOL 1 have?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/53396474-d4dd-4422-87db-8ec590e237d5",
+   "resource_label": "Złote sny",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the country of Złote sny?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Which status is associated with Złote sny?",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the date of Złote sny.",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    },
+    {
+     "question": "What title does Złote sny have?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/08cb4684-9bbc-4674-9055-4b693446ec71",
+   "resource_label": "Lady Bhang (She Got Me Rollin’)",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#barcode",
+     "barcode"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#packaging",
+     "packaging"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the barcode of Lady Bhang (She Got Me Rollin’)?",
+     "expected_predicate": "http://musicbrainz.org/ontology#barcode",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Lady Bhang (She Got Me Rollin’)?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the packaging of Lady Bhang (She Got Me Rollin’).",
+     "expected_predicate": "http://musicbrainz.org/ontology#packaging",
+     "score": 1.0
+    },
+    {
+     "question": "What status does Lady Bhang (She Got Me Rollin’) have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/a3b6042e-c2e8-4474-8cbc-2fd111f1e411",
+   "resource_label": "Sink Into Eden (Live)",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#barcode",
+     "barcode"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#packaging",
+     "packaging"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the barcode of Sink Into Eden (Live)?",
+     "expected_predicate": "http://musicbrainz.org/ontology#barcode",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Sink Into Eden (Live)?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the packaging of Sink Into Eden (Live).",
+     "expected_predicate": "http://musicbrainz.org/ontology#packaging",
+     "score": 1.0
+    },
+    {
+     "question": "What status does Sink Into Eden (Live) have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/8e29e6bf-d73e-4d5d-bace-af880b9679b4",
+   "resource_label": "Secret Samadhi",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#barcode",
+     "barcode"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#packaging",
+     "packaging"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the barcode of Secret Samadhi?",
+     "expected_predicate": "http://musicbrainz.org/ontology#barcode",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Secret Samadhi?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the packaging of Secret Samadhi.",
+     "expected_predicate": "http://musicbrainz.org/ontology#packaging",
+     "score": 1.0
+    },
+    {
+     "question": "What status does Secret Samadhi have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/b72b1d94-d817-4984-9556-fb1b4547e9bb",
+   "resource_label": "The River",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the country of The River?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Which status is associated with The River?",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the date of The River.",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    },
+    {
+     "question": "What title does The River have?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/f4691bf5-9f43-3ffe-8fb7-6bdb5e51d61f",
+   "resource_label": "The Distance to Here",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#barcode",
+     "barcode"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the barcode of The Distance to Here?",
+     "expected_predicate": "http://musicbrainz.org/ontology#barcode",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with The Distance to Here?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the status of The Distance to Here.",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "What date does The Distance to Here have?",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/f4058c48-83f0-4ac7-8834-6d1db22ba9b5",
+   "resource_label": "Overcome",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the country of Overcome?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Which status is associated with Overcome?",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the date of Overcome.",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    },
+    {
+     "question": "What title does Overcome have?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/1051d122-497c-47cb-9afe-488daf96af08",
+   "resource_label": "They Stood Up for Love",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the country of They Stood Up for Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Which status is associated with They Stood Up for Love?",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the date of They Stood Up for Love.",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    },
+    {
+     "question": "What title does They Stood Up for Love have?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/795e1560-adba-4ef8-a3d6-223d7d38f6fe",
+   "resource_label": "Greatest Greatest Hits",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#packaging",
+     "packaging"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the country of Greatest Greatest Hits?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Which packaging is associated with Greatest Greatest Hits?",
+     "expected_predicate": "http://musicbrainz.org/ontology#packaging",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the status of Greatest Greatest Hits.",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "What title does Greatest Greatest Hits have?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/42956d81-0eb9-49ad-9df9-8fa48d103100",
+   "resource_label": "Greatest Greatest Hits",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#barcode",
+     "barcode"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#packaging",
+     "packaging"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the barcode of Greatest Greatest Hits?",
+     "expected_predicate": "http://musicbrainz.org/ontology#barcode",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Greatest Greatest Hits?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the packaging of Greatest Greatest Hits.",
+     "expected_predicate": "http://musicbrainz.org/ontology#packaging",
+     "score": 1.0
+    },
+    {
+     "question": "What status does Greatest Greatest Hits have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/2aa1ca3b-c393-480a-971d-e84d48d894b5",
+   "resource_label": "Greatest",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#packaging",
+     "packaging"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the country of Greatest?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Which packaging is associated with Greatest?",
+     "expected_predicate": "http://musicbrainz.org/ontology#packaging",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the status of Greatest.",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "What date does Greatest have?",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/cf33665d-45db-4b44-9f8f-4d19b0b346f4",
+   "resource_label": "Greatest",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#packaging",
+     "packaging"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the country of Greatest?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Which packaging is associated with Greatest?",
+     "expected_predicate": "http://musicbrainz.org/ontology#packaging",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the status of Greatest.",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "What date does Greatest have?",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/f3ead1a3-7f52-43bb-a281-db34f0878ad0",
+   "resource_label": "Greatest",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#barcode",
+     "barcode"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the barcode of Greatest?",
+     "expected_predicate": "http://musicbrainz.org/ontology#barcode",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Greatest?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the status of Greatest.",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "What date does Greatest have?",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/release/7d69383d-d092-3871-8cce-3f6f361c0e5d",
+   "resource_label": "Greatest",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#status",
+     "status"
+    ],
+    [
+     "http://purl.org/dc/terms/date",
+     "date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/format",
+     "format"
+    ],
+    [
+     "http://purl.org/ontology/mo/label",
+     "label"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the country of Greatest?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Which status is associated with Greatest?",
+     "expected_predicate": "http://musicbrainz.org/ontology#status",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the date of Greatest.",
+     "expected_predicate": "http://purl.org/dc/terms/date",
+     "score": 1.0
+    },
+    {
+     "question": "What title does Greatest have?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/112c0596-bff3-41d0-a21d-afec9368d440",
+   "resource_label": "Light Light Light",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Light Light Light?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Light Light Light?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Light Light Light.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Light Light Light have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/52f9c1f5-872f-492e-9ec4-de7469868f00",
+   "resource_label": "Light Light Light",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Light Light Light?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Light Light Light?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Light Light Light.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Light Light Light have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/367132fd-2e5b-4ef3-903a-4cf608bc24d1",
+   "resource_label": "Light light light",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Light light light?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Light light light?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the artist of Light light light.",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/3874a953-0aed-4d5d-8e81-a38af0fbe294",
+   "resource_label": "Light Light Light",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Light Light Light?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Light Light Light?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Light Light Light.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Light Light Light have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/f680270e-79d4-4356-b46f-a771f77ea7b5",
+   "resource_label": "Light Light Light",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Light Light Light?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Light Light Light?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Light Light Light.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Light Light Light have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/f6a0415d-148f-46e2-8a82-dedade0db596",
+   "resource_label": "Light Light Light",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Light Light Light?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Light Light Light?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Light Light Light.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Light Light Light have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/03ac4a96-af4e-4d61-b789-3ef37c0e6518",
+   "resource_label": "Light Light",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Light Light?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Light Light?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Light Light.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Light Light have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/a5ab81e4-42ff-45f2-9b47-3c4cd4efb67d",
+   "resource_label": "Light Light",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Light Light?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Light Light?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Light Light.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Light Light have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/00eebc3b-9421-4d58-8c14-c74acab76127",
+   "resource_label": "Light/Light",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Light/Light?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Light/Light?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Light/Light.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Light/Light have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/c5a62da7-c146-4531-bf6e-dd17dfa13da7",
+   "resource_label": "Light Light",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Light Light?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Light Light?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Light Light.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Light Light have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/413665f2-01d1-48bf-a059-edff65bff9c1",
+   "resource_label": "Light/Light",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Light/Light?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Light/Light?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the artist of Light/Light.",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/df2fff0a-b8ec-4e03-9f6f-5d4e94af2dff",
+   "resource_label": "Light Light",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Light Light?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Light Light?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Light Light.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Light Light have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/525f9d40-ef58-4674-a30f-dea7d14747cf",
+   "resource_label": "Ol’ Boy",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Ol’ Boy?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Ol’ Boy?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Ol’ Boy.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Ol’ Boy have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/a9b50368-54a7-4aaa-a1ed-6002da145cb8",
+   "resource_label": "6 Months/16 Years",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of 6 Months/16 Years?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with 6 Months/16 Years?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of 6 Months/16 Years.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does 6 Months/16 Years have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/a247b24b-6b52-4004-9b66-1e544daf086c",
+   "resource_label": "Suicide City",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Suicide City?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Suicide City?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Suicide City.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Suicide City have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/f470d33b-ffb0-41df-9787-d04decffd6ed",
+   "resource_label": "Cheetah Print Speedo",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Cheetah Print Speedo?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Cheetah Print Speedo?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Cheetah Print Speedo.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Cheetah Print Speedo have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/d3fb562b-db89-4ce8-8e27-0a9d0b5c96fd",
+   "resource_label": "Switches",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Switches?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Switches?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Switches.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Switches have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/e08e2d27-d380-44cc-9917-4d2878361d8a",
+   "resource_label": "Astro Nomo",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Astro Nomo?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Astro Nomo?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Astro Nomo.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Astro Nomo have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/e9d1c8a2-cd63-42e5-8b9e-223e0fd264b6",
+   "resource_label": "Night! Night! Night!",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Night! Night! Night!?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Night! Night! Night!?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Night! Night! Night!.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Night! Night! Night! have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/e8d23707-830c-47f3-aca3-77deb3a329da",
+   "resource_label": "Night, Night, Night",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Night, Night, Night?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Night, Night, Night?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Night, Night, Night.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Night, Night, Night have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/80668d04-c468-4b8b-81d0-cacaa82fc3e9",
+   "resource_label": "Night! Night! Night!",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://purl.org/ontology/mo/tag",
+     "tag"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Night! Night! Night!?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Night! Night! Night!?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Night! Night! Night!.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What tag does Night! Night! Night! have?",
+     "expected_predicate": "http://purl.org/ontology/mo/tag",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/dc827cd6-5d46-49c7-87a8-15493bfd2fde",
+   "resource_label": "Night Night Night",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Night Night Night?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Night Night Night?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Night Night Night.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Night Night Night have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/4be468a0-5b35-4383-a0a7-9a723539080f",
+   "resource_label": "Night Night Night",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Night Night Night?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Night Night Night?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Night Night Night.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Night Night Night have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/b49421f0-ec2d-4641-93fa-9a97b024d2b0",
+   "resource_label": "Night Night",
+   "candidates": [
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the title of Night Night?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Which duration is associated with Night Night?",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the artist of Night Night.",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/061f5049-d4a9-4708-b2fc-63024b502c95",
+   "resource_label": "Heart, Heart",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Heart, Heart?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Heart, Heart?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the artist of Heart, Heart.",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/453c5222-d137-43e4-84a1-33e6ebe19d67",
+   "resource_label": "Heart+Heart",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Heart+Heart?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Heart+Heart?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Heart+Heart.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Heart+Heart have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/c81bcf01-6b0c-48bf-ad37-10362bbdca0d",
+   "resource_label": "Heart Heart",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Heart Heart?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Heart Heart?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Heart Heart.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Heart Heart have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/818d8daf-97df-4f18-9a4f-680e82eb3b27",
+   "resource_label": "Heart, Heart",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Heart, Heart?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Heart, Heart?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Heart, Heart.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Heart, Heart have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/391da4a3-0c48-4e0d-a9d9-0b1ece9168b6",
+   "resource_label": "Heart Heart",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Heart Heart?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Heart Heart?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Heart Heart.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Heart Heart have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/recording/8c879df4-235f-40d2-9f39-5847b06df648",
+   "resource_label": "Heart, Heart",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#firstReleaseDate",
+     "first release date"
+    ],
+    [
+     "http://purl.org/dc/terms/title",
+     "title"
+    ],
+    [
+     "http://purl.org/ontology/mo/duration",
+     "duration"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/maker",
+     "artist"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the first release date of Heart, Heart?",
+     "expected_predicate": "http://musicbrainz.org/ontology#firstReleaseDate",
+     "score": 1.0
+    },
+    {
+     "question": "Which title is associated with Heart, Heart?",
+     "expected_predicate": "http://purl.org/dc/terms/title",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the duration of Heart, Heart.",
+     "expected_predicate": "http://purl.org/ontology/mo/duration",
+     "score": 1.0
+    },
+    {
+     "question": "What artist does Heart, Heart have?",
+     "expected_predicate": "http://xmlns.com/foaf/0.1/maker",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/label/157afde4-4bf5-4039-8ad2-5a15acc85176",
+   "resource_label": "[no label]",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of [no label]?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with [no label]?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the disambiguation of [no label].",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/label/011d1192-6f65-45bd-85c4-0400dd45693e",
+   "resource_label": "Columbia",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#labelCode",
+     "label code"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of Columbia?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Columbia?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the disambiguation of Columbia.",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    },
+    {
+     "question": "What label code does Columbia have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#labelCode",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/label/abea2d3e-eabf-4480-ab24-9382dd642c73",
+   "resource_label": "Capitol Records",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#labelCode",
+     "label code"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of Capitol Records?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Capitol Records?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the disambiguation of Capitol Records.",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    },
+    {
+     "question": "What label code does Capitol Records have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#labelCode",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/label/995428e7-81b6-41dd-bd38-5a7a0ece8ad6",
+   "resource_label": "Mercury Records",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#labelCode",
+     "label code"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of Mercury Records?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Mercury Records?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the disambiguation of Mercury Records.",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    },
+    {
+     "question": "What label code does Mercury Records have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#labelCode",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/label/dfd92cd3-4888-46d2-b968-328b1feb2642",
+   "resource_label": "Island",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#labelCode",
+     "label code"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of Island?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Island?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the disambiguation of Island.",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    },
+    {
+     "question": "What label code does Island have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#labelCode",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/label/8f638ddb-131a-4cc3-b3d4-7ebdac201b55",
+   "resource_label": "Epic",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#labelCode",
+     "label code"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of Epic?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Epic?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the disambiguation of Epic.",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    },
+    {
+     "question": "What label code does Epic have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#labelCode",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/label/c029628b-6633-439e-bcee-ed02e8a338f7",
+   "resource_label": "EMI",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#labelCode",
+     "label code"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of EMI?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with EMI?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the disambiguation of EMI.",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    },
+    {
+     "question": "What label code does EMI have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#labelCode",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/label/1ca5ed29-e00b-4ea5-b817-0bcca0e04946",
+   "resource_label": "RCA",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#labelCode",
+     "label code"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of RCA?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with RCA?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the disambiguation of RCA.",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    },
+    {
+     "question": "What label code does RCA have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#labelCode",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/label/49b58bdb-3d74-40c6-956a-4c4b46115c9c",
+   "resource_label": "Virgin",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#labelCode",
+     "label code"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of Virgin?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Virgin?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the disambiguation of Virgin.",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    },
+    {
+     "question": "What label code does Virgin have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#labelCode",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/label/c595c289-47ce-4fba-b999-b87503e8cb71",
+   "resource_label": "Warner Bros. Records",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#labelCode",
+     "label code"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of Warner Bros. Records?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Warner Bros. Records?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the disambiguation of Warner Bros. Records.",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    },
+    {
+     "question": "What label code does Warner Bros. Records have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#labelCode",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/label/f18f3b31-8263-4de3-966a-fda317492d3d",
+   "resource_label": "Decca Records",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#labelCode",
+     "label code"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of Decca Records?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Decca Records?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the label code of Decca Records.",
+     "expected_predicate": "http://musicbrainz.org/ontology#labelCode",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/label/b8d33bec-92cc-40d9-bd92-4eb089b401a9",
+   "resource_label": "CBS",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#labelCode",
+     "label code"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of CBS?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with CBS?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the disambiguation of CBS.",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    },
+    {
+     "question": "What label code does CBS have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#labelCode",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/label/9e6b4d7f-4958-4db7-8504-d89e315836af",
+   "resource_label": "Sony Music",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#labelCode",
+     "label code"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of Sony Music?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Sony Music?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the disambiguation of Sony Music.",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    },
+    {
+     "question": "What label code does Sony Music have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#labelCode",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/label/ce24ab18-1bd6-4293-a486-546d13d6a5e2",
+   "resource_label": "Polydor",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#labelCode",
+     "label code"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of Polydor?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Polydor?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the disambiguation of Polydor.",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    },
+    {
+     "question": "What label code does Polydor have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#labelCode",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/label/50c384a2-0b44-401b-b893-8181173339c7",
+   "resource_label": "Atlantic",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#labelCode",
+     "label code"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of Atlantic?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Atlantic?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the disambiguation of Atlantic.",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    },
+    {
+     "question": "What label code does Atlantic have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#labelCode",
+     "score": 1.0
+    }
+   ]
+  },
+  {
+   "resource": "http://musicbrainz.org/label/13a464dc-b9fd-4d16-a4f4-d4316f6a46c7",
+   "resource_label": "Universal Music",
+   "candidates": [
+    [
+     "http://musicbrainz.org/ontology#area",
+     "area"
+    ],
+    [
+     "http://musicbrainz.org/ontology#country",
+     "country"
+    ],
+    [
+     "http://musicbrainz.org/ontology#disambiguation",
+     "disambiguation"
+    ],
+    [
+     "http://musicbrainz.org/ontology#labelCode",
+     "label code"
+    ],
+    [
+     "http://musicbrainz.org/ontology#type",
+     "type"
+    ],
+    [
+     "http://xmlns.com/foaf/0.1/name",
+     "name"
+    ]
+   ],
+   "cases": [
+    {
+     "question": "What is the area of Universal Music?",
+     "expected_predicate": "http://musicbrainz.org/ontology#area",
+     "score": 1.0
+    },
+    {
+     "question": "Which country is associated with Universal Music?",
+     "expected_predicate": "http://musicbrainz.org/ontology#country",
+     "score": 1.0
+    },
+    {
+     "question": "Tell me the disambiguation of Universal Music.",
+     "expected_predicate": "http://musicbrainz.org/ontology#disambiguation",
+     "score": 1.0
+    },
+    {
+     "question": "What label code does Universal Music have?",
+     "expected_predicate": "http://musicbrainz.org/ontology#labelCode",
+     "score": 1.0
+    }
+   ]
+  }
+ ]
+}

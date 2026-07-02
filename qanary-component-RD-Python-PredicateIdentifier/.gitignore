@@ -1,0 +1,10 @@
+# local virtual environments / caches / coverage artifacts (never committed)
+venv/
+env/
+.venv/
+environments/
+__pycache__/
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml

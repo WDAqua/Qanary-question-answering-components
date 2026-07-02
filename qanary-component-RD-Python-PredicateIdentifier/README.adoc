@@ -1,0 +1,271 @@
+:toc:
+:toclevels: 3
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:warning-caption: :warning:
+endif::[]
+
+= RD Python Predicate Identifier component
+
+toc::[]
+
+== Intention
+
+Given a question and a resource that an upstream component has already
+identified in it, this component determines the *most probable predicate*
+(property / relation) that answers the question.
+
+.Example
+[NOTE]
+====
+* *Question:* "What is the capital of Germany?"
+* *Provided knowledge graph:* DBpedia (`https://dbpedia.org/sparql`)
+* *Already identified resource:* `http://dbpedia.org/resource/Germany`
+* *Result:* the predicate `http://dbpedia.org/ontology/capital` is identified
+  and stored in the Qanary triplestore.
+====
+
+== Behavior
+
+As a Qanary component it reads the shared process memory (the Qanary
+triplestore) and writes its result back as a standard Qanary
+(`qa:AnnotationOfRelation`) annotation:
+
+1. Read the question text from the Qanary triplestore.
+2. Read the resource(s) already identified in the question — both
+   `qa:AnnotationOfInstance` (the canonical Qanary type) and
+   `qa:AnnotationOfEntity` are considered, highest `qa:score` first.
+3. For each resource, query the *provided* knowledge-graph endpoint
+   (`KNOWLEDGE_GRAPH_ENDPOINT`) for the predicates the resource actually has:
+   `SELECT DISTINCT ?p WHERE { <resource> ?p ?o }`. Only predicates that exist
+   for the resource can be proposed. An English `rdfs:label` is used when the
+   graph offers one; otherwise the predicate URI's local name is used
+   (meaningful for most ontologies, e.g. `dbo:capital` -> "capital").
+4. Rank the candidate predicates by how well their label matches the question
+   keywords (camelCase / snake_case aware, stop-word filtered, with a
+   character-level fallback for near misses). Ontology predicates
+   (e.g. `.../ontology/...`) are preferred over free-text property predicates
+   on a tie, which is why `dbo:capital` is chosen over `dbp:capital`.
+5. Store the best predicate above `MIN_MATCH_SCORE` as a
+   `qa:AnnotationOfRelation`.
+
+The ranking is deterministic and dependency-light (Python standard library
+only). The scoring functions (`tokenize`, `match_score`,
+`select_best_predicate`) are pure and can be swapped for an
+embedding- or LLM-based ranker without touching the Qanary I/O.
+
+== Characteristics
+
+* *Task type:* Relation Detection / Predicate Identification (RD).
+* *Runtime:* containerised; no models to download. Works against any SPARQL
+  endpoint configured via `KNOWLEDGE_GRAPH_ENDPOINT` (DBpedia, Wikidata, a local
+  Virtuoso, ...).
+
+== Implementation
+
+* *Language:* Python 3.
+* *Major frameworks:* FastAPI, `qanary-helpers`, `SPARQLWrapper`.
+* *Tests:* `pytest` (network-free, deterministic — see `tests/`). In addition to
+  the unit tests (`test_rd_predicate_identifier.py`), four data-driven suites
+  (`test_kg_dbpedia.py`, `test_kg_wikidata.py`, `test_kg_musicbrainz.py`,
+  `test_kg_geonames.py`) each exercise predicate identification over a
+  100-resource subset of a real knowledge graph (≥3 question/predicate cases per
+  resource, ~1600 cases in total). The subsets and their generator are documented
+  in `tests/kg_fixtures/`.
+
+== Build and run
+
+Build and run the containerised component (configure the `.env` / environment first):
+
+[source,bash]
+----
+docker compose up --build
+# or, for local development:
+pip install -r requirements.txt && python run.py
+----
+
+== How to execute the tests
+
+The tests are written with `pytest` and are fully **offline and deterministic**
+(no running triplestore or network access is required): the unit tests mock the
+triplestore/knowledge-graph I/O, and the per-knowledge-graph suites replay
+committed fixtures.
+
+In the four knowledge-graph suites every case has the same contract as the
+component itself — the *input* is a **natural-language question** and a
+**resource URI**, and the expected *output* is the identified **predicate URI**.
+
+The quickest way is the bundled script, which creates a local virtual
+environment, installs the requirements and runs the suite (any arguments are
+forwarded to `pytest`):
+
+[source,bash]
+----
+./run_all_tests.sh          # run every test
+./run_all_tests.sh -v       # verbose: print  resource | question -> predicate  ✔ ok / ✘ failed
+----
+
+The individual steps are described below.
+
+1. Install the dependencies (ideally in a virtual environment):
+
+[source,bash]
+----
+python -m venv venv && source venv/bin/activate   # optional
+pip install -r requirements.txt
+----
+
+`pytest` and `pytest-env` are listed in `requirements.txt`; the test
+configuration (environment variables such as `SERVICE_NAME_COMPONENT` and
+`KNOWLEDGE_GRAPH_ENDPOINT`) is provided by `pytest.ini`, so no `.env` is needed.
+
+2. Run the whole test suite from the component directory:
+
+[source,bash]
+----
+pytest
+----
+
+This runs the unit tests plus the four knowledge-graph suites (~1600 cases) in a
+few seconds.
+
+3. Run in verbose mode to see each case's resource, question and result:
+
+[source,bash]
+----
+pytest -v
+----
+
+In verbose mode every knowledge-graph case prints the resource URI, the
+question and the computed predicate URI, trailed by an ok/failed symbol:
+
+[source,text]
+----
+tests/test_kg_dbpedia.py::test_identify_predicate[Nigeria#2] http://dbpedia.org/resource/Nigeria  |  Tell me the capital of Nigeria.  ->  http://dbpedia.org/ontology/capital  ✔ ok
+tests/test_kg_wikidata.py::test_identify_predicate[Hengelo#0] http://www.wikidata.org/entity/Q10006  |  What is the population of Hengelo?  ->  http://www.wikidata.org/prop/direct/P1082  ✔ ok
+----
+
+A failing case is shown the same way, with the (wrong) computed predicate and a
+`✘ failed` marker, so the resource, question and mismatch are visible at a glance.
+
+4. Run a single suite or an individual test (optional):
+
+[source,bash]
+----
+pytest tests/test_rd_predicate_identifier.py          # unit tests only
+pytest tests/test_kg_dbpedia.py                        # one knowledge-graph suite
+pytest tests/test_kg_wikidata.py tests/test_kg_geonames.py
+pytest -k "capital"                                    # cases matching a keyword
+pytest -q                                              # quiet, one line per result
+----
+
+5. Run with coverage (as the CI does):
+
+[source,bash]
+----
+pytest --cov=. --cov-report=term
+----
+
+[NOTE]
+====
+The knowledge-graph suites read the committed fixtures under
+`tests/kg_fixtures/` and never contact the network. To *rebuild* those fixtures
+from live knowledge-graph data (a development-time task that does require
+network access) see `tests/kg_fixtures/README.md`.
+====
+
+== Input specification
+
+Consumes the question text and the already-identified resource(s):
+
+[source,ttl]
+----
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+
+<urn:qanary:input> a qa:AnnotationOfInstance .   # or qa:AnnotationOfEntity
+<urn:qanary:input> oa:hasBody <http://dbpedia.org/resource/Germany> .
+----
+
+== Output specification
+
+[source,ttl]
+----
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:qanary:output> a qa:AnnotationOfRelation .
+<urn:qanary:output> oa:hasTarget [
+    a   oa:SpecificResource ;
+        oa:hasSource <urn:qanary:myQanaryQuestion>
+    ] .
+<urn:qanary:output> oa:hasBody <http://dbpedia.org/ontology/capital> ;
+    qa:score "1.0"^^xsd:float ;
+    oa:annotatedBy <urn:qanary:RD-Python-PredicateIdentifier> ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
+----
+
+== Usage
+
+1. Clone the Git repository of the collected Qanary components:
+
+[source,bash]
+----
+git clone https://github.com/WDAqua/Qanary-question-answering-components.git
+----
+
+2. Switch to the component's directory:
+
+[source,bash]
+----
+cd Qanary-question-answering-components/qanary-component-RD-Python-PredicateIdentifier
+----
+
+3. Set the environment variables in the `.env` file
+
+[source,bash]
+----
+SPRING_BOOT_ADMIN_URL=http://qanary-pipeline-host:40111
+SPRING_BOOT_ADMIN_USERNAME=admin
+SPRING_BOOT_ADMIN_PASSWORD=admin
+SERVER_HOST=public-component-host
+SERVER_PORT=40120
+SERVICE_NAME_COMPONENT=RD-Python-PredicateIdentifier
+SERVICE_DESCRIPTION_COMPONENT=Identifies the most probable predicate for a question and an already-identified resource
+KNOWLEDGE_GRAPH_ENDPOINT=https://dbpedia.org/sparql
+MIN_MATCH_SCORE=0.5
+MAX_PREDICATE_CANDIDATES=1000
+PRODUCTION=True
+----
+
+The parameters description:
+
+* `SPRING_BOOT_ADMIN_URL` -- URL of the Qanary pipeline (see Step 1 and Step 2 of the https://github.com/WDAqua/Qanary/wiki/Qanary-tutorial:-How-to-build-a-trivial-Question-Answering-pipeline[tutorial])
+* `SPRING_BOOT_ADMIN_USERNAME` -- the admin username of the Qanary pipeline
+* `SPRING_BOOT_ADMIN_PASSWORD` -- the admin password of the Qanary pipeline
+* `SERVER_HOST` -- the host of your Qanary component without protocol prefix (e.g., `http://`). It has to be visible to the Qanary pipeline (i.e., a callback from the Qanary pipeline can be executed).
+* `SERVER_PORT` -- the port of your Qanary component (has to be visible to the Qanary pipeline)
+* `SERVICE_NAME_COMPONENT` -- the name of your Qanary component (for better identification)
+* `SERVICE_DESCRIPTION_COMPONENT` -- the description of your Qanary component
+* `KNOWLEDGE_GRAPH_ENDPOINT` -- the SPARQL endpoint of the provided triplestore / knowledge graph whose predicates are inspected (e.g., `https://dbpedia.org/sparql`)
+* `MIN_MATCH_SCORE` -- minimum match score (0..1) a predicate must reach to be annotated (default `0.5`)
+* `MAX_PREDICATE_CANDIDATES` -- maximum number of candidate predicates fetched per resource (default `1000`)
+* `AGENT_HEADER` -- optional User-Agent sent to the knowledge-graph endpoint
+* `PRODUCTION` -- the flag that indicates whether the component is running in production mode
+
+4. Build the Docker image:
+
+[source,bash]
+----
+docker-compose build .
+----
+
+5. Run the component with docker-compose:
+
+[source,bash]
+----
+docker-compose up
+----
