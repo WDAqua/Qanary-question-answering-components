@@ -1,0 +1,311 @@
+:toc:
+:toclevels: 3
+:source-highlighter: highlight.js
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:warning-caption: :warning:
+endif::[]
+
+= QB Python Rule-Based Query Builder component
+
+toc::[]
+
+== Intention
+
+Given the annotations that upstream components have already stored in the
+Qanary triplestore — *one or two resources* (entities) and *one or two
+predicates* — this component builds the SPARQL query answering the question, in
+a purely rule-based way. It automatically searches the possible graph patterns
+for the ones actually matching in the knowledge graph.
+
+.Example
+[NOTE]
+====
+* *Question:* "Who is the mayor of the capital of Germany?"
+* *Annotated entity:* `dbr:Germany`; *annotated predicates:* `dbo:capital`, `dbo:mayor`
+* *Result:* `SELECT DISTINCT ?answer WHERE { <dbr:Germany> <dbo:capital> ?joint . ?joint <dbo:mayor> ?answer . }`
+  stored as `qa:AnnotationOfAnswerSPARQL` in the Qanary triplestore.
+====
+
+== Behavior
+
+As a Qanary component it reads the shared process memory (the Qanary
+triplestore) and writes its result back as standard Qanary annotations:
+
+1. Read the question text from the Qanary triplestore.
+2. Read the annotated *entities* (`qa:AnnotationOfInstance` /
+   `qa:AnnotationOfEntity`) and *predicates* (`qa:AnnotationOfRelation`),
+   highest `qa:score` first; the top one or two of each are used.
+3. *Enumerate candidate graph patterns* for the combination at hand
+   (see <<Rule set>>), choosing the query form from lexical cues:
+   yes/no phrasing -> `ASK`, "how many"/"number of" -> `COUNT`,
+   "total"/"average" -> `SUM`/`AVG` aggregation, superlatives
+   ("highest", "longest", "smallest", ...) -> `ORDER BY ... LIMIT 1`,
+   otherwise `SELECT`.
+4. *Search for matching patterns:* every candidate is probed with an `ASK`
+   against the configured knowledge-graph endpoint; patterns with actual
+   matches are ranked first. Without an endpoint (or if probing fails) the
+   deterministic rule order is used — the component works offline.
+5. Store the best candidates (`MAX_STORED_CANDIDATES`, default 3) as
+   `qa:AnnotationOfAnswerSPARQL` annotations with descending scores, ready for
+   a query-executer (QE) component.
+
+[#rule-set]
+== Rule set
+
+The rules mirror the dominant question structures of the QALD-10 and LC-QuAD
+benchmarks (analysis in `tests/fixtures/benchmark_analysis.md`; E = entity,
+P = predicate, `?` = variable):
+
+|===
+| Entities | Predicates | Question cue | Candidate graph patterns
+
+| 1 | 1 | — | forward `E-P-?answer`, backward `?answer-P-E`
+| 1 | 1 | "how many" | the same, wrapped in `COUNT(DISTINCT ?answer)`
+| 2 | 1 | yes/no | `ASK E1-P-E2`, `ASK E2-P-E1`
+| 2 | 1 | — | shared-predicate intersection `?answer-P-E1 . ?answer-P-E2` (and the forward variant)
+| 1 | 2 | — | two-hop chains `E-P1-?joint . ?joint-P2-?answer` — all 8 direction/assignment variants
+| 2 | 2 | — | intersections `?answer-P1-E1 . ?answer-P2-E2` — all 8 direction/assignment variants
+| 1 | 2 | superlative | ordering `?answer-Prel-E . ?answer-Pval-?value` + `ORDER BY DESC/ASC(?value) LIMIT 1` — 4 assignment/direction variants (e.g. "What is the highest mountain in Germany?")
+| 0/1 | 1 | superlative | global ordering `?answer-P-?value` + `ORDER BY ... LIMIT 1` (e.g. "What is the highest mountain?"); with an entity the plain 1x1 rules apply
+| 1 | 2 | "total"/"average" | value aggregation `SELECT (SUM/AVG(?value) AS ?result)` over `?answer-Prel-E . ?answer-Pval-?value` — 4 variants (e.g. "What is the total population of the cities in Germany?")
+|===
+
+The superlative direction is chosen by cue ("highest", "largest", "longest",
+"most", ... -> `DESC`; "lowest", "smallest", "shortest", ... -> `ASC`); the
+counting cue wins over aggregation and superlative cues when both occur.
+Comparatives, filters, ordering by aggregates (e.g. "who directed the most
+films") and >2 entities/predicates remain out of scope for the rule-based
+approach (they are a minority class in both benchmarks).
+
+== Characteristics
+
+* *Task type:* Query Builder (QB).
+* *Runtime:* containerised; no models. Works against any SPARQL endpoint
+  configured via `KNOWLEDGE_GRAPH_ENDPOINT` (DBpedia, Wikidata, a local
+  Virtuoso, ...) — and degrades gracefully to pure rule order without one.
+
+== Implementation
+
+* *Language:* Python 3.
+* *Major frameworks:* FastAPI, `qanary-helpers`, `SPARQLWrapper`; `rdflib`
+  powers the offline test triplestore.
+* *Tests:* `pytest`; unit tests plus an *offline end-to-end pipeline* over
+  124 benchmark-inspired questions (see below).
+
+== Build and run
+
+Build and run the containerised component (configure the `.env` / environment first):
+
+[source,bash]
+----
+docker compose up --build
+# or, for local development:
+pip install -r requirements.txt && python run.py
+----
+
+== How to execute the tests
+
+The tests are fully **offline and deterministic** — no external network access:
+the E2E suite runs a local SPARQL server (rdflib over HTTP on 127.0.0.1) that
+stands in for both the Qanary triplestore and the knowledge-graph endpoint.
+
+The quickest way is the bundled script (any arguments are forwarded to
+`pytest`):
+
+[source,bash]
+----
+./run_all_tests.sh          # run every test
+./run_all_tests.sh -v       # verbose: entities | question -> generated query  ✔ ok / ✘ failed
+----
+
+Or manually:
+
+[source,bash]
+----
+python -m venv venv && source venv/bin/activate   # optional
+pip install -r requirements.txt
+pytest                       # unit tests + 124-question offline E2E pipeline
+pytest tests/test_e2e_pipeline.py -v              # E2E only, verbose
+pytest --cov=. --cov-report=term                  # with coverage (as the CI does)
+----
+
+=== The end-to-end pipeline
+
+Every question in `tests/fixtures/questions.json` (124 questions, distribution
+in `tests/fixtures/benchmark_analysis.md`) runs the complete component pipeline:
+
+1. an offline Qanary triplestore is seeded with the question and its
+   entity/predicate annotations — what NED/NEL and relation-linking components
+   leave behind in a real pipeline run;
+2. the component's `POST /annotatequestion` is called; it reads the annotations
+   over SPARQL/HTTP, enumerates and validates the graph patterns against the
+   offline knowledge graph (`tests/fixtures/offline_kg.ttl`), and stores
+   `qa:AnnotationOfAnswerSPARQL`;
+3. the highest-scored generated query is read back — as a QE component would —
+   executed against the offline knowledge graph, and the results are compared
+   with the gold answers.
+
+In verbose mode (`pytest -v`) every question prints its input entities, the
+question and the generated query, trailed by an ok/failed symbol:
+
+[source,text]
+----
+...::test_e2e_question[q001-forward] http://dbpedia.org/resource/Germany  |  What is the capital of Germany?  ->  SELECT DISTINCT ?answer WHERE { <http://dbpedia.org/resource/Germany> <http://dbpedia.org/ontology/capital> ?answer . }  ✔ ok
+----
+
+=== Test run report
+
+After **every** test run a complete report — summary counts plus one line per
+test, including each question and its generated query — is stored in a
+temporary file; the path is printed at the end of the pytest output:
+
+[source,text]
+----
+------- complete test report written to /tmp/qanary-qb-rulebased-test-report-20260702-215722-364264.txt -------
+----
+
+Set `QB_TEST_REPORT_FILE` to write the report to a fixed path instead.
+
+=== Live quality test against QALD-9 (opt-in)
+
+`tests/test_live_qald9.py` measures the component's real-world quality on the
+https://github.com/ag-sc/QALD[QALD-9] *test* benchmark. It is independent of
+the other suites and **disabled by default** so that the regular pipeline stays
+offline; enable it explicitly:
+
+[source,bash]
+----
+QALD9_LIVE_TEST_ACTIVE=true pytest tests/test_live_qald9.py -v
+----
+
+What it does:
+
+1. selects the QALD-9 test questions whose gold SPARQL query lies within the
+   component's scope (1–2 DBpedia entities × 1–2 predicates, no
+   `FILTER`/`UNION`/… — 83 of 150 questions);
+2. feeds each question through the full pipeline with the entities/predicates
+   of the gold query as annotations (emulating perfect upstream NED/REL — the
+   query builder is evaluated in isolation) and the *live* DBpedia endpoint for
+   pattern validation;
+3. executes **both** the gold query and the generated query on the live DBpedia
+   endpoint, so both result sets face the same, current data and are directly
+   comparable (the answer sets shipped with the 2018 benchmark are not used);
+4. computes precision/recall/F1 per question and writes an *extensive
+   comparison report* (aggregate metrics, per-question breakdown with both
+   queries, result-set sizes and overlap, out-of-scope list) to a temporary
+   file whose path is shown in the pytest output.
+
+The quality is expectedly below 100% (gold queries may use class constraints or
+vocabulary beyond the annotated entity/predicate pairs); the test only asserts
+a configurable macro-F1 floor.
+
+.Indicative measurement (2026-07-02, live DBpedia)
+[NOTE]
+====
+Of the 150 QALD-9 test questions, 83 were in scope; **55 exact matches
+(F1 = 1.0)**, 28 without overlap, 0 execution errors — **macro F1 = 0.663**
+over the attempted questions. The dominant failure modes are gold queries that
+additionally use `rdf:type`/YAGO class constraints, `dct:subject` category
+joins or variable-to-variable joins — outside the entity/predicate rule set by
+design.
+====
+
+Environment variables: `QALD9_LIVE_TEST_ACTIVE` (enable), `QALD9_LIMIT`
+(first N in-scope questions only), `QALD9_MIN_F1` (assertion floor, default
+`0.3` — well under the measured 0.663 to absorb DBpedia data drift),
+`QALD9_REPORT_FILE` (fixed report path).
+
+== Input specification
+
+Consumes the question text plus the annotated entities and predicates:
+
+[source,ttl]
+----
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+
+<urn:qanary:input1> a qa:AnnotationOfInstance .   # or qa:AnnotationOfEntity
+<urn:qanary:input1> oa:hasBody <http://dbpedia.org/resource/Germany> .
+<urn:qanary:input2> a qa:AnnotationOfRelation .
+<urn:qanary:input2> oa:hasBody <http://dbpedia.org/ontology/capital> .
+----
+
+== Output specification
+
+[source,ttl]
+----
+@prefix qa: <http://www.wdaqua.eu/qa#> .
+@prefix oa: <http://www.w3.org/ns/openannotation/core/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:qanary:output> a qa:AnnotationOfAnswerSPARQL ;
+    oa:hasTarget <urn:qanary:myQanaryQuestion> ;
+    oa:hasBody "SELECT DISTINCT ?answer WHERE { ... }" ;
+    qa:score "1.0"^^xsd:float ;
+    oa:annotatedBy <urn:qanary:QB-Python-RuleBasedQueryBuilder> ;
+    oa:annotatedAt "2001-10-26T21:32:52"^^xsd:dateTime .
+----
+
+== Usage
+
+1. Clone the Git repository of the collected Qanary components:
+
+[source,bash]
+----
+git clone https://github.com/WDAqua/Qanary-question-answering-components.git
+----
+
+2. Switch to the component's directory:
+
+[source,bash]
+----
+cd Qanary-question-answering-components/qanary-component-QB-Python-RuleBasedQueryBuilder
+----
+
+3. Set the environment variables in the `.env` file
+
+[source,bash]
+----
+SPRING_BOOT_ADMIN_URL=http://qanary-pipeline-host:40111
+SPRING_BOOT_ADMIN_USERNAME=admin
+SPRING_BOOT_ADMIN_PASSWORD=admin
+SERVER_HOST=public-component-host
+SERVER_PORT=40120
+SERVICE_NAME_COMPONENT=QB-Python-RuleBasedQueryBuilder
+SERVICE_DESCRIPTION_COMPONENT=Rule-based query builder generating SPARQL from annotated entities and predicates
+KNOWLEDGE_GRAPH_ENDPOINT=https://dbpedia.org/sparql
+MAX_ANNOTATIONS_PER_TYPE=2
+MAX_STORED_CANDIDATES=3
+PRODUCTION=True
+----
+
+The parameters description:
+
+* `SPRING_BOOT_ADMIN_URL` -- URL of the Qanary pipeline (see Step 1 and Step 2 of the https://github.com/WDAqua/Qanary/wiki/Qanary-tutorial:-How-to-build-a-trivial-Question-Answering-pipeline[tutorial])
+* `SPRING_BOOT_ADMIN_USERNAME` -- the admin username of the Qanary pipeline
+* `SPRING_BOOT_ADMIN_PASSWORD` -- the admin password of the Qanary pipeline
+* `SERVER_HOST` -- the host of your Qanary component without protocol prefix (e.g., `http://`). It has to be visible to the Qanary pipeline (i.e., a callback from the Qanary pipeline can be executed).
+* `SERVER_PORT` -- the port of your Qanary component (has to be visible to the Qanary pipeline)
+* `SERVICE_NAME_COMPONENT` -- the name of your Qanary component (for better identification)
+* `SERVICE_DESCRIPTION_COMPONENT` -- the description of your Qanary component
+* `KNOWLEDGE_GRAPH_ENDPOINT` -- the SPARQL endpoint used to validate the candidate graph patterns (optional; without it the rule order decides)
+* `MAX_ANNOTATIONS_PER_TYPE` -- how many entity/predicate annotations are consumed (default `2`)
+* `MAX_STORED_CANDIDATES` -- how many ranked queries are stored (default `3`)
+* `AGENT_HEADER` -- optional User-Agent sent to the knowledge-graph endpoint
+* `PRODUCTION` -- the flag that indicates whether the component is running in production mode
+
+4. Build the Docker image:
+
+[source,bash]
+----
+docker-compose build .
+----
+
+5. Run the component with docker-compose:
+
+[source,bash]
+----
+docker-compose up
+----

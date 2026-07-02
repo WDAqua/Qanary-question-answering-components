@@ -1,0 +1,201 @@
+# Offline knowledge graph for the E2E tests of the rule-based query builder.
+#
+# DBpedia-style URIs and predicates; the facts are a small, controlled subset
+# (values simplified) chosen so that every question in questions.json has a
+# well-defined answer and exactly one matching graph pattern. The tests execute
+# the generated SPARQL queries against this graph — fully offline.
+@prefix dbr: <http://dbpedia.org/resource/> .
+@prefix dbo: <http://dbpedia.org/ontology/> .
+
+### countries ##################################################################
+dbr:Germany        dbo:capital dbr:Berlin ;   dbo:currency dbr:Euro ;
+                   dbo:officialLanguage dbr:German_language ;
+                   dbo:leader dbr:Frank-Walter_Steinmeier .
+dbr:France         dbo:capital dbr:Paris ;    dbo:currency dbr:Euro ;
+                   dbo:officialLanguage dbr:French_language ;
+                   dbo:leader dbr:Emmanuel_Macron .
+dbr:Spain          dbo:capital dbr:Madrid ;   dbo:currency dbr:Euro ;
+                   dbo:officialLanguage dbr:Spanish_language .
+dbr:Italy          dbo:capital dbr:Rome ;     dbo:currency dbr:Euro ;
+                   dbo:officialLanguage dbr:Italian_language .
+dbr:Austria        dbo:capital dbr:Vienna ;   dbo:currency dbr:Euro ;
+                   dbo:officialLanguage dbr:German_language .
+dbr:Switzerland    dbo:capital dbr:Bern ;     dbo:currency dbr:Swiss_franc ;
+                   dbo:officialLanguage dbr:German_language , dbr:French_language ,
+                                        dbr:Italian_language , dbr:Romansh_language .
+dbr:Netherlands    dbo:capital dbr:Amsterdam ; dbo:currency dbr:Euro ;
+                   dbo:officialLanguage dbr:Dutch_language .
+dbr:Poland         dbo:capital dbr:Warsaw ;   dbo:currency dbr:Polish_zloty ;
+                   dbo:officialLanguage dbr:Polish_language .
+dbr:Japan          dbo:capital dbr:Tokyo ;    dbo:currency dbr:Japanese_yen ;
+                   dbo:officialLanguage dbr:Japanese_language .
+dbr:Canada         dbo:capital dbr:Ottawa ;   dbo:currency dbr:Canadian_dollar ;
+                   dbo:officialLanguage dbr:English_language , dbr:French_language .
+dbr:Brazil         dbo:capital dbr:Brasilia ; dbo:currency dbr:Brazilian_real ;
+                   dbo:officialLanguage dbr:Portuguese_language .
+dbr:India          dbo:capital dbr:New_Delhi ; dbo:currency dbr:Indian_rupee ;
+                   dbo:officialLanguage dbr:Hindi , dbr:English_language .
+dbr:Egypt          dbo:capital dbr:Cairo ;    dbo:currency dbr:Egyptian_pound ;
+                   dbo:officialLanguage dbr:Arabic_language .
+dbr:Sudan          dbo:capital dbr:Khartoum ;
+                   dbo:officialLanguage dbr:Arabic_language .
+dbr:United_Kingdom dbo:capital dbr:London ;   dbo:currency dbr:Pound_sterling ;
+                   dbo:officialLanguage dbr:English_language .
+dbr:Hungary        dbo:capital dbr:Budapest ; dbo:currency dbr:Hungarian_forint .
+dbr:Czech_Republic dbo:capital dbr:Prague ;   dbo:currency dbr:Czech_koruna .
+dbr:United_States  dbo:capital dbr:Washington_DC ;
+                   dbo:currency dbr:United_States_dollar .
+dbr:Australia      dbo:capital dbr:Canberra ; dbo:currency dbr:Australian_dollar .
+
+### cities (populations simplified) ############################################
+dbr:Berlin        dbo:mayor dbr:Kai_Wegner ;       dbo:country dbr:Germany ;
+                  dbo:populationTotal 3600000 .
+dbr:Paris         dbo:mayor dbr:Anne_Hidalgo ;     dbo:country dbr:France ;
+                  dbo:populationTotal 2100000 .
+dbr:London        dbo:mayor dbr:Sadiq_Khan ;       dbo:country dbr:United_Kingdom ;
+                  dbo:populationTotal 8900000 .
+dbr:Rome          dbo:mayor dbr:Roberto_Gualtieri ; dbo:country dbr:Italy .
+dbr:Vienna        dbo:mayor dbr:Michael_Ludwig ;   dbo:country dbr:Austria .
+dbr:Amsterdam     dbo:mayor dbr:Femke_Halsema ;    dbo:country dbr:Netherlands .
+dbr:Madrid        dbo:country dbr:Spain .
+dbr:Bern          dbo:country dbr:Switzerland .
+dbr:Warsaw        dbo:country dbr:Poland .
+dbr:Tokyo         dbo:country dbr:Japan .
+dbr:Ottawa        dbo:country dbr:Canada .
+dbr:Brasilia      dbo:country dbr:Brazil .
+dbr:New_Delhi     dbo:country dbr:India .
+dbr:Cairo         dbo:country dbr:Egypt .
+dbr:Washington_DC dbo:country dbr:United_States .
+dbr:Canberra      dbo:country dbr:Australia .
+dbr:Munich        dbo:country dbr:Germany ;
+                  dbo:populationTotal 1500000 .
+dbr:Hamburg       dbo:country dbr:Germany ;
+                  dbo:populationTotal 1900000 .
+dbr:Ulm           dbo:country dbr:Germany ;
+                  dbo:populationTotal 126000 .
+dbr:Frankfurt     dbo:country dbr:Germany .
+dbr:Weimar        dbo:country dbr:Germany .
+dbr:Kiel          dbo:country dbr:Germany .
+dbr:Dusseldorf    dbo:country dbr:Germany .
+dbr:Walldorf      dbo:country dbr:Germany .
+dbr:Wolfsburg     dbo:country dbr:Germany .
+dbr:Zurich        dbo:country dbr:Switzerland .
+dbr:Liverpool     dbo:country dbr:United_Kingdom .
+dbr:Oxford        dbo:country dbr:United_Kingdom .
+dbr:Stratford_upon_Avon dbo:country dbr:United_Kingdom .
+dbr:Yate          dbo:country dbr:United_Kingdom .
+dbr:St_Albans     dbo:country dbr:United_Kingdom .
+dbr:Prague        dbo:country dbr:Czech_Republic .
+dbr:Passy         dbo:country dbr:France .
+dbr:Toulouse      dbo:country dbr:France .
+dbr:Kapuskasing   dbo:country dbr:Canada .
+dbr:Princeton_New_Jersey dbo:country dbr:United_States .
+dbr:Los_Angeles   dbo:country dbr:United_States .
+dbr:New_York_City dbo:country dbr:United_States .
+dbr:Kierling      dbo:country dbr:Austria .
+
+### rivers (lengths in km) #####################################################
+dbr:Rhine  dbo:crosses dbr:Germany , dbr:Switzerland , dbr:Netherlands , dbr:France ;
+           dbo:length 1233 .
+dbr:Danube dbo:crosses dbr:Germany , dbr:Austria , dbr:Hungary ;
+           dbo:length 2850 .
+dbr:Elbe   dbo:crosses dbr:Germany , dbr:Czech_Republic ;
+           dbo:length 1094 .
+dbr:Seine  dbo:crosses dbr:France ;
+           dbo:length 775 .
+dbr:Nile   dbo:crosses dbr:Egypt , dbr:Sudan ;
+           dbo:length 6650 .
+dbr:Po_River dbo:crosses dbr:Italy ;
+           dbo:length 652 .
+
+### mountains (elevations in m) ################################################
+dbr:Zugspitze     dbo:locatedInArea dbr:Germany ;     dbo:elevation 2962 .
+dbr:Feldberg      dbo:locatedInArea dbr:Germany ;     dbo:elevation 1493 .
+dbr:Brocken       dbo:locatedInArea dbr:Germany ;     dbo:elevation 1141 .
+dbr:Mont_Blanc    dbo:locatedInArea dbr:France ;      dbo:elevation 4808 .
+dbr:Matterhorn    dbo:locatedInArea dbr:Switzerland ; dbo:elevation 4478 .
+dbr:Dufourspitze  dbo:locatedInArea dbr:Switzerland ; dbo:elevation 4634 .
+dbr:Grossglockner dbo:locatedInArea dbr:Austria ;     dbo:elevation 3798 .
+dbr:Mount_Fuji    dbo:locatedInArea dbr:Japan ;       dbo:elevation 3776 .
+
+### scientists #################################################################
+dbr:Albert_Einstein   dbo:birthPlace dbr:Ulm ;
+                      dbo:deathPlace dbr:Princeton_New_Jersey ;
+                      dbo:spouse dbr:Mileva_Maric ;
+                      dbo:almaMater dbr:ETH_Zurich ;
+                      dbo:field dbr:Physics ;
+                      dbo:award dbr:Nobel_Prize_in_Physics .
+dbr:Marie_Curie       dbo:birthPlace dbr:Warsaw ;
+                      dbo:deathPlace dbr:Passy ;
+                      dbo:almaMater dbr:University_of_Paris ;
+                      dbo:field dbr:Physics , dbr:Chemistry ;
+                      dbo:award dbr:Nobel_Prize_in_Physics , dbr:Nobel_Prize_in_Chemistry .
+dbr:Max_Planck        dbo:birthPlace dbr:Kiel ;
+                      dbo:field dbr:Physics ;
+                      dbo:award dbr:Nobel_Prize_in_Physics .
+dbr:Werner_Heisenberg dbo:birthPlace dbr:Wurzburg ;
+                      dbo:field dbr:Physics ;
+                      dbo:award dbr:Nobel_Prize_in_Physics .
+dbr:Wurzburg          dbo:country dbr:Germany .
+dbr:Alexander_von_Humboldt dbo:birthPlace dbr:Berlin ;
+                      dbo:field dbr:Geography .
+
+### writers and books ##########################################################
+dbr:Faust                        dbo:author dbr:Johann_Wolfgang_von_Goethe .
+dbr:The_Sorrows_of_Young_Werther dbo:author dbr:Johann_Wolfgang_von_Goethe .
+dbr:Johann_Wolfgang_von_Goethe   dbo:birthPlace dbr:Frankfurt ;
+                                 dbo:deathPlace dbr:Weimar .
+dbr:Hamlet           dbo:author dbr:William_Shakespeare .
+dbr:Macbeth          dbo:author dbr:William_Shakespeare .
+dbr:Romeo_and_Juliet dbo:author dbr:William_Shakespeare .
+dbr:William_Shakespeare dbo:birthPlace dbr:Stratford_upon_Avon ;
+                        dbo:deathPlace dbr:Stratford_upon_Avon ;
+                        dbo:spouse dbr:Anne_Hathaway .
+dbr:Harry_Potter_and_the_Philosophers_Stone dbo:author dbr:J_K_Rowling .
+dbr:J_K_Rowling      dbo:birthPlace dbr:Yate .
+dbr:The_Trial        dbo:author dbr:Franz_Kafka .
+dbr:Franz_Kafka      dbo:birthPlace dbr:Prague ;
+                     dbo:deathPlace dbr:Kierling .
+
+### films ######################################################################
+dbr:Inception    dbo:director dbr:Christopher_Nolan ;
+                 dbo:starring dbr:Leonardo_DiCaprio , dbr:Joseph_Gordon_Levitt .
+dbr:Interstellar dbo:director dbr:Christopher_Nolan ;
+                 dbo:starring dbr:Matthew_McConaughey , dbr:Anne_Hathaway_actress .
+dbr:Oppenheimer_film dbo:director dbr:Christopher_Nolan ;
+                 dbo:starring dbr:Cillian_Murphy .
+dbr:Titanic_film dbo:director dbr:James_Cameron ;
+                 dbo:starring dbr:Leonardo_DiCaprio , dbr:Kate_Winslet .
+dbr:Avatar_film  dbo:director dbr:James_Cameron ;
+                 dbo:starring dbr:Sam_Worthington .
+dbr:The_Shining_film dbo:director dbr:Stanley_Kubrick ;
+                 dbo:starring dbr:Jack_Nicholson .
+dbr:2001_A_Space_Odyssey dbo:director dbr:Stanley_Kubrick .
+dbr:Christopher_Nolan  dbo:birthPlace dbr:London .
+dbr:James_Cameron      dbo:birthPlace dbr:Kapuskasing .
+dbr:Stanley_Kubrick    dbo:birthPlace dbr:New_York_City ;
+                       dbo:deathPlace dbr:St_Albans .
+dbr:Leonardo_DiCaprio  dbo:birthPlace dbr:Los_Angeles .
+
+### music ######################################################################
+dbr:The_Beatles dbo:genre dbr:Rock_music ;       dbo:hometown dbr:Liverpool .
+dbr:Queen_band  dbo:genre dbr:Rock_music ;       dbo:hometown dbr:London .
+dbr:Kraftwerk   dbo:genre dbr:Electronic_music ; dbo:hometown dbr:Dusseldorf .
+
+### companies ##################################################################
+dbr:BMW        dbo:foundationPlace dbr:Munich ;
+               dbo:industry dbr:Automotive_industry .
+dbr:Volkswagen dbo:foundationPlace dbr:Wolfsburg ;
+               dbo:industry dbr:Automotive_industry .
+dbr:Siemens    dbo:foundationPlace dbr:Berlin ;
+               dbo:industry dbr:Electronics_industry .
+dbr:SAP        dbo:foundationPlace dbr:Walldorf ;
+               dbo:industry dbr:Software_industry .
+dbr:Airbus     dbo:foundationPlace dbr:Toulouse ;
+               dbo:industry dbr:Aerospace_industry .
+
+### universities ###############################################################
+dbr:ETH_Zurich                    dbo:city dbr:Zurich .
+dbr:Humboldt_University_of_Berlin dbo:city dbr:Berlin .
+dbr:University_of_Oxford          dbo:city dbr:Oxford .
+dbr:University_of_Paris           dbo:city dbr:Paris .
