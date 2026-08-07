@@ -1,6 +1,5 @@
 package eu.wdaqua.qanary.component.stanford.ner;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,7 +21,7 @@ public class Application {
      * QanaryServiceController in the qanary_component-template
      */
     @Bean
-    public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
+    public StanfordNERComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
         return new StanfordNERComponent(applicationName);
     }
 }

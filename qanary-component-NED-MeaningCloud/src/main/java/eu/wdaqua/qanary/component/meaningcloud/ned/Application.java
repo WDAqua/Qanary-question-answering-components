@@ -1,6 +1,5 @@
 package eu.wdaqua.qanary.component.meaningcloud.ned;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,7 +25,7 @@ public class Application {
      * @return
      */
     @Bean
-    public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName,
+    public MeaningCloudNed qanaryComponent(@Value("${spring.application.name}") final String applicationName,
                                            @Value("${ned-meaningcloud.cache.file}") final String cacheFilePath,
                                            @Value("${meaningcloud.api.url}") final String meaningCloudUrl,
                                            @Value("${meaningcloud.api.key}") final String meaningCloudKey

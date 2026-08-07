@@ -2,7 +2,6 @@ package eu.wdaqua.qanary.component.dandelion.ned;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.dandelion.ned.exception.ApiLiveTestFaildException;
 import eu.wdaqua.qanary.component.dandelion.ned.exception.ApiTokenIsNullOrEmptyException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,7 @@ public class Application {
      * @return
      */
     @Bean
-    public QanaryComponent qanaryComponent(
+    public DandelionNED qanaryComponent(
             @Value("${spring.application.name}") final String applicationName, //
             @Value("${dandelion.api.live.test.active}") final boolean apiLiveTestActive, //
             @Value("${dandelion.api.key}") final String apiToken //

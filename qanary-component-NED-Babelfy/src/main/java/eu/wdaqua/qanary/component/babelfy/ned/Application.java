@@ -1,7 +1,6 @@
 package eu.wdaqua.qanary.component.babelfy.ned;
 
 import com.google.gson.JsonArray;
-import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.babelfy.ned.exception.ApiLiveTestFaildException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,7 @@ public class Application {
      * @return
      */
     @Bean
-    public QanaryComponent qanaryComponent(
+    public BabelfyNED qanaryComponent(
             @Autowired BabelfyServiceFetcher babelfyServiceFetcher, //
             @Value("${spring.application.name}") String applicationName, //
             @Value("${babelfy.api.live.test.active}") boolean apiLiveTestActive, //

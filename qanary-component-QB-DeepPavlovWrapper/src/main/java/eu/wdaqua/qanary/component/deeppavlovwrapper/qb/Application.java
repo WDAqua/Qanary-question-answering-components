@@ -15,7 +15,6 @@ import org.springframework.context.annotation.ComponentScan;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -55,7 +54,7 @@ public class Application {
 	* @return
 	*/
 	@Bean
-	public QanaryComponent qanaryComponent(
+	public DeepPavlovWrapper qanaryComponent(
 			@Value("${spring.application.name}") final String applicationName,
 			@Qualifier("deeppavlov.langDefault") String langDefault,
 			@Qualifier("deeppavlov.endpoint.language.supported") ArrayList<String> supportedLang, 

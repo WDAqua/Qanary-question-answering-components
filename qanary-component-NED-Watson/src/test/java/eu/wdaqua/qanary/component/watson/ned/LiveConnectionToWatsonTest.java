@@ -5,7 +5,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -22,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class LiveConnectionToWatsonTest {
     private static final Logger logger = LoggerFactory.getLogger(LiveConnectionToWatsonTest.class);
     private final float minThreshold = 0.4f;
-    @Qualifier("watsonNED")
+    // no @Qualifier needed: WatsonNED is registered exactly once, by the qanaryComponent() factory
     @Autowired
     private WatsonNED myWatsonNED;
 

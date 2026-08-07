@@ -2,7 +2,6 @@ package eu.wdaqua.qanary.component.meaningcloud.ner;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.meaningcloud.ner.exception.ApiLiveTestFaildException;
 import eu.wdaqua.qanary.component.meaningcloud.ner.exception.ApiTokenIsNullOrEmptyException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ public class Application {
      * @return
      */
     @Bean
-    public QanaryComponent qanaryComponent(
+    public MeaningCloud qanaryComponent(
             @Value("${spring.application.name}") final String applicationName, //
             @Value("${meaningcloud.api.live.test.active}") final boolean apiLiveTestActive, //
             @Value("${meaningcloud.api.key}") String meaningCloudKey, //

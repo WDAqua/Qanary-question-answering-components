@@ -1,6 +1,5 @@
 package eu.wdaqua.qanary.component.smaph.nerd;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +20,7 @@ public class Application {
 	 * @return
 	 */
 	@Bean
-	public QanaryComponent qanaryComponent() {
+	public SmaphErd qanaryComponent() {
 		return new SmaphErd();
 	}
 }

@@ -1,6 +1,5 @@
 package eu.wdaqua.qanary.component.monoliticwrapper.qb;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,7 +24,7 @@ public class Application {
 	 * @return
 	 */
 	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
+	public Monolitic qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
 		return new Monolitic(applicationName);
 	}
 }

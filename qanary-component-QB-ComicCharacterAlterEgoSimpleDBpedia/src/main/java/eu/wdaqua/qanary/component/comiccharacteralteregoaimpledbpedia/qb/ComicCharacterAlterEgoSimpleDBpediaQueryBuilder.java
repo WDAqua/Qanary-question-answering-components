@@ -13,11 +13,9 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-@Component
 /**
  * This component creates a SPARQL query that can be used to find the real name of fictional characters.
  * It recognizes the question prefix "what is the real name of".

@@ -1,6 +1,5 @@
 package eu.wdaqua.qanary.component.comiccharacternamesimple.ner;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,7 +25,7 @@ public class Application {
 	 * @return
 	 */
 	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") String applicationName) {
+	public ComicCharacterNameSimpleNamedEntityRecognizer qanaryComponent(@Value("${spring.application.name}") String applicationName) {
 		return new ComicCharacterNameSimpleNamedEntityRecognizer(applicationName);
 	}
 }

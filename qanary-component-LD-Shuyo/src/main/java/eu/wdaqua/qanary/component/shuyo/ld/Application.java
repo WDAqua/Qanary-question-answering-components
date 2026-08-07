@@ -10,7 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
 
 import com.cybozu.labs.langdetect.LangDetectException;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
@@ -35,7 +34,7 @@ public class Application {
 	}
 	
 	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String name) throws IOException, LangDetectException {
+	public LanguageDetection qanaryComponent(@Value("${spring.application.name}") final String name) throws IOException, LangDetectException {
 		return new LanguageDetection(name);
 	}
 }

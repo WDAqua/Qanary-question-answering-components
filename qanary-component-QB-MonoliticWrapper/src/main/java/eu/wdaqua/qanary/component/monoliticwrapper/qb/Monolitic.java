@@ -11,11 +11,9 @@ import org.apache.jena.query.ResultSetFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
 
-@Component
 public class Monolitic extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(Monolitic.class);
 

@@ -1,6 +1,5 @@
 package eu.wdaqua.qanary.component.aylien.ned;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.aylien.ned.AylienServiceFetcher.Link;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +34,7 @@ public class Application {
 	 * @throws Exception
 	*/
 	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") String applicationName) throws Exception {
+	public AylienNED qanaryComponent(@Value("${spring.application.name}") String applicationName) throws Exception {
 		return new AylienNED(applicationName);
 	}
 
