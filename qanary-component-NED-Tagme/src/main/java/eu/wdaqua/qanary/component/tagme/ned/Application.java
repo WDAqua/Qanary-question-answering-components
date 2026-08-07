@@ -1,6 +1,5 @@
 package eu.wdaqua.qanary.component.tagme.ned;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,7 +21,7 @@ public class Application {
 	 * @return
 	 */
 	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName,
+	public TagmeNED qanaryComponent(@Value("${spring.application.name}") final String applicationName,
 			@Value("${ned-tagme.cache.enabled}") final Boolean cacheEnabled,
 			@Value("${ned-tagme.cache.file}") final String cacheFile,
 			@Value("${ned-tagme.service.url}") final String tagMeServiceURL,

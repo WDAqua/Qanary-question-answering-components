@@ -1,6 +1,5 @@
 package eu.wdaqua.qanary.component.relationlinker.rel;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.relationlinker.rel.RelationLinkerServiceFetcher.Link;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,7 @@ public class Application {
 	* @throws Exception
 	*/
 	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) throws Exception {
+	public RelationLinker1 qanaryComponent(@Value("${spring.application.name}") final String applicationName) throws Exception {
 		return new RelationLinker1(applicationName);
 	}
 

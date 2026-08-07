@@ -1,6 +1,5 @@
 package eu.wdaqua.qanary.component.diambiguationclass.ned;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -24,7 +23,7 @@ public class Application {
 	* @return
 	*/
 	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
+	public DiambiguationClass qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
 		return new DiambiguationClass(applicationName);
 	}
 	

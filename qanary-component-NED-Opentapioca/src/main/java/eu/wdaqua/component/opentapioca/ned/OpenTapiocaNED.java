@@ -15,7 +15,6 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,7 +30,6 @@ import java.util.List;
  * to the Qanary triplestore to be used by other services in the question answering process
  */
 
-@Component
 public class OpenTapiocaNED extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(OpenTapiocaNED.class);
 

@@ -2,7 +2,6 @@ package eu.wdaqua.qanary.component.tagme.ner;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.tagme.ner.exception.ApiLiveTestFaildException;
 import eu.wdaqua.qanary.component.tagme.ner.exception.ApiTokenIsNullOrEmptyException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +42,7 @@ public class Application {
      * @return
      */
     @Bean
-    public QanaryComponent qanaryComponent(
+    public TagmeNER qanaryComponent(
             @Value("${spring.application.name}") final String applicationName, //
             @Value("${tagme.api.live.test.active}") final boolean apiLiveTestActive, //
             @Value("${tagme.api.url}") final String url, //

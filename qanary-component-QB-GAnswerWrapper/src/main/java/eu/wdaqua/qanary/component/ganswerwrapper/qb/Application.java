@@ -2,7 +2,6 @@ package eu.wdaqua.qanary.component.ganswerwrapper.qb;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -67,7 +66,7 @@ import java.util.ArrayList;
     }
 
     @Bean
-    public QanaryComponent qanaryComponent( //
+    public GAnswerQueryBuilder qanaryComponent( //
                                             float threshold, //
                                             @Qualifier("g_answer.langDefault") String langDefault, //
                                             @Qualifier("g_answer.endpoint.language.supported") ArrayList<String> supportedLang, //

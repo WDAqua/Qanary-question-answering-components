@@ -2,7 +2,6 @@ package eu.wdaqua.qanary.component.tebaqawrapper.qb;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -65,7 +64,7 @@ import java.util.ArrayList;
     }
 
     @Bean
-    public QanaryComponent qanaryComponent( //
+    public TeBaQAQueryBuilder qanaryComponent( //
                                             float threshold, //
                                             @Qualifier("tebaqa.langDefault") String langDefault, //
                                             @Qualifier("tebaqa.endpoint.language.supported") ArrayList<String> supportedLang, //

@@ -2,7 +2,6 @@ package eu.wdaqua.qanary.component.chatgptwrapper.tqa;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.MyCompletionRequest;
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.exception.MissingTokenException;
 import eu.wdaqua.qanary.component.chatgptwrapper.tqa.openai.api.exception.OpenApiUnreachableException;
@@ -54,7 +53,7 @@ public class Application {
      * @throws MissingArgumentException
      */
     @Bean
-    public QanaryComponent qanaryComponent(
+    public ChatGPTWrapper qanaryComponent(
             @Value("${spring.application.name}") String applicationName, //
             @Value("${chatgpt.api.key}") String token, //
             @Value("${chatgpt.api.live.test.active}") boolean doApiIsAliveCheck, //

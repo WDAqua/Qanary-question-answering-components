@@ -2,7 +2,6 @@ package eu.wdaqua.qanary.component.dbpediaspotlight.ner;
 
 import com.google.gson.JsonArray;
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
-import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.dbpediaspotlight.ner.exceptions.DBpediaSpotlightServiceNotAvailable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,7 @@ public class Application {
      * the QanaryServiceController in the qanary_component-template
      */
     @Bean
-    public QanaryComponent qanaryComponent(
+    public DBpediaSpotlightNER qanaryComponent(
             @Value("${spring.application.name}") final String applicationName, //
             DBpediaSpotlightConfiguration dBpediaSpotlightConfiguration, //
             DBpediaSpotlightServiceFetcher dBpediaSpotlightServiceFetcher, //

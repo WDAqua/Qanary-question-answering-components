@@ -1,6 +1,5 @@
 package eu.wdaqua.qanary.component.sina.qb;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,7 +25,7 @@ public class Application {
 	 * @throws IOException 
 	*/
 	@Bean
-	public QanaryComponent qanaryComponent(@Value("${sina.jarfilelocation}" ) String sinaJarFileLocation) throws IOException, InterruptedException {
+	public SINA qanaryComponent(@Value("${sina.jarfilelocation}" ) String sinaJarFileLocation) throws IOException, InterruptedException {
 		return new SINA(sinaJarFileLocation);
 	}
 	

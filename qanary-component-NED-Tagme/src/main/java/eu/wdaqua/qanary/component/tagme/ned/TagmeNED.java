@@ -21,7 +21,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 
 import java.io.*;
@@ -30,7 +29,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 /**
  * This component retrieved named entities for a given question from the Tagme
  * Web service

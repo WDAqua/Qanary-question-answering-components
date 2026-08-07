@@ -1,6 +1,5 @@
 package eu.wdaqua.qanary.component.clsnliod.cls;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
 import org.apache.jena.riot.system.AsyncParser;
 import java.util.Iterator;
 import org.json.JSONArray;
@@ -41,7 +40,7 @@ public class Application {
 	 * @return
 	 */
 	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName,
+	public ClsNliodCls qanaryComponent(@Value("${spring.application.name}") final String applicationName,
 										   @Value("${cls-clsnliod.cache.enabled}") final Boolean cacheEnabled,
 										   @Value("${cls-clsnliod.cache.file}") final String cacheFile) {
 		return new ClsNliodCls(applicationName, cacheEnabled, cacheFile);

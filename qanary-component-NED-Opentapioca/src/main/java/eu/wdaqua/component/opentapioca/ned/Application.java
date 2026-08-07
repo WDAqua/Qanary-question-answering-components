@@ -1,7 +1,6 @@
 package eu.wdaqua.component.opentapioca.ned;
 
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.QanaryComponent;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
@@ -39,7 +38,7 @@ public class Application {
 	}
 
 	@Bean
-	public QanaryComponent qanaryComponent(
+	public OpenTapiocaNED qanaryComponent(
 			@Value("${spring.application.name}") final String applicationName,
 			OpenTapiocaConfiguration openTapiocaConfiguration,
 			OpenTapiocaServiceFetcher openTapiocaServiceFetcher) {

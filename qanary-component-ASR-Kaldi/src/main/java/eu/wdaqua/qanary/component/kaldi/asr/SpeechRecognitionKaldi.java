@@ -16,9 +16,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
-@Component
 public class SpeechRecognitionKaldi extends QanaryComponent {
     private static final Logger logger = LoggerFactory.getLogger(SpeechRecognitionKaldi.class);
     @Value("${spring.boot.admin.url}")

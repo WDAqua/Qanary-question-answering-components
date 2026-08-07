@@ -15,12 +15,10 @@ import org.apache.jena.rdfconnection.RDFConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-@Component
 /**
  * This Qanary component is annotating DBpedia's Superhero entities within
  * questions. Example: "What is the real name of Catwoman?" with the entity

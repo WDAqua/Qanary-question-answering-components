@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -33,7 +32,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 
-@Component
 /**
  * This component connected automatically to the Qanary pipeline.
  * The Qanary pipeline endpoint defined in application.properties (spring.boot.admin.url)

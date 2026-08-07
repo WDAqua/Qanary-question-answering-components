@@ -12,7 +12,6 @@ import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
-import eu.wdaqua.qanary.component.QanaryComponent;
 
 @SpringBootApplication
 @EnableAutoConfiguration
@@ -30,7 +29,7 @@ public class Application {
 	* @return
 	*/
 	@Bean
-	public QanaryComponent qanaryComponent(
+	public QueryBuilderDateOfDeathDBpedia qanaryComponent(
 			@Value("${spring.application.name}") final String applicationName) {
 		return new QueryBuilderDateOfDeathDBpedia(applicationName);
 	}

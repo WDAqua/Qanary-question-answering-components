@@ -17,7 +17,6 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import eu.wdaqua.qanary.commons.QanaryExceptionNoOrMultipleQuestions;
 import eu.wdaqua.qanary.commons.QanaryMessage;
@@ -41,7 +40,6 @@ import io.swagger.v3.oas.annotations.Operation;
  * query that might be used to compute the answer to the question
  */
 
-@Component
 public class BirthDataQueryBuilder extends QanaryComponent {
 	private static final Logger logger = LoggerFactory.getLogger(BirthDataQueryBuilder.class);
 	public static final String FILENAME_ANNOTATIONS = "/queries/getAnnotation.rq";

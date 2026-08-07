@@ -1,6 +1,5 @@
 package eu.wdaqua.qanary.component.answertypeclassifier.qc;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -23,7 +22,7 @@ public class Application {
 	 * @return
 	 */
 	@Bean
-	public QanaryComponent qanaryComponent() {
+	public AnswerTypeClassifier qanaryComponent() {
 		return new AnswerTypeClassifier();
 	}
 

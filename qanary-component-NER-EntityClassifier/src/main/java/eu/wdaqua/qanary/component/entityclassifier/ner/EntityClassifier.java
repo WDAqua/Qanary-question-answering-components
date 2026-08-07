@@ -4,10 +4,8 @@ import eu.wdaqua.qanary.commons.QanaryMessage;
 import eu.wdaqua.qanary.component.QanaryComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 
-@Component
 /**
  * This component connected automatically to the Qanary pipeline.
  * The Qanary pipeline endpoint defined in application.properties (spring.boot.admin.url)

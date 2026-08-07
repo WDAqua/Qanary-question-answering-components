@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
@@ -28,7 +27,6 @@ import java.util.Collections;
 import java.util.List;
 
 
-@Component
 /**
  * This component retrieves named entities for a given question from the
  * IBM Watson Natural Language Understanding Web Service

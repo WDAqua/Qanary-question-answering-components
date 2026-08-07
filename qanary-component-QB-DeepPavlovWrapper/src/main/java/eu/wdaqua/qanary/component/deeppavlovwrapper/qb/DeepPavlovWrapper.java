@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -32,7 +31,6 @@ import eu.wdaqua.qanary.exceptions.SparqlQueryFailed;
 import net.minidev.json.JSONArray;
 
 
-@Component
 /**
  * This component connected automatically to the Qanary pipeline.
  * The Qanary pipeline endpoint defined in application.properties (spring.boot.admin.url)

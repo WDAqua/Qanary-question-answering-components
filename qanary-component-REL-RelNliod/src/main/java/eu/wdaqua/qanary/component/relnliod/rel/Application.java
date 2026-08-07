@@ -1,6 +1,5 @@
 package eu.wdaqua.qanary.component.relnliod.rel;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,7 +21,7 @@ public class Application {
 	* @return
 	*/
 	@Bean
-	public QanaryComponent qanaryComponent(@Value("${spring.application.name}") final String applicationName,
+	public RelNliodRel qanaryComponent(@Value("${spring.application.name}") final String applicationName,
 										   @Value("${rel-nliod.cache.enabled}") final Boolean cacheEnabled,
 										   @Value("${rel-nliod.cache.file}") final String cacheFile,
 										   @Value("${rel-nliod.service.url}") final String textRazorServiceURL,

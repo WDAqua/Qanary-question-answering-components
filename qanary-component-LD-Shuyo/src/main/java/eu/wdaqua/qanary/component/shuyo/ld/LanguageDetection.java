@@ -17,7 +17,6 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
@@ -36,7 +35,6 @@ import eu.wdaqua.qanary.component.QanaryComponent;
  * process
  *
  */
-@Component
 public class LanguageDetection extends QanaryComponent {
 	private final String FILENAME_ANNOTATIONS_FILTERED = "/queries/insert_one_AnnotationOfQuestionLanguage.rq";
 

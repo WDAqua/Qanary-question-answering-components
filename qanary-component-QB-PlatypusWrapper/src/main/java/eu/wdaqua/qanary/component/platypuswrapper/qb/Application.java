@@ -2,7 +2,6 @@ package eu.wdaqua.qanary.component.platypuswrapper.qb;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -68,7 +67,7 @@ import java.util.List;
     }
 
     @Bean
-    public QanaryComponent qanaryComponent( //
+    public PlatypusQueryBuilder qanaryComponent( //
                                             float threshold, //
                                             @Qualifier("platypus.langDefault") String langDefault, //
                                             @Qualifier("platypus.endpoint.language.supported") List<String> supportedLang, //

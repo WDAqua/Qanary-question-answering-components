@@ -27,7 +27,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -44,7 +43,6 @@ import java.util.List;
  * @author Dennis Diefenbach
  */
 
-@Component
 public class Agdistis extends QanaryComponent {
     private static final Logger LOGGER = LoggerFactory.getLogger(Agdistis.class);
 

@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -32,7 +31,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 /**
  * This component connected automatically to the Qanary pipeline.
  * The Qanary pipeline endpoint defined in application.properties (spring.boot.admin.url)

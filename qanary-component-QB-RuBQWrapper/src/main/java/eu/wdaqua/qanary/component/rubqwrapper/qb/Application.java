@@ -2,7 +2,6 @@ package eu.wdaqua.qanary.component.rubqwrapper.qb;
 
 import eu.wdaqua.qanary.communications.CacheOfRestTemplateResponse;
 import eu.wdaqua.qanary.communications.RestTemplateWithCaching;
-import eu.wdaqua.qanary.component.QanaryComponent;
 import eu.wdaqua.qanary.component.QanaryComponentConfiguration;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -67,7 +66,7 @@ import java.util.ArrayList;
     }
 
     @Bean
-    public QanaryComponent qanaryComponent( //
+    public RuBQQueryBuilder qanaryComponent( //
                                             float threshold, //
                                             @Qualifier("rubq.langDefault") String langDefault, //
                                             @Qualifier("rubq.endpoint.language.supported") ArrayList<String> supportedLang, //

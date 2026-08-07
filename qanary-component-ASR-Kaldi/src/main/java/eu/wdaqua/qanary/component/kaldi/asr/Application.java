@@ -1,6 +1,5 @@
 package eu.wdaqua.qanary.component.kaldi.asr;
 
-import eu.wdaqua.qanary.component.QanaryComponent;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +16,7 @@ public class Application {
 	* @return
 	*/
 	@Bean
-	public QanaryComponent qanaryComponent() {
+	public SpeechRecognitionKaldi qanaryComponent() {
 		return new SpeechRecognitionKaldi();
 	}
 	
