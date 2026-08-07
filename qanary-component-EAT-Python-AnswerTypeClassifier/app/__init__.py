@@ -1,6 +1,8 @@
 from app.answer_type_classifier import answer_type_classifier
 from flask import Flask, render_template
 
+version = "0.1.0"
+
 # default config file (use -c parameter on command line specify a custom config file)
 configfile = "app.conf"
 
