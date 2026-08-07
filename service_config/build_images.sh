@@ -89,43 +89,62 @@ else
 fi
 
 
-# build Docker Images and store name and tag
+# build the JARs -- each component's Dockerfile copies target/<finalName>.jar
 if ! mvn --batch-mode clean package -DskipTests;
 then
   echo "Maven build failed"
   exit 4 # stop if maven build fails
 fi
 
-docker image ls | grep -oP "^qanary/qanary-component.*\.[0-9]+ " > images.temp
+# Maven only produces the JARs; it does not build any Docker image (the components
+# carry no Docker plugin). So build every component image here from the component's
+# own Dockerfile. list_java_component_images.py derives the image coordinates from
+# each pom.xml and fails if no JAR was produced at all, so that a broken build can
+# no longer look like a successful run that just happens to push nothing.
+if ! python3 service_config/list_java_component_images.py > images.temp;
+then
+  echo "Could not determine the component images to build"
+  rm -f images.temp
+  exit 5
+fi
 
-# read image list
-images=$(cat images.temp)
-
-i=0
-
-# for each image
-for row in $images
+built=0
+while IFS=$'\t' read -r directory image version jar_file
 do
-  # row contains the image name
-  if [ $i -eq 0 ]
+  [ -z "${directory}" ] && continue
+
+  echo "::group::Building ${image}:${version} from ${directory}"
+  if ! docker build "${directory}" \
+        --file "${directory}/Dockerfile" \
+        --build-arg "JAR_FILE=${jar_file}" \
+        --tag "${image}:${version}" \
+        --tag "${image}:latest";
   then
-    # store image name
-    file_name=$row
-    i=$((i + 1))
-  # row contains tag
-  else
-    # generate version and latest tag
-    latest_file_name="${file_name}:latest"
-    file_name="${file_name}:${row}"
-
-    i=0
-
-    # tag images and push to Dockerhub
-    docker tag "${file_name}" "${latest_file_name}"
-    docker push "${file_name}"
-    docker push "${latest_file_name}"
+    echo "::endgroup::"
+    echo "Docker build failed for ${directory}"
+    rm -f images.temp
+    exit 6
   fi
-done
+  echo "::endgroup::"
+
+  # push both the versioned and the latest tag to Dockerhub
+  if ! docker push "${image}:${version}" || ! docker push "${image}:latest";
+  then
+    echo "Docker push failed for ${image}"
+    rm -f images.temp
+    exit 7
+  fi
+
+  built=$((built + 1))
+done < images.temp
 
 # delete temp results
-rm images.temp
+rm -f images.temp
+
+if [ "${built}" -eq 0 ]
+then
+  echo "No component image was built - refusing to report success"
+  exit 8
+fi
+
+echo "Successfully built and pushed ${built} component image(s)"
