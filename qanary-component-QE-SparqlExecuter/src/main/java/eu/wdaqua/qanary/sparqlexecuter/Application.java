@@ -6,6 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+
 @SpringBootApplication
 @ComponentScan(basePackages = {"eu.wdaqua.qanary"})
 /**
@@ -23,6 +27,24 @@ public class Application {
 	@Bean
 	public SparqlExecuter qanaryComponent(@Value("${spring.application.name}") final String applicationName) {
 		return new SparqlExecuter(applicationName);
+	}
+
+	/**
+	 * the version is taken from the JAR manifest, so the running component reports the
+	 * version it was built from -- this is what makes the deployed version verifiable
+	 * (see service_config/verify_deployment.py)
+	 */
+	@Bean
+	public OpenAPI customOpenAPI() {
+		String appVersion = getClass().getPackage().getImplementationVersion();
+		return new OpenAPI().info(new Info() //
+				.title("Qanary SPARQL Executer Component") //
+				.version(appVersion) //
+				.description("Executes the SPARQL query computed by a previous component " //
+						+ "automatically on Wikidata or DBpedia") //
+				.termsOfService("http://swagger.io/terms/") //
+				.license(new License().name("Apache 2.0").url("http://springdoc.org")) //
+		);
 	}
 	
 	

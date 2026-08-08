@@ -5,6 +5,14 @@ on:
     branches: [master]
   workflow_dispatch:
 
+# Only one deployment at a time. Two runs pushing images and triggering the updater in
+# parallel restart the components underneath each other, which makes verify-deployment
+# report a failure that is only a race between two merges. Queue instead of cancelling,
+# so a rollout that is already running is never interrupted half way through.
+concurrency:
+  group: deploy-qanary-components
+  cancel-in-progress: false
+
 jobs:
   build-java:
     runs-on: ubuntu-latest
