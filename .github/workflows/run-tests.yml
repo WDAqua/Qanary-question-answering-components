@@ -59,7 +59,7 @@ jobs:
       pull-requests: write # post the coverage report as a PR comment
     steps:
       - name: Configure Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         id: setup_python
         with:
           python-version: "3.12"
