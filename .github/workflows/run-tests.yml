@@ -41,7 +41,7 @@ jobs:
         run: python3 service_config/jacoco_summary.py
       - name: Post Java coverage comment
         if: always()
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v3
         with:
           header: java-component-coverage
           path: java-coverage-summary.md
@@ -106,7 +106,7 @@ jobs:
         run: python service_config/coverage_summary.py
       - name: Post Python coverage comment
         if: always()
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v3
         with:
           header: python-component-coverage
           path: python-coverage-summary.md
