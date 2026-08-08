@@ -1,0 +1,9 @@
+qanary-helpers
+fastapi
+uvicorn
+requests
+httpx
+SPARQLWrapper
+python-dotenv
+pytest
+pytest-env
