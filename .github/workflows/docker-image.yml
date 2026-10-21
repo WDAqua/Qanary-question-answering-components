@@ -59,6 +59,14 @@ jobs:
         with:
           api_key: ${{ secrets.API_KEY }}
           updater_host: ${{ secrets.UPDATER_HOST }}
+      # The machine translation components load about 10 GB of models, more than the main
+      # deployment host has to spare; they run on wse1 and register with the same pipeline.
+      - name: Init update (wse1)
+        uses: WSE-research/docker-service-updater@v0.2.1
+        with:
+          config_file: service_config/service_config_wse1.json
+          api_key: ${{ secrets.WSE1_API_KEY }}
+          updater_host: ${{ secrets.WSE1_UPDATER_HOST }}
   # A green build step does not mean the change is live: the image build published
   # nothing for months while every run reported success, and LD-Shuyo crash-looped on
   # the server unnoticed. This job asks the deployment itself whether it now runs what
