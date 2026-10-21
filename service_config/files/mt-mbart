@@ -1,4 +1,4 @@
-SPRING_BOOT_ADMIN_URL=http://demos.swe.htwk-leipzig.de:40111/
+SPRING_BOOT_ADMIN_URL=http://demos.swe.htwk-leipzig.de:40111
 SPRING_BOOT_ADMIN_USERNAME=admin
 SPRING_BOOT_ADMIN_PASSWORD=admin
 SERVER_HOST=http://wse1.imn.htwk-leipzig.de
