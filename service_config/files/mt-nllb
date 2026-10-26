@@ -1,4 +1,7 @@
-SPRING_BOOT_ADMIN_URL=http://demos.swe.htwk-leipzig.de:40111/
-SERVER_HOST=http://demos.swe.htwk-leipzig.de
-SERVER_PORT=40194
+SPRING_BOOT_ADMIN_URL=http://demos.swe.htwk-leipzig.de:40111
+SPRING_BOOT_ADMIN_USERNAME=admin
+SPRING_BOOT_ADMIN_PASSWORD=admin
+SERVER_HOST=http://wse1.imn.htwk-leipzig.de
+SERVER_PORT=30194
+SERVICE_NAME_COMPONENT=MT-NLLB
 SERVICE_DESCRIPTION_COMPONENT="Translates text using NLLB"

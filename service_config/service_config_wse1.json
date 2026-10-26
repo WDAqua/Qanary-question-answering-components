@@ -1,0 +1,48 @@
+{
+  "services": [
+    {
+        "mode": "dockerfile",
+        "port": "30193:30193",
+        "image": "qanary/qanary-component-mt-python-helsinkinlp",
+        "tag": "latest",
+        "mem_limit": "8g",
+        "volumes": [
+          "qanary-mt-python-helsinkinlp-models:/root/.cache/huggingface"
+        ],
+        "files": {
+          ".env": "mt-helsinki"
+        }
+    },
+    {
+        "mode": "dockerfile",
+        "port": "30194:30194",
+        "image": "qanary/qanary-component-mt-python-nllb",
+        "tag": "latest",
+        "mem_limit": "5g",
+        "volumes": [
+          "qanary-mt-python-nllb-models:/root/.cache/huggingface"
+        ],
+        "files": {
+          ".env": "mt-nllb"
+        }
+    },
+    {
+        "mode": "dockerfile",
+        "port": "30196:30196",
+        "image": "qanary/qanary-component-mt-python-mbart",
+        "tag": "latest",
+        "mem_limit": "5g",
+        "volumes": [
+          "qanary-mt-python-mbart-models:/root/.cache/huggingface"
+        ],
+        "files": {
+          ".env": "mt-mbart"
+        }
+    }
+  ],
+  "ids": {
+    "0": "qanary-qanary-component-mt-python-helsinkinlp",
+    "1": "qanary-qanary-component-mt-python-nllb",
+    "2": "qanary-qanary-component-mt-python-mbart"
+  }
+}
