@@ -55,6 +55,16 @@ def parse_timestamp(value):
     return stamp if stamp.tzinfo else stamp.replace(tzinfo=timezone.utc)
 
 
+def registered_startup(metadata):
+    """Return when a component started, as it told the registry.
+
+    The Java components (Spring Boot Admin client) send "startup" in ISO 8601 with a
+    time zone. The Python components send "start" as "YYYY-MM-DD HH:MM:SS" in the
+    container's local time, which is UTC in their images.
+    """
+    return parse_timestamp(metadata.get("startup") or metadata.get("start"))
+
+
 def read(path):
     with open(path, encoding="utf-8", errors="replace") as handle:
         return handle.read()
@@ -109,7 +119,7 @@ def check_registry(instances, since):
         status = instance.get("statusInfo", {}).get("status")
         if status != "UP":
             not_up.append("%s (%s)" % (name, status))
-        startup = parse_timestamp(registration.get("metadata", {}).get("startup"))
+        startup = registered_startup(registration.get("metadata", {}))
         if since is not None and (startup is None or startup < since):
             not_restarted.append("%s (startup %s)" % (name, startup))
     return not_up, not_restarted
@@ -200,7 +210,7 @@ def main():
     print("\n%d registered component(s), all UP:" % len(instances))
     for instance in sorted(instances, key=lambda i: i.get("registration", {}).get("name", "")):
         registration = instance.get("registration", {})
-        print("  %-58s %s" % (registration.get("name"), registration.get("metadata", {}).get("startup")))
+        print("  %-58s %s" % (registration.get("name"), registered_startup(registration.get("metadata", {}))))
 
     # the versions the components actually serve
     host = re.sub(r"^\w+://", "", args.registry).split(":")[0].split("/")[0]
