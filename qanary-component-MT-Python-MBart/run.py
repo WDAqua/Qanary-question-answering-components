@@ -36,7 +36,7 @@ registration = Registration(
     metadata=metadata
 )
 
-logging.info(f"Start registration on: {SPRING_BOOT_ADMIN_URL} with the credentials: {SPRING_BOOT_ADMIN_USERNAME}/{SPRING_BOOT_ADMIN_PASSWORD}")
+logging.info(f"Start registration on: {SPRING_BOOT_ADMIN_URL}")
 
 # start a thread that will contact iteratively the Spring Boot Admin server
 registrator_thread = Registrator(

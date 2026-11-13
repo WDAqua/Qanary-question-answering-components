@@ -58,11 +58,6 @@ jobs:
       contents: read
       pull-requests: write # post the coverage report as a PR comment
     steps:
-      - name: Configure Python
-        uses: actions/setup-python@v7
-        id: setup_python
-        with:
-          python-version: "3.12"
       - name: "Remove swap"
         run: |
           sudo swapoff -a
@@ -93,6 +88,12 @@ jobs:
         run: |
           sudo apt-get clean
           df -h          
+      # after the cleanup, which removes the tool cache and with it this Python
+      - name: Configure Python
+        uses: actions/setup-python@v7
+        id: setup_python
+        with:
+          python-version: "3.12"
       - uses: actions/checkout@v7
       - name: Cache virtual environments
         uses: actions/cache@v6
